@@ -1,0 +1,9 @@
+fiftyone.mobile.detection
+fiftyone.mobile.detection.binary
+fiftyone.mobile.detection.handlers
+fiftyone.mobile.detection.matchers
+fiftyone.mobile.detection.matchers.editdistance
+fiftyone.mobile.detection.matchers.finalmatcher
+fiftyone.mobile.detection.matchers.reducedinitialstring
+fiftyone.mobile.detection.matchers.segment
+fiftyone.mobile.detection.trie
