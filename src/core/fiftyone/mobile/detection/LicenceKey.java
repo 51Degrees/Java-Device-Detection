@@ -10,16 +10,13 @@
  * ********************************************************************* */
 package fiftyone.mobile.detection;
 
+import fiftyone.properties.DetectionConstants;
 import java.util.regex.Matcher;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *
  * Class to hold and validate a 51Degrees.mobi Licence key.
  *
- * @author 51Degrees.mobi
- * @version 2.2.9.1
  */
 public class LicenceKey {
 
@@ -28,11 +25,6 @@ public class LicenceKey {
      */
     private static String key = null;
     
-    /**
-     * Creates a logger for this class
-     */
-    private static final Logger _logger = LoggerFactory.getLogger(LicenceKey.class);
-
     /**
      * Assigns the given license key to the License key object if it is a valid
      * key.
@@ -44,10 +36,10 @@ public class LicenceKey {
             if (validate(licenceKey)) {
                 key = licenceKey;
             } else {
-                _logger.info(
+                /*_logger.info(
                         String.format(
                         "Licence key '%s' was invalid.",
-                        licenceKey));               
+                        licenceKey)); */              
             }
         }
     }
@@ -71,7 +63,7 @@ public class LicenceKey {
      */
     private static boolean validate(final String licenceKey) {
         if (licenceKey != null) {
-            final Matcher m = Constants.LICENSE_KEY_VALIDATION_REGEX.matcher(licenceKey);
+            final Matcher m = DetectionConstants.LICENSE_KEY_VALIDATION_REGEX.matcher(licenceKey);
             return m.matches();
         }
         return false;
