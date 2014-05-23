@@ -25,29 +25,29 @@ import fiftyone.mobile.detection.entities.Signature;
  * This Source Code Form is "Incompatible With Secondary Licenses", as
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
-
 /**
  * Used to determine if all the signature node sub strings are in the target
  * just at different character positions.
  */
 class NearestScore extends BaseScore {
 
-	@Override
-    protected int getInitialScore(Match match, Signature signature, int lastNodeCharacter) throws IOException
-    {
+    @Override
+    protected int getInitialScore(Match match, Signature signature, int lastNodeCharacter) throws IOException {
         return 0;
     }
 
-	/**
-	 * If the sub string is contained in the target but in a different position
-	 * return the difference between the two sub string positions.
-	 * @returns -1 if a score can't be determined, or the difference in positions
-	 */
-    protected int getScore(Match match, Node node) throws IOException
-    {
+    /**
+     * If the sub string is contained in the target but in a different position
+     * return the difference between the two sub string positions.
+     *
+     * @returns -1 if a score can't be determined, or the difference in
+     * positions
+     */
+    protected int getScore(Match match, Node node) throws IOException {
         int index = match.getIndexOf(node);
-        if (index >= 0)
+        if (index >= 0) {
             return Math.abs(node.position + 1 - index);
+        }
 
         // Return -1 to indicate that a score could not be calculated.
         return -1;

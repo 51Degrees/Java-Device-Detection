@@ -24,11 +24,11 @@ import fiftyone.mobile.detection.readers.BinaryReader;
  * This Source Code Form is "Incompatible With Secondary Licenses", as
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
-
 public class ComponentFactory extends BaseEntityFactory<Component> {
-	@Override
-	public Component create(Dataset dataSet, int index,
-			BinaryReader reader) {
-		return new Component(dataSet, index, reader);
-	}
+
+    @Override
+    public Component create(Dataset dataSet, int index,
+            BinaryReader reader) {
+        return new Component(dataSet, index, reader);
+    }
 }

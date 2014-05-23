@@ -68,6 +68,8 @@ public class Constants {
     
     public static final String IMAGE_FACTOR = "IMAGE_FACTOR";
     
+    public static final String DEFAULT_AUTO = "IMAGE_DEFAULT_AUTO";
+    
     public static final String IMAGE_WIDTH_PARAM = "IMAGE_WIDTH_PARAM";
     
     public static final String IMAGE_HEIGHT_PARAM = "IMAGE_HEIGHT_PARAM";
@@ -79,6 +81,8 @@ public class Constants {
     public static final int FILE_CHECK_WAIT = 2 * 60;
     
     public static final int FILE_CHECK_DELAYED_START = 5 * 60;
+    
+    public static final int CACHE_SERVICE_INTERVAL = 60;
 
     /**
      * Header fields that should not be shared with 51Degrees.

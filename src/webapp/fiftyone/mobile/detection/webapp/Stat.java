@@ -22,76 +22,73 @@ import java.io.Serializable;
  * This Source Code Form is "Incompatible With Secondary Licenses", as
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
-
 @SuppressWarnings("serial")
 public class Stat implements Comparable<Stat>, Serializable {
-	// Set when the server starts to send the headers.
-	long serverTimeSent;
+    // Set when the server starts to send the headers.
 
-	// Set when the browser receives the response.
-	long browserTimeRecieved;
+    long serverTimeSent;
+    // Set when the browser receives the response.
+    long browserTimeRecieved;
+    // Set when the browser finishes rendering the response.
+    long browserTimeCompleted;
+    // Set when the browser sends the request.
+    long browserTimeSent;
+    // Set when the stat is created.
+    long serverTimeRecieved;
+    // Length in bytes of the response.
+    int responseLength;
+    // Length in bytes of the request.
+    int requestLength;
+    // / <summary>
+    // / The unique Id of the stat for the session.
+    // / </summary>
+    final long id;
 
-	// Set when the browser finishes rendering the response.
-	long browserTimeCompleted;
+    public Stat() {
+        this.id = System.currentTimeMillis();
+    }
 
-	// Set when the browser sends the request.
-	long browserTimeSent;
+    public long getServerProcessingTime() {
+        if (serverTimeSent >= serverTimeRecieved) {
+            return serverTimeSent - serverTimeRecieved;
+        }
+        return -1;
+    }
 
-	// Set when the stat is created.
-	long serverTimeRecieved;
+    public long getResponseTime() {
+        if (browserTimeRecieved >= browserTimeSent) {
+            return browserTimeRecieved - browserTimeSent;
+        }
+        return -1;
+    }
 
-	// Length in bytes of the response.
-	int responseLength;
+    public long getCompletionTime() {
+        if (browserTimeCompleted >= browserTimeSent) {
+            return browserTimeCompleted - browserTimeSent;
+        }
+        return -1;
+    }
 
-	// Length in bytes of the request.
-	int requestLength;
+    public double getBandwidth() {
+        if (getResponseTime() != -1 && getServerProcessingTime() != -1) {
+            return ((double) (requestLength + responseLength))
+                    / ((double) (getResponseTime() - getServerProcessingTime()))
+                    / 1000;
+        }
+        return 0;
+    }
 
-	// / <summary>
-	// / The unique Id of the stat for the session.
-	// / </summary>
-	final long id;
+    public boolean isComplete() {
+        return browserTimeSent > 0
+                && browserTimeRecieved >= browserTimeSent
+                && browserTimeCompleted >= browserTimeSent
+                && serverTimeRecieved > 0
+                && serverTimeSent >= serverTimeRecieved;
 
-	public Stat() {
-		this.id = System.currentTimeMillis();
-	}
+    }
 
-	public long getServerProcessingTime() {
-		if (serverTimeSent >= serverTimeRecieved)
-			return serverTimeSent - serverTimeRecieved;
-		return -1;
-	}
-
-	public long getResponseTime() {
-		if (browserTimeRecieved >= browserTimeSent)
-			return browserTimeRecieved - browserTimeSent;
-		return -1;
-	}
-
-	public long getCompletionTime() {
-		if (browserTimeCompleted >= browserTimeSent)
-			return browserTimeCompleted - browserTimeSent;
-		return -1;
-	}
-
-	public double getBandwidth() {
-		if (getResponseTime() != -1 && getServerProcessingTime() != -1)
-			return ((double) (requestLength + responseLength))
-					/ ((double) (getResponseTime() - getServerProcessingTime()))
-					/ 1000;
-		return 0;
-	}
-
-	public boolean isComplete() {
-		return browserTimeSent > 0
-				&& browserTimeRecieved >= browserTimeSent
-				&& browserTimeCompleted >= browserTimeSent
-				&& serverTimeRecieved > 0
-				&& serverTimeSent >= serverTimeRecieved;
-
-	}
-
-	@Override
-	public int compareTo(Stat stat) {
-		return id - stat.id > 0 ? 1 : -1;
-	}
+    @Override
+    public int compareTo(Stat stat) {
+        return id - stat.id > 0 ? 1 : -1;
+    }
 }

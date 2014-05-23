@@ -20,26 +20,26 @@ package fiftyone.mobile.detection.entities;
  * This Source Code Form is "Incompatible With Secondary Licenses", as
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
-
 public class Version {
-	private int major;
-	private int minor;
-	private int build;
-	private int revision;
 
-	public Version(int major, int minor, int build, int revision) {
-		this.major = major;
-		this.minor = minor;
-		this.build = build;
-		this.revision = revision;
-	}
-	
-	@Override
-	public String toString() {
-		return String.format("%s.%s.%s.%s",
-				major,
-				minor,
-				build,
-				revision);
-	}
+    public final int major;
+    public final int minor;
+    public final int build;
+    public final int revision;
+
+    public Version(int major, int minor, int build, int revision) {
+        this.major = major;
+        this.minor = minor;
+        this.build = build;
+        this.revision = revision;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%s.%s.%s.%s",
+                major,
+                minor,
+                build,
+                revision);
+    }
 }

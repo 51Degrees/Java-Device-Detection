@@ -36,7 +36,6 @@ class Cache {
      * into.
      */
     private static final int SPLIT_COUNT = 5;
-    
     private File tmpDir;
 
     Cache(File tmpDir) {
@@ -65,15 +64,14 @@ class Cache {
 
     private String getEncodedFile(String imageLocal) throws UnsupportedEncodingException {
         String encoded = Base64.encodeBase64String(imageLocal.getBytes("US-ASCII"));
-        
+
         StringBuilder sb = new StringBuilder();
         int iteration = 0;
         int startIndex = iteration * SPLIT_COUNT;
-        while (startIndex < encoded.length())
-        {
+        while (startIndex < encoded.length()) {
             int length = encoded.length() - startIndex;
             sb.append(encoded.substring(
-                    startIndex, 
+                    startIndex,
                     (length > SPLIT_COUNT ? SPLIT_COUNT : length) + startIndex));
             iteration++;
             startIndex = iteration * SPLIT_COUNT;
@@ -81,12 +79,12 @@ class Cache {
                 sb.append("\\");
             }
         }
-        
+
         return sb.toString();
     }
-    
+
     private File getFile(String imageLocal, int width, int height) throws UnsupportedEncodingException {
-        
+
         // Create the cached file based on the base 32 encoding of the 
         // local image file plus the width and height.
         File file = new File(String.format(
@@ -96,14 +94,14 @@ class Cache {
                 height,
                 getEncodedFile(imageLocal),
                 imageLocal.substring(imageLocal.length() - 3)));
-        
+
         // Make sure the directory is created before the file is returned for
         // use.
         File parent = file.getParentFile();
         if (parent.exists() == false) {
             parent.mkdirs();
         }
-        
+
         return file;
     }
 }

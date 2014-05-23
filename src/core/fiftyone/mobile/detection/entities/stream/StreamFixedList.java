@@ -1,12 +1,11 @@
 package fiftyone.mobile.detection.entities.stream;
 
-import java.io.IOException;
-import java.util.Iterator;
-
 import fiftyone.mobile.detection.Dataset;
 import fiftyone.mobile.detection.entities.BaseEntity;
 import fiftyone.mobile.detection.factories.BaseEntityFactory;
 import fiftyone.mobile.detection.readers.BinaryReader;
+import java.io.IOException;
+import java.util.Iterator;
 
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
@@ -28,75 +27,57 @@ import fiftyone.mobile.detection.readers.BinaryReader;
  * This Source Code Form is "Incompatible With Secondary Licenses", as
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
-
 /**
  * A readonly list of fixed length entity types held on persistent storage
- * rather than in memory.
- * <p>
- * Entities in the underlying data structure are either fixed length where the
- * data that represents them always contains the same number of bytes, or
- * variable length where the number of bytes to represent the entity varies.
- * <p>
- * This class uses the index of the entity in the accessor. The list is
- * typically used by entities that need to be found quickly using a divide and
- * conquer algorithm.
- * <p>
- * The constructor will read the header information about the underlying data
- * structure. The data for each entity is only loaded when requested via the
- * accessor. A cache is used to avoid creating duplicate objects when requested
- * multiple times.
- * <p>
- * Data sources which don't support seeking can not be used. Specifically
- * compressed data structures can not be used with these lists.
- * <p>
- * Should not be referenced directly.
- * 
- * @param T
- *            The type of BaseEntity the list will contain
+ * rather than in memory. <p> Entities in the underlying data structure are
+ * either fixed length where the data that represents them always contains the
+ * same number of bytes, or variable length where the number of bytes to
+ * represent the entity varies. <p> This class uses the index of the entity in
+ * the accessor. The list is typically used by entities that need to be found
+ * quickly using a divide and conquer algorithm. <p> The constructor will read
+ * the header information about the underlying data structure. The data for each
+ * entity is only loaded when requested via the accessor. A cache is used to
+ * avoid creating duplicate objects when requested multiple times. <p> Data
+ * sources which don't support seeking can not be used. Specifically compressed
+ * data structures can not be used with these lists. <p> Should not be
+ * referenced directly.
+ *
+ * @param T The type of BaseEntity the list will contain
  */
-
 /**
  * Constructs a new instance of FixedList.
- * 
- * @param dataSet
- *            The DetectorDataSet being created.
- * @param reader
- *            Reader connected to the source data structure and positioned to
- *            start reading.
- * @param create
- *            Pointer to a delegate used to create new entities of type T.
- * @param source
- *            Reference to the underlying data structure.
- * @param recordLength
- *            The length of the records in bytes.
+ *
+ * @param dataSet The DetectorDataSet being created.
+ * @param reader Reader connected to the source data structure and positioned to
+ * start reading.
+ * @param create Pointer to a delegate used to create new entities of type T.
+ * @param source Reference to the underlying data structure.
+ * @param recordLength The length of the records in bytes.
  */
-
 public class StreamFixedList<T extends BaseEntity> extends BaseList<T> {
 
-	public StreamFixedList(Dataset dataSet, BinaryReader reader,
-			Source source, BaseEntityFactory<T> entityFactory) {
-		super(dataSet, reader, source, entityFactory);
-	}
+    public StreamFixedList(Dataset dataSet, BinaryReader reader,
+            Source source, BaseEntityFactory<T> entityFactory) {
+        super(dataSet, reader, source, entityFactory);
+    }
 
-	/**
-	 * Creates a new entity of type T.
-	 * 
-	 * @param index
-	 *            The index of the entity being created.
-	 * @param reader
-	 *            Reader connected to the source data structure and positioned
-	 *            to start reading.
-	 * @return A new entity of type T at the index provided.
-	 * @throws IOException 
-	 */
-	@Override
-	protected T createEntity(int index, BinaryReader reader) throws IOException {
-		reader.setPos(header.getStartPosition() + (entityFactory.getLength() * index));
-		return entityFactory.create(dataSet, index, reader);
-	}
+    /**
+     * Creates a new entity of type T.
+     *
+     * @param index The index of the entity being created.
+     * @param reader Reader connected to the source data structure and
+     * positioned to start reading.
+     * @return A new entity of type T at the index provided.
+     * @throws IOException
+     */
+    @Override
+    protected T createEntity(int index, BinaryReader reader) throws IOException {
+        reader.setPos(header.getStartPosition() + (entityFactory.getLength() * index));
+        return entityFactory.create(dataSet, index, reader);
+    }
 
-	@Override
-	public Iterator<T> iterator() {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public Iterator<T> iterator() {
+        throw new UnsupportedOperationException();
+    }
 }

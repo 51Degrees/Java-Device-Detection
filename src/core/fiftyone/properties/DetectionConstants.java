@@ -1,5 +1,6 @@
 package fiftyone.properties;
 
+import fiftyone.mobile.detection.entities.Version;
 import java.util.regex.Pattern;
 
 /* *********************************************************************
@@ -27,6 +28,11 @@ import java.util.regex.Pattern;
  */
 public class DetectionConstants {
 
+    /**
+     * The format version of the binary data contained in the file header. This
+     * much match with the data file for the file to be read.
+     */
+    public static final Version FormatVersion = new Version(3, 1, 0, 0);
     /**
      * Character to use when combining values from properties that support lists
      * and may have more than one value. For example; SupportedBearers.
@@ -66,7 +72,6 @@ public class DetectionConstants {
      * before performing a data update.
      */
     public static final long AUTO_UPDATE_REQUIRED_FREE_MEMORY = 100 * 1024 * 1024;
-    
     /**
      * Regular expression used to validate License Keys.
      */

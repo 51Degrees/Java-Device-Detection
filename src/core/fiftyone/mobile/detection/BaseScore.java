@@ -1,7 +1,6 @@
 package fiftyone.mobile.detection;
 
 import java.io.IOException;
-import java.util.List;
 
 import fiftyone.mobile.detection.entities.Node;
 import fiftyone.mobile.detection.entities.Signature;
@@ -26,40 +25,47 @@ import fiftyone.mobile.detection.entities.Signature;
  * This Source Code Form is "Incompatible With Secondary Licenses", as
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
-
 abstract class BaseScore {
 
-	/**
-	 * Gets the score for the specific node of the signature.
-	 * @param match
-	 * @param node
-	 * @return
-	 */
-	protected abstract int getScore(Match match, Node node) throws IOException;
-	
-	/**
-	 * Sets any initial score before each node is evaluated.
-	 * @param match
-	 * @param signature
-	 * @param lastNodeCharacter
-	 * @return
-	 */
-	protected abstract int getInitialScore(Match match, Signature signature, int lastNodeCharacter) throws IOException;
-	
-	void evaluateSignatures(Match match,
-			List<Signature> closestSignatures) throws IOException {
-		int count = 0;
+    /**
+     * Gets the score for the specific node of the signature.
+     *
+     * @param match
+     * @param node
+     * @return
+     */
+    protected abstract int getScore(Match match, Node node) throws IOException;
+
+    /**
+     * Sets any initial score before each node is evaluated.
+     *
+     * @param match
+     * @param signature
+     * @param lastNodeCharacter
+     * @return
+     */
+    protected abstract int getInitialScore(Match match, Signature signature, int lastNodeCharacter) throws IOException;
+
+    void evaluateSignatures(Match match,
+            Match.RankedSignatureIterator closestSignatures) throws IOException {
+        int count = 0, signatureIndex, rankedSignatureIndex;
+        closestSignatures.reset();
         match.setLowestScore(Integer.MAX_VALUE);
         int lastNodeCharacter = match.getNodes().get(match.getNodes().size() - 1).getRoot().position;
-        for (Signature signature : closestSignatures) {
-            evaluateSignature(match, signature, lastNodeCharacter);
+        while (closestSignatures.hasNext()
+                && count < match.getDataSet().maxSignatures) {
+            rankedSignatureIndex = closestSignatures.next();
+            signatureIndex = match.getDataSet().rankedSignatureIndexes.get(
+                    rankedSignatureIndex).getSignatureIndex();
+            evaluateSignature(
+                    match,
+                    match.getDataSet().signatures.get(signatureIndex),
+                    lastNodeCharacter);
             count++;
-            if (count == match.getDataSet().maxSignatures)
-            	break;
         }
-	}
-	
-	private void evaluateSignature(Match match, Signature signature, int lastNodeCharacter) throws IOException {
+    }
+
+    private void evaluateSignature(Match match, Signature signature, int lastNodeCharacter) throws IOException {
         match.signaturesCompared++;
 
         // Get the score between the target and the signature stopping if it's
@@ -67,15 +73,13 @@ abstract class BaseScore {
         int score = getScore(match, signature, lastNodeCharacter);
 
         // If the score is lower than the current lowest then use this signature.
-        if (score < match.getLowestScore())
-        {
+        if (score < match.getLowestScore()) {
             match.setLowestScore(score);
             match.setSignature(signature);
         }
-	}
-	
-	private int getScore(Match match, Signature signature, int lastNodeCharacter) throws IOException
-    {
+    }
+
+    private int getScore(Match match, Signature signature, int lastNodeCharacter) throws IOException {
         // Calculate the initial score based on the difference in length of 
         // the right most node and the target user agent.
         int runningScore = getInitialScore(match, signature, lastNodeCharacter);
@@ -85,39 +89,34 @@ abstract class BaseScore {
         int matchNodeIndex = 0;
         int signatureNodeIndex = 0;
 
-        while (signatureNodeIndex < signature.nodeOffsets.length &&
-                runningScore < match.getLowestScore())
-         {
-             int matchNodeOffset = matchNodeIndex >= match.getNodes().size() ? Integer.MAX_VALUE : match.getNodes().get(matchNodeIndex).getIndex();
-             int signatureNodeOffset = signature.nodeOffsets[signatureNodeIndex];
-             if (matchNodeOffset > signatureNodeOffset)
-             {
-                 // The matched node is either not available, or is higher than
-                 // the current signature node. The signature node is not contained
-                 // in the match so we must score it.
-                 int score = getScore(match, match.getDataSet().nodes.get(signature.nodeOffsets[signatureNodeIndex]));
+        while (signatureNodeIndex < signature.nodeOffsets.length
+                && runningScore < match.getLowestScore()) {
+            int matchNodeOffset = matchNodeIndex >= match.getNodes().size() ? Integer.MAX_VALUE : match.getNodes().get(matchNodeIndex).getIndex();
+            int signatureNodeOffset = signature.nodeOffsets[signatureNodeIndex];
+            if (matchNodeOffset > signatureNodeOffset) {
+                // The matched node is either not available, or is higher than
+                // the current signature node. The signature node is not contained
+                // in the match so we must score it.
+                int score = getScore(match, match.getDataSet().nodes.get(signature.nodeOffsets[signatureNodeIndex]));
 
-                 // If the score is less than zero then a score could not be 
-                 // determined and the signature can't be compared to the target
-                 // user agent. Exit with a high score.
-                 if (score < 0)
-                     return Integer.MAX_VALUE;
-                 runningScore += score;
-                 signatureNodeIndex++;
-             }
-             else if (matchNodeOffset == signatureNodeOffset)
-             {
-                 // They both are the same so move to the next node in each.
-                 matchNodeIndex++;
-                 signatureNodeIndex++;
-             }
-             else if (matchNodeOffset < signatureNodeOffset)
-             {
-                 // The match node is lower so move to the next one and see if
-                 // it's higher or equal to the current signature node.
-                 matchNodeIndex++;
-             }
-         }
+                // If the score is less than zero then a score could not be 
+                // determined and the signature can't be compared to the target
+                // user agent. Exit with a high score.
+                if (score < 0) {
+                    return Integer.MAX_VALUE;
+                }
+                runningScore += score;
+                signatureNodeIndex++;
+            } else if (matchNodeOffset == signatureNodeOffset) {
+                // They both are the same so move to the next node in each.
+                matchNodeIndex++;
+                signatureNodeIndex++;
+            } else if (matchNodeOffset < signatureNodeOffset) {
+                // The match node is lower so move to the next one and see if
+                // it's higher or equal to the current signature node.
+                matchNodeIndex++;
+            }
+        }
 
         return runningScore;
     }

@@ -23,105 +23,103 @@ import java.util.List;
  * This Source Code Form is "Incompatible With Secondary Licenses", as
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
-
 @SuppressWarnings("serial")
 public class Stats extends ArrayList<Stat> {
-	private static final long FIVE_MINUTES = 5 * 60 * 1000;
 
-	long lastId = 0;
+    private static final long FIVE_MINUTES = 5 * 60 * 1000;
+    long lastId = 0;
 
-	public long getLastResponseTime() {
-		Stat stat = getLastComplete();
-		return stat == null ? -1 : stat.getResponseTime();
-	}
+    public long getLastResponseTime() {
+        Stat stat = getLastComplete();
+        return stat == null ? -1 : stat.getResponseTime();
+    }
 
-	void removeOld() {
-		long now = System.currentTimeMillis();
-		List<Stat> toRemove = new ArrayList<Stat>();
-		for (Stat stat : this) {
-			if (now - stat.serverTimeRecieved > FIVE_MINUTES) {
-				toRemove.add(stat);
-			}
-		}
-		removeAll(toRemove);
-	}
+    void removeOld() {
+        long now = System.currentTimeMillis();
+        List<Stat> toRemove = new ArrayList<Stat>();
+        for (Stat stat : this) {
+            if (now - stat.serverTimeRecieved > FIVE_MINUTES) {
+                toRemove.add(stat);
+            }
+        }
+        removeAll(toRemove);
+    }
 
-	public long getLastCompletionTime() {
-		Stat stat = getLastComplete();
-		return stat == null ? -1 : stat.getCompletionTime();
-	}
+    public long getLastCompletionTime() {
+        Stat stat = getLastComplete();
+        return stat == null ? -1 : stat.getCompletionTime();
+    }
 
-	// will get minor rounding errors
-	public long getAverageResponseTime() {
-		List<Stat> all = getAllComplete();
-		if (all.size() > 0) {
-			long total = 0;
-			for (Stat stat : all) {
-				total += stat.getResponseTime();
-			}
-			return total / all.size();
-		} else {
-			return 0;
-		}
-	}
+    // will get minor rounding errors
+    public long getAverageResponseTime() {
+        List<Stat> all = getAllComplete();
+        if (all.size() > 0) {
+            long total = 0;
+            for (Stat stat : all) {
+                total += stat.getResponseTime();
+            }
+            return total / all.size();
+        } else {
+            return 0;
+        }
+    }
 
-	// minor rounding errors
-	public long getAverageCompletionTime() {
-		List<Stat> all = getAllComplete();
-		if (all.size() > 0) {
-			long total = 0;
-			for (Stat stat : all) {
-				total += stat.getCompletionTime();
-			}
-			return total / all.size();
-		} else {
-			return 0;
-		}
-	}
+    // minor rounding errors
+    public long getAverageCompletionTime() {
+        List<Stat> all = getAllComplete();
+        if (all.size() > 0) {
+            long total = 0;
+            for (Stat stat : all) {
+                total += stat.getCompletionTime();
+            }
+            return total / all.size();
+        } else {
+            return 0;
+        }
+    }
 
-	// minor rounding issues
-	public int getAverageBandwidth() {
-		List<Stat> all = getAllComplete();
-		if (all.size() > 0) {
-			int total = 0;
-			for (Stat stat : all) {
-				total += stat.getBandwidth();
-			}
-			return total / all.size();
-		} else {
-			return 0;
-		}
-	}
+    // minor rounding issues
+    public int getAverageBandwidth() {
+        List<Stat> all = getAllComplete();
+        if (all.size() > 0) {
+            int total = 0;
+            for (Stat stat : all) {
+                total += stat.getBandwidth();
+            }
+            return total / all.size();
+        } else {
+            return 0;
+        }
+    }
 
-	private List<Stat> getAllComplete() {
-		List<Stat> result = new ArrayList<Stat>();
+    private List<Stat> getAllComplete() {
+        List<Stat> result = new ArrayList<Stat>();
 
-		for (Stat stat : this) {
-			if (stat.isComplete()) {
-				result.add(stat);
-			}
-		}
+        for (Stat stat : this) {
+            if (stat.isComplete()) {
+                result.add(stat);
+            }
+        }
 
-		return result;
-	}
+        return result;
+    }
 
-	private Stat getLastComplete() {
-		for (int i = size() - 1; i >= 0; i--) {
-			Stat current = get(i);
-			if (current.isComplete()) {
-				return current;
-			}
-		}
-		return null;
-	}
+    private Stat getLastComplete() {
+        for (int i = size() - 1; i >= 0; i--) {
+            Stat current = get(i);
+            if (current.isComplete()) {
+                return current;
+            }
+        }
+        return null;
+    }
 
-	public Stat fetch(long id) {
-		for (Stat stat : this) {
-			if (id == stat.id) {
-				return stat;
-			}
-		}
-		return null;
-	}
-
+    public Stat fetch(long id) {
+        for (Stat stat : this) {
+            if (id == stat.id) {
+                return stat;
+            }
+        }
+        return null;
+    }
 }

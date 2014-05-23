@@ -24,31 +24,24 @@ import fiftyone.mobile.detection.readers.BinaryReader;
  * This Source Code Form is "Incompatible With Secondary Licenses", as
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
-
 public class SignatureFactory extends BaseEntityFactory<Signature> {
-	
-	/**
-     * The minimum length of a signature assuming there are no
-     * profiles or nodes.
-	 */
-	private final static int MIN_LENGTH = 4;
-	
-	private int recordLength;
-	
-	public SignatureFactory(Dataset dataset) {
-        recordLength = MIN_LENGTH + 
-                (dataset.getProfilesCount() * 4) + 
-                (dataset.getNodesCount() * 4);
-	}
-	
-	@Override
-	public Signature create(Dataset dataSet, int index,
-			BinaryReader reader) {
-		return new Signature(dataSet, index, reader);
-	}
 
-	@Override
-	public int getLength() {
-		return recordLength;
-	}		
+    private int recordLength;
+
+    public SignatureFactory(Dataset dataset) {
+        recordLength =
+                (dataset.getProfilesCount() * 4)
+                + (dataset.getNodesCount() * 4);
+    }
+
+    @Override
+    public Signature create(Dataset dataSet, int index,
+            BinaryReader reader) {
+        return new Signature(dataSet, index, reader);
+    }
+
+    @Override
+    public int getLength() {
+        return recordLength;
+    }
 }

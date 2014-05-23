@@ -22,50 +22,46 @@ import fiftyone.mobile.detection.readers.BinaryReader;
  * This Source Code Form is "Incompatible With Secondary Licenses", as
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
-
 /**
  * Every list contains a standard initial header. This class provides the basic
  * properties needed to access lists irrespective of the storage implementation.
  */
 public class Header {
 
-	/**
-	 * The number of items contain in the collection.
-	 */
-	private final int count;
+    /**
+     * The number of items contain in the collection.
+     */
+    private final int count;
+    /**
+     * The position in the file where the data structure starts.
+     */
+    private final int startPosition;
+    /**
+     * The number of bytes consumed by the data structure.
+     */
+    private final int length;
 
-	/**
-	 * The position in the file where the data structure starts.
-	 */
-	private final int startPosition;
+    /**
+     * Constructs a new instance of Header
+     *
+     * @param reader Reader connected to the source data structure and
+     * positioned to start reading
+     */
+    public Header(BinaryReader reader) {
+        startPosition = reader.readInt32();
+        length = reader.readInt32();
+        count = reader.readInt32();
+    }
 
-	/**
-	 * The number of bytes consumed by the data structure.
-	 */
-	private final int length;
+    public int getCount() {
+        return count;
+    }
 
-	/**
-	 * Constructs a new instance of Header
-	 * 
-	 * @param reader
-	 *            Reader connected to the source data structure and positioned
-	 *            to start reading
-	 */
-	public Header(BinaryReader reader) {
-		startPosition = reader.readInt32();
-		length = reader.readInt32();
-		count = reader.readInt32();
-	}
+    public int getStartPosition() {
+        return startPosition;
+    }
 
-	public int getCount() {
-		return count;
-	}
-
-	public int getStartPosition() {
-		return startPosition;
-	}
-
-	public int getLength() {
-		return length;
-	}
+    public int getLength() {
+        return length;
+    }
 }

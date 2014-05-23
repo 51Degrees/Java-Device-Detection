@@ -3,12 +3,10 @@ package fiftyone.mobile.detection.webapp;
 import java.net.URLDecoder;
 import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
-
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,83 +30,80 @@ import org.slf4j.LoggerFactory;
  * This Source Code Form is "Incompatible With Secondary Licenses", as
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
-
 class Bandwidth {
-	final private static Logger logger = LoggerFactory
-			.getLogger(Bandwidth.class);
 
-	private static final String COOKIE_NAME = "51D_Bandwidth";
+    final private static Logger logger = LoggerFactory
+            .getLogger(Bandwidth.class);
+    private static final String COOKIE_NAME = "51D_Bandwidth";
+    private static final String SESSION_KEY = "51D_Stats";
+    public static final String COOKIE_DELIM = "|";
 
-	private static final String SESSION_KEY = "51D_Stats";
+    void process(HttpServletRequest req, HttpServletResponse resp,
+            HttpSession session, Cookie[] cookies) {
+        Stats stats = (Stats) session.getAttribute(SESSION_KEY);
+        if (stats == null) {
+            stats = new Stats();
+        }
+        long browserTimeSent = 0;
+        for (Cookie cookie : cookies) {
+            if (COOKIE_NAME.equals(cookie.getName())) {
+                @SuppressWarnings("deprecation")
+                StringTokenizer st = new StringTokenizer(
+                        URLDecoder.decode(cookie.getValue()), COOKIE_DELIM,
+                        false);
+                try {
+                    long id = Long.parseLong(st.nextToken());
+                    long browserTimeRecieved = Long.parseLong(st.nextToken());
+                    browserTimeSent = Long.parseLong(st.nextToken());
+                    long browserTimeCompleted = Long.parseLong(st.nextToken());
+                    int responseLength = Integer.parseInt(st.nextToken());
 
-	public static final String COOKIE_DELIM = "|";
+                    try {
+                        Stat stat = stats.fetch(id);
+                        if (stat == null) {
+                            stats.clear();
+                        } else if (!stat.isComplete()) {
+                            stat.browserTimeRecieved = browserTimeRecieved;
+                            stat.browserTimeCompleted = browserTimeCompleted;
+                            stat.responseLength = responseLength;
+                        }
 
-	void process(HttpServletRequest req, HttpServletResponse resp,
-			HttpSession session, Cookie[] cookies) {
-		Stats stats = (Stats) session.getAttribute(SESSION_KEY);
-		if (stats == null) {
-			stats = new Stats();
-		}
-		long browserTimeSent = 0;
-		for (Cookie cookie : cookies) {
-			if (COOKIE_NAME.equals(cookie.getName())) {
-				@SuppressWarnings("deprecation")
-				StringTokenizer st = new StringTokenizer(
-						URLDecoder.decode(cookie.getValue()), COOKIE_DELIM,
-						false);
-				try {
-					long id = Long.parseLong(st.nextToken());
-					long browserTimeRecieved = Long.parseLong(st.nextToken());
-					browserTimeSent = Long.parseLong(st.nextToken());
-					long browserTimeCompleted = Long.parseLong(st.nextToken());
-					int responseLength = Integer.parseInt(st.nextToken());
+                        stats.removeOld();
 
-					try {
-						Stat stat = stats.fetch(id);
-						if (stat == null) {
-							stats.clear();
-						} else if (!stat.isComplete()) {
-							stat.browserTimeRecieved = browserTimeRecieved;
-							stat.browserTimeCompleted = browserTimeCompleted;
-							stat.responseLength = responseLength;
-						}
+                        req.setAttribute("51D_LastResponseTime",
+                                stats.getLastResponseTime());
+                        req.setAttribute("51D_LastCompletionTime",
+                                stats.getLastCompletionTime());
+                        req.setAttribute("51D_AverageResponseTime",
+                                stats.getAverageResponseTime());
+                        req.setAttribute("51D_AverageCompletionTime",
+                                stats.getAverageCompletionTime());
+                        req.setAttribute("51D_AverageBandwidth",
+                                stats.getAverageBandwidth());
 
-						stats.removeOld();
+                    } catch (NumberFormatException e) {
+                        logger.error("Error parsing 51D_Bandwidth cookie", e);
+                    }
+                } catch (NoSuchElementException e) {
+                    // do nothing
+                }
+                break;
+            }
+        }
+        Stat newStat = new Stat();
+        newStat.serverTimeRecieved = System.currentTimeMillis();
+        newStat.requestLength = req.getContentLength();
+        newStat.browserTimeSent = browserTimeSent;
 
-						req.setAttribute("51D_LastResponseTime",
-								stats.getLastResponseTime());
-						req.setAttribute("51D_LastCompletionTime",
-								stats.getLastCompletionTime());
-						req.setAttribute("51D_AverageResponseTime",
-								stats.getAverageResponseTime());
-						req.setAttribute("51D_AverageCompletionTime",
-								stats.getAverageCompletionTime());
-						req.setAttribute("51D_AverageBandwidth",
-								stats.getAverageBandwidth());
+        stats.add(newStat);
 
-					} catch (NumberFormatException e) {
-						logger.error("Error parsing 51D_Bandwidth cookie", e);
-					}
-				} catch (NoSuchElementException e) {
-					// do nothing
-				}
-				break;
-			}
-		}
-		Stat newStat = new Stat();
-		newStat.serverTimeRecieved = System.currentTimeMillis();
-		newStat.requestLength = req.getContentLength();
-		newStat.browserTimeSent = browserTimeSent;
+        Cookie newCookie = new Cookie(COOKIE_NAME,
+                Long.toString(newStat.id));
+        resp.addCookie(newCookie);
 
-		stats.add(newStat);
+        stats.lastId = newStat.id;
+        newStat.serverTimeSent = System.currentTimeMillis();
+        session.setAttribute(SESSION_KEY, stats);
 
-		Cookie newCookie = new Cookie(COOKIE_NAME,
-				Long.toString(newStat.id));
-		resp.addCookie(newCookie);
-
-		stats.lastId = newStat.id;
-		newStat.serverTimeSent = System.currentTimeMillis();
-		session.setAttribute(SESSION_KEY, stats);
-
-	}
+    }
 }

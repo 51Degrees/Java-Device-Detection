@@ -20,28 +20,24 @@ package fiftyone.mobile.detection;
  * This Source Code Form is "Incompatible With Secondary Licenses", as
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
-
 /**
  * Enumerator of possible methods used to obtain the match.
- * 
- * @param NONE
- *            No match could be determined between the target user agent and the
- *            list of signatures. Defaults were used.
- * @param EXACT
- *            The signature returned matches precisely with the target user
- *            agent.
- * @param NUMERIC
- *			  The signature returned matches the target user agent with only
- *			  minor differences between numeric numbers.
- * @param CLOSEST
- *            No signature matched precisely and some relevant characters may be
- *            different between the returned signature and the target user
- *            agent. The Match.Confidence property should be used to determine
- *            the degree of difference.
- * @param NEAREST
- * 			  The signature returned contains all the same sub strings as the
- * 	  		  target user agent, but there are minor differences in position.
- *  */
+ *
+ * @param NONE No match could be determined between the target user agent and
+ * the list of signatures. Defaults were used.
+ * @param EXACT The signature returned matches precisely with the target user
+ * agent.
+ * @param NUMERIC The signature returned matches the target user agent with only
+ * minor differences between numeric numbers.
+ * @param CLOSEST No signature matched precisely and some relevant characters
+ * may be different between the returned signature and the target user agent.
+ * The Match.Confidence property should be used to determine the degree of
+ * difference.
+ * @param NEAREST The signature returned contains all the same sub strings as
+ * the target user agent, but there are minor differences in position.
+ *
+ */
 public enum MatchMethods {
-	NONE, EXACT, NUMERIC, NEAREST, CLOSEST;
+
+    NONE, EXACT, NUMERIC, NEAREST, CLOSEST;
 }

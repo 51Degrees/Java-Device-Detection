@@ -82,7 +82,7 @@ public class Example extends BaseServlet {
         if (title == true) {
             // Display the final property and values.
             return String.format(
-                "<tr class=\"item\"><td class=\"property\" title=\"%s\"><a href=\"http://51degrees.mobi/Products/DeviceData/PropertyDictionary.aspx#%s\">%s</a></td><td>%s</td></tr>",
+                "<tr class=\"item\"><td class=\"property\" title=\"%s\"><a href=\"http://51degrees.com/Resources/Property-Dictionary#%s\">%s</a></td><td>%s</td></tr>",
                 property.getDescription(),
                 property.getName(),
                 property.getName(),

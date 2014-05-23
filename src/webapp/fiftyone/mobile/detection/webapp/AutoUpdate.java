@@ -21,13 +21,13 @@ import org.slf4j.LoggerFactory;
  * @author tom
  */
 public class AutoUpdate extends TimerTask {
-    
+
     private final FiftyOneDegreesListener listener;
     private final String masterFilePath;
     private String[] licenseKeys;
     final private static Logger logger = LoggerFactory
             .getLogger(AutoUpdate.class);
-    
+
     public AutoUpdate(final FiftyOneDegreesListener listener,
             final String masterFilePath,
             final List<String> licenseKeys) {
@@ -36,7 +36,7 @@ public class AutoUpdate extends TimerTask {
         this.masterFilePath = masterFilePath;
         this.licenseKeys = licenseKeys.toArray(new String[licenseKeys.size()]);
     }
-    
+
     @Override
     public void run() {
         if (shouldUpdate()) {
@@ -44,14 +44,14 @@ public class AutoUpdate extends TimerTask {
                 boolean success = fiftyone.mobile.detection.AutoUpdate.update(licenseKeys, masterFilePath);
                 if (success) {
                     SimpleDateFormat dateFormat = new SimpleDateFormat("y-MMM-d");
-                    final File masterFile = new File(masterFilePath);                    
+                    final File masterFile = new File(masterFilePath);
                     Date fileDate = new Date(masterFile.lastModified());
                     String dateStr = dateFormat.format(fileDate);
-                    logger.info(String.format("Automatically updated binary data file '%s' with version " +
-                        "published on the '%s'.",
-                        masterFile,
-                        dateStr));
-                    
+                    logger.info(String.format("Automatically updated binary data file '%s' with version "
+                            + "published on the '%s'.",
+                            masterFile,
+                            dateStr));
+
                     listener.refreshWebProvider();
                 }
             } catch (AutoUpdateException ex) {
@@ -59,7 +59,7 @@ public class AutoUpdate extends TimerTask {
             }
         }
     }
-    
+
     private boolean shouldUpdate() {
         // check if file exists
         boolean shouldUpdate = true;
@@ -75,7 +75,7 @@ public class AutoUpdate extends TimerTask {
                 // data file is probably corrupt, allow update
             }
         }
-        
+
         return shouldUpdate;
     }
 }

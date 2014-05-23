@@ -49,8 +49,9 @@ public class ImageOptimizer {
     private static final String AUTO = "auto";
     private static final String SCREEN_PIXEL_WIDTH = "ScreenPixelsWidth";
     private static final String SCREEN_PIXEL_HEIGHT = "ScreenPixelsHeight";
-    private String widthParam = "width";
-    private String heightParam = "height";
+    private String widthParam = "w";
+    private String heightParam = "h";
+    private int defaultAuto = 50;
     private int imageMaxWidth = Integer.MAX_VALUE;
     private int imageMaxHeight = Integer.MAX_VALUE;
     private int factor = 1;
@@ -72,15 +73,19 @@ public class ImageOptimizer {
         if (factorParam != Integer.MIN_VALUE) {
             factor = factorParam;
         }
-
-        String widthParam = servletContext.getInitParameter(Constants.IMAGE_WIDTH_PARAM);
-        if (widthParam != null) {
-            this.widthParam = widthParam;
+        int defaultAutoParam = GetIntegerParameter(servletContext, Constants.DEFAULT_AUTO);
+        if (defaultAutoParam != Integer.MIN_VALUE) {
+            defaultAuto = defaultAutoParam;
         }
 
-        String heightParam = servletContext.getInitParameter(Constants.IMAGE_HEIGHT_PARAM);
-        if (heightParam != null) {
-            this.heightParam = heightParam;
+        String localWidthParam = servletContext.getInitParameter(Constants.IMAGE_WIDTH_PARAM);
+        if (localWidthParam != null) {
+            this.widthParam = localWidthParam;
+        }
+
+        String localHeightParam = servletContext.getInitParameter(Constants.IMAGE_HEIGHT_PARAM);
+        if (localHeightParam != null) {
+            this.heightParam = localHeightParam;
         }
 
     }
@@ -91,7 +96,7 @@ public class ImageOptimizer {
         if ("/Empty.gif".equals(request.getPathInfo())) {
             imageAsStream = serveEmpty(response);
         } else {
-            
+
             // Get a list of parameters from with the query string.
             Map<String, String> map = new HashMap<String, String>();
             List<String> params = new ArrayList<String>();
@@ -117,11 +122,8 @@ public class ImageOptimizer {
             if (strWidth == null && strHeight == null) {
                 imageAsStream = servletContext
                         .getResourceAsStream(requestedImage);
-            } else if (strWidth != null && strWidth.toLowerCase().equals(AUTO)
-                    || strHeight != null
-                    && strHeight.toLowerCase().equals(AUTO)) {
-                imageAsStream = serveEmpty(response);
-            } else {
+            }
+            else {
                 int width = parseDimension(strWidth);
                 int height = parseDimension(strHeight);
 
@@ -187,10 +189,17 @@ public class ImageOptimizer {
     }
 
     private int parseDimension(String str) {
-        try {
-            return Integer.parseInt(str);
-        } catch (NumberFormatException e) {
-            return 0;
+        if (AUTO.equals(str))
+        {
+            return defaultAuto;
+        }
+        else
+        {
+            try {
+                return Integer.parseInt(str);
+            } catch (NumberFormatException e) {
+                return 0;
+            }
         }
     }
 

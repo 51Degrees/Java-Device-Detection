@@ -26,110 +26,110 @@ import fiftyone.properties.DetectionConstants;
  * This Source Code Form is "Incompatible With Secondary Licenses", as
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
-
 /**
  * Encapsulates a list of one or more values. Provides methods to return
- * boolean, double and string representations of the values list.
- * <p>
- * The class contains helper methods to make consuming the data set easier.
- * <p>
- * For more information see http://51degrees.mobi/Support/Documentation/Java
+ * boolean, double and string representations of the values list. <p> The class
+ * contains helper methods to make consuming the data set easier. <p> For more
+ * information see http://51degrees.mobi/Support/Documentation/Java
  */
 @SuppressWarnings("serial")
 public class Values extends ArrayList<Value> {
-	/**
-	 * The property the list of values relates to.
-	 */
-	private final Property property;
 
-	/**
-	 * Constructs a new instance of the values list.
-	 * 
-	 * @param property
-	 *            Property the values list relates to
-	 * @param values
-	 *            IEnumerable of values to use to initialise the list
-	 */
-	Values(Property property, Collection<Value> values) {
-		super(values);
-		this.property = property;
-	}
+    /**
+     * The property the list of values relates to.
+     */
+    private final Property property;
 
-	/**
-	 * The value represented as a boolean. return A boolean representation of
-	 * the only item in the list. MobileException Thrown if the method is called
-	 * for a property with multiple values
-	 * @throws IOException 
-	 */
-	public boolean toBool() throws IOException {
-		if (property.isList)
-			throw new UnsupportedOperationException(
-					"toBool can only be used on non List properties");
-		return get(0).toBool();
-	}
+    /**
+     * Constructs a new instance of the values list.
+     *
+     * @param property Property the values list relates to
+     * @param values IEnumerable of values to use to initialise the list
+     */
+    Values(Property property, Collection<Value> values) {
+        super(values);
+        this.property = property;
+    }
 
-	/**
-	 * The value represented as a double.
-	 * 
-	 * @return A double representation of the only item in the list.
-	 * @throws IOException 
-	 * 
-	 * @exception MobileException
-	 *                Thrown if the method is called for a property with
-	 *                multiple values
-	 */
-	public double toDouble() throws IOException {
-		if (property.isList)
-			throw new UnsupportedOperationException(
-					"toDouble can only be used on non List properties");
-		return get(0).toDouble();
-	}
+    /**
+     * The value represented as a boolean. return A boolean representation of
+     * the only item in the list. MobileException Thrown if the method is called
+     * for a property with multiple values
+     *
+     * @throws IOException
+     */
+    public boolean toBool() throws IOException {
+        if (property.isList) {
+            throw new UnsupportedOperationException(
+                    "toBool can only be used on non List properties");
+        }
+        return get(0).toBool();
+    }
 
-	/**
-	 * Returns the values as a string array.
-	 * @return a string array of values
-	 * @throws IOException
-	 */
-	public String[] toStringArray() throws IOException {
-		String[] array = new String[size()];
-		for(int i = 0; i < size(); i++) {
-			array[i] = this.get(i).getName();
-		}
-		return array;
-	}
-	
-	/**
-	 * The values represented as a string where multiple values are seperated by
-	 * colons.
-	 * 
-	 * @return The values as a string
-	 */
-	@Override
-	public String toString() {
-		StringBuilder result = new StringBuilder();
+    /**
+     * The value represented as a double.
+     *
+     * @return A double representation of the only item in the list.
+     * @throws IOException
+     *
+     * @exception MobileException Thrown if the method is called for a property
+     * with multiple values
+     */
+    public double toDouble() throws IOException {
+        if (property.isList) {
+            throw new UnsupportedOperationException(
+                    "toDouble can only be used on non List properties");
+        }
+        return get(0).toDouble();
+    }
 
-		for (int i = 0; i < size(); i++) {
-			result.append(get(i));
+    /**
+     * Returns the values as a string array.
+     *
+     * @return a string array of values
+     * @throws IOException
+     */
+    public String[] toStringArray() throws IOException {
+        String[] array = new String[size()];
+        for (int i = 0; i < size(); i++) {
+            array[i] = this.get(i).getName();
+        }
+        return array;
+    }
 
-			if (i != size() - 1) {
-				result.append(DetectionConstants.VALUE_SEPARATOR);
-			}
-		}
+    /**
+     * The values represented as a string where multiple values are seperated by
+     * colons.
+     *
+     * @return The values as a string
+     */
+    @Override
+    public String toString() {
+        StringBuilder result = new StringBuilder();
 
-		return result.toString();
-	}
+        for (int i = 0; i < size(); i++) {
+            result.append(get(i));
 
-	/**
-	 * Returns true if any of the values are the null values
-	 * for the property.
-	 * @return
-	 * @throws IOException 
-	 */
-	public boolean getIsDefault() throws IOException {
-		for(Value value : this) {
-			if (value.getIsDefault())
-				return true;
-		}
-		return false;
-	}
+            if (i != size() - 1) {
+                result.append(DetectionConstants.VALUE_SEPARATOR);
+            }
+        }
+
+        return result.toString();
+    }
+
+    /**
+     * Returns true if any of the values are the null values for the property.
+     *
+     * @return
+     * @throws IOException
+     */
+    public boolean getIsDefault() throws IOException {
+        for (Value value : this) {
+            if (value.getIsDefault()) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

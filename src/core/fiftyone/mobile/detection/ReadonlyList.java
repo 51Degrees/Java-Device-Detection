@@ -1,8 +1,7 @@
 package fiftyone.mobile.detection;
 
-import java.io.IOException;
-
 import fiftyone.mobile.detection.entities.BaseEntity;
+import java.io.IOException;
 
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
@@ -24,19 +23,18 @@ import fiftyone.mobile.detection.entities.BaseEntity;
  * This Source Code Form is "Incompatible With Secondary Licenses", as
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
-
 /**
  * A list which only provides those features needed to read items from the list.
- * 
- * @param T
- *            The type of BaseEntity the list will contain
+ *
+ * @param T The type of BaseEntity the list will contain
  */
 public interface ReadonlyList<T extends BaseEntity> extends Iterable<T>,
-		Disposable {
-	// Accessor for the list.
-	// Index or offset of the entity required
-	T get(int i) throws IOException;
+        Disposable {
+    // Accessor for the list.
+    // Index or offset of the entity required
 
-	// Number of items in the list.
-	int size();
+    T get(int i) throws IOException;
+
+    // Number of items in the list.
+    int size();
 }
