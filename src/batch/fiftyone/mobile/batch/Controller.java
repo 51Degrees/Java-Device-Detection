@@ -10,6 +10,7 @@ import java.io.InputStreamReader;
 import java.text.NumberFormat;
 
 import fiftyone.mobile.detection.Provider;
+import fiftyone.mobile.detection.factories.MemoryFactory;
 import fiftyone.mobile.detection.factories.StreamFactory;
 
 /* *********************************************************************
@@ -32,110 +33,113 @@ import fiftyone.mobile.detection.factories.StreamFactory;
  * This Source Code Form is "Incompatible With Secondary Licenses", as
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
-
 public class Controller {
-	
-	/**
-	 * 
-	 * @param args
-	 * @throws IOException 
-	 */
-	public static void main(String[] args) throws IOException {
-        
-		String sourceFile = GetFile(args, 0);
+
+    /**
+     *
+     * @param args
+     * @throws IOException
+     */
+    public static void main(String[] args) throws IOException {
+
+        String sourceFile = GetFile(args, 0);
         String useragentsFile = GetFile(args, 1);
         int limit = args.length > 2 ? Integer.parseInt(args[2]) : Integer.MAX_VALUE;
         int numberOfThreads = args.length > 3 ? Integer.parseInt(args[3]) : 4;
-        
-        if (sourceFile != null && useragentsFile != null)
-        {
-        	BufferedReader useragents = new BufferedReader(
-        			new InputStreamReader(
-        					new FileInputStream(useragentsFile),  "UTF-8"));
-        	
-        	FileWriter fileWriter = new FileWriter(useragentsFile + "." + Integer.toString(numberOfThreads) + ".java");
-        	BufferedWriter writer = new BufferedWriter(fileWriter);
-        	
-        	writer.write("UserAgent" + "\t" + 
-					"PlatformName" + "\t" +
-					"PlatformVersion" + "\t" +
-					"IsMobile" + "\t" +
-					"IsTablet" + "\t" +
-					"IsSmartPhone" + "\t" +
-					"IsSmallScreen" + "\t" +
-					"IsEmailBrowser" + "\t" +
-					"IsCrawler" + "\t" +
-					"BrowserName" + "\t" +
-					"BrowserVersion" + "\t" +
-					"ScreenMMHeight" + "\t" +
-					"ScreenMMWidth" + "\t" +
-					"HasTouchScreen" + "\t" +
-					"HasVirtualQwerty" + "\t" +
-					"HasQwertyPad" + "\r\n");
-        	
-        	long start = System.currentTimeMillis();        	
-        	Provider provider = new Provider(
-        			StreamFactory.create(sourceFile));
-        	System.out.println(String.format(
-        			"'%dms' initialise time",
-        			System.currentTimeMillis() - start));
-        	
-        	Process process = new Process(useragents, writer, provider, limit);
-        	
-        	Thread[] threads = new Thread[numberOfThreads];
-        	for(int i = 0; i < threads.length; i++) {
-        		threads[i] = new Thread(process);
-        		threads[i].start();
-        	}
-        	
-        	for(int i = 0; i < threads.length; i++) {
-        		try {
-					threads[i].join();
-				} catch (InterruptedException e) {
-					// do nothing.
-				}
-        	}
 
-    		long end = System.currentTimeMillis();
-        	System.out.println(String.format(
-        			"'%.3fms' average detection time", 
-        			(double)(end - process.start) / (double)process.count));
-        	NumberFormat percentFormat = NumberFormat.getPercentInstance();
-        	percentFormat.setMaximumFractionDigits(2);
-       	
-        	System.out.println(String.format(
-        			"'%s' Node cache misses", 
-        			percentFormat.format(provider.dataSet.getPercentageNodeCacheMisses())));
-        	System.out.println(String.format(
-        			"'%s' Profiles cache misses", 
-        			percentFormat.format(provider.dataSet.getPercentageProfilesCacheMisses())));
-        	System.out.println(String.format(
-        			"'%s' Signature cache misses", 
-        			percentFormat.format(provider.dataSet.getPercentageSignatureCacheMisses())));
-        	System.out.println(String.format(
-        			"'%s' Strings cache misses", 
-        			percentFormat.format(provider.dataSet.getPercentageStringsCacheMisses())));
-        	System.out.println(String.format(
-        			"'%s' Values cache misses", 
-        			percentFormat.format(provider.dataSet.getPercentageValuesCacheMisses())));
-        	
-        	provider.dataSet.dispose();
+        if (sourceFile != null && useragentsFile != null) {
+            BufferedReader useragents = new BufferedReader(
+                    new InputStreamReader(
+                    new FileInputStream(useragentsFile), "UTF-8"));
 
-        	writer.close();
-        	fileWriter.close();
-        	useragents.close();
+            FileWriter fileWriter = new FileWriter(useragentsFile + "." + Integer.toString(numberOfThreads) + ".java");
+            BufferedWriter writer = new BufferedWriter(fileWriter);
+
+            writer.write("UserAgent" + "\t"
+                    + "PlatformName" + "\t"
+                    + "PlatformVersion" + "\t"
+                    + "IsMobile" + "\t"
+                    + "IsTablet" + "\t"
+                    + "IsSmartPhone" + "\t"
+                    + "IsSmallScreen" + "\t"
+                    + "IsEmailBrowser" + "\t"
+                    + "IsCrawler" + "\t"
+                    + "BrowserName" + "\t"
+                    + "BrowserVersion" + "\t"
+                    + "ScreenMMHeight" + "\t"
+                    + "ScreenMMWidth" + "\t"
+                    + "HasTouchScreen" + "\t"
+                    + "HasVirtualQwerty" + "\t"
+                    + "HasQwertyPad" + "\r\n");
+
+            long start = System.currentTimeMillis();
+            
+            // Enable the provide with a cache as there could be multiple
+            // useragents in our test file and this will improve performance.
+            Provider provider = new Provider(
+                    // MemoryFactory.create(sourceFile),
+                    StreamFactory.create(sourceFile), 
+                    fiftyone.properties.DetectionConstants.CACHE_SERVICE_INTERVAL);
+            
+            System.out.println(String.format(
+                    "'%dms' initialise time",
+                    System.currentTimeMillis() - start));
+
+            Process process = new Process(useragents, writer, provider, limit);
+
+            Thread[] threads = new Thread[numberOfThreads];
+            for (int i = 0; i < threads.length; i++) {
+                threads[i] = new Thread(process);
+                threads[i].start();
+            }
+
+            for (int i = 0; i < threads.length; i++) {
+                try {
+                    threads[i].join();
+                } catch (InterruptedException e) {
+                    // do nothing.
+                }
+            }
+
+            long end = System.currentTimeMillis();
+            System.out.println(String.format(
+                    "'%.3fms' average detection time",
+                    (double) (end - process.start) / (double) process.count));
+            NumberFormat percentFormat = NumberFormat.getPercentInstance();
+            percentFormat.setMaximumFractionDigits(2);
+
+            System.out.println(String.format(
+                    "'%s' Node cache misses",
+                    percentFormat.format(provider.dataSet.getPercentageNodeCacheMisses())));
+            System.out.println(String.format(
+                    "'%s' Profiles cache misses",
+                    percentFormat.format(provider.dataSet.getPercentageProfilesCacheMisses())));
+            System.out.println(String.format(
+                    "'%s' Signature cache misses",
+                    percentFormat.format(provider.dataSet.getPercentageSignatureCacheMisses())));
+            System.out.println(String.format(
+                    "'%s' Strings cache misses",
+                    percentFormat.format(provider.dataSet.getPercentageStringsCacheMisses())));
+            System.out.println(String.format(
+                    "'%s' Values cache misses",
+                    percentFormat.format(provider.dataSet.getPercentageValuesCacheMisses())));
+
+            provider.dataSet.dispose();
+
+            writer.close();
+            fileWriter.close();
+            useragents.close();
         }
-        
+
         System.exit(0);
-	}
-	
-    static String GetFile(String[] args, int index)
-    {
-        if (index < args.length)
-        {
+    }
+
+    static String GetFile(String[] args, int index) {
+        if (index < args.length) {
             String file = args[index];
-            if (new File(file).exists())
+            if (new File(file).exists()) {
                 return file;
+            }
         }
         return null;
     }

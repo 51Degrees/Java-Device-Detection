@@ -20,12 +20,12 @@ package fiftyone.mobile.detection;
  * This Source Code Form is "Incompatible With Secondary Licenses", as
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
-
 /**
- * Used in the closest match to track the difference and the character
- * position index.
+ * Used in the closest match to track the difference and the character position
+ * index.
  */
 class IndexDifference {
-	public int index;
-	public int difference;
+
+    public int index;
+    public int difference;
 }

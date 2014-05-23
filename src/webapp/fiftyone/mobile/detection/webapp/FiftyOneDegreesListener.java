@@ -1,25 +1,21 @@
 package fiftyone.mobile.detection.webapp;
 
 import fiftyone.mobile.detection.factories.MemoryFactory;
-import java.io.File;
-import java.io.IOException;
-
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import fiftyone.mobile.detection.factories.StreamFactory;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
-import java.io.FilenameFilter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import java.util.Timer;
 import java.util.UUID;
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 

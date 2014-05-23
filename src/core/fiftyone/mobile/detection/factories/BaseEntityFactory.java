@@ -1,8 +1,8 @@
 package fiftyone.mobile.detection.factories;
 
-import java.io.IOException;
 import fiftyone.mobile.detection.Dataset;
 import fiftyone.mobile.detection.readers.BinaryReader;
+import java.io.IOException;
 
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
@@ -24,16 +24,22 @@ import fiftyone.mobile.detection.readers.BinaryReader;
  * This Source Code Form is "Incompatible With Secondary Licenses", as
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
-
 public abstract class BaseEntityFactory<T> {
-	
-	public abstract T create(Dataset dataSet, int index, BinaryReader reader) throws IOException;
-	
-	public int getLength(T entity) {
-		return 0;
-	}
-	
-	public int getLength() {
-		return 0;
-	}
+
+    public abstract T create(Dataset dataSet, int index, BinaryReader reader) throws IOException;
+
+    /**
+     * @param entity whose size is required.
+     * @return the size of the entity provided.
+     */
+    public int getLength(T entity) {
+        throw new UnsupportedOperationException("Not implemented");
+    }
+
+    /**
+     * @return returns the size of a fixed length entity type.
+     */
+    public int getLength() {
+        throw new UnsupportedOperationException("Not implemented");
+    }
 }

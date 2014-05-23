@@ -75,7 +75,6 @@ public class TrieProvider implements Disposable {
             SIZE_OF_SHORT = 2,
             SIZE_OF_UBYTE = 1,
             SIZE_OF_BYTE = 1;
-    
     /**
      * The copy right notice associated with the data file.
      */
@@ -133,7 +132,8 @@ public class TrieProvider implements Disposable {
      * @param devices Array of devices.
      * @param lookupList Lookups data array.
      * @param nodesLength The length of the node data.
-     * @param nodesOffset The position of the start of the nodes in the file provided.
+     * @param nodesOffset The position of the start of the nodes in the file
+     * provided.
      * @param fileName Name of the source data file used to create the provider.
      */
     public TrieProvider(String copyright, byte[] strings, byte[] properties, byte[] devices,
@@ -209,7 +209,8 @@ public class TrieProvider implements Disposable {
     /**
      * Returns the property value based on the useragent provided.
      *
-     * @param deviceIndex The index of the device whose property should be returned.
+     * @param deviceIndex The index of the device whose property should be
+     * returned.
      * @param property">The name of the property required.
      * @return The value of the property for the given device index.
      */
@@ -398,7 +399,8 @@ public class TrieProvider implements Disposable {
      * useragent provided.
      *
      * @param reader Reader with exclusive access to the underlying file.
-     * @param userAgent A null terminated byte array of the user agent to be tested.
+     * @param userAgent A null terminated byte array of the user agent to be
+     * tested.
      * @param index The index in the array of the current character.
      * @param parentDeviceIndex The device index of the parent node.
      * @return The device id with the most number of matching characters.
@@ -418,8 +420,7 @@ public class TrieProvider implements Disposable {
             // The lookup list is positive so the device index
             // is contained as the next 4 bytes.
             deviceIndex = reader.readInt();
-        }
-        else {
+        } else {
             // The look list is negative so the device index
             // of this node is the same as the parent device index.
             deviceIndex = parentDeviceIndex;
@@ -452,7 +453,7 @@ public class TrieProvider implements Disposable {
         // offset and then move to that position recognising the 1st child 
         // always appears at the position immediately after the list of children.
         OffsetType offsetType = OffsetType.fromByte(reader.readByte());
-        setNextNodePosition(reader, (short)childIndex, numberOfChildren, offsetType);
+        setNextNodePosition(reader, (short) childIndex, numberOfChildren, offsetType);
         return getDeviceIndex(
                 reader,
                 userAgent,
@@ -465,9 +466,11 @@ public class TrieProvider implements Disposable {
      * useragent provided.
      *
      * @param reader Reader with exclusive access to the underlying file.
-     * @param userAgent A null terminated byte array of the user agent to be tested.
+     * @param userAgent A null terminated byte array of the user agent to be
+     * tested.
      * @param index The index in the array of the current character.
-     * @param parentDeviceIndex The parent device index to be used if this node doesn't have a different one.
+     * @param parentDeviceIndex The parent device index to be used if this node
+     * doesn't have a different one.
      * @param matchedUserAgent">The characters of the user agent matched.
      * @return The device id with the most number of matching characters.
      */
@@ -487,8 +490,7 @@ public class TrieProvider implements Disposable {
             // The lookup list is positive so the device index
             // is contained as the next 4 bytes.
             deviceIndex = reader.readInt();
-        }
-        else {
+        } else {
             // The look list is negative so the device index
             // of this node is the same as the parent device index.
             deviceIndex = parentDeviceIndex;
@@ -522,7 +524,7 @@ public class TrieProvider implements Disposable {
         // offset and then move to that position recognising the 1st child 
         // always appears at the position immediately after the list of children.
         OffsetType offsetType = OffsetType.fromByte(reader.readByte());
-        setNextNodePosition(reader, (short)childIndex, numberOfChildren, offsetType);
+        setNextNodePosition(reader, (short) childIndex, numberOfChildren, offsetType);
         return getDeviceIndex(
                 reader,
                 userAgent,

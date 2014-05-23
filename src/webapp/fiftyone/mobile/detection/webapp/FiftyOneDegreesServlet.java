@@ -2,14 +2,12 @@ package fiftyone.mobile.detection.webapp;
 
 import java.io.File;
 import java.io.IOException;
-
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,18 +54,16 @@ public final class FiftyOneDegreesServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request,
             HttpServletResponse response) throws IOException, ServletException {
-        
+
         // Check the path information to find the resource being requested.
         String pathInfo = request.getPathInfo();
         if (JAVASCRIPT_CORE.equals(pathInfo)) {
             javascriptProvider.provide(request, response);
-        }
-        else if (JAVASCRIPT_FEATURES.equals(pathInfo)) {
+        } else if (JAVASCRIPT_FEATURES.equals(pathInfo)) {
             javascriptProvider.provideFeatures(request, response);
-        }
-        else if (pathInfo.endsWith("png") ||
-                pathInfo.endsWith("jpg") ||
-                pathInfo.endsWith("gif")) {
+        } else if (pathInfo.endsWith("png")
+                || pathInfo.endsWith("jpg")
+                || pathInfo.endsWith("gif")) {
             imageResizer.image(request, response);
         }
     }

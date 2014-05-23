@@ -22,10 +22,10 @@ import java.util.TreeMap;
  * This Source Code Form is "Incompatible With Secondary Licenses", as
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
-
 @SuppressWarnings("serial")
 public class SortedList<K, V> extends TreeMap<K, V> {
-	public void add(K offset, V value) {
-		put(offset, value);
-	}
+
+    public void add(K offset, V value) {
+        put(offset, value);
+    }
 }

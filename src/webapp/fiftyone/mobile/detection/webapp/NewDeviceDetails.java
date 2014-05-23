@@ -20,7 +20,6 @@ package fiftyone.mobile.detection.webapp;
  * This Source Code Form is "Incompatible With Secondary Licenses", as
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
-
 /**
  *
  * Enumeration use for defining the amount of detail of the share usage data.
@@ -29,6 +28,7 @@ package fiftyone.mobile.detection.webapp;
  * @version 2.2.8.9
  */
 public enum NewDeviceDetails {
+
     /**
      * Sends only UserAgent and UAProf header fields.
      */

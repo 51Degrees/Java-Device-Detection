@@ -20,17 +20,17 @@ package fiftyone.mobile.detection.entities;
  * This Source Code Form is "Incompatible With Secondary Licenses", as
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
-
 class Range {
-	final short lower;
-	final short upper;
-	
-	Range(short lower, short upper) {
-		this.lower = lower;
-		this.upper = upper;
-	}
-	
-	boolean inRange(int value) {
-		return value >= lower && value < upper;
-	}
+
+    final short lower;
+    final short upper;
+
+    Range(short lower, short upper) {
+        this.lower = lower;
+        this.upper = upper;
+    }
+
+    boolean inRange(int value) {
+        return value >= lower && value < upper;
+    }
 }

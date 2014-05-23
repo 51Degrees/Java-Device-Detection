@@ -1,7 +1,6 @@
 package fiftyone.mobile.detection.webapp;
 
 import java.io.IOException;
-
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -33,36 +32,36 @@ import javax.servlet.http.HttpSession;
  * This Source Code Form is "Incompatible With Secondary Licenses", as
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
-
 public class FiftyOneDegreesFilter implements Filter {
-	private final Bandwidth bandwidth;
-	private final Feature feature;
 
-	public FiftyOneDegreesFilter() {
-		bandwidth = new Bandwidth();
-		feature = new Feature();
-	}
+    private final Bandwidth bandwidth;
+    private final Feature feature;
 
-	@Override
-	public void destroy() {
-	}
+    public FiftyOneDegreesFilter() {
+        bandwidth = new Bandwidth();
+        feature = new Feature();
+    }
 
-	@Override
-	public void doFilter(ServletRequest req, ServletResponse resp,
-			FilterChain chain) throws IOException, ServletException {
-		HttpServletRequest request = (HttpServletRequest) req;
-		HttpSession session = request.getSession();
+    @Override
+    public void destroy() {
+    }
 
-		Cookie[] cookies = request.getCookies();
-		if (cookies != null) {
-			bandwidth.process(request, (HttpServletResponse) resp, session, cookies);
-			feature.process(request, session, cookies);
-		}
-		
-		chain.doFilter(req, resp);
-	}
+    @Override
+    public void doFilter(ServletRequest req, ServletResponse resp,
+            FilterChain chain) throws IOException, ServletException {
+        HttpServletRequest request = (HttpServletRequest) req;
+        HttpSession session = request.getSession();
 
-	@Override
-	public void init(FilterConfig fc) throws ServletException {
-	}
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            bandwidth.process(request, (HttpServletResponse) resp, session, cookies);
+            feature.process(request, session, cookies);
+        }
+
+        chain.doFilter(req, resp);
+    }
+
+    @Override
+    public void init(FilterConfig fc) throws ServletException {
+    }
 }

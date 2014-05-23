@@ -29,49 +29,57 @@ import java.util.List;
  * This Source Code Form is ?Incompatible With Secondary Licenses?, as
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
-
 public class BinaryReader {
 
-	/**
-	 * List of integers used to create arrays of integers where the
-	 * length of the list is not known before reading starts.
-	 */
-	public final List<Integer> list = new ArrayList<Integer>();
-	
-	private final ByteBuffer byteBuffer;
+    /**
+     * List of integers used to create arrays of integers where the length of
+     * the list is not known before reading starts.
+     */
+    public final List<Integer> list = new ArrayList<Integer>();
+    private final ByteBuffer byteBuffer;
 
-	public BinaryReader(byte[] data){
-		byteBuffer = ByteBuffer.wrap(data);
-		byteBuffer.order(ByteOrder.LITTLE_ENDIAN);	
-	}
-	
-	public BinaryReader(FileInputStream fileInputStream) throws IOException {
-		FileChannel channel = fileInputStream.getChannel();
-		byteBuffer = fileInputStream.getChannel().map(
+    public BinaryReader(byte[] data) {
+        byteBuffer = ByteBuffer.wrap(data);
+        byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
+    }
+
+    public BinaryReader(FileInputStream fileInputStream) throws IOException {
+        FileChannel channel = fileInputStream.getChannel();
+        byteBuffer = fileInputStream.getChannel().map(
                 MapMode.READ_ONLY,
                 0,
                 channel.size());
-		byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
-	}
-	
-	public BinaryReader(ByteBuffer byteBuffer) {
-		this.byteBuffer = byteBuffer;
-		this.byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
-	}
-	
-    public void setPos(int pos) { byteBuffer.position(pos); }
+        byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
+    }
 
-    public byte readByte() { return byteBuffer.get(); }
+    public BinaryReader(ByteBuffer byteBuffer) {
+        this.byteBuffer = byteBuffer;
+        this.byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
+    }
 
-    public short readInt16() { return byteBuffer.getShort(); }
+    public void setPos(int pos) {
+        byteBuffer.position(pos);
+    }
 
-    public int readInt32() { return byteBuffer.getInt(); }
+    public byte readByte() {
+        return byteBuffer.get();
+    }
 
-    public boolean readBoolean() { return byteBuffer.get() != 0; }
+    public short readInt16() {
+        return byteBuffer.getShort();
+    }
+
+    public int readInt32() {
+        return byteBuffer.getInt();
+    }
+
+    public boolean readBoolean() {
+        return byteBuffer.get() != 0;
+    }
 
     public byte[] readBytes(final int length) {
-    	byte[] bytes = new byte[length];
-    	byteBuffer.get(bytes);
-    	return bytes;
+        byte[] bytes = new byte[length];
+        byteBuffer.get(bytes);
+        return bytes;
     }
 }

@@ -54,7 +54,6 @@ public class TrieReader {
      * The index of the buffer that _position is pointed at.
      */
     private int _bufferIndex;
-    
     private long _globalPosition;
 
     /**
@@ -114,7 +113,7 @@ public class TrieReader {
             if (position > _buffers.get(i).limit()) {
                 position -= _buffers.get(i).limit();
             } else {
-                int p = (int)position;
+                int p = (int) position;
                 _bufferIndex = i;
                 _buffers.get(i).position(p);
                 break;
@@ -203,8 +202,7 @@ public class TrieReader {
 
         return l;
     }
-    
-    
+
     /**
      *
      * Read an signed integer from the file at the current location.
@@ -220,13 +218,13 @@ public class TrieReader {
             r += ((int) value[i] & 0xffL) << (8 * i);
         }
         /*
-        i |= (value[3] & 0xFF);
-        i <<= 8;
-        i |= (value[2] & 0xFF);
-        i <<= 8;
-        i |= (value[1] & 0xFF);
-        i <<= 8;
-        i |= (value[0] & 0xFF);*/
+         i |= (value[3] & 0xFF);
+         i <<= 8;
+         i |= (value[2] & 0xFF);
+         i <<= 8;
+         i |= (value[1] & 0xFF);
+         i <<= 8;
+         i |= (value[0] & 0xFF);*/
 
         return r;
     }
@@ -278,9 +276,9 @@ public class TrieReader {
         }
         return returnByte;
     }
-    
+
     public byte readByte() {
-        return getNextByte();    
+        return getNextByte();
     }
 
     public byte[] readBytes(final int length) {

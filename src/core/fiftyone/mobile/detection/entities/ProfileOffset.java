@@ -23,31 +23,30 @@ import fiftyone.mobile.detection.readers.BinaryReader;
  * This Source Code Form is "Incompatible With Secondary Licenses", as
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
-
 /**
  * Maps a profile id to its position in the data file.
  */
 public class ProfileOffset extends BaseEntity {
-	public int getProfileId() {
-		return profileId;
-	}
 
-	private int profileId;
+    public int getProfileId() {
+        return profileId;
+    }
+    private int profileId;
 
-	/**
-	 * The position within the data file that the profile can be read from.
-	 * @return offset of the profile Id in the profiles data structure
-	 */
-	public int getOffset() {
-		return offset;
-	}
+    /**
+     * The position within the data file that the profile can be read from.
+     *
+     * @return offset of the profile Id in the profiles data structure
+     */
+    public int getOffset() {
+        return offset;
+    }
+    private int offset;
 
-	private int offset;
-
-	public ProfileOffset(Dataset dataSet, int offset,
-			BinaryReader reader) {
-		super(dataSet, offset);
-		profileId = reader.readInt32();
-		offset = reader.readInt32();
-	}
+    public ProfileOffset(Dataset dataSet, int offset,
+            BinaryReader reader) {
+        super(dataSet, offset);
+        profileId = reader.readInt32();
+        offset = reader.readInt32();
+    }
 }

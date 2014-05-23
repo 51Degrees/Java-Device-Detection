@@ -24,37 +24,32 @@ import fiftyone.mobile.detection.readers.BinaryReader;
  * This Source Code Form is "Incompatible With Secondary Licenses", as
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
-
 public class AsciiStringFactory extends BaseEntityFactory<AsciiString> {
-	/**
-	 * Creates a new instance of AsciiString
-	 * 
-	 * @param dataSet
-	 *            The data set whose strings list the string is contained
-	 *            within
-	 * @param offset
-	 *            The offset to the start of the string within the string
-	 *            data structure
-	 * @param reader
-	 *            Binary reader positioned at the start of the AsciiString
-	 * @return A new instance of an AsciiString
-	 */
-	public AsciiString create(Dataset dataSet, int offset,
-			BinaryReader reader) {
-		return new AsciiString(dataSet, offset, reader);
-	}
 
-	/**
-	 * Returns the length of the AsciiString entity including
-	 * the 2 bytes for the length and the null terminator not
-	 * used by java.
-	 * 
-	 * @param entity
-	 *            Entity of type AsciiString
-	 * @return Length in bytes of the AsciiString
-	 */
-	@Override
-	public int getLength(AsciiString entity) {
-		return entity.getLength() + 3;
-	}
+    /**
+     * Creates a new instance of AsciiString
+     *
+     * @param dataSet The data set whose strings list the string is contained
+     * within
+     * @param offset The offset to the start of the string within the string
+     * data structure
+     * @param reader Binary reader positioned at the start of the AsciiString
+     * @return A new instance of an AsciiString
+     */
+    public AsciiString create(Dataset dataSet, int offset,
+            BinaryReader reader) {
+        return new AsciiString(dataSet, offset, reader);
+    }
+
+    /**
+     * Returns the length of the AsciiString entity including the 2 bytes for
+     * the length and the null terminator not used by java.
+     *
+     * @param entity Entity of type AsciiString
+     * @return Length in bytes of the AsciiString
+     */
+    @Override
+    public int getLength(AsciiString entity) {
+        return entity.getLength() + 3;
+    }
 }

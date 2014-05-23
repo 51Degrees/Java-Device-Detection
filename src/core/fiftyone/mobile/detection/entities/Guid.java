@@ -20,12 +20,11 @@ package fiftyone.mobile.detection.entities;
  * This Source Code Form is "Incompatible With Secondary Licenses", as
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
-
 public class Guid {
 
-	public final byte[] data;
+    public final byte[] data;
 
-	public Guid(byte[] data) {
-		this.data = data;
-	}
+    public Guid(byte[] data) {
+        this.data = data;
+    }
 }

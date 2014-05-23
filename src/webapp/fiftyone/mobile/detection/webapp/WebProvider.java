@@ -39,133 +39,128 @@ import fiftyone.mobile.detection.Provider;
  * This Source Code Form is "Incompatible With Secondary Licenses", as
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
-
 public class WebProvider extends Provider implements Disposable {
-	final Logger logger = LoggerFactory.getLogger(WebProvider.class);
 
-	private static final String USER_AGENT = "user-agent";
+    final Logger logger = LoggerFactory.getLogger(WebProvider.class);
+    private static final String USER_AGENT = "user-agent";
+    /**
+     * Used to store the result for the current request in the
+     * HttpServletRequest's attribute collection.
+     */
+    private static final String RESULT_ATTIBUTE = "51D_RESULT";
+    private static final String SESSION_RESULT = "SESSION_RESULT";
+    private final ShareUsage usage;
+    private final Feature feature;
 
-	/**
-	 * Used to store the result for the current request in the
-	 * HttpServletRequest's attribute collection.
-	 */
-	private static final String RESULT_ATTIBUTE = "51D_RESULT";
+    public WebProvider() throws IOException {
+        super(Constants.CACHE_SERVICE_INTERVAL);
+        usage = new ShareUsage(Constants.URL, NewDeviceDetails.MAXIMUM);
+        Thread usageThread = new Thread(usage, "51Degrees usage thread");
+        usageThread.setDaemon(true);
+        usageThread.setPriority(Thread.MIN_PRIORITY);
 
-	private static final String SESSION_RESULT = "SESSION_RESULT";
+        feature = new Feature();
 
-	private final ShareUsage usage;
+        // don't start threads in constructors, but in this case we want to
+        // match the extended API
+        usageThread.start();
+    }
 
-	private final Feature feature;
+    public WebProvider(Dataset dataSet) {
+        super(dataSet, Constants.CACHE_SERVICE_INTERVAL);
+        usage = new ShareUsage(Constants.URL, NewDeviceDetails.MAXIMUM);
+        Thread usageThread = new Thread(usage, "51Degrees usage thread");
+        usageThread.setDaemon(true);
+        usageThread.setPriority(Thread.MIN_PRIORITY);
 
-	public WebProvider() throws IOException {
-		super();
-		usage = new ShareUsage(Constants.URL, NewDeviceDetails.MAXIMUM);
-		Thread usageThread = new Thread(usage, "51Degrees usage thread");
-		usageThread.setDaemon(true);
-		usageThread.setPriority(Thread.MIN_PRIORITY);
+        feature = new Feature();
 
-		feature = new Feature();
+        // don't start threads in constructors, but in this case we want to
+        // match the extended API
+        usageThread.start();
+    }
 
-		// don't start threads in constructors, but in this case we want to
-		// match the extended API
-		usageThread.start();
-	}
-	
-	public WebProvider(Dataset dataSet) {
-		super(dataSet);
-		usage = new ShareUsage(Constants.URL, NewDeviceDetails.MAXIMUM);
-		Thread usageThread = new Thread(usage, "51Degrees usage thread");
-		usageThread.setDaemon(true);
-		usageThread.setPriority(Thread.MIN_PRIORITY);
+    @Override
+    public void dispose() {
+        // let thread run to completion and then die
+        usage.destroy();
+    }
 
-		feature = new Feature();
+    public void record(HttpServletRequest request) {
+        String shareUsage = request.getServletContext().
+                getInitParameter(Constants.SHARE_USAGE);
+        if (shareUsage == null
+                || Boolean.parseBoolean(shareUsage)) {
+            try {
+                usage.recordNewDevice(request);
+            } catch (Exception e) {
+                logger.error("Could not record request", e);
+            }
+        }
+    }
 
-		// don't start threads in constructors, but in this case we want to
-		// match the extended API
-		usageThread.start();
-	}
+    public Match getResult(final HttpServletRequest request)
+            throws ServletException, IOException {
+        record(request);
+        Object previousResult = request.getAttribute(RESULT_ATTIBUTE);
+        if (previousResult instanceof Match == false) {
+            try {
+                Match result = match(parseRequest(request));
+                mergeMatchWithSessionData(result, request.getSession());
+                request.setAttribute(RESULT_ATTIBUTE, result);
+                previousResult = result;
+                request.getSession().setAttribute(SESSION_RESULT,
+                        result.getResults());
+            } catch (UnsupportedEncodingException e) {
+                logger.error("Issues reading header info:", e);
+            }
+        }
+        return (Match) previousResult;
+    }
 
-	@Override
-	public void dispose() {
-		// let thread run to completion and then die
-		usage.destroy();
-	}
+    @SuppressWarnings("unchecked")
+    public Map<String, String[]> getResults(HttpServletRequest request)
+            throws IOException {
+        Map<String, String[]> result = (Map<String, String[]>) request.getSession()
+                .getAttribute(SESSION_RESULT);
+        //TODO rationalise with above
+        if (result == null) {
+            Match match = match(parseRequest(request));
+            mergeMatchWithSessionData(match, request.getSession());
+            request.setAttribute(RESULT_ATTIBUTE, result);
+            result = match.getResults();
+            request.getSession().setAttribute(SESSION_RESULT,
+                    match.getResults());
+        }
 
-	public void record(HttpServletRequest request) {
-		String shareUsage = request.getServletContext().
-				getInitParameter(Constants.SHARE_USAGE);
-		if (shareUsage == null ||
-			Boolean.parseBoolean(shareUsage)) {
-			try {
-				usage.recordNewDevice(request);
-			} catch (Exception e) {
-				logger.error("Could not record request", e);
-			}
-		}
-	}
+        return result;
+    }
 
-	public Match getResult(final HttpServletRequest request)
-			throws ServletException, IOException {
-		record(request);
-		Object previousResult = request.getAttribute(RESULT_ATTIBUTE);
-		if (previousResult instanceof Match == false) {
-			try {
-				Match result = match(parseRequest(request));
-				mergeMatchWithSessionData(result, request.getSession());
-				request.setAttribute(RESULT_ATTIBUTE, result);
-				previousResult = result;
-				request.getSession().setAttribute(SESSION_RESULT,
-						result.getResults());
-			} catch (UnsupportedEncodingException e) {
-				logger.error("Issues reading header info:", e);
-			}
-		}
-		return (Match) previousResult;
-	}
+    public Map<String, String> parseRequest(HttpServletRequest request) {
+        final Enumeration<String> headerNames = request.getHeaderNames();
+        final Map<String, String> headers = new HashMap<String, String>();
+        while (headerNames.hasMoreElements()) {
+            final String n = (String) headerNames.nextElement().toString()
+                    .toLowerCase();
+            headers.put(n, request.getHeader(n));
+        }
+        return headers;
+    }
 
-	@SuppressWarnings("unchecked")
-	public Map<String, String[]> getResults(HttpServletRequest request)
-			throws IOException {
-		Map<String, String[]> result = (Map<String, String[]>) request.getSession()
-				.getAttribute(SESSION_RESULT);
-		//TODO rationalise with above
-		if (result == null) {
-			Match match = match(parseRequest(request));
-			mergeMatchWithSessionData(match, request.getSession());
-			request.setAttribute(RESULT_ATTIBUTE, result);
-			result = match.getResults();
-			request.getSession().setAttribute(SESSION_RESULT,
-					match.getResults());
-		}
+    @Override
+    protected String getUserAgentString() {
+        return USER_AGENT;
+    }
 
-		return result;
-	}
+    private void mergeMatchWithSessionData(Match result, HttpSession session) throws IOException {
+        feature.merge(result, session, dataSet);
+    }
 
-	public Map<String, String> parseRequest(HttpServletRequest request) {
-		final Enumeration<String> headerNames = request.getHeaderNames();
-		final Map<String, String> headers = new HashMap<String, String>();
-		while (headerNames.hasMoreElements()) {
-			final String n = (String) headerNames.nextElement().toString()
-					.toLowerCase();
-			headers.put(n, request.getHeader(n));
-		}
-		return headers;
-	}
+    public Date getPublished() {
+        return dataSet.published;
+    }
 
-	@Override
-	protected String getUserAgentString() {
-		return USER_AGENT;
-	}
-
-	private void mergeMatchWithSessionData(Match result, HttpSession session) throws IOException {
-		feature.merge(result, session, dataSet);
-	}
-
-	public Date getPublished() {
-		return dataSet.published;
-	}
-
-	public Date getNextUpdate() {
-		return dataSet.nextUpdate;
-	}
+    public Date getNextUpdate() {
+        return dataSet.nextUpdate;
+    }
 }

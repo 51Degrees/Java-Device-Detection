@@ -2,7 +2,6 @@ package fiftyone.mobile.detection.factories;
 
 import fiftyone.mobile.detection.Dataset;
 import fiftyone.mobile.detection.entities.Map;
-import fiftyone.mobile.detection.entities.Value;
 import fiftyone.mobile.detection.readers.BinaryReader;
 
 /* *********************************************************************
@@ -25,16 +24,16 @@ import fiftyone.mobile.detection.readers.BinaryReader;
  * This Source Code Form is "Incompatible With Secondary Licenses", as
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
-
 public class MapFactory extends BaseEntityFactory<Map> {
-	@Override
-	public Map create(Dataset dataSet, int index,
-			BinaryReader reader) {
-		return new Map(dataSet, index, reader);
-	}
-/*
-	@Override
-	public int getLength() {
-		return Value.RECORD_LENGTH;
-	}*/
+
+    @Override
+    public Map create(Dataset dataSet, int index,
+            BinaryReader reader) {
+        return new Map(dataSet, index, reader);
+    }
+    /*
+     @Override
+     public int getLength() {
+     return Value.RECORD_LENGTH;
+     }*/
 }

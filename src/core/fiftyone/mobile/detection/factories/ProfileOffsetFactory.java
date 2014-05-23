@@ -24,11 +24,19 @@ import fiftyone.mobile.detection.readers.BinaryReader;
  * This Source Code Form is "Incompatible With Secondary Licenses", as
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
-
 public class ProfileOffsetFactory extends BaseEntityFactory<ProfileOffset> {
-	@Override
-	public ProfileOffset create(Dataset dataSet, int index,
-			BinaryReader reader) {
-		return new ProfileOffset(dataSet, index, reader);
-	}
+
+    /**
+     * Creates a new instance of profile offset from the reader
+     *
+     * @param dataSet related to the data file
+     * @param index index of the profile offset to return
+     * @param reader reader connected to the source data
+     * @return a new profile offset
+     */
+    @Override
+    public ProfileOffset create(Dataset dataSet, int index,
+            BinaryReader reader) {
+        return new ProfileOffset(dataSet, index, reader);
+    }
 }

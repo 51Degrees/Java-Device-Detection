@@ -106,6 +106,7 @@ public class Command {
             System.out.printf("Strings Read\t\t%d\r\n", patternMatch.getStringsRead());
             System.out.printf("Signatures Read\t\t%d\r\n", patternMatch.getSignaturesRead());
             System.out.printf("Signatures Compared\t%d\r\n", patternMatch.getSignaturesCompared());
+            System.out.printf("Closest Signatures\t%d\r\n", patternMatch.getClosestSignaturesCount());
 
             // Demonstrate some example lite properties.
             System.out.println("\r\n\t\t\t*** Example Lite Properties ***");
@@ -125,7 +126,7 @@ public class Command {
 
             // Demonstrate some example Premium properties.	
             if (p.dataSet.getName().equals("Lite") == false) {
-                System.out.println("\r\n\t\t\t*** Example Premium Properties ***");
+                System.out.println("\r\n\t\t\t*** Example Enhanced Properties ***");
                 if (patternMatch.getValues("IsMediaHub") != null) {
                     System.out.printf("IsMediaHub\t\t%b\r\n", 
                             patternMatch.getValues("IsMediaHub").toBool());

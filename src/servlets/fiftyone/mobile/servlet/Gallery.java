@@ -108,7 +108,7 @@ public class Gallery extends BaseServlet {
         }
 
         if (mainImage != null) {
-            out.printf("<div><img src=\"51D%s?width=600\"/><p>%s</P></div>", mainImage, mainImage);
+            out.printf("<div><img src=\"51D%s?w=600\"/><p>%s</P></div>", mainImage, mainImage);
         } else {
             ServletContext context = request.getServletContext();
             if (context != null) {
@@ -116,7 +116,7 @@ public class Gallery extends BaseServlet {
                 for (String image : images) {
                     if (image.endsWith(".jpg")) {
                         out.printf(
-                                "<div style=\"width: 200px;\"><a href=\"?image=%s\"><img src=\"51D%s?width=auto\"/></a><p>%s</P></div>",
+                                "<div style=\"width: 200px;\"><a href=\"?image=%s\"><img src=\"51D%s?w=auto\"/></a><p>%s</P></div>",
                                 image, image, image);
                     }
                 }
@@ -127,7 +127,7 @@ public class Gallery extends BaseServlet {
         out.println(dataInfo);
         
         // Add the call to the automatic image optimiser.
-        out.println("<script type=\"text/javascript\">FODIO('width', 'height');</script>");
+        out.println("<script type=\"text/javascript\">FODIO('w', 'h');</script>");
 
         out.println("</body>");
         

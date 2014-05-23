@@ -24,16 +24,16 @@ import fiftyone.mobile.detection.readers.BinaryReader;
  * This Source Code Form is "Incompatible With Secondary Licenses", as
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
-
 public class ProfileFactory extends BaseEntityFactory<Profile> {
-	@Override
-	public Profile create(Dataset dataSet, int index,
-			BinaryReader reader) {
-		return new Profile(dataSet, index, reader);
-	}
 
-	@Override
-	public int getLength(Profile entity) {
-		return entity.getLength();
-	}
+    @Override
+    public Profile create(Dataset dataSet, int index,
+            BinaryReader reader) {
+        return new Profile(dataSet, index, reader);
+    }
+
+    @Override
+    public int getLength(Profile entity) {
+        return entity.getLength();
+    }
 }
