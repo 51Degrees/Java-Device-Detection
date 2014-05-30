@@ -1,12 +1,9 @@
 package fiftyone.mobile.detection;
 
 import java.io.IOException;
-import java.util.List;
 
 import fiftyone.mobile.detection.entities.Node;
 import fiftyone.mobile.detection.entities.Profile;
-import fiftyone.mobile.detection.entities.Signature;
-import java.util.Iterator;
 
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 

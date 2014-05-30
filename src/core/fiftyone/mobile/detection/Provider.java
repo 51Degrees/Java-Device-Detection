@@ -34,7 +34,6 @@ import java.util.Map;
  */
 public class Provider {
 
-    private static final String USER_AGENT = "User-Agent";
     /**
      * A cache for user agents.
      */
@@ -150,17 +149,59 @@ public class Provider {
     /**
      * For a given collection of HTTP headers returns a match containing
      * information about the capabilities of the device and it's components.
-     *
      * @param headers List of HTTP headers to use for the detection
      * @return a match for the target headers provided
      * @throws IOException
      */
     public Match match(final Map<String, String> headers) throws IOException {
-        return match(headers.get(getUserAgentString()), createMatch());
+        return match(headers, createMatch());
     }
+    
+    /**
+     * For a given collection of HTTP headers returns a match containing
+     * information about the capabilities of the device and it's components.
+     * @param headers List of HTTP headers to use for the detection
+     * @param match object created to store the results of the match
+     * @return a match for the target headers provided
+     * @throws IOException
+     */
+    public Match match(final Map<String, String> headers, Match match) throws IOException {
+        // Get the match for the main user agent.
+        match(headers.get(DetectionConstants.USER_AGENT_HEADER.toLowerCase()), match);
+        
+        // Get the user agent for the device if a secondary header is present.
+        String deviceUserAgent = getDeviceUserAgent(headers);
+        if (deviceUserAgent != null)
+        {
+            Match deviceMatch = match(deviceUserAgent);
+            if (deviceMatch != null)
+            {
+                // Update the statistics about the matching process.
+                match.signaturesCompared += deviceMatch.signaturesCompared;
+                match.signaturesRead += deviceMatch.signaturesRead;
+                match.stringsRead += deviceMatch.stringsRead;
+                match.rootNodesEvaluated += deviceMatch.rootNodesEvaluated;
+                match.nodesEvaluated += deviceMatch.nodesEvaluated;
 
-    protected String getUserAgentString() {
-        return USER_AGENT;
+                // Replace the Hardware and Software profiles with the ones from
+                // the device match.
+                for (int i = 0; i < match.getProfiles().length && i < deviceMatch.getProfiles().length; i++)
+                {
+                    if (match.getProfiles()[i].getComponent().getComponentId() <= 2 &&
+                        match.getProfiles()[i].getComponent().getComponentId() == 
+                            deviceMatch.getProfiles()[i].getComponent().getComponentId())
+                    {
+                        // Swap over the profiles if they're the same component.
+                        match.getProfiles()[i] = deviceMatch.getProfiles()[i];
+                    }
+                }
+
+                // Remove the signature as a single one is not being returned.
+                match.setSignature(null);
+            }
+        }
+        
+        return match;
     }
 
     /**
@@ -189,7 +230,7 @@ public class Provider {
     public Match match(String targetUserAgent, Match match) throws IOException {
         MatchState state;
 
-        if (userAgentCache != null) {
+        if (userAgentCache != null && targetUserAgent != null) {
             state = userAgentCache.tryGetValue(targetUserAgent);
             if (state == null) {
                 // The user agent has not been checked previously. Therefore perform
@@ -227,5 +268,21 @@ public class Provider {
         }
 
         return match;
+    }
+    
+    /**
+     * Used to check other header fields in case a device user agent is being used
+     * and returns the devices useragent string.
+     * @param headers Collection of Http headers associated with the request.
+     * @return the useragent string of the device.
+     */
+    private static String getDeviceUserAgent(Map<String, String> headers)
+    {
+        for(String current : DetectionConstants.DEVICE_USER_AGENT_HEADERS) {
+            if (headers.get(current.toLowerCase()) != null) {
+                return headers.get(current.toLowerCase());
+            }
+        }
+        return null;
     }
 }

@@ -1,6 +1,9 @@
 package fiftyone.mobile.detection.webapp;
 
+import java.io.IOException;
 import java.net.URLDecoder;
+import java.util.Collection;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 import javax.servlet.http.Cookie;
@@ -34,11 +37,12 @@ class Bandwidth {
 
     final private static Logger logger = LoggerFactory
             .getLogger(Bandwidth.class);
+    
     private static final String COOKIE_NAME = "51D_Bandwidth";
     private static final String SESSION_KEY = "51D_Stats";
-    public static final String COOKIE_DELIM = "|";
+    private static final String COOKIE_DELIM = "|";
 
-    void process(HttpServletRequest req, HttpServletResponse resp,
+    static void process(HttpServletRequest req, HttpServletResponse resp,
             HttpSession session, Cookie[] cookies) {
         Stats stats = (Stats) session.getAttribute(SESSION_KEY);
         if (stats == null) {
@@ -80,14 +84,15 @@ class Bandwidth {
                                 stats.getAverageCompletionTime());
                         req.setAttribute("51D_AverageBandwidth",
                                 stats.getAverageBandwidth());
+                        break;
 
                     } catch (NumberFormatException e) {
                         logger.error("Error parsing 51D_Bandwidth cookie", e);
                     }
                 } catch (NoSuchElementException e) {
                     // do nothing
+                    System.out.println(e.toString());
                 }
-                break;
             }
         }
         Stat newStat = new Stat();
@@ -99,11 +104,29 @@ class Bandwidth {
 
         Cookie newCookie = new Cookie(COOKIE_NAME,
                 Long.toString(newStat.id));
+        newCookie.setPath("/");
         resp.addCookie(newCookie);
-
         stats.lastId = newStat.id;
         newStat.serverTimeSent = System.currentTimeMillis();
         session.setAttribute(SESSION_KEY, stats);
-
     }
+    
+    
+    /**
+     * Returns the bandwidth monitoring JavaScript for the current request.
+     * @param request
+     * @return
+     * @throws IOException 
+     */
+    static String getJavascript(HttpServletRequest request) throws IOException {
+        Map<String, String[]> results = WebProvider.getResult(request);
+        if (results != null) {
+            String[] values = results.get("JavascriptBandwidth");
+            if (values != null &&
+                values.length == 1) {
+                return values[0];
+            }
+        }
+        return null;
+    }    
 }

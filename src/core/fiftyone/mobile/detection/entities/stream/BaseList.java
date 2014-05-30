@@ -119,7 +119,7 @@ public abstract class BaseList<T extends BaseEntity> implements
      * Disposes of the pool of readers.
      */
     @Override
-    public void dispose() throws IOException {
+    public void dispose() {
         cache.dispose();
         pool.dispose();
     }

@@ -12,7 +12,7 @@
     <context-param>
         <description>The name of the device database if the embedded version should not be used.</description>
         <param-name>BINARY_FILE_PATH</param-name>
-        <param-value>51Degrees-Lite.dat</param-value>
+        <param-value>51Degrees.dat</param-value>
     </context-param>
     <!--
 

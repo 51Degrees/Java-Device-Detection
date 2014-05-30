@@ -55,6 +55,64 @@ http://www.slf4j.org/license.html
 
 Changes:
 
+Version 3.1.2.16
+
+Known Issues:
+
+Exception "Device data download failed: sun.security.validator.ValidatorException:
+PKIX path building failed: 
+sun.security.provider.certpath.SunCertPathBuilderException: 
+unable to find valid certification path to requested target" thrown when auto 
+updating the data file due to GoDaddy root authority SSL certificate used by
+51Degrees not being present in some Java certificate stores.
+
+Changes:
+
+Added support for secondary HTTP headers such as Device-Stock-UA.
+
+Changed the example project to use the Map<String, String[]> data structure
+used to cache the results of a detection in the requests attribute list, and 
+the session when available.
+
+Temporary files used by the WebProvider are now cleaned up correctly when the 
+WebProvider is destroyed and a new active provider is created.
+
+Change the Disposable interface to no longer throw the IOException.
+
+Refactored WebProvider, ProfileOverride, Listener and other classes to align
+to the .NET reference implementation and address minor defects with inconsistent
+servlet behaviour.
+
+MD5 hash eTags now used for consistency with other implementations.
+
+Client javascript and image optimiser classes are now internal, static and 
+not publicly accessible.
+
+Fixed defects in the 51Degrees.features.js javascript generation.
+
+Added checks for malformed querystrings with image optimiser.
+
+Moved functionality from the listenner to the WebProvider.
+
+Improved the quality of resized images from the optimiser.
+
+Removed memory constraint checking code in auto updater as V3 does not need
+to load the data file into memory inorder to validate it.
+
+Stopped bandwidth server processing when the bandwidth monitoring javascript 
+is not included in the data set.
+
+Added the empty gif resource to the webapp package for image optimiser.
+
+The Performance Monitoring cookie now has a path set, preventing multiple
+instance of the cookie from building up.
+
+Performance Monitoring is no longer calculated on pages going through
+the 51D filter, such as optimised images.
+
+The Performance Monitor will now process all 51D_Bandwidth cookies until
+a complete one is found.
+
 Version 3.1.1.3
 
 Important: version 3.0 format data files will not work with version 3.1 APIs.
@@ -65,6 +123,8 @@ Upgraded detection algorithm to support version 3.1 data format which contains
 presorted lists for Nearest and Closest methods improving performance.
 
 Address minor issues with code formatting and comments.
+
+Fixed itermitent issue when no cookies present with profile override.
 
 Version 3.0.7.3
 

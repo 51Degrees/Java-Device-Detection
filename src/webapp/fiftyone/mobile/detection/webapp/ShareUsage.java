@@ -286,7 +286,7 @@ class ShareUsage implements Runnable {
      * storage.
      *
      * @param Headers A Map of the connection headers.
-     * @param HostAddress The address ip Address of the host.
+     * @param HostAddress The address IP address of the host.
      * @param URI The URI information.
      * @param newDeviceDetail How much information to be recorded.
      * @return The XML data as a byte array.
@@ -322,12 +322,16 @@ class ShareUsage implements Runnable {
 
             // Record either the IP address of the client if not local or the IP
             // address of the machine.
-            // if it contains dots then its an IPV4
+            // If it contains dots then its an IPV4
             if (!isLocal(HostAddress)) {
                 writer.writeStartElement("ClientIP");
                 writer.writeCharacters(HostAddress);
                 writer.writeEndElement();
             }
+            
+            writer.writeStartElement("ServerIP");
+            writer.writeCharacters(HostAddress);
+            writer.writeEndElement();
 
             for (String key : Headers.keySet()) {
                 // Determine if the field should be treated as a blank.

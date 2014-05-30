@@ -1,6 +1,5 @@
 package fiftyone.mobile.detection;
 
-import java.util.Date;
 import java.util.concurrent.ConcurrentHashMap;
 
 /* *********************************************************************
@@ -91,11 +90,11 @@ class Cache<K, V> {
     }
 
     void setActive(K key, V result) {
-        active.put(key, result);
+        active.putIfAbsent(key, result);
     }
 
     void setBackground(K key, V result) {
-        background.put(key, result);
+        background.putIfAbsent(key, result);
         service();
     }
 }

@@ -73,7 +73,7 @@ public class Pool implements Disposable {
     }
 
     @Override
-    public void dispose() throws IOException {
+    public void dispose() {
         source.dispose();
     }
 }

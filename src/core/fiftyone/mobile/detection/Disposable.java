@@ -1,7 +1,5 @@
 package fiftyone.mobile.detection;
 
-import java.io.IOException;
-
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
  * Copyright 2014 51Degrees Mobile Experts Limited, 5 Charlotte Close,
@@ -24,5 +22,5 @@ import java.io.IOException;
  * ********************************************************************* */
 public interface Disposable {
 
-    void dispose() throws IOException;
+    void dispose();
 }

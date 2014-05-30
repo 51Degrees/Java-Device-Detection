@@ -1,7 +1,6 @@
 package fiftyone.mobile.detection.webapp;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,7 +22,7 @@ import org.apache.commons.codec.binary.Base64;
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0.
  * 
- * If a copy of the MPL was not distributed with this file, You can obtain
+ * If a copy of the MPL was not distributed with this cacheFile, You can obtain
  * one at http://mozilla.org/MPL/2.0/.
  * 
  * This Source Code Form is "Incompatible With Secondary Licenses", as
@@ -31,26 +30,40 @@ import org.apache.commons.codec.binary.Base64;
  * ********************************************************************* */
 class Cache {
 
-    /*
-     * The number of "chunks" the image file location should be broken 
+    /**
+     * The number of "chunks" the image cacheFile location should be broken 
      * into.
      */
     private static final int SPLIT_COUNT = 5;
-    private File tmpDir;
 
-    Cache(File tmpDir) {
-        this.tmpDir = tmpDir;
-    }
-
+    /**
+     * Looks for the local image with the width and height in the cache.
+     * @param imageLocal path to the local image cacheFile.
+     * @param width of the image
+     * @param height of the image
+     * @return null if the image with the specified height and width does not
+     * exist in the cache.
+     * @throws IOException 
+     */
     @SuppressWarnings("resource")
-    synchronized InputStream lookup(String imageLocal, int width, int height) throws IOException {
-        File file = getFile(imageLocal, width, height);
-        return file.exists() ? new FileInputStream(file) : null;
+    synchronized static File lookup(String cacheDirectory, File physicalPath, 
+            int width, int height) throws IOException {
+        return getFile(cacheDirectory, physicalPath.getAbsolutePath(), width, height);
     }
 
-    synchronized void add(String imageLocal, int width, int height, InputStream imageAsStream) throws IOException {
-        File file = getFile(imageLocal, width, height);
-        OutputStream outputStream = new FileOutputStream(file);
+    /**
+     * Adds the image at the width and height provided to the cache.
+     * @param imageLocal
+     * @param width
+     * @param height
+     * @param imageAsStream
+     * @throws IOException 
+     */
+    synchronized static void add(File physicalPath, File cacheFile, int width, 
+            int height, InputStream imageAsStream) throws IOException {
+        new File(cacheFile.getParent()).mkdirs();
+        cacheFile.createNewFile();
+        OutputStream outputStream = new FileOutputStream(cacheFile);
 
         int read = 0;
         byte[] bytes = new byte[1024 ^ 2];
@@ -62,7 +75,13 @@ class Cache {
         outputStream.close();
     }
 
-    private String getEncodedFile(String imageLocal) throws UnsupportedEncodingException {
+    /**
+     * Gets a base 64 encoded version of the image URL.
+     * @param imageLocal
+     * @return
+     * @throws UnsupportedEncodingException 
+     */
+    private static String getEncodedFile(String imageLocal) throws UnsupportedEncodingException {
         String encoded = Base64.encodeBase64String(imageLocal.getBytes("US-ASCII"));
 
         StringBuilder sb = new StringBuilder();
@@ -83,19 +102,30 @@ class Cache {
         return sb.toString();
     }
 
-    private File getFile(String imageLocal, int width, int height) throws UnsupportedEncodingException {
+    /**
+     * Gets the full path to the image in the cache at the specified width and
+     * height.
+     * @param imageLocal
+     * @param width
+     * @param height
+     * @return
+     * @throws UnsupportedEncodingException 
+     */
+    private static File getFile(String cacheDirectory, String imageLocal, 
+            int width, int height) 
+            throws UnsupportedEncodingException {
 
-        // Create the cached file based on the base 32 encoding of the 
-        // local image file plus the width and height.
+        // Create the cached cacheFile based on the base 32 encoding of the 
+        // local image cacheFile plus the width and height.
         File file = new File(String.format(
                 "%s\\%s\\%s\\%s.%s",
-                tmpDir,
+                cacheDirectory,
                 width,
                 height,
                 getEncodedFile(imageLocal),
                 imageLocal.substring(imageLocal.length() - 3)));
 
-        // Make sure the directory is created before the file is returned for
+        // Make sure the directory is created before the cacheFile is returned for
         // use.
         File parent = file.getParentFile();
         if (parent.exists() == false) {

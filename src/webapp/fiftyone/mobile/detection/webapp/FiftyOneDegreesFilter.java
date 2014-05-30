@@ -34,12 +34,7 @@ import javax.servlet.http.HttpSession;
  * ********************************************************************* */
 public class FiftyOneDegreesFilter implements Filter {
 
-    private final Bandwidth bandwidth;
-    private final Feature feature;
-
     public FiftyOneDegreesFilter() {
-        bandwidth = new Bandwidth();
-        feature = new Feature();
     }
 
     @Override
@@ -47,18 +42,26 @@ public class FiftyOneDegreesFilter implements Filter {
     }
 
     @Override
-    public void doFilter(ServletRequest req, ServletResponse resp,
+    public void doFilter(ServletRequest request, ServletResponse response,
             FilterChain chain) throws IOException, ServletException {
-        HttpServletRequest request = (HttpServletRequest) req;
-        HttpSession session = request.getSession();
-
-        Cookie[] cookies = request.getCookies();
-        if (cookies != null) {
-            bandwidth.process(request, (HttpServletResponse) resp, session, cookies);
-            feature.process(request, session, cookies);
+        
+        HttpServletRequest httpRequest = (HttpServletRequest)request;
+        if (Bandwidth.getJavascript(httpRequest) != null) {
+            HttpSession session = httpRequest.getSession();
+            Cookie[] cookies = httpRequest.getCookies();
+            String ServletPath = httpRequest.getServletPath();
+            
+            if(!ServletPath.equals("/51D")) {
+                if (cookies != null && session != null) {
+                    Bandwidth.process(
+                            (HttpServletRequest)request, 
+                            (HttpServletResponse)response,
+                            session,
+                            cookies);
+                }
+            }
+            chain.doFilter(request, response);
         }
-
-        chain.doFilter(req, resp);
     }
 
     @Override
