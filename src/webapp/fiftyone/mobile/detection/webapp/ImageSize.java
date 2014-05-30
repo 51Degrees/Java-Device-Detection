@@ -1,75 +1,34 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package fiftyone.mobile.detection.webapp;
 
-/**
+/* *********************************************************************
+ * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
+ * Copyright 2014 51Degrees Mobile Experts Limited, 5 Charlotte Close,
+ * Caversham, Reading, Berkshire, United Kingdom RG4 7BY
+ * 
+ * This Source Code Form is the subject of the following patent 
+ * applications, owned by 51Degrees Mobile Experts Limited of 5 Charlotte
+ * Close, Caversham, Reading, Berkshire, United Kingdom RG4 7BY: 
+ * European Patent Application No. 13192291.6; and 
+ * United States Patent Application Nos. 14/085,223 and 14/085,301.
  *
- * @author tom
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0.
+ * 
+ * If a copy of the MPL was not distributed with this file, You can obtain
+ * one at http://mozilla.org/MPL/2.0/.
+ * 
+ * This Source Code Form is "Incompatible With Secondary Licenses", as
+ * defined by the Mozilla Public License, v. 2.0.
+ * ********************************************************************* */
+
+/**
+ * Dimensions of the image being manipulated.
  */
-public class ImageSize {
-
-    private int width;
-    private int height;
-    private final int maxWidth;
-    private final int maxHeight;
-    private final int factor;
-
-    public ImageSize(final int width, final int height, final int maxWidth, final int maxHeight, final int factor) {
+class Size {
+    int width;
+    int height;
+    Size(int width, int height) {
         this.width = width;
         this.height = height;
-        this.maxWidth = maxWidth;
-        this.maxHeight = maxHeight;
-        this.factor = factor;
-    }
-
-    public int getWidth() {
-        return width;
-    }
-
-    public int getHeight() {
-        return height;
-    }
-
-    public void resolveSize() {
-        // Check that no dimensions are above the specifed max.
-        if (height > maxHeight || width > maxWidth) {
-            if (height > width) {
-                resolveWidth();
-                resolveHeight();
-            } else {
-                resolveHeight();
-                resolveWidth();
-            }
-        }
-
-        // Level size with factor.
-        height = factor * (int) Math.floor((double) height / factor);
-        width = factor * (int) Math.floor((double) width / factor);
-    }
-
-    /// <summary>
-    /// Adjust the height of the image so that it is not larger than the
-    /// maximum allowed height.
-    /// </summary>
-    private void resolveHeight() {
-        if (height > maxHeight) {
-            double ratio = (double) maxHeight / (double) height;
-            height = maxHeight;
-            width = (int) ((double) height * ratio);
-        }
-    }
-
-    /// <summary>
-    /// Adjust the width of the image so that it is not larger than the
-    /// maximum allowed width.
-    /// </summary>
-    private void resolveWidth() {
-        if (width > maxWidth) {
-            double ratio = (double) maxWidth / (double) width;
-            width = maxWidth;
-            height = (int) ((double) height * ratio);
-        }
     }
 }

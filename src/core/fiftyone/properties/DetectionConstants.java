@@ -66,7 +66,10 @@ public class DetectionConstants {
      * Resource name of the embedded data file.
      */
     public static final String EMBEDDED_DATA_RESOURCE_NAME = "51Degrees-Lite.dat";
-    public static final String AUTO_UPDATE_URL = "https://51degrees.mobi/Products/Downloads/Premium.aspx";
+    /**
+     * URL for the service that provides automatic updates of device data.
+     */
+    public static final String AUTO_UPDATE_URL = "https://51degrees.com/Products/Downloads/Premium.aspx";
     /**
      * The amount of free memory, in bytes, that the JVM must have available
      * before performing a data update.
@@ -76,14 +79,18 @@ public class DetectionConstants {
      * Regular expression used to validate License Keys.
      */
     public static final Pattern LICENSE_KEY_VALIDATION_REGEX = Pattern.compile("^[A-Z\\d]+$");
-
-	/**
-	 * The major version of the API.
-	 */
-	public static final int MAJOR_VERSION = 3;
-
-	/**
-	 * The minor version of the API.
-	 */
-	public static final int MINOR_VERSION = 0;
+    /**
+     * HTTP header for the user agent.
+     */
+    public static final String USER_AGENT_HEADER = "User-Agent";
+    /**
+     * Array of HTTP headers that represent the useragent string of the device
+     * rather than the browser.
+     */
+    public static final String[] DEVICE_USER_AGENT_HEADERS = new String[]{
+        "Device-Stock-UA",
+        "x-Device-User-Agent",
+        "X-Device-User-Agent",
+        "X-OperaMini-Phone-UA"
+    };
 }

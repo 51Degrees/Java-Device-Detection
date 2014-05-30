@@ -1,9 +1,6 @@
 package fiftyone.mobile.detection.webapp;
 
-import java.io.File;
 import java.io.IOException;
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -38,18 +35,6 @@ public final class FiftyOneDegreesServlet extends HttpServlet {
             .getLogger(FiftyOneDegreesServlet.class);
     private static final String JAVASCRIPT_CORE = "/core.js";
     private static final String JAVASCRIPT_FEATURES = "/features.js";
-    private JavascriptProvider javascriptProvider;
-    private ImageOptimizer imageResizer;
-
-    @Override
-    public void init(ServletConfig config) throws ServletException {
-        super.init(config);
-        javascriptProvider = new JavascriptProvider(getServletContext());
-        imageResizer = new ImageOptimizer(config.getServletContext(),
-                new Cache((File) getServletContext().getAttribute(
-                ServletContext.TEMPDIR)));
-        logger.info("init");
-    }
 
     @Override
     protected void doGet(HttpServletRequest request,
@@ -58,13 +43,14 @@ public final class FiftyOneDegreesServlet extends HttpServlet {
         // Check the path information to find the resource being requested.
         String pathInfo = request.getPathInfo();
         if (JAVASCRIPT_CORE.equals(pathInfo)) {
-            javascriptProvider.provide(request, response);
+            JavascriptProvider.sendCoreJavaScript(request, response);
         } else if (JAVASCRIPT_FEATURES.equals(pathInfo)) {
-            javascriptProvider.provideFeatures(request, response);
-        } else if (pathInfo.endsWith("png")
-                || pathInfo.endsWith("jpg")
-                || pathInfo.endsWith("gif")) {
-            imageResizer.image(request, response);
+            JavascriptProvider.sendFeatureJavaScript(request, response);
+        } else if (
+                pathInfo.toLowerCase().endsWith("jpg") ||
+                pathInfo.toLowerCase().endsWith("png") ||
+                pathInfo.toLowerCase().endsWith("gif")) {
+            ImageOptimizer.sendImage(request, response);
         }
     }
 }

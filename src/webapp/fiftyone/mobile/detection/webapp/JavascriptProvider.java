@@ -1,22 +1,22 @@
 package fiftyone.mobile.detection.webapp;
 
-import fiftyone.mobile.detection.Match;
+import fiftyone.mobile.detection.Dataset;
 import fiftyone.mobile.detection.entities.Property;
 import fiftyone.mobile.detection.entities.Property.PropertyValueType;
-import fiftyone.mobile.detection.entities.Value;
-import fiftyone.mobile.detection.entities.Values;
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.commons.codec.binary.Base64;
 
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
@@ -40,65 +40,23 @@ import javax.servlet.http.HttpServletResponse;
  * ********************************************************************* */
 class JavascriptProvider {
 
-    private static String stringJoin(String seperator, List<String> strings) {
-        String value;
-        StringBuilder stringBuilder = new StringBuilder();
-        for (int i = 0; i < strings.size(); i++) {
-            stringBuilder.append(strings.get(i));
-            if (i < strings.size() - 1) {
-                stringBuilder.append(seperator);
-            }
-        }
-        value = stringBuilder.toString();
-        return value;
-    }
-    private ServletContext servletContext;
     private static final int DEFAULT_BUFFER_SIZE = 10240;
 
-    public JavascriptProvider(ServletContext servletContext) {
-        this.servletContext = servletContext;
-    }
-
-    public void provide(HttpServletRequest request, HttpServletResponse response)
-            throws IOException {
-
-        WebProvider provider = ((FiftyOneDegreesListener) servletContext
-                .getAttribute(Constants.WEB_PROVIDER_KEY)).getProvider();
-
-        StringBuilder javascript = new StringBuilder();
-
-        Map<String, String[]> results = provider.getResults(request);
-        String fODPO[] = results.get("JavascriptHardwareProfile");
-        if (fODPO != null) {
-            javascript
-                    .append("function FODPO() {{ var profileIds = new Array(); ");
-            javascript.append(fODPO[0]);
-            javascript
-                    .append(" document.cookie = \"51D_ProfileIds=\" + profileIds.join(\"|\"); }}");
-            javascript.append("\r");
-        }
-        String fODBW[] = results.get("JavascriptBandwidth");
-        String fODIO[] = results.get("JavascriptImageOptimiser");
-        if (fODBW != null) {
-            javascript.append(fODBW[0]);
-            javascript.append("\r");
-        }
-        if (fODIO != null) {
-            javascript.append(fODIO[0]);
-        }
-
+    static void sendJavaScript(
+            HttpServletRequest request, HttpServletResponse response, 
+            Dataset dataSet, StringBuilder javascript) throws IOException {
+        
         response.reset();
-
         response.setContentType("application/x-javascript");
         response.setCharacterEncoding("UTF-8");
         response.setHeader("Vary", "User-Agent");
         response.setHeader("Cache-Control", "public");
-        response.setHeader("Expires", provider.getNextUpdate().toString());
-        response.setHeader("Last-Modified", provider.getPublished().toString());
+        response.setHeader("Expires", dataSet.nextUpdate.toString());
+        response.setHeader("Last-Modified", dataSet.published.toString());
         try {
-            response.setHeader("ETag", eTagHash(provider, request));
+            response.setHeader("ETag", eTagHash(dataSet, request));
         } catch (Exception ex) {
-            // Nothing to do.
+            // The response doesn't support eTags. Nothing we can do.
         }
         response.setBufferSize(DEFAULT_BUFFER_SIZE);
         response.setHeader("Content-Length",
@@ -108,98 +66,179 @@ class JavascriptProvider {
         response.getOutputStream().flush();
         response.getOutputStream().close();
     }
+    
+    static void sendCoreJavaScript(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
 
-    public void provideFeatures(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        WebProvider provider = ((FiftyOneDegreesListener) servletContext
-                .getAttribute(Constants.WEB_PROVIDER_KEY)).getProvider();
+        StringBuilder javascript = new StringBuilder(
+                "// Copyright 51 Degrees Mobile Experts Limited\r\n");
 
-        Set<String> requestedProperties = null;
-        String query = request.getQueryString();
-        if (query != null) {
-            requestedProperties = new HashSet<String>(Arrays.asList(query.split("&")));
+        
+        String fodIo = ImageOptimizer.getJavascript(request);
+        if(fodIo != null) {
+            javascript.append(fodIo);
         }
-        final Match match = provider.getResult(request);
+        String fodBw = Bandwidth.getJavascript(request);
+        if(fodBw != null) {
+            javascript.append(fodBw);
+        }
+        String fodPo = ProfileOverride.getJavascript(request);
+        if(fodPo != null) {
+            javascript.append(fodPo);
+        }
+        
+        sendJavaScript(
+                request, 
+                response, 
+                WebProvider.getActiveProvider(
+                    request.getServletContext()).dataSet,
+                javascript);
+    }
 
-        final List<String> pairs = new ArrayList<String>();
-        for (Property property : provider.dataSet.properties) {
-            if (property.valueType != PropertyValueType.JAVASCRIPT) {
-                if (requestedProperties == null
-                        || (requestedProperties != null && requestedProperties.contains(property.getName()))) {
-                    Values values = match.getValues(property);
-                    pairs.add(getJavascriptPair(property, values));
+    /**
+     * Responds with the JavaScript listing the featured properties and values.
+     * @param request
+     * @param response
+     * @throws IOException 
+     */
+    static void sendFeatureJavaScript(HttpServletRequest request, HttpServletResponse response) 
+            throws IOException {
+        
+        StringBuilder javascript = new StringBuilder(
+                "// Copyright 51 Degrees Mobile Experts Limited\r\n");
+        Dataset dataSet = WebProvider.getActiveProvider(request.getServletContext()).dataSet;
+        final Map<String, String[]> results = WebProvider.getResult(request);
+        List<String> features = new ArrayList<String>();
+        
+        String query = request.getQueryString();
+        if (query == null) {
+            for(Property property : dataSet.properties) {
+                if (property.valueType != PropertyValueType.JAVASCRIPT) {
+                    getFeatureJavaScript(results, features, property);
                 }
             }
         }
-
-        final String output = String.format("var FODF = {%s};", stringJoin(", ", pairs));
-
-        response.reset();
-
-        response.setContentType("application/x-javascript");
-        response.setCharacterEncoding("UTF-8");
-        response.setHeader("Vary", "User-Agent");
-        response.setHeader("Cache-Control", "public");
-        response.setHeader("Expires", provider.getNextUpdate().toString());
-        response.setHeader("Last-Modified", provider.getPublished().toString());
-        try {
-            response.setHeader("ETag", eTagHash(provider, request));
-        } catch (Exception ex) {
-            // Nothing to do.
+        else {
+            Set<String> requestedProperties = 
+                    new HashSet<String>(Arrays.asList(query.split("&")));
+            for(Property property : dataSet.properties) {
+                if (property.valueType != PropertyValueType.JAVASCRIPT) {
+                    for(String name : requestedProperties) {
+                        if (name.equalsIgnoreCase(property.getName())) {
+                            getFeatureJavaScript(results, features, property);
+                        }
+                    }
+                }
+            }
         }
-        response.setBufferSize(DEFAULT_BUFFER_SIZE);
-        response.setHeader("Content-Length",
-                Integer.toString(output.length()));
-
-        response.getOutputStream().println(output);
-        response.getOutputStream().flush();
-        response.getOutputStream().close();
+                
+        javascript.append(String.format("var FODF={%s};", 
+            stringJoin(",", features)));
+        
+        sendJavaScript(
+            request, 
+            response, 
+            WebProvider.getActiveProvider(
+                request.getServletContext()).dataSet,
+            javascript);        
     }
 
-    /// <summary>
-    /// Adds the value for the property provided to the list of features.
-    /// </summary>
-    /// <param name="match"></param>
-    /// <param name="features"></param>
-    /// <param name="property"></param>
-    private static String getJavascriptPair(Property property, Values values) throws IOException {
-        List<String> valueStrs = new ArrayList<String>();
-        for (Value value : values) {
-            String valueStr;
+    private static void getFeatureJavaScript(
+            Map<String, String[]> results, List<String> features, Property property) throws IOException {
+        String[] values = results.get(property.getName());
+        if (values != null && values.length > 0) {
             switch (property.valueType) {
                 case BOOL:
-                    valueStr = Boolean.toString(value.toBool());
+                    try {
+                        features.add(String.format(
+                                "%s:%s",
+                                property.getName(),
+                                Boolean.parseBoolean(values[0]) ? "true" : "false"));
+                    } catch (NumberFormatException ex) {
+                        // Ignore the property as there isn't a value that
+                        // converts to a boolean.
+                    }
                     break;
                 case INT:
+                    try {
+                        features.add(String.format(
+                                "%s:%i",
+                                property.getName(),
+                                Double.parseDouble(values[0])));
+                    } catch (NumberFormatException ex) {
+                        // Ignore the property as there isn't a value that
+                        // converts to a boolean.
+                    }                 
                 case DOUBLE:
-                    valueStr = Double.toString(value.toDouble());
+                    try {
+                        features.add(String.format(
+                                "%s:%s",
+                                property.getName(),
+                                Double.parseDouble(values[0])));
+                    } catch (NumberFormatException ex) {
+                        // Ignore the property as there isn't a value that
+                        // converts to a boolean.
+                    }
                     break;
                 default:
-                    valueStr = String.format("\"%s\"", value.getName());
+                    features.add(String.format(
+                            "%s:\"%s\"",
+                            property.getName(),
+                            stringJoin(fiftyone.properties.DetectionConstants.VALUE_SEPARATOR, values)));
                     break;
             }
-            valueStrs.add(valueStr);
         }
-        String value;
-        if (valueStrs.size() > 1) {
-            value = String.format("[%s]", stringJoin(", ", valueStrs));
-        } else {
-            value = valueStrs.get(0);
-        }
-        String pair = String.format("%s:%s", property.getName(), value);
-        return pair;
     }
-
-    @SuppressWarnings("deprecation")
-    private String eTagHash(WebProvider provider, HttpServletRequest request) {
-        Date published = provider.getPublished();
-        Integer year = published.getYear();
-        Integer month = published.getMonth();
-        Integer day = published.getDay();
-        String userAgent = request.getHeader("User-Agent");
-        String queryString = request.getQueryString();
-
-        return Integer.toHexString(year.hashCode() + month.hashCode()
-                + day.hashCode() + userAgent.hashCode()
-                + queryString == null ? 0 : queryString.hashCode());
+    
+    /**
+     * Returns a base 64 encoded version of the hash for the core JavaScript
+     * being returned.
+     * @param dataSet providing the JavaScript properties.
+     * @param request
+     * @return 
+     */
+    private static String eTagHash(Dataset dataSet, HttpServletRequest request) 
+            throws IOException, NoSuchAlgorithmException {
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        DataOutputStream dos = new DataOutputStream(bos);
+        dos.writeLong(dataSet.published.getTime());
+        dos.writeChars(request.getHeader("User-Agent"));
+        dos.writeChars(request.getQueryString());
+        return Base64.encodeBase64String(
+                MessageDigest.getInstance("MD5").digest(bos.toByteArray()));
+    }
+    
+    /**
+     * Joins the array of strings separated by the separator provided.
+     * @param seperator
+     * @param values
+     * @return 
+     */
+    private static String stringJoin(String seperator, String[] values) {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int i = 0; i < values.length; i++) {
+            stringBuilder.append(values[i]);
+            if (i < values.length - 1) {
+                stringBuilder.append(seperator);
+            }
+        }
+        return stringBuilder.toString();
+    }
+    
+    /**
+     * Joins the list of strings separated by the separator provided.
+     * @param seperator
+     * @param values
+     * @return 
+     */
+    private static String stringJoin(String seperator, List<String> values) {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int i = 0; i < values.size(); i++) {
+            stringBuilder.append(values.get(i));
+            if (i < values.size() - 1) {
+                stringBuilder.append(seperator);
+            }
+        }
+        return stringBuilder.toString();
     }
 }

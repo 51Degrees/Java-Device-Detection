@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package fiftyone.mobile.detection.webapp;
 
 import fiftyone.mobile.detection.AutoUpdateException;
@@ -16,23 +12,38 @@ import java.util.TimerTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
+/* *********************************************************************
+ * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
+ * Copyright 2014 51Degrees Mobile Experts Limited, 5 Charlotte Close,
+ * Caversham, Reading, Berkshire, United Kingdom RG4 7BY
+ * 
+ * This Source Code Form is the subject of the following patent 
+ * applications, owned by 51Degrees Mobile Experts Limited of 5 Charlotte
+ * Close, Caversham, Reading, Berkshire, United Kingdom RG4 7BY: 
+ * European Patent Application No. 13192291.6; and 
+ * United States Patent Application Nos. 14/085,223 and 14/085,301.
  *
- * @author tom
- */
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0.
+ * 
+ * If a copy of the MPL was not distributed with this file, You can obtain
+ * one at http://mozilla.org/MPL/2.0/.
+ * 
+ * This Source Code Form is "Incompatible With Secondary Licenses", as
+ * defined by the Mozilla Public License, v. 2.0.
+ * ********************************************************************* */
+
 public class AutoUpdate extends TimerTask {
 
-    private final FiftyOneDegreesListener listener;
     private final String masterFilePath;
     private String[] licenseKeys;
     final private static Logger logger = LoggerFactory
             .getLogger(AutoUpdate.class);
 
-    public AutoUpdate(final FiftyOneDegreesListener listener,
+    public AutoUpdate(
             final String masterFilePath,
             final List<String> licenseKeys) {
         super();
-        this.listener = listener;
         this.masterFilePath = masterFilePath;
         this.licenseKeys = licenseKeys.toArray(new String[licenseKeys.size()]);
     }
@@ -41,21 +52,30 @@ public class AutoUpdate extends TimerTask {
     public void run() {
         if (shouldUpdate()) {
             try {
-                boolean success = fiftyone.mobile.detection.AutoUpdate.update(licenseKeys, masterFilePath);
+                boolean success = fiftyone.mobile.detection.AutoUpdate.update(
+                        licenseKeys, masterFilePath);
                 if (success) {
                     SimpleDateFormat dateFormat = new SimpleDateFormat("y-MMM-d");
                     final File masterFile = new File(masterFilePath);
                     Date fileDate = new Date(masterFile.lastModified());
                     String dateStr = dateFormat.format(fileDate);
-                    logger.info(String.format("Automatically updated binary data file '%s' with version "
-                            + "published on the '%s'.",
+                    logger.info(String.format(
+                            "Automatically updated binary data file '%s' with "
+                            + " version published on the '%s'.",
                             masterFile,
                             dateStr));
-
-                    listener.refreshWebProvider();
+                    WebProvider.refresh();
                 }
             } catch (AutoUpdateException ex) {
-                logger.debug(ex.getMessage());
+                logger.warn(String.format(
+                        "Exception auto updating file '%s'",
+                        masterFilePath),
+                        ex);
+            } catch (Exception ex) {
+                logger.warn(String.format(
+                        "Exception auto updating file '%s'",
+                        masterFilePath),
+                        ex);                
             }
         }
     }

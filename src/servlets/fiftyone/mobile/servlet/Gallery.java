@@ -88,9 +88,9 @@ public class Gallery extends BaseServlet {
         // Display the name and published date of the dataset being used.
         String dataInfo = String.format(
                 "<h4 class=\"heading\">'%s' data published on '%tc' containing '%d' properties in use</h4>",
-                super.getProvider().dataSet.getName(),
-                super.getProvider().dataSet.published,
-                super.getProvider().dataSet.getProperties().size());
+                super.getProvider(request).dataSet.getName(),
+                super.getProvider(request).dataSet.published,
+                super.getProvider(request).dataSet.getProperties().size());
 
         String mainImage = null;
         if (request.getQueryString() != null) {
@@ -116,7 +116,7 @@ public class Gallery extends BaseServlet {
                 for (String image : images) {
                     if (image.endsWith(".jpg")) {
                         out.printf(
-                                "<div style=\"width: 200px;\"><a href=\"?image=%s\"><img src=\"51D%s?w=auto\"/></a><p>%s</P></div>",
+                                "<div style=\"width: 200px;\"><a href=\"?image=%s\"><img src=\"51D/Empty.gif\" data-src=\"51D%s?w=auto\"/></a><p>%s</P></div>",
                                 image, image, image);
                     }
                 }

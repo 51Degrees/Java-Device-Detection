@@ -292,7 +292,7 @@ public class Dataset implements Disposable {
         return name;
     }
     protected final int nameOffset;
-    protected String name;
+    private String name;
 
     /**
      * The name of the property map used to create the dataset.
@@ -571,7 +571,7 @@ public class Dataset implements Disposable {
     }
 
     @Override
-    public void dispose() throws IOException {
+    public void dispose() {
         disposed = true;
         if (strings != null) {
             strings.dispose();

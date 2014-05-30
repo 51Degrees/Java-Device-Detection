@@ -24,10 +24,19 @@ package fiftyone.mobile.detection.webapp;
 public class Constants {
 
     /**
+     * The version of the API to report in usage sharing.
+     */
+    public static final String VERSION = "3.1.2.16";
+    
+    /**
      * Context parameter in the web.xml file for the file path.
      */
     public static final String BINARY_FILE_PATH = "BINARY_FILE_PATH";
     
+    /**
+     * Context parameter in the web.xml file for the mode used to load
+     * the data file.
+     */
     public static final String MEMORY_MODE = "MEMORY_MODE";
     
     /**
@@ -41,12 +50,6 @@ public class Constants {
     public static final String URL ="http://devices.51degrees.mobi/new.ashx";
 
     /**
-     * The key in the servlet contexts attributes collection to return this
-     * instance of the factory.
-     */
-    public static final String WEB_PROVIDER_KEY = "51D_LISTENER";
-
-    /**
      * Number of new device requests before the share usage information is
      * sent to 51Degrees.
      */
@@ -56,11 +59,6 @@ public class Constants {
      * Timeout in milliseconds before usage sharing is abandoned.
      */
     public static final int NEW_URL_TIMEOUT = 10000;  
-
-    /**
-     * The version of the API to report in usage sharing.
-     */
-    public static final String VERSION = "3.0.0.0";
     
     public static final String IMAGE_MAX_WIDTH = "IMAGE_MAX_WIDTH";
     
@@ -74,14 +72,35 @@ public class Constants {
     
     public static final String IMAGE_HEIGHT_PARAM = "IMAGE_HEIGHT_PARAM";
     
-    public static final int AUTO_UPDATE_WAIT = 10 * 60;
+    /**
+     * The number of seconds to wait between checks for new data files at 
+     * 51Degrees.
+     */
+    public static final int AUTO_UPDATE_WAIT = 30 * 60;
     
+    /**
+     * The number of seconds to wait before performing the first check for
+     * a new data file at 51Degrees.
+     */
     public static final int AUTO_UPDATE_DELAYED_START = 10;
     
+    /**
+     * The number of seconds to wait between checks for new data files on the
+     * disk. Another process may have performed the
+     * update.
+     */
     public static final int FILE_CHECK_WAIT = 2 * 60;
     
+    /**
+     * The number of seconds to wait before performing the first check for
+     * a new data file on the disk. Another process may have performed the
+     * update.
+     */
     public static final int FILE_CHECK_DELAYED_START = 5 * 60;
     
+    /**
+     * Number of seconds between the cache being serviced.
+     */
     public static final int CACHE_SERVICE_INTERVAL = 60;
 
     /**

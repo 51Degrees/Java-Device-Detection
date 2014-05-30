@@ -349,12 +349,14 @@ public class Match {
      * @throws UnsupportedEncodingException
      */
     private void init(String targetUserAgent) throws UnsupportedEncodingException {
-        if (targetUserAgent.length() > 0) {
+        if (targetUserAgent != null && targetUserAgent.length() > 0) {
             this.targetUserAgentArray = targetUserAgent.getBytes("US-ASCII");
         } else {
             this.targetUserAgentArray = new byte[0];
         }
-        this.targetUserAgent = targetUserAgent;
+        
+        // Null check to ensure no down stream problems.
+        this.targetUserAgent = targetUserAgent == null ? "" : targetUserAgent;
 
         resetNextCharacterPositionIndex();
     }
@@ -732,7 +734,8 @@ public class Match {
         if (results == null) {
             synchronized (this) {
                 if (results == null) {
-                    Map<String, String[]> newResults = new HashMap<String, String[]>();
+                    Map<String, String[]> newResults =
+                            new HashMap<String, String[]>();
 
                     // Add the properties and values first.
                     for (Profile profile : getProfiles()) {
@@ -746,8 +749,8 @@ public class Match {
                                     }
                                 }
                                 newResults.put(
-                                        property.getName(),
-                                        strings.toArray(new String[strings.size()]));
+                                    property.getName(),
+                                    strings.toArray(new String[strings.size()]));
                             }
                         }
                     }

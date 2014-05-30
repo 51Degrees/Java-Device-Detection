@@ -3,7 +3,6 @@ package fiftyone.mobile.detection.entities.stream;
 import fiftyone.mobile.detection.Disposable;
 import fiftyone.mobile.detection.factories.BaseEntityFactory;
 import fiftyone.properties.DetectionConstants;
-import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
@@ -30,10 +29,10 @@ import java.util.concurrent.atomic.AtomicInteger;
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
 /**
- * Many of the entities used by the detector data set are requested repeatably.
+ * Many of the entities used by the detector data set are requested repeatedly.
  * The cache improves memory usage and reduces strain on the garbage collector
  * by storing previously requested entities for a short period of time to avoid
- * the need to refetch them from the underlying storage mechanisim. <p> The
+ * the need to re-fetch them from the underlying storage mechanism. <p> The
  * cache works by maintaining two dictionaries of entities keyed on their offset
  * or index. The inactive list contains all items requested since the cache was
  * created or last serviced. The active list contains all the items currently in
@@ -92,7 +91,7 @@ public class Cache<T> implements Disposable {
     }
 
     @Override
-    public void dispose() throws IOException {
+    public void dispose() {
         cacheServiceTimer.cancel();
     }
 }

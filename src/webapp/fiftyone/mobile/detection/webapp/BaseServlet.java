@@ -1,15 +1,10 @@
 package fiftyone.mobile.detection.webapp;
 
-import fiftyone.mobile.detection.Match;
-import fiftyone.mobile.detection.entities.Values;
 import java.io.IOException;
-import java.util.List;
-import javax.servlet.ServletConfig;
+import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
@@ -40,42 +35,6 @@ import org.slf4j.LoggerFactory;
 public class BaseServlet extends HttpServlet {
 
     /**
-     * Used to store the result for the current request in the
-     * HttpServletRequest's attribute collection.
-     */
-    private static final String RESULT_ATTIBUTE = "51D_RESULT";
-    /**
-     * The factory class used to access the current provider used across all
-     * servlets.
-     */
-    private FiftyOneDegreesListener listener = null;
-    /**
-     * Creates a logger for this class
-     */
-    private final Logger logger = LoggerFactory.getLogger(BaseServlet.class);
-
-    /**
-     * Gets the factory being used by this servlet context.
-     *
-     * @param sc
-     * @throws ServletException
-     */
-    @Override
-    public void init(final ServletConfig sc) throws ServletException {
-        super.init();
-        this.listener = (FiftyOneDegreesListener) sc.getServletContext().
-                getAttribute(Constants.WEB_PROVIDER_KEY);
-        if (this.listener != null) {
-            logger.info("51Degrees.mobi Servlet Initialised");
-        } else {
-            throw new ServletException(
-                    "51Degrees.mobi listener is not available. "
-                    + "Check the class fiftyone.mobile.detection.webapp.FiftyOneDegreesListener "
-                    + "is registered in the web.xml file.");
-        }
-    }
-
-    /**
      * Returns the result set associated with the request provided. If this is
      * the first time the method is called the result will be stored in the
      * HttpServletRequest's attribute collection so that it does not need to be
@@ -85,14 +44,18 @@ public class BaseServlet extends HttpServlet {
      * @return a set of results containing access to properties.
      * @throws IOException
      */
-    protected Match getResult(final HttpServletRequest request) throws ServletException, IOException {
-        // Check to see if the result has already been fetched.
-        Object previousResult = request.getAttribute(RESULT_ATTIBUTE);
-        if (previousResult instanceof Match == false) {
-            previousResult = listener.getProvider().getResult(request);
-            request.setAttribute(RESULT_ATTIBUTE, previousResult);
-        }
-        return (Match) previousResult;
+    protected Map<String, String[]> getResult(final HttpServletRequest request) 
+            throws IOException {
+        return WebProvider.getResult(request);
+    }
+    
+    /**
+     * 
+     * @param request
+     * @return the active provider for the system.
+     */
+    protected WebProvider getProvider(final HttpServletRequest request) {
+        return WebProvider.getActiveProvider(request.getServletContext());
     }
 
     /**
@@ -106,11 +69,11 @@ public class BaseServlet extends HttpServlet {
     protected String getProperty(
             final HttpServletRequest request,
             final String propertyName) throws ServletException, IOException {
-        final Match result = getResult(request);
+        final Map<String, String[]> result = getResult(request);
         if (result != null) {
-            Values values = result.getValues(propertyName);
+            String[] values = result.get(propertyName);
             if (values != null) {
-                return values.toString();
+                return join(values);
             }
         }
         return null;
@@ -122,18 +85,14 @@ public class BaseServlet extends HttpServlet {
      * @param values list of values to join
      * @return single string comma separated
      */
-    protected String join(final List<String> values) {
+    protected String join(final String[] values) {
         final StringBuilder builder = new StringBuilder();
-        for (int i = 0; i < values.size(); i++) {
-            builder.append(values.get(i));
-            if (i + 1 < values.size()) {
+        for (int i = 0; i < values.length; i++) {
+            builder.append(values[i]);
+            if (i + 1 < values.length) {
                 builder.append(", ");
             }
         }
         return builder.toString();
-    }
-
-    public WebProvider getProvider() {
-        return listener.getProvider();
     }
 }

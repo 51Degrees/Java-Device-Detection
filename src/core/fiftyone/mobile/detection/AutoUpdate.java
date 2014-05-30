@@ -65,7 +65,7 @@ public class AutoUpdate {
             long lastModified = -1;
             if (oldDataFile.exists()) {
                 final Dataset oldDataset = StreamFactory.create(dataFilePath);
-                if (!oldDataset.name.contains("Lite")) {
+                if (!oldDataset.getName().contains("Lite")) {
                     lastModified = oldDataFile.lastModified();
                 }
             }
@@ -83,7 +83,8 @@ public class AutoUpdate {
                 if (dataFile.exists()) {
 
                     final Dataset currentDataSet = StreamFactory.create(dataFilePath);
-                    copyFile = newDataSet.published.getTime() > currentDataSet.published.getTime() || newDataSet.name != currentDataSet.name;
+                    copyFile = newDataSet.published.getTime() > currentDataSet.published.getTime() || 
+                               newDataSet.getName() != currentDataSet.getName();
                 }
                 // Check this is new data based on publish data and number of
                 // available properties.
@@ -174,7 +175,8 @@ public class AutoUpdate {
             "LicenseKeys=" + joinString("|", licenseKeys),
             "Download=True",
             "Type=BinaryV3"};
-        String url = String.format("%s?%s", DetectionConstants.AUTO_UPDATE_URL, joinString("&", parameters));
+        String url = String.format("%s?%s", DetectionConstants.AUTO_UPDATE_URL, 
+                joinString("&", parameters));
         return new URL(url);
     }
 
@@ -202,39 +204,27 @@ public class AutoUpdate {
      * unavailable, corrupt, older than the current data or not enough memory
      * was available. In that case the current data is used.
      */
-    public static boolean update(final String[] licenseKeys, String dataFilePath) throws AutoUpdateException {
+    public static boolean update(final String[] licenseKeys, String dataFilePath) 
+            throws AutoUpdateException {
 
         if (licenseKeys == null || licenseKeys.length == 0) {
-            throw new AutoUpdateException("Device data cannot be updated without a licence key.");
+            throw new AutoUpdateException(
+                    "Device data cannot be updated without a licence key.");
         }
-        // get roughly how much memory is available
-        final long usedMemory = Runtime.getRuntime().totalMemory()
-                - Runtime.getRuntime().freeMemory();
-        final long availableMemory = Runtime.getRuntime().maxMemory()
-                - usedMemory;
 
-        // only attempt an update if there is more than 100mb available
-        if (availableMemory < DetectionConstants.AUTO_UPDATE_REQUIRED_FREE_MEMORY) {
-            throw new AutoUpdateException("JVM does not have enough free memory to update. "
-                    + "Consider increasing the memory limit for your JVM.");
-        } else {
-            try {
-                // If a valid license key exists then proceed
-                final String[] validKeys = getValidKeys(licenseKeys);
-                if (validKeys.length > 0) {
-                    // Download the provider getting an instance of a new provider.
-                    final Dataset dataset = getNewDataset(validKeys, dataFilePath);
-                    if (dataset != null) {
-                        return true;
-                    }
-                } else {
-                    throw new AutoUpdateException("The license key(s) provided were invalid.");
-                }
-            } catch (OutOfMemoryError ex) {
-                throw new AutoUpdateException("Auto update could not complete as the process ran out "
-                        + "of memory. Try allocation the JVM with more memory: " + ex.getMessage());
+        // If a valid license key exists then proceed
+        final String[] validKeys = getValidKeys(licenseKeys);
+        if (validKeys.length > 0) {
+            // Download the provider getting an instance of a new provider.
+            final Dataset dataset = getNewDataset(validKeys, dataFilePath);
+            if (dataset != null) {
+                return true;
             }
+        } else {
+            throw new AutoUpdateException(
+                    "The license key(s) provided were invalid.");
         }
+        
         return false;
     }
 

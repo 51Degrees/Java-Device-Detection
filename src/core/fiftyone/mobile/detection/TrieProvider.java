@@ -268,7 +268,7 @@ public class TrieProvider implements Disposable {
      * Disposes of the pool assigned to the provider.
      */
     @Override
-    public void dispose() throws IOException {
+    public void dispose() {
         _pool.dispose();
     }
 

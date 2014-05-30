@@ -53,8 +53,12 @@ public class Source implements Disposable {
     }
 
     @Override
-    public void dispose() throws IOException {
-        fileInputStream.close();
+    public void dispose() {
+        try {
+            fileInputStream.close();
+        } catch (IOException ex) {
+            // Nothing we can do at this point. Ignore.
+        }
     }
 
     /**

@@ -12,13 +12,11 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import fiftyone.mobile.detection.Match;
 import fiftyone.mobile.detection.entities.Component;
 import fiftyone.mobile.detection.entities.Property;
 import fiftyone.mobile.detection.entities.Property.PropertyValueType;
-import fiftyone.mobile.detection.entities.Value;
-import fiftyone.mobile.detection.entities.Values;
 import fiftyone.mobile.detection.webapp.BaseServlet;
+import java.util.Map;
 
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
@@ -71,6 +69,25 @@ public class Example extends BaseServlet {
 	};
 	
     /**
+     * Joins the array of strings separated by the separator provided.
+     * @param seperator
+     * @param values
+     * @return 
+     */
+    private static String stringJoin(String seperator, String[] values) {
+        String value;
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int i = 0; i < values.length; i++) {
+            stringBuilder.append(values[i]);
+            if (i < values.length - 1) {
+                stringBuilder.append(seperator);
+            }
+        }
+        value = stringBuilder.toString();
+        return value;
+    }        
+        
+    /**
      * Returns a list item string in HTML.
      * 
      * @param property property the values relate to.
@@ -78,7 +95,7 @@ public class Example extends BaseServlet {
      * @param title true if a balloon title should be displayed.
      * @throws IOException 
      */
-    private String calculateItem(Property property, Values values, boolean title) throws IOException {
+    private String calculateItem(Property property, String[] values, boolean title) throws IOException {
         if (title == true) {
             // Display the final property and values.
             return String.format(
@@ -86,13 +103,13 @@ public class Example extends BaseServlet {
                 property.getDescription(),
                 property.getName(),
                 property.getName(),
-                values.toString());
+                stringJoin(", ", values));
             
         } else {
             return String.format(
                 "<tr class=\"item\"><td class=\"property\">%s:</td><td class=\"value\">%s</td></tr>",
                 property.getName(),
-                values.toString());
+                stringJoin(", ", values));
         }
     }
     
@@ -103,14 +120,14 @@ public class Example extends BaseServlet {
      * @param values list of image values.
      * @return HTML string for display.
      */
-    private String calculateImages(String propertyName, Values values) {
+    private String calculateImages(String propertyName, String[] values) {
         StringBuilder builder = new StringBuilder();
         builder.append("<tr class=\"item\">");
         builder.append(String.format(
             "<td class=\"property\">%s</td><td>",
             propertyName));
-        for(Value value : values) {
-            String[] elements = value.toString().split("\t");
+        for(String value : values) {
+            String[] elements = value.split("\t");
             if (elements.length == 2) {
             builder.append(String.format(
                 "<div class=\"image\"><img src=\"%s\"></img><div class=\"value\">%s</div></div>",
@@ -135,7 +152,7 @@ public class Example extends BaseServlet {
             final HttpServletRequest request, 
             final Component component) throws ServletException, IOException {
 
-        final Match result = super.getResult(request);
+        final Map<String, String[]> result = super.getResult(request);
         final boolean isMobile = "True".equals(super.getProperty(request, "IsMobile"));
 
         List<Property> properties = Arrays.asList(component.getProperties());
@@ -158,9 +175,9 @@ public class Example extends BaseServlet {
 		            if ("HardwareImages".equals(property.getName())) {
 		            	snippet = calculateImages(
 		                        property.getName(), 
-		                        result.getValues(property.getName()));
+		                        result.get(property.getName()));
 		            } else {
-		                final Values values = result.getValues(
+		                final String[] values = result.get(
 		                        property.getName());
 		                if (values != null) {
 		                	snippet = calculateItem(
@@ -217,13 +234,13 @@ public class Example extends BaseServlet {
         // Display the name and published date of the dataset being used.
         String dataInfo = String.format(
             "<h4 class=\"heading\">'%s' data published on '%tc' containing '%d' properties in use</h4>",
-            super.getProvider().dataSet.getName(),
-            super.getProvider().dataSet.published,
-            super.getProvider().dataSet.getProperties().size());
+            super.getProvider(request).dataSet.getName(),
+            super.getProvider(request).dataSet.published,
+            super.getProvider(request).dataSet.getProperties().size());
         
         // Display all the properties available.
         out.println("<table class=\"list\">");
-        for(Component component : super.getProvider().dataSet.components) {
+        for(Component component : super.getProvider(request).dataSet.components) {
         	printComponentProperties(out, request, component);
         }
         out.println("</table>");
