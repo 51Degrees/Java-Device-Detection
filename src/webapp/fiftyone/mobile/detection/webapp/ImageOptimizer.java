@@ -212,7 +212,7 @@ class ImageOptimizer {
         
         Size size = getRequiredSize(request);
         String cacheDirectory = String.format(
-                "%s\\cache",
+                "%s/cache",
                 request.getServletContext().getRealPath("WEB-INF"));
         
         if (size.width == 0 && size.height == 0) {

@@ -55,6 +55,15 @@ http://www.slf4j.org/license.html
 
 Changes:
 
+Version 3.1.3.2
+
+Bug fixes:
+
+Client side javascript no longer writes names with '/' characters in them which
+would cause parser errors. They are now stripped out completely.
+
+Fixed bug where Unix type systems would not cache images in the correct directory.
+
 Version 3.1.2.16
 
 Known Issues:

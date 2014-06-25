@@ -60,7 +60,7 @@ public class FiftyOneDegreesFilter implements Filter {
                             cookies);
                 }
             }
-        }
+        }    
         chain.doFilter(request, response);
     }
 
