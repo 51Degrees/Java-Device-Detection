@@ -95,7 +95,7 @@ class Cache {
             iteration++;
             startIndex = iteration * SPLIT_COUNT;
             if (startIndex < encoded.length()) {
-                sb.append("\\");
+                sb.append("/");
             }
         }
 
@@ -118,7 +118,7 @@ class Cache {
         // Create the cached cacheFile based on the base 32 encoding of the 
         // local image cacheFile plus the width and height.
         File file = new File(String.format(
-                "%s\\%s\\%s\\%s.%s",
+                "%s/%s/%s/%s.%s",
                 cacheDirectory,
                 width,
                 height,

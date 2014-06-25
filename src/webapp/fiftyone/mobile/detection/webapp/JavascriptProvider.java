@@ -152,7 +152,7 @@ class JavascriptProvider {
                     try {
                         features.add(String.format(
                                 "%s:%s",
-                                property.getName(),
+                                property.getName().replace("/", ""),
                                 Boolean.parseBoolean(values[0]) ? "true" : "false"));
                     } catch (NumberFormatException ex) {
                         // Ignore the property as there isn't a value that
