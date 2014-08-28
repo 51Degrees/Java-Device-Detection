@@ -127,7 +127,7 @@ public class TrieProvider implements Disposable {
      * Constructs a new instance of a tree provider.
      *
      * @param copyright The copyright notice for the data file.
-     * @param Strings Array containing all Strings in the output.
+     * @param strings Array containing all Strings in the output.
      * @param properties Array of properties.
      * @param devices Array of devices.
      * @param lookupList Lookups data array.
