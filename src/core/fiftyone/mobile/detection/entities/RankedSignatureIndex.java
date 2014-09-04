@@ -2,6 +2,7 @@ package fiftyone.mobile.detection.entities;
 
 import fiftyone.mobile.detection.Dataset;
 import fiftyone.mobile.detection.readers.BinaryReader;
+import java.io.IOException;
 
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
@@ -40,5 +41,13 @@ public class RankedSignatureIndex extends BaseEntity {
             BinaryReader reader) {
         super(dataSet, index);
         signatureIndex = reader.readInt32();
+    }
+    
+    /**
+     * Sets the associated signatures rank property.
+     * @throws IOException 
+     */
+    public void init() throws IOException {
+        getDataSet().signatures.get(signatureIndex).rank = getIndex();
     }
 }
