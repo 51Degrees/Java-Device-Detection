@@ -497,6 +497,9 @@ public class Dataset implements Disposable {
         for (Value value : values) {
             value.init();
         }
+        for (RankedSignatureIndex rsi : rankedSignatureIndexes) {
+            rsi.init();
+        }
 
         // We no longer need the strings data structure as all dependent
         // data has been taken from it.

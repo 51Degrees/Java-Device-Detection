@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import fiftyone.mobile.detection.Dataset;
+import fiftyone.mobile.detection.ReadonlyList;
 import fiftyone.mobile.detection.SortedList;
 import fiftyone.mobile.detection.readers.BinaryReader;
 import fiftyone.properties.DetectionConstants;
@@ -112,6 +113,27 @@ public class Signature extends BaseEntity implements Comparable<Signature> {
     private Value[] values;
 
     /**
+     * Gets the rank, where a lower number means the signature is more popular, of
+     * the signature compared to other signatures.
+     * As the property uses the ranked signature indexes list to obtain the rank
+     * it will be comparatively slow compared to other methods the firs time
+     * the property is accessed.
+     * @return the rank of the signature compared to others
+     * @throws IOException 
+     */
+    public int getRank() throws IOException {
+        if (rank == -1) {
+            synchronized (this) {
+                if (rank == -1) {
+                    rank = getSignatureRank();
+                }
+            }
+        }
+        return rank;
+    }
+    int rank = -1;
+    
+    /**
      * The length in bytes of the signature.
      *
      * @throws IOException
@@ -127,6 +149,21 @@ public class Signature extends BaseEntity implements Comparable<Signature> {
         return _length;
     }
 
+    /**
+     * Gets the signature rank by iterating through the list of signature ranks.
+     * @return Rank compared to other signatures starting at 0.
+     */
+    private int getSignatureRank() throws IOException {
+        ReadonlyList<RankedSignatureIndex> rsi = 
+                getDataSet().rankedSignatureIndexes;
+        for(int rank = 0; rank < rsi.size(); rank++) {
+            if (rsi.get(rank).getSignatureIndex() == this.getIndex()) {
+                return rank;
+            }
+        }
+        return Integer.MAX_VALUE;
+    }
+    
     /**
      * @return the number of characters in the signature.
      * @throws IOException
