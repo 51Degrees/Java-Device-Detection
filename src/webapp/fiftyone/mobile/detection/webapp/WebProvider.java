@@ -391,7 +391,7 @@ public class WebProvider extends Provider implements Disposable {
             throws IOException {
         boolean hasOverrides = ProfileOverride.hasOverrides(request);
         Map<String, String[]> results = (Map<String, String[]>) request.getAttribute(RESULT_ATTIBUTE);
-        HttpSession session = request.getSession();
+        //HttpSession session = request.getSession();
 
         // If there are no results already for the request, or there are 
         // overrides from client JavaScript then get the updated/new results.
@@ -401,11 +401,6 @@ public class WebProvider extends Provider implements Disposable {
                 // processed them and added to the request attributes.
                 results = (Map<String, String[]>) request.getAttribute(RESULT_ATTIBUTE);
                 if (results == null || hasOverrides) {
-                    // See if there are results in the session from a previous
-                    // request.
-                    if (session != null && hasOverrides == false) {
-                        results = (Map<String, String[]>) session.getAttribute(RESULT_ATTIBUTE);
-                    }
 
                     if (results == null) {
                         // Get the match and store the list of properties and 
@@ -416,20 +411,13 @@ public class WebProvider extends Provider implements Disposable {
                             // Allow other feautre detection methods to override
                             // priofiles.
                             ProfileOverride.override(request, match);
-
-                            // Store the match results for future checks during the same
-                            // request.
-                            if (session != null) {
-                                session.setAttribute(RESULT_ATTIBUTE, match.getResults());
-                            }
+                            
                             request.setAttribute(RESULT_ATTIBUTE, match.getResults());
                             results = match.getResults();
                         }
                     }
                 }
             }
-        } else if (session != null) {
-            session.setAttribute(RESULT_ATTIBUTE, results);
         }
         return results;
     }
