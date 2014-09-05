@@ -7,7 +7,6 @@ import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +22,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
+import java.util.Date;
 import java.util.UUID;
 import javax.servlet.ServletContext;
 
@@ -238,28 +238,74 @@ public class WebProvider extends Provider implements Disposable {
                 binaryFilePath.getName(),
                 UUID.randomUUID().toString());
     }
-
-    /**
-     * Copies the source data file for use with a stream provider.
-     *
-     * @param binaryFilePath to the source data file
-     * @param tempDirectory
-     * @returns a temporary working file
-     */
-    private static String getTempWorkingFile(
-            File tempDirectory, File binaryFilePath)
-            throws FileNotFoundException, IOException {
-        String tempFilePath = null;
-        if (binaryFilePath.exists()) {
-            // Create a working temp file in the App_Data folder to enable the source
-            // file to be updated without stopping the web site.
-            tempFilePath = getTempFileName(tempDirectory, binaryFilePath);
-
-            // Copy the file to enable other processes to update it.
-            copyFile(binaryFilePath, tempFilePath);
-        }
-        return tempFilePath;
+    
+    private static Date getDataFileDate(String fileName) throws IOException {
+        Dataset dataset = StreamFactory.create(fileName);
+        return dataset.published;
     }
+    
+    /**
+     * Gets the file path of a temporary data file for use with a stream provider.
+     * 
+     * This method will create a file if one does not already exist.
+     * @param tempDirectory directory where temp files should be searched for
+     * and created.
+     * @param binaryFile the binary source file to get a temporary copy of.
+     * @returns a file path to a temporary working file.
+     */
+        private static String getTempWorkingFile(File tempDirectory, File binaryFile)
+                throws FileNotFoundException, IOException {
+            String tempFilePath = null;
+            if (binaryFile.exists())
+            {
+                String binaryFilePath = binaryFile.getAbsolutePath();
+                String binaryName = binaryFile.getName();
+                // Get the publish date of the master data file.
+                Date masterDate = getDataFileDate(binaryFilePath);
+
+                // Check if there are any other tmp files.
+                File[] files = tempDirectory.listFiles();
+                for (File file : files) {
+                    String filePath = file.getAbsolutePath();
+                    String fileName = file.getName();
+                    
+                    if(!filePath.equals(binaryFilePath) &&
+                    filePath.startsWith(binaryName) &&
+                        filePath.endsWith(".tmp"))
+                    {
+                        // Check if temp file matches date of the master file.
+                        try
+                        {
+                            Date tempDate = getDataFileDate(filePath);
+                            if (tempDate.equals(masterDate))
+                            {
+                                logger.info("Using existing temp data file with published data %s - \"%s\"",
+                                        tempDate.toString(),
+                                        filePath);
+                                return fileName;
+                            }
+                        }
+                        catch (Exception ex) // Exception may occur if file is not a 51Degrees file, no action is needed.
+                        {
+                            logger.info("Error while reading temporary data file \"%s\": %s",
+                                    filePath,
+                                    ex.getMessage());
+                        }
+                    }
+                }
+                
+                // No suitable temp file was found, create one in the
+                //App_Data folder to enable the source file to be updated
+                // without stopping the web site.
+                tempFilePath = getTempFileName(tempDirectory, binaryFile);
+
+                // Copy the file to enable other processes to update it.
+                copyFile(binaryFile, tempFilePath);
+                logger.info("Created temp data file - \"%s\"", tempFilePath);
+                
+            }
+            return tempFilePath;
+        }
 
     /**
      * Forces the provider to update current ActiveProvider with new data.
