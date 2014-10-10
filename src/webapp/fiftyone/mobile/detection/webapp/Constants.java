@@ -26,7 +26,7 @@ public class Constants {
     /**
      * The version of the API to report in usage sharing.
      */
-    public static final String VERSION = "3.1.3.2";
+    public static final String VERSION = "3.1.4.8";
     
     /**
      * Context parameter in the web.xml file for the file path.
@@ -47,7 +47,7 @@ public class Constants {
     /**
      * Url used to share usage information with 51Degrees.
      */
-    public static final String URL ="http://devices.51degrees.mobi/new.ashx";
+    public static final String URL ="http://d8632a5fc2704d5c8324f0e62d667f84.cloudapp.net/new.ashx";
 
     /**
      * Number of new device requests before the share usage information is

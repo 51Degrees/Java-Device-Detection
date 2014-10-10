@@ -55,6 +55,31 @@ http://www.slf4j.org/license.html
 
 Changes:
 
+Version 3.1.4.8
+
+Changes:
+
+Added a new property to the Signature.java entity class called Rank. This
+property returns the rank of the signature, where 0 is the most popular
+signature, to indicate the popularity of a signature compared to others.
+
+Changed AutoUpdate so lite data always gets updated. Also fixed a bug where the
+publishedDate was being queried rather than nextUpdate, which means update
+requests would be made far more than necessary.
+
+No longer uses session to store detection results.
+
+Now only one temp data file is created at a time.
+
+Changed getValues and getSignatures to avoid using a list before creating an
+array to improve performance and reduce memory usage.
+
+Fixed a defect in getSignatures where the wrong signatures were being returned.
+
+Fixed error when building servlet java docs using the ant script.
+
+Removed illegal characters that would sometimes cause compilation errors.
+
 Version 3.1.3.2
 
 Bug fixes:
