@@ -148,15 +148,16 @@
     <!--Create the javadoc file -->
     <mkdir dir="${servletsJavaDoc}" />
     <!-- Start creating the java docs... -->
-    <javadoc packagenames="fiftyone.mobile.detection.*"
-             sourcepath="src/servlets"
-         Private ="true"
-             destdir="${servletsJavaDoc}"
-             author="true"
-             version="true"
-             use="true"
-             windowtitle="51Degrees.detection.servlets API"
-         classpath="lib/webapp/slf4j-api-1.7.5.jar:lib/webapp/slf4j-simple-1.7.5.jar:lib/webapp/servlet-api.jar:lib/webapp/commons-codec-1.9.jar:${dist}/51Degrees.detection.core.jar:${dist}/51Degrees.detection.servlets.jar">
+    <javadoc
+		packagenames="fiftyone.mobile.servlet.*"
+		sourcepath="src/servlets"
+		Private ="true"
+		destdir="${servletsJavaDoc}"
+		author="true"
+		version="true"
+		use="true"
+		windowtitle="fiftyone.mobile.servlet API"
+        classpath="lib/webapp/slf4j-api-1.7.5.jar:lib/webapp/slf4j-simple-1.7.5.jar:lib/webapp/servlet-api.jar:lib/webapp/commons-codec-1.9.jar:${dist}/51Degrees.detection.core.jar:${dist}/51Degrees.detection.servlets.jar">
       <doctitle><![CDATA[<h1>51Degrees.detection.servlets API</h1></p><h1>Version ${version}</h1>]]></doctitle>
 
       <!--<link offline="true" href="http://docs.oracle.com/javase/6/docs/api/" packagelistLoc="C:\tmp" />-->
