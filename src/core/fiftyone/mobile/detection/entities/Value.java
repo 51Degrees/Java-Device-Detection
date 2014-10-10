@@ -38,18 +38,20 @@ import fiftyone.mobile.detection.readers.BinaryReader;
  * information such as a description or URL to find out additional information.
  * These other properties can be used by UI developers to provide users with
  * more information about the meaning and intended use of a value. <p> For more
- * information see http://51degrees.mobi/Support/Documentation/Java
+ * information see http://51degrees.com/Support/Documentation/Java
  */
 /**
  * A value associated with a property and component within the dataset.
  */
 public class Value extends BaseEntity implements Comparable<Value> {
 
+    /**
+     * The length in bytes of the value record in the data file.
+     */
     public static final int RECORD_LENGTH = (4 * 3) + 2;
 
     /**
-     * The name of the value.
-     *
+     * @return The name of the value.
      * @throws IOException
      */
     public String getName() throws IOException {
@@ -66,15 +68,14 @@ public class Value extends BaseEntity implements Comparable<Value> {
     private final int nameIndex;
 
     /**
-     * Array containing the signatures that the value is associated with.
-     *
+     * @return Array containing the signatures that the value is associated with.
      * @throws IOException
      */
     public Signature[] getSignatures() throws IOException {
         if (signatures == null) {
             synchronized (this) {
                 if (signatures == null) {
-                    signatures = GetSignatures();
+                    signatures = doGetSignatures();
                 }
             }
         }
@@ -83,15 +84,14 @@ public class Value extends BaseEntity implements Comparable<Value> {
     private Signature[] signatures;
 
     /**
-     * Array containing the profiles the value is associated with.
-     *
+     * @return Array containing the profiles the value is associated with.
      * @throws IOException
      */
     public Profile[] getProfiles() throws IOException {
         if (profiles == null) {
             synchronized (this) {
                 if (profiles == null) {
-                    profiles = GetProfiles();
+                    profiles = doGetProfiles();
                 }
             }
         }
@@ -100,8 +100,7 @@ public class Value extends BaseEntity implements Comparable<Value> {
     private Profile[] profiles;
 
     /**
-     * The property the value relates to.
-     *
+     * @return The property the value relates to.
      * @throws IOException
      */
     public Property getProperty() throws IOException {
@@ -118,8 +117,7 @@ public class Value extends BaseEntity implements Comparable<Value> {
     final int propertyIndex;
 
     /**
-     * The component the value relates to.
-     *
+     * @return The component the value relates to.
      * @throws IOException
      */
     public Component getComponent() throws IOException {
@@ -127,9 +125,8 @@ public class Value extends BaseEntity implements Comparable<Value> {
     }
 
     /**
-     * A description of the value suitable to be displayed to end users via a
-     * user interface.
-     *
+     * @return A description of the value suitable to be displayed to end users
+     * via a user interface.
      * @throws IOException
      */
     public String getDescription() throws IOException {
@@ -147,8 +144,7 @@ public class Value extends BaseEntity implements Comparable<Value> {
     private final int descriptionIndex;
 
     /**
-     * A url to more information about the value.
-     *
+     * @return A URL to more information about the value if present.
      * @throws IOException
      */
     public URL getUrl() throws IOException {
@@ -213,18 +209,16 @@ public class Value extends BaseEntity implements Comparable<Value> {
      * @return Returns the profiles from the component that relate to this value
      * @throws IOException
      */
-    private Profile[] GetProfiles() throws IOException {
-        // return Component.Profiles.Where(i =>
-        // BinarySearch(i.Values, this) >= 0).ToArray();
-        List<Profile> profiles = new ArrayList<Profile>();
+    private Profile[] doGetProfiles() throws IOException {
+        List<Profile> list = new ArrayList<Profile>();
 
         for (Profile profile : getComponent().getProfiles()) {
             if (binarySearch(profile.getValues(), getIndex()) >= 0) {
-                profiles.add(profile);
+                list.add(profile);
             }
         }
 
-        return profiles.toArray(new Profile[profiles.size()]);
+        return list.toArray(new Profile[list.size()]);
     }
 
     /**
@@ -233,8 +227,8 @@ public class Value extends BaseEntity implements Comparable<Value> {
      * @return Returns the signatures associated with the value
      * @throws IOException
      */
-    private Signature[] GetSignatures() throws IOException {
-        // Get a distinct list of signatures.
+    private Signature[] doGetSignatures() throws IOException {
+        // Get a distinct list of signature indexes.
         List<Integer> list = new ArrayList<Integer>();
         for (Profile profile : getProfiles()) {
             for (Integer signatureIndex : profile.getSignatureIndexes()) {
@@ -244,10 +238,10 @@ public class Value extends BaseEntity implements Comparable<Value> {
                 }
             }
         }
-
+        // Turn that list into an array of signatures.
         Signature[] result = new Signature[list.size()];
         for (int i = 0; i < result.length; i++) {
-            result[i] = getDataSet().getSignatures().get(i);
+            result[i] = getDataSet().getSignatures().get(list.get(i));
         }
         return result;
     }
@@ -259,6 +253,7 @@ public class Value extends BaseEntity implements Comparable<Value> {
      * @param other The value to be compared against
      * @return Indication of relative value based on index field
      */
+    @Override
     public int compareTo(Value other) {
         if (getDataSet() == other.getDataSet()) {
             return getIndex() - other.getIndex();
@@ -285,8 +280,7 @@ public class Value extends BaseEntity implements Comparable<Value> {
     }
 
     /**
-     * Returns the value as a number.
-     *
+     * @return Returns the value as a number.
      * @throws IOException
      */
     public double toDouble() throws IOException {
@@ -310,8 +304,7 @@ public class Value extends BaseEntity implements Comparable<Value> {
     private Double asNumber;
 
     /**
-     * Returns the value as a boolean.
-     *
+     * @return Returns the value as a boolean.
      * @throws IOException
      */
     public boolean toBool() throws IOException {

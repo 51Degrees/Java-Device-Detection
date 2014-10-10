@@ -33,7 +33,7 @@ import java.util.TreeSet;
  * ********************************************************************* */
 /**
  * Represents a collection of properties and values relating to a profile which
- * in turn relates to a component. <p> Each Signature relates to one profile for
+ * in turn relates to a component. Each Signature relates to one profile for
  * each component.
  */
 public class Profile extends BaseEntity implements Comparable<Profile> {
@@ -42,6 +42,7 @@ public class Profile extends BaseEntity implements Comparable<Profile> {
      * Comparator used to order the properties by descending display order.
      */
     private static final Comparator<Value> propertyComparator = new Comparator<Value>() {
+        @Override
         public int compare(Value v1, Value v2) {
             try {
                 if (v1.getProperty().displayOrder < v2.getProperty().displayOrder) {
@@ -83,6 +84,7 @@ public class Profile extends BaseEntity implements Comparable<Profile> {
      * @param property The property whose values are required
      * @return Array of the values associated with the property, or null if the
      * property does not exist
+     * @throws java.io.IOException
      */
     public Values getValues(Property property) throws IOException {
         // Does the storage structure already exist?
@@ -96,10 +98,10 @@ public class Profile extends BaseEntity implements Comparable<Profile> {
 
         // Do the values already exist for the property?
         synchronized (nameToValues) {
-            // Values values;
-            Values values = nameToValues.get(property.getName());
-            if (values != null) {
-                return values;
+
+            Values result = nameToValues.get(property.getName());
+            if (result != null) {
+                return result;
             }
 
             // Create the list of values.
@@ -109,28 +111,29 @@ public class Profile extends BaseEntity implements Comparable<Profile> {
                     vals.add(value);
                 }
             }
-            values = new Values(property, vals);
+            result = new Values(property, vals);
 
-            if (values.size() == 0) {
-                values = null;
+            if (result.size() == 0) {
+                result = null;
             }
 
             // Store for future reference.
-            nameToValues.add(property.getName(), values);
+            nameToValues.add(property.getName(), result);
 
-            return values;
+            return result;
         }
     }
     private SortedList<String, Values> nameToValues;
 
     /**
-     * Array of signatures associated with the profile.
+     * @return Array of signatures associated with the profile.
+     * @throws java.io.IOException
      */
     public Signature[] Signatures() throws IOException {
         if (signatures == null) {
             synchronized (this) {
                 if (signatures == null) {
-                    signatures = GetSignatures();
+                    signatures = doGetSignatures();
                 }
             }
         }
@@ -140,7 +143,8 @@ public class Profile extends BaseEntity implements Comparable<Profile> {
     private final int[] signatureIndexes;
 
     /**
-     * The component the profile belongs to.
+     * @return The component the profile belongs to
+     * @throws java.io.IOException
      */
     public Component getComponent() throws IOException {
         if (component == null) {
@@ -157,13 +161,14 @@ public class Profile extends BaseEntity implements Comparable<Profile> {
     private final int componentIndex;
 
     /**
-     * An array of values associated with the profile.
+     * @return An array of values associated with the profile.
+     * @throws java.io.IOException
      */
     public Value[] getValues() throws IOException {
         if (values == null) {
             synchronized (this) {
                 if (values == null) {
-                    values = GetValues();
+                    values = doGetValues();
                 }
             }
         }
@@ -172,13 +177,14 @@ public class Profile extends BaseEntity implements Comparable<Profile> {
     private Value[] values;
 
     /**
-     * An array of properties associated with the profile.
+     * @return An array of properties associated with the profile.
+     * @throws java.io.IOException
      */
     public Property[] getProperties() throws IOException {
         if (properties == null) {
             synchronized (this) {
                 if (properties == null) {
-                    properties = GetProperties();
+                    properties = doGetProperties();
                 }
             }
         }
@@ -191,6 +197,7 @@ public class Profile extends BaseEntity implements Comparable<Profile> {
      *
      * @param dataSet The data set the profile will be contained with in
      * @param offset The offset of the profile in the source data structure
+     * @param reader Reader connected to the input stream
      */
     public Profile(Dataset dataSet, int offset, BinaryReader reader) {
         super(dataSet, offset);
@@ -205,38 +212,31 @@ public class Profile extends BaseEntity implements Comparable<Profile> {
     /**
      * If storage of object references is enabled initialises the arrays of
      * related properties and values.
+     * @throws java.io.IOException
      */
     public void init() throws IOException {
-        properties = GetProperties();
-        values = GetValues();
-        signatures = GetSignatures();
+        properties = doGetProperties();
+        values = doGetValues();
+        signatures = doGetSignatures();
         component = getDataSet().getComponents().get(componentIndex);
     }
 
     /**
-     * Returns an array of signatures the profile relates to.
-     *
-     * @return
+     * @return Returns an array of signatures the profile relates to.
      */
-    private Signature[] GetSignatures() throws IOException {
-        // return SignatureIndexes.Select(i =>
-        // DataSet.Signatures[i]).ToArray();
-        List<Signature> signatures = new ArrayList<Signature>();
-
-        for (int index : signatureIndexes) {
-            signatures.add(getDataSet().getSignatures().get(index));
+    private Signature[] doGetSignatures() throws IOException {
+        Signature[] array = new Signature[signatureIndexes.length];
+        for (int i = 0; i < signatureIndexes.length; i++) {
+            array[i] = getDataSet().getSignatures().get(signatureIndexes[i]);
         }
-
-        return signatures.toArray(new Signature[signatures.size()]);
+        return array;
     }
 
     /**
-     * Returns an array of properties the profile relates to.
-     *
-     * @return
+     * @return Returns an array of properties the profile relates to.
      */
-    private Property[] GetProperties() throws IOException {
-        Set<Property> properties = new TreeSet<Property>(
+    private Property[] doGetProperties() throws IOException {
+        Set<Property> tree = new TreeSet<Property>(
                 new Comparator<Property>() {
                     public int compare(Property o1, Property o2) {
                         try {
@@ -248,23 +248,21 @@ public class Profile extends BaseEntity implements Comparable<Profile> {
                 });
 
         for (Value value : getValues()) {
-            properties.add(value.getProperty());
+            tree.add(value.getProperty());
         }
 
-        return properties.toArray(new Property[properties.size()]);
+        return tree.toArray(new Property[tree.size()]);
     }
 
     /**
-     * Returns an array of values the profile relates to.
-     *
-     * @return
+     * @return Returns an array of values the profile relates to.
      */
-    private Value[] GetValues() throws IOException {
-        List<Value> values = new ArrayList<Value>();
-        for (int valueIndex : getValueIndexes()) {
-            values.add(getDataSet().getValues().get(valueIndex));
+    private Value[] doGetValues() throws IOException {
+        Value[] array = new Value[getValueIndexes().length];
+        for (int i = 0; i < array.length; i++) {
+            array[i] = getDataSet().getValues().get(getValueIndexes()[i]);
         }
-        return values.toArray(new Value[values.size()]);
+        return array;
     }
 
     /**
@@ -273,6 +271,7 @@ public class Profile extends BaseEntity implements Comparable<Profile> {
      * @param other The component to be compared against
      * @return Indication of relative value based on ProfileId field
      */
+    @Override
     public int compareTo(Profile other) {
         return profileId - other.profileId;
     }
@@ -287,25 +286,25 @@ public class Profile extends BaseEntity implements Comparable<Profile> {
         if (stringValue == null) {
             synchronized (this) {
                 if (stringValue == null) {
-                    List<Value> values = new ArrayList<Value>();
+                    List<Value> list = new ArrayList<Value>();
                     try {
                         for (int i = 0; i < getValues().length; i++) {
                             Value value = getValues()[i];
                             if (value.getProperty().displayOrder > 0
                                     && value.getName().contains("Unknown") == false) {
-                                int index = Collections.binarySearch(values, value, propertyComparator);
+                                int index = Collections.binarySearch(list, value, propertyComparator);
                                 if (index < 0) {
-                                    values.add(~index, value);
+                                    list.add(~index, value);
                                 }
                             }
                         }
-                        if (values.size() > 0) {
+                        if (list.size() > 0) {
                             // Values with a display order were found. Sort 
                             // them and then concatenate before returning.
                             StringBuilder sb = new StringBuilder();
-                            for (int i = 0; i < values.size(); i++) {
-                                sb.append(values.get(i).toString());
-                                if (i < values.size() - 1) {
+                            for (int i = 0; i < list.size(); i++) {
+                                sb.append(list.get(i).toString());
+                                if (i < list.size() - 1) {
                                     sb.append("/");
                                 }
                             }
