@@ -55,9 +55,12 @@ http://www.slf4j.org/license.html
 
 Changes:
 
-Version 3.1.4.8
+Version 3.1.4.9
 
 Changes:
+
+Changed to use JDK 1.7 in the Netbeans project and the build.xml. Maven builds
+will now use JDK 1.7.
 
 Added a new property to the Signature.java entity class called Rank. This
 property returns the rank of the signature, where 0 is the most popular
