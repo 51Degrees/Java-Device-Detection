@@ -17,7 +17,7 @@
   <property name="servletsJavaDoc" location="javadoc/servlets"/>
   <property name="datsrc" location="resources/data"/>
   <property name="cdatdest" location="build/core"/>
-  <property name="version" value="3.0.6.5"/>
+  <property name="version" value="3.1.4.9"/>
 
   <target name="init">
     <!-- Create the time stamp -->
@@ -31,7 +31,7 @@
   <target name="corecompile" depends="init"
         description="compile the source" >
     <!-- Compile the core Java release -->
-    <javac srcdir="${coreSrc}" destdir="${coreBuild}" verbose ="true" classpath="slf4j-api-1.7.5.jar:slf4j-simple-1.7.5.jar">
+    <javac target="1.7" source="1.7" srcdir="${coreSrc}" destdir="${coreBuild}" verbose ="true" classpath="slf4j-api-1.7.5.jar:slf4j-simple-1.7.5.jar">
       <compilerarg value="-Xlint:unchecked"/>
     </javac>
   </target>
@@ -85,7 +85,7 @@
   <target name="wacompile" depends="core"
         description="compile the source" >
     <!-- Compile the Web App Java release -->
-    <javac srcdir="${webAppSrc}" destdir="${webAppBuild}" verbose ="true" classpath="lib/webapp/slf4j-api-1.7.5.jar:lib/webapp/slf4j-simple-1.7.5.jar:lib/webapp/servlet-api.jar:lib/webapp/commons-codec-1.9.jar:${dist}/51Degrees.detection.core.jar">
+    <javac target="1.7" source="1.7" srcdir="${webAppSrc}" destdir="${webAppBuild}" verbose ="true" classpath="lib/webapp/slf4j-api-1.7.5.jar:lib/webapp/slf4j-simple-1.7.5.jar:lib/webapp/servlet-api.jar:lib/webapp/commons-codec-1.9.jar:${dist}/51Degrees.detection.core.jar">
       <compilerarg value="-Xlint:unchecked"/>
     </javac>
   </target>
@@ -126,7 +126,7 @@
   <target name="servletscompile" depends="webapp"
         description="compile the source" >
     <!-- Compile the Servlets Java release -->
-    <javac srcdir="${servletsSrc}" destdir="${servletsBuild}" verbose ="true" classpath="lib/webapp/slf4j-api-1.7.5.jar:lib/webapp/slf4j-simple-1.7.5.jar:lib/webapp/servlet-api.jar:lib/webapp/commons-codec-1.9.jar:${dist}/51Degrees.detection.core.jar:${dist}/51Degrees.detection.webapp.jar">
+    <javac target="1.7" source="1.7" srcdir="${servletsSrc}" destdir="${servletsBuild}" verbose ="true" classpath="lib/webapp/slf4j-api-1.7.5.jar:lib/webapp/slf4j-simple-1.7.5.jar:lib/webapp/servlet-api.jar:lib/webapp/commons-codec-1.9.jar:${dist}/51Degrees.detection.core.jar:${dist}/51Degrees.detection.webapp.jar">
       <compilerarg value="-Xlint:unchecked"/>
     </javac>
   </target>
