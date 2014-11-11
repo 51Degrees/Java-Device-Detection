@@ -174,8 +174,9 @@ public class WebProvider extends Provider implements Disposable {
         String value = sc.getInitParameter(Constants.BINARY_FILE_PATH);
         return value == null ? null
                 : new File(String.format(
-                "%s\\%s",
+                "%s%s%s",
                 sc.getRealPath("WEB-INF"),
+                File.separator,
                 value));
     }
 
