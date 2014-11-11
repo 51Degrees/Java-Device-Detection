@@ -17,7 +17,7 @@
   <property name="servletsJavaDoc" location="javadoc/servlets"/>
   <property name="datsrc" location="resources/data"/>
   <property name="cdatdest" location="build/core"/>
-  <property name="version" value="3.1.4.9"/>
+  <property name="version" value="3.1.4.10"/>
 
   <target name="init">
     <!-- Create the time stamp -->

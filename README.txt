@@ -55,9 +55,12 @@ http://www.slf4j.org/license.html
 
 Changes:
 
+
 Version 3.1.4.9
 
 Changes:
+
+getBinaryFilePath in webapp/WebProvider has been modified to address path issue on some systems.
 
 Changed to use JDK 1.7 in the Netbeans project and the build.xml. Maven builds
 will now use JDK 1.7.
