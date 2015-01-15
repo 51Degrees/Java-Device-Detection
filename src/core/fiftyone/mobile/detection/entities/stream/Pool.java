@@ -29,7 +29,7 @@ import java.util.concurrent.LinkedBlockingDeque;
 /**
  * As multiple threads need to read from the Source concurrently this class
  * provides a mechanism for readers to be recycled across threads and requests.
- * <p> Used by the BaseList<T> to provide multiple readers for the list. <p> The
+ * <p> Used by the BaseList of type T to provide multiple readers for the list. <p> The
  * DetectorDataSet must be disposed of to ensure the readers in the pool are
  * closed.
  */

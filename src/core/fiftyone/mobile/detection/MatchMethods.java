@@ -23,17 +23,17 @@ package fiftyone.mobile.detection;
 /**
  * Enumerator of possible methods used to obtain the match.
  *
- * @param NONE No match could be determined between the target user agent and
+ * NONE No match could be determined between the target user agent and
  * the list of signatures. Defaults were used.
- * @param EXACT The signature returned matches precisely with the target user
+ * EXACT The signature returned matches precisely with the target user
  * agent.
- * @param NUMERIC The signature returned matches the target user agent with only
+ * NUMERIC The signature returned matches the target user agent with only
  * minor differences between numeric numbers.
- * @param CLOSEST No signature matched precisely and some relevant characters
+ * CLOSEST No signature matched precisely and some relevant characters
  * may be different between the returned signature and the target user agent.
  * The Match.Confidence property should be used to determine the degree of
  * difference.
- * @param NEAREST The signature returned contains all the same sub strings as
+ * NEAREST The signature returned contains all the same sub strings as
  * the target user agent, but there are minor differences in position.
  *
  */

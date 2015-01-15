@@ -236,7 +236,7 @@ public class Match {
     /**
      * Constructs a new detection match ready to be used.
      *
-     * @param dataSet
+     * @param dataSet data set to be used for this match
      */
     public Match(Dataset dataSet) {
         this.dataSet = dataSet;
@@ -246,8 +246,10 @@ public class Match {
      * Constructs a new detection match ready to be used to identify the
      * profiles associated with the target user agent.
      *
-     * @param dataSet
-     * @param targetUserAgent
+     * @param dataSet data set to be used for this match
+     * @param targetUserAgent user agent to identify
+     * @throws UnsupportedEncodingException indicates an Unsupported Encoding 
+     * exception occurred
      */
     public Match(Dataset dataSet, String targetUserAgent)
             throws UnsupportedEncodingException {
@@ -270,6 +272,7 @@ public class Match {
 
     /**
      * The user agent string as an ASCII byte array.
+     * @return byte array representing user agent string
      */
     public byte[] getTargetUserAgentArray() {
         return targetUserAgentArray;
@@ -278,6 +281,7 @@ public class Match {
 
     /**
      * The target user agent string used for the detection.
+     * @return target user agent string used for detection
      */
     public String getTargetUserAgent() {
         return targetUserAgent;
@@ -286,6 +290,7 @@ public class Match {
 
     /**
      * The signature with the closest match to the user agent provided.
+     * @return signature with closest match to the user agent provided
      */
     public Signature getSignature() {
         return signature;
@@ -367,6 +372,7 @@ public class Match {
 
     /**
      * The method used to obtain the match.
+     * @return method used to obtain match
      */
     public MatchMethods getMethod() {
         return method;
@@ -375,6 +381,7 @@ public class Match {
 
     /**
      * The number of signatures read during the detection.
+     * @return integer representing number of signatures read during detection
      */
     public int getSignaturesRead() {
         return signaturesRead;
@@ -384,6 +391,8 @@ public class Match {
     /**
      * The number of signatures that were compared against the target user agent
      * if the Closest match method was used.
+     * @return integer representing number of signatures compared against user 
+     * agent if closest match method was used
      */
     public int getSignaturesCompared() {
         return signaturesCompared;
@@ -392,6 +401,7 @@ public class Match {
 
     /**
      * The number of root nodes checked against the target user agent.
+     * @return integer representing number of root node checked
      */
     public int getRootNodesEvaluated() {
         return rootNodesEvaluated;
@@ -400,6 +410,7 @@ public class Match {
 
     /**
      * The number of nodes checked.
+     * @return integer representing the number of nodes checked
      */
     public int getNodesEvaluated() {
         return nodesEvaluated;
@@ -409,6 +420,7 @@ public class Match {
     /**
      * The number of strings that were read from the data structure for the
      * match.
+     * @return integer representing number of strings read for the match
      */
     public int getStringsRead() {
         return stringsRead;
@@ -417,6 +429,8 @@ public class Match {
 
     /**
      * The number of closest signatures returned for evaluation.
+     * @return integer representing number of closest signatures returned for 
+     * evaluation
      */
     public int getClosestSignaturesCount() {
         return closestSignaturesCount;
@@ -425,8 +439,8 @@ public class Match {
 
     /**
      * The unique id of the Device.
-     *
-     * @throws IOException
+     * @return string representing unique id of device
+     * @throws IOException signals an I/O exception occurred
      */
     public String getDeviceId() throws IOException {
         return signature != null ? signature.getDeviceId() : null;
@@ -434,8 +448,8 @@ public class Match {
 
     /**
      * Array of profiles associated with the device that was found.
-     *
-     * @throws IOException
+     * @return array of profiles associated with the device that was found
+     * @throws IOException indicates an I/O exception occurred
      */
     public Profile[] getProfiles() throws IOException {
         if (profiles == null && signature != null) {
@@ -451,6 +465,8 @@ public class Match {
 
     /**
      * The user agent of the matching device with irrelevant characters removed.
+     * @return the user agent of the matching device with irrelevant characters 
+     * removed
      */
     public String getUserAgent() {
         return signature != null ? signature.toString() : null;
@@ -691,7 +707,7 @@ public class Match {
      * @param property The property whose values are required
      * @return Array of the values associated with the property, or null if the
      * property does not exist
-     * @throws IOException
+     * @throws IOException indicates an I/O exception occurred
      */
     public Values getValues(Property property) throws IOException {
         Values value = null;
@@ -724,7 +740,7 @@ public class Match {
      * @param propertyName The property name whose values are required
      * @return Array of the values associated with the property, or null if the
      * property does not exist
-     * @throws IOException
+     * @throws IOException indicates an I/O exception occurred
      */
     public Values getValues(String propertyName) throws IOException {
         return getValues(dataSet.get(propertyName));
@@ -814,7 +830,7 @@ public class Match {
      * Override the profiles found by the match with the profileId provided.
      *
      * @param profileId The ID of the profile to replace the existing component
-     * @throws IOException
+     * @throws IOException indicates an I/O exception occurred
      */
     public void updateProfile(int profileId) throws IOException {
         // Find the new profile from the data set.

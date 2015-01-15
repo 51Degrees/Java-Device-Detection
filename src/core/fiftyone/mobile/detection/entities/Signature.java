@@ -68,7 +68,8 @@ public class Signature extends BaseEntity implements Comparable<Signature> {
     /**
      * List of the profiles the signature relates to.
      *
-     * @throws IOException
+     * @return List of the profiles the signature relates to
+     * @throws IOException indicates an I/O exception occurred
      */
     public Profile[] getProfiles() throws IOException {
         if (profiles == null) {
@@ -86,7 +87,8 @@ public class Signature extends BaseEntity implements Comparable<Signature> {
     /**
      * The unique Device Id for the signature.
      *
-     * @throws IOException
+     * @return unique Device Id for the signature
+     * @throws IOException indicates an I/O exception occurred
      */
     public String getDeviceId() throws IOException {
         if (deviceId == null) {
@@ -119,7 +121,7 @@ public class Signature extends BaseEntity implements Comparable<Signature> {
      * it will be comparatively slow compared to other methods the firs time
      * the property is accessed.
      * @return the rank of the signature compared to others
-     * @throws IOException 
+     * @throws IOException indicates an I/O exception occurred
      */
     public int getRank() throws IOException {
         if (rank == -1) {
@@ -136,7 +138,8 @@ public class Signature extends BaseEntity implements Comparable<Signature> {
     /**
      * The length in bytes of the signature.
      *
-     * @throws IOException
+     * @return length in bytes of the signature
+     * @throws IOException indicates an I/O exception occurred
      */
     public int getLength() throws IOException {
         if (_length == 0) {
@@ -218,7 +221,7 @@ public class Signature extends BaseEntity implements Comparable<Signature> {
      * initialisation steps that require other items in the data set can be
      * completed.
      *
-     * @throws IOException
+     * @throws IOException indicates an I/O exception occurred
      */
     public void init() throws IOException {
         profiles = getProfiles(profileOffsets);
@@ -248,7 +251,7 @@ public class Signature extends BaseEntity implements Comparable<Signature> {
      * Gets a string list of the properties and names.
      *
      * @return dictionary of properties and values for the signature
-     * @throws IOException
+     * @throws IOException indicates an I/O exception occurred
      */
     public SortedList<String, List<String>> getPropertyValuesAsStrings() throws IOException {
         SortedList<String, List<String>> list = new SortedList<String, List<String>>();
@@ -296,7 +299,7 @@ public class Signature extends BaseEntity implements Comparable<Signature> {
     /**
      * Compares this signature to a list of node offsets.
      *
-     * @param nodeOffsets The node indexes to be compared against
+     * @param nodes list of nodes to compare to
      * @return Indication of relative value based on the node offsets
      */
     public int compareTo(List<Node> nodes) {

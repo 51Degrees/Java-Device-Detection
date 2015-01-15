@@ -181,6 +181,8 @@ public class Node extends BaseEntity implements Comparable<Node> {
 
     /**
      * Returns the root node for this node.
+     * @return root node for this node
+     * @throws java.io.IOException indicates an I/O exception occurred
      */
     public Node getRoot() throws IOException {
         if (root == null) {
@@ -219,6 +221,8 @@ public class Node extends BaseEntity implements Comparable<Node> {
 
     /**
      * Returns the number of characters in the node tree.
+     * @return number of characters in the node tree
+     * @throws java.io.IOException indicates an I/O exception occurred
      */
     public int getLength() throws IOException {
         return getRoot().position - position;
@@ -226,6 +230,8 @@ public class Node extends BaseEntity implements Comparable<Node> {
 
     /**
      * Gets an array containing all the characters of the node.
+     * @return array containing all the characters of the node
+     * @throws java.io.IOException indicates an I/O exception occurred
      */
     public byte[] getCharacters() throws IOException {
         if (characters == null && characterStringOffset >= 0) {
@@ -256,6 +262,7 @@ public class Node extends BaseEntity implements Comparable<Node> {
      *
      * @param dataSet The data set the node is contained within
      * @param offset The offset in the data structure to the node
+     * @param reader BinaryReader object to be used
      */
     public Node(Dataset dataSet, int offset, BinaryReader reader) {
         super(dataSet, offset);
@@ -317,6 +324,7 @@ public class Node extends BaseEntity implements Comparable<Node> {
      * Called after the entire data set has been loaded to ensure any further
      * initialisation steps that require other items in the data set can be
      * completed.
+     * @throws java.io.IOException indicates an I/O exception occurred
      */
     public void init() throws IOException {
         if (parentIndex >= 0) {
@@ -453,7 +461,7 @@ public class Node extends BaseEntity implements Comparable<Node> {
      *
      * @param match results including the target user agent
      * @return The next child node, or null if there isn't one
-     * @throws IOException
+     * @throws IOException indicates an I/O exception occurred
      */
     public Node getCompleteNode(Match match) throws IOException {
         Node node = null;
@@ -528,9 +536,10 @@ public class Node extends BaseEntity implements Comparable<Node> {
      * Returns true if any of the nodes in the match have overlapping characters
      * with this one.
      *
-     * @param match
-     * @return
-     * @throws IOException
+     * @param match Match object to be checked for overlaps
+     * @return true if any of the nodes in the match have overlapping characters
+     * with this one.
+     * @throws IOException indicates an I/O exception occurred
      */
     public boolean getIsOverlap(Match match) throws IOException {
         for (Node node : match.getNodes()) {
@@ -544,7 +553,8 @@ public class Node extends BaseEntity implements Comparable<Node> {
     /**
      * Adds the characters for this node to the values array.
      *
-     * @param values
+     * @param values array to add characters to
+     * @throws java.io.IOException indicates an I/O exception occurred
      */
     public void addCharacters(byte[] values) throws IOException {
         if (getParent() != null) {

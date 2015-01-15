@@ -84,6 +84,8 @@ public class Property extends BaseEntity implements Comparable<Property> {
 
     /**
      * The name of the property.
+     * @return name of the property
+     * @throws java.io.IOException indicates an I/O exception occurred
      */
     public String getName() throws IOException {
         if (name == null) {
@@ -104,6 +106,8 @@ public class Property extends BaseEntity implements Comparable<Property> {
 
     /**
      * The value the property returns if a strongly type value is not available.
+     * @return value the property returns if a strongly type value is not available
+     * @throws java.io.IOException indicates an I/O exception occurred
      */
     public Value getDefaultValue() throws IOException {
         if (defaultValue == null) {
@@ -120,6 +124,8 @@ public class Property extends BaseEntity implements Comparable<Property> {
 
     /**
      * The component the property relates to.
+     * @return component the property relates to
+     * @throws java.io.IOException indicates an I/O exception occurred
      */
     public Component getComponent() throws IOException {
         if (component == null) {
@@ -137,7 +143,8 @@ public class Property extends BaseEntity implements Comparable<Property> {
     /**
      * An array of values the property has available.
      *
-     * @throws IOException
+     * @return array of values the property has available
+     * @throws IOException indicates an I/O exception occurred
      */
     public Values getValues() throws IOException {
         if (values == null) {
@@ -155,7 +162,9 @@ public class Property extends BaseEntity implements Comparable<Property> {
      * A description of the property suitable to be displayed to end users via a
      * user interface.
      *
-     * @throws IOException
+     * @return description of the property suitable to be displayed to end users 
+     * via a user interface.
+     * @throws IOException indicates an I/O exception occurred
      */
     public String getDescription() throws IOException {
         if (description == null && descriptionOffset >= 0) {
@@ -174,7 +183,8 @@ public class Property extends BaseEntity implements Comparable<Property> {
     /**
      * The category the property relates to within the data set.
      *
-     * @throws IOException
+     * @return category the property relates to within the data set
+     * @throws IOException indicates an I/O exception occurred
      */
     public String getCategory() throws IOException {
         if (category == null && categoryOffset >= 0) {
@@ -193,7 +203,8 @@ public class Property extends BaseEntity implements Comparable<Property> {
     /**
      * A URL to more information about the property.
      *
-     * @throws IOException
+     * @return URL to more information about the property
+     * @throws IOException indicates an I/O exception occurred
      */
     public URL getUrl() throws IOException {
         if (url == null && urlOffset >= 0) {
@@ -219,10 +230,10 @@ public class Property extends BaseEntity implements Comparable<Property> {
     /**
      * Constructs a new instance of Property
      *
-     * @param dataSet
-     * @param index
-     * @param reader
-     * @throws IOException
+     * @param dataSet data set to construct from
+     * @param index property index
+     * @param reader BinaryReader to be used
+     * @throws IOException indicates an I/O exception occurred
      */
     public Property(Dataset dataSet, int index, BinaryReader reader) throws IOException {
         super(dataSet, index);
@@ -249,7 +260,7 @@ public class Property extends BaseEntity implements Comparable<Property> {
      * Initialises the often used lists and references if storing of object
      * references is enabled.
      *
-     * @throws IOException
+     * @throws IOException indicates an I/O exception occurred
      */
     public void init() throws IOException {
         getValues();

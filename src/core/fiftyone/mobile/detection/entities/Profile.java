@@ -72,7 +72,7 @@ public class Profile extends BaseEntity implements Comparable<Profile> {
      * @param propertyName Name of the property whose values are required
      * @return Array of the values associated with the property, or null if the
      * property does not exist
-     * @throws IOException
+     * @throws IOException indicates an I/O exception occurred
      */
     public Values getValues(String propertyName) throws IOException {
         return getValues(getDataSet().get(propertyName));
@@ -84,7 +84,7 @@ public class Profile extends BaseEntity implements Comparable<Profile> {
      * @param property The property whose values are required
      * @return Array of the values associated with the property, or null if the
      * property does not exist
-     * @throws java.io.IOException
+     * @throws java.io.IOException indicates an I/O exception occurred
      */
     public Values getValues(Property property) throws IOException {
         // Does the storage structure already exist?
@@ -127,7 +127,7 @@ public class Profile extends BaseEntity implements Comparable<Profile> {
 
     /**
      * @return Array of signatures associated with the profile.
-     * @throws java.io.IOException
+     * @throws java.io.IOException indicates an I/O exception occurred
      */
     public Signature[] Signatures() throws IOException {
         if (signatures == null) {
@@ -144,7 +144,7 @@ public class Profile extends BaseEntity implements Comparable<Profile> {
 
     /**
      * @return The component the profile belongs to
-     * @throws java.io.IOException
+     * @throws java.io.IOException indicates an I/O exception occurred
      */
     public Component getComponent() throws IOException {
         if (component == null) {
@@ -162,7 +162,7 @@ public class Profile extends BaseEntity implements Comparable<Profile> {
 
     /**
      * @return An array of values associated with the profile.
-     * @throws java.io.IOException
+     * @throws java.io.IOException indicates an I/O exception occurred
      */
     public Value[] getValues() throws IOException {
         if (values == null) {
@@ -178,7 +178,7 @@ public class Profile extends BaseEntity implements Comparable<Profile> {
 
     /**
      * @return An array of properties associated with the profile.
-     * @throws java.io.IOException
+     * @throws java.io.IOException indicates an I/O exception occurred
      */
     public Property[] getProperties() throws IOException {
         if (properties == null) {
@@ -212,7 +212,7 @@ public class Profile extends BaseEntity implements Comparable<Profile> {
     /**
      * If storage of object references is enabled initialises the arrays of
      * related properties and values.
-     * @throws java.io.IOException
+     * @throws java.io.IOException indicates an I/O exception occurred
      */
     public void init() throws IOException {
         properties = doGetProperties();

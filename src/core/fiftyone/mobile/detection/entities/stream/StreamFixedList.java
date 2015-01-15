@@ -47,12 +47,13 @@ import java.util.Iterator;
 /**
  * Constructs a new instance of FixedList.
  *
- * @param dataSet The DetectorDataSet being created.
- * @param reader Reader connected to the source data structure and positioned to
+ * dataSet The DetectorDataSet being created.
+ * reader Reader connected to the source data structure and positioned to
  * start reading.
- * @param create Pointer to a delegate used to create new entities of type T.
- * @param source Reference to the underlying data structure.
- * @param recordLength The length of the records in bytes.
+ * create Pointer to a delegate used to create new entities of type T.
+ * source Reference to the underlying data structure.
+ * recordLength The length of the records in bytes.
+ * @param <T> extends base entity
  */
 public class StreamFixedList<T extends BaseEntity> extends BaseList<T> {
 
@@ -68,7 +69,7 @@ public class StreamFixedList<T extends BaseEntity> extends BaseList<T> {
      * @param reader Reader connected to the source data structure and
      * positioned to start reading.
      * @return A new entity of type T at the index provided.
-     * @throws IOException
+     * @throws IOException indicates an I/O exception occurred
      */
     @Override
     protected T createEntity(int index, BinaryReader reader) throws IOException {

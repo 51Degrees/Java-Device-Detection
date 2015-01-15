@@ -64,7 +64,7 @@ public class MemoryFixedList<T extends BaseEntity> extends BaseList<T> {
      *
      * @param reader Reader connected to the source data structure and
      * positioned to start reading
-     * @throws IOException
+     * @throws IOException indicates an I/O exception occurred
      */
     public void read(BinaryReader reader) throws IOException {
         for (int index = 0; index < header.getCount(); index++) {

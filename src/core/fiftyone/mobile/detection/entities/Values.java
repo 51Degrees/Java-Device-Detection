@@ -56,7 +56,8 @@ public class Values extends ArrayList<Value> {
      * the only item in the list. MobileException Thrown if the method is called
      * for a property with multiple values
      *
-     * @throws IOException
+     * @return return A boolean representation of the only item in the list
+     * @throws IOException indicates an I/O exception occurred
      */
     public boolean toBool() throws IOException {
         if (property.isList) {
@@ -70,10 +71,7 @@ public class Values extends ArrayList<Value> {
      * The value represented as a double.
      *
      * @return A double representation of the only item in the list.
-     * @throws IOException
-     *
-     * @exception MobileException Thrown if the method is called for a property
-     * with multiple values
+     * @throws IOException indicates an I/O exception occurred
      */
     public double toDouble() throws IOException {
         if (property.isList) {
@@ -87,7 +85,7 @@ public class Values extends ArrayList<Value> {
      * Returns the values as a string array.
      *
      * @return a string array of values
-     * @throws IOException
+     * @throws IOException indicates an I/O exception occurred
      */
     public String[] toStringArray() throws IOException {
         String[] array = new String[size()];
@@ -121,8 +119,8 @@ public class Values extends ArrayList<Value> {
     /**
      * Returns true if any of the values are the null values for the property.
      *
-     * @return
-     * @throws IOException
+     * @return true if any of the values are the null values for the property
+     * @throws IOException indicates an I/O exception occurred
      */
     public boolean getIsDefault() throws IOException {
         for (Value value : this) {

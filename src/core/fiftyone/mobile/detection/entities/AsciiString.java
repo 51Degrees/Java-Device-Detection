@@ -43,6 +43,7 @@ public class AsciiString extends BaseEntity {
 
     /**
      * The length of the byte array or string in characters.
+     * @return length of the byte array or string in characters.
      */
     public int getLength() {
         return value.length;
@@ -55,6 +56,7 @@ public class AsciiString extends BaseEntity {
      * within
      * @param offset The offset to the start of the string within the string
      * data structure
+     * @param reader reader to be used
      */
     public AsciiString(Dataset dataSet, int offset, BinaryReader reader) {
         super(dataSet, offset);

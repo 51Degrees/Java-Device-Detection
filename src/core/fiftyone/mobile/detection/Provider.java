@@ -41,6 +41,7 @@ public class Provider {
 
     /**
      * The total number of detections performed by the data set.
+     * @return total number of detections performed by this data set
      */
     public long getDetectionCount() {
         return detectionCount;
@@ -59,7 +60,7 @@ public class Provider {
     /**
      * Builds a new provider with the embedded data set.
      *
-     * @throws IOException
+     * @throws IOException indicates an I/O exception occurred
      */
     public Provider() throws IOException {
         this(MemoryFactory.read(new BinaryReader(getEmbeddedByteArray()), false), 0);
@@ -70,7 +71,7 @@ public class Provider {
      * service internal specified.
      *
      * @param cacheServiceInterval cache service internal in seconds.
-     * @throws IOException
+     * @throws IOException indicates an I/O exception occurred
      */
     public Provider(int cacheServiceInterval) throws IOException {
         this(MemoryFactory.read(
@@ -139,8 +140,7 @@ public class Provider {
     /**
      * Creates a new match object to be used for matching.
      *
-     * @return a match object ready to be used with the Match methods
-     * @throws Exception
+     * @return a match object ready to be used with the Match methods 
      */
     public Match createMatch() {
         return new Match(dataSet);
@@ -151,7 +151,7 @@ public class Provider {
      * information about the capabilities of the device and it's components.
      * @param headers List of HTTP headers to use for the detection
      * @return a match for the target headers provided
-     * @throws IOException
+     * @throws IOException indicates an I/O exception occurred
      */
     public Match match(final Map<String, String> headers) throws IOException {
         return match(headers, createMatch());
@@ -163,7 +163,7 @@ public class Provider {
      * @param headers List of HTTP headers to use for the detection
      * @param match object created to store the results of the match
      * @return a match for the target headers provided
-     * @throws IOException
+     * @throws IOException indicates an I/O exception occurred
      */
     public Match match(final Map<String, String> headers, Match match) throws IOException {
         // Get the match for the main user agent.
@@ -208,9 +208,9 @@ public class Provider {
      * For a given user agent returns a match containing information about the
      * capabilities of the device and it's components.
      *
-     * @param targetUserAgent
+     * @param targetUserAgent string representing the user agent to be identified
      * @return a match result for the target user agent
-     * @throws IOException
+     * @throws IOException indicates an I/O exception occurred
      */
     public Match match(String targetUserAgent) throws IOException {
         return match(targetUserAgent, createMatch());
@@ -223,9 +223,9 @@ public class Provider {
      * @param targetUserAgent The user agent string to use as the target
      * @param match A match object created by a previous match, or via the
      * CreateMatch method.
-     * @return
-     * @throws IOException
-     * @throws Exception
+     * @return a match containing information about the capabilities of the 
+     * device and it's components
+     * @throws IOException indicates and I/O exception occurred
      */
     public Match match(String targetUserAgent, Match match) throws IOException {
         MatchState state;

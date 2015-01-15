@@ -52,7 +52,7 @@ public class Value extends BaseEntity implements Comparable<Value> {
 
     /**
      * @return The name of the value.
-     * @throws IOException
+     * @throws IOException indicates an I/O exception occurred
      */
     public String getName() throws IOException {
         if (name == null) {
@@ -69,7 +69,7 @@ public class Value extends BaseEntity implements Comparable<Value> {
 
     /**
      * @return Array containing the signatures that the value is associated with.
-     * @throws IOException
+     * @throws IOException indicates an I/O exception occurred
      */
     public Signature[] getSignatures() throws IOException {
         if (signatures == null) {
@@ -85,7 +85,7 @@ public class Value extends BaseEntity implements Comparable<Value> {
 
     /**
      * @return Array containing the profiles the value is associated with.
-     * @throws IOException
+     * @throws IOException indicates an I/O exception occurred
      */
     public Profile[] getProfiles() throws IOException {
         if (profiles == null) {
@@ -101,7 +101,7 @@ public class Value extends BaseEntity implements Comparable<Value> {
 
     /**
      * @return The property the value relates to.
-     * @throws IOException
+     * @throws IOException indicates an I/O exception occurred
      */
     public Property getProperty() throws IOException {
         if (property == null) {
@@ -118,7 +118,7 @@ public class Value extends BaseEntity implements Comparable<Value> {
 
     /**
      * @return The component the value relates to.
-     * @throws IOException
+     * @throws IOException indicates an I/O exception occurred
      */
     public Component getComponent() throws IOException {
         return getProperty().getComponent();
@@ -127,7 +127,7 @@ public class Value extends BaseEntity implements Comparable<Value> {
     /**
      * @return A description of the value suitable to be displayed to end users
      * via a user interface.
-     * @throws IOException
+     * @throws IOException indicates an I/O exception occurred
      */
     public String getDescription() throws IOException {
         if (descriptionIndex >= 0 && description == null) {
@@ -145,7 +145,7 @@ public class Value extends BaseEntity implements Comparable<Value> {
 
     /**
      * @return A URL to more information about the value if present.
-     * @throws IOException
+     * @throws IOException indicates an I/O exception occurred
      */
     public URL getUrl() throws IOException {
         if (urlIndex >= 0 && url == null) {
@@ -184,7 +184,7 @@ public class Value extends BaseEntity implements Comparable<Value> {
      * completed. The Profiles and Signatures are not initialised as they are
      * very rarely used and take a long time to initialise.
      *
-     * @throws IOException
+     * @throws IOException indicates an I/O exception occurred
      */
     public void init() throws IOException {
         name = getDataSet().strings.get(nameIndex).toString();
@@ -281,7 +281,7 @@ public class Value extends BaseEntity implements Comparable<Value> {
 
     /**
      * @return Returns the value as a number.
-     * @throws IOException
+     * @throws IOException indicates an I/O exception occurred
      */
     public double toDouble() throws IOException {
         if (asNumber == null) {
@@ -305,7 +305,7 @@ public class Value extends BaseEntity implements Comparable<Value> {
 
     /**
      * @return Returns the value as a boolean.
-     * @throws IOException
+     * @throws IOException indicates an I/O exception occurred
      */
     public boolean toBool() throws IOException {
         if (asBool == null) {
@@ -323,8 +323,9 @@ public class Value extends BaseEntity implements Comparable<Value> {
      * Returns true if the value is the null value for the property. If the
      * property has no null value false is always returned.
      *
-     * @return
-     * @throws IOException
+     * @return true if the value is the null value for the property. If the
+     * property has no null value false is always returned.
+     * @throws IOException indicates an I/O exception occurred
      */
     public boolean getIsDefault() throws IOException {
         Value defaultValue = property.getDefaultValue();

@@ -48,6 +48,8 @@ public class Component extends BaseEntity implements Comparable<Component> {
 
     /**
      * The unique name of the component.
+     * @return unique name of the component
+     * @throws java.io.IOException indicates an I/O exception occurred 
      */
     public String getName() throws IOException {
         if (name == null) {
@@ -65,7 +67,8 @@ public class Component extends BaseEntity implements Comparable<Component> {
     /**
      * Array of properties the component relates to.
      *
-     * @throws IOException
+     * @return array of properties the component relates to.
+     * @throws IOException indicates an I/O exception occurred
      */
     public Property[] getProperties() throws IOException {
         if (properties == null) {
@@ -80,7 +83,9 @@ public class Component extends BaseEntity implements Comparable<Component> {
     private Property[] properties;
 
     /**
-     * An array of the p
+     * An array of the profiles.
+     * @return an array of the profiles.
+     * @throws java.io.IOException indicates an I/O exception occurred
      */
     public Profile[] getProfiles() throws IOException {
         if (profiles == null) {
@@ -96,6 +101,8 @@ public class Component extends BaseEntity implements Comparable<Component> {
 
     /**
      * The default profile that should be returned for the component.
+     * @return default profile that should be returned for the component
+     * @throws java.io.IOException indicates an I/O exception occurred
      */
     public Profile getDefaultProfile() throws IOException {
         if (defaultProfile == null) {
@@ -117,6 +124,7 @@ public class Component extends BaseEntity implements Comparable<Component> {
      * @param dataSet The data set whose components list the component is
      * contained within
      * @param index Index of the component within the list
+     * @param reader the BinaryReader object to be used
      */
     public Component(Dataset dataSet, int index, BinaryReader reader) {
         super(dataSet, index);
@@ -127,6 +135,7 @@ public class Component extends BaseEntity implements Comparable<Component> {
 
     /**
      * Initialises the references to profiles.
+     * @throws java.io.IOException indicates an I/O exception occurred
      */
     public void init() throws IOException {
         defaultProfile = getDataSet().getProfiles().get(defaultProfileOffset);

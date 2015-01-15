@@ -67,7 +67,7 @@ public class Controller {
      * data set will always perform fastest but does consume more memory.
      *
      * @param match The match object to be updated.
-     * @throws IOException
+     * @throws IOException an I/O exception has occurred
      */
     public void match(Match match) throws IOException {
 

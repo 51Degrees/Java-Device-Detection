@@ -54,10 +54,12 @@ public class Source implements Disposable {
 
     @Override
     public void dispose() {
-        try {
-            fileInputStream.close();
-        } catch (IOException ex) {
-            // Nothing we can do at this point. Ignore.
+        if (fileInputStream != null) {
+            try {
+                fileInputStream.close();
+            } catch (IOException ex) {
+                // Nothing we can do at this point. Ignore.
+            }
         }
     }
 
@@ -65,6 +67,7 @@ public class Source implements Disposable {
      * Creates a new reader and stores a reference to it.
      *
      * @return A reader open for read access to the stream
+     * @throws java.io.IOException indicates an I/O exception occurred
      */
     public synchronized BinaryReader createReader() throws IOException {
         if (data != null) {
