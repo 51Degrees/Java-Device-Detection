@@ -52,10 +52,20 @@ This project uses SLF4J, using the MIT licence.
 http://www.slf4j.org/license.html
 
 --------------------------------------------------------------------------------
+Version 3.1.5.4
+Changes:
+
+Added missing descriptions in comments that prevented generating Javadoc.
+
+Updated Lite data files (both Trie and Pattern) to the latest version.
+
+Fixed an issue in AutoUpdate that would cause the amount of threads created by the auto update 
+to increase with each iteration, using up more memory with every iteration.
+
+The error message in AutoUpdate is now more informative. Server response code is now printed along with 
+the short message explaining what the cause might be.
 
 Version 3.1.4.10
-
-Changes:
 
 getBinaryFilePath in webapp/WebProvider has been modified to address path issue on some systems.
 
@@ -252,10 +262,10 @@ session when available and are no longer cached separately.
 
 Two modes of operation are available:
 
-1.  Memory – the detection data set is loaded into memory and there is no 
+1.  Memory Â– the detection data set is loaded into memory and there is no 
   continuous connection to the source data file. Slower initialisation time
   but faster detection performance.
-2.  Stream – relevant parts of the data set are loaded into memory when required
+2.  Stream Â– relevant parts of the data set are loaded into memory when required
   and cached to improve performance. Rapid initialisation time but 
   approximately 50% slower detection performance. This mode is used when 
   operated in a web environment.
@@ -294,7 +304,7 @@ references to these classes will need to be revised.
 
 Two factories are now available to create detection data sets.
 
-1.  FiftyOne.Foundation.Mobile.Detection.Factories.MemoryFactory – 
+1.  FiftyOne.Foundation.Mobile.Detection.Factories.MemoryFactory Â– 
   provides Create methods to build data sets held in memory. An optional
   parameter can be specified to initialise the data set where all references
   to related objects are set after the data set has been loaded into memory.
@@ -303,7 +313,7 @@ Two factories are now available to create detection data sets.
   of log files or centralised web services where memory overhead and 
   initialisation time are less important.
 
-2.  FiftyOne.Foundation.Mobile.Detection.Factories.StreamFactory – 
+2.  FiftyOne.Foundation.Mobile.Detection.Factories.StreamFactory Â– 
   provides Create methods to build data sets that retain a connection to the 
   data set source and load required data only when needed. Recommended for web
   environments. Default operation when deployed into a web project.
@@ -379,7 +389,7 @@ Method        The method used to complete the detection.
           characters may be different between the returned signature
           and the target user agent. The Difference property should be
           used to determine the degree of difference.
-          None – A match could not be determined.
+          None Â– A match could not be determined.
 SignaturesCompared  The number of signatures compared to the target to identify
           a Closest or Nearest match. Will return zero for any other
           methods.
