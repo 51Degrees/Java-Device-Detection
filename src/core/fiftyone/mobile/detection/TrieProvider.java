@@ -118,6 +118,7 @@ public class TrieProvider implements Disposable {
 
     /**
      * List of all property names for the provider.
+     * @return list of all property names for the provider
      */
     public List<String> PropertyNames() {
         return _propertyNames;
@@ -135,6 +136,7 @@ public class TrieProvider implements Disposable {
      * @param nodesOffset The position of the start of the nodes in the file
      * provided.
      * @param fileName Name of the source data file used to create the provider.
+     * @throws FileNotFoundException indicates device data file was not found.
      */
     public TrieProvider(String copyright, byte[] strings, byte[] properties, byte[] devices,
             short[] lookupList, long nodesLength, long nodesOffset, String fileName) throws FileNotFoundException {
@@ -162,7 +164,9 @@ public class TrieProvider implements Disposable {
     /**
      * Returns the user agent matched against the one provided.
      *
-     * @param userAgent
+     * @param userAgent user agent to match
+     * @return user agent string that was matched against the user agent provided
+     * @throws Exception indicates an exception occurred
      */
     public String getUserAgent(String userAgent) throws Exception {
         StringBuilder matchedUserAgent = new StringBuilder();
@@ -183,7 +187,9 @@ public class TrieProvider implements Disposable {
      * index returned may vary across different versions of the source data file
      * and should not be stored. The "Id" property will remain unique.
      *
-     * @param userAgent
+     * @param userAgent user agent to get device index of.
+     * @return index of the device associated with the given user agent.
+     * @throws Exception indicates an exception occurred
      */
     public int getDeviceIndex(String userAgent) throws Exception {
         TrieReader reader = _pool.getReader();
@@ -200,7 +206,8 @@ public class TrieProvider implements Disposable {
     /**
      * Returns the device id matching the device index.
      *
-     * @param deviceIndex">Index of the device whose Id should be returned
+     * @param deviceIndex index of the device whose Id should be returned
+     * @return device id matching the device index
      */
     public String getDeviceId(int deviceIndex) {
         return getPropertyValue(deviceIndex, "Id");
@@ -211,7 +218,7 @@ public class TrieProvider implements Disposable {
      *
      * @param deviceIndex The index of the device whose property should be
      * returned.
-     * @param property">The name of the property required.
+     * @param property the name of the property required.
      * @return The value of the property for the given device index.
      */
     public String getPropertyValue(int deviceIndex, String property) {
@@ -224,6 +231,8 @@ public class TrieProvider implements Disposable {
      *
      * @param deviceIndex Index for the device.
      * @param propertyIndex Index of the property required.
+     * @return value of the property index provided for the device index 
+     * provided.
      */
     public String getPropertyValue(int deviceIndex, int propertyIndex) {
         int devicePosition = deviceIndex * _propertyCount * SIZE_OF_INT;
@@ -235,7 +244,9 @@ public class TrieProvider implements Disposable {
      * Returns the integer index of the property in the list of values
      * associated with the device.
      *
-     * @param property
+     * @param property property to return index of
+     * @return integer index of the property in the list of values associated 
+     * with the device.
      */
     public int getPropertyIndex(String property) {
         int index = -1;
@@ -344,7 +355,8 @@ public class TrieProvider implements Disposable {
     /**
      * The number of bytes each offset takes.
      *
-     * @param offsetType
+     * @param offsetType offset type
+     * @return number of bytes each offset takes.
      */
     public static int sizeOfOffsets(OffsetType offsetType) {
         switch (offsetType) {

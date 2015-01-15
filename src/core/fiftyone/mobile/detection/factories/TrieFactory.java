@@ -33,8 +33,9 @@ public class TrieFactory {
     /**
      * Creates a new provider from the binary file supplied.
      *
-     * @param file Binary file to use to create the provider.
+     * @param fileName Binary file to use to create the provider.
      * @return A new provider initialised with data from the file provided.
+     * @throws IOException indicates an I/O exception occurred
      */
     public static TrieProvider create(String fileName) throws IOException {
         File file = new File(fileName);

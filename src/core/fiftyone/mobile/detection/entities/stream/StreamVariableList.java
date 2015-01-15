@@ -45,12 +45,12 @@ import java.util.List;
  * seeking can not be used. Specifically compressed data structures can not be
  * used with these lists. <p> Should not be referenced directly.
  *
- * @param T The type of BaseEntity the list will contain
+ * @param <T> The type of BaseEntity the list will contain
  */
 public class StreamVariableList<T extends BaseEntity> extends BaseList<T> {
 
     /**
-     * Constructs a new instance of VariableList<T>
+     * Constructs a new instance of VariableList of type T
      *
      * @param dataSet The DetectorDataSet being created
      * @param reader Reader connected to the source data structure and

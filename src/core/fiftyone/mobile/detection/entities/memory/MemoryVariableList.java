@@ -40,12 +40,12 @@ import java.io.IOException;
  * source stream that do not support seeking. <p> Should not be referenced
  * directly.
  *
- * @param T The type of BaseEntity the list will contain
+ * @param <T> The type of BaseEntity the list will contain
  */
 public class MemoryVariableList<T extends BaseEntity> extends BaseList<T> {
 
     /**
-     * Constructs a new instance of VariableList<T>
+     * Constructs a new instance of VariableList of type T
      *
      * @param dataSet The DetectorDataSet being created
      * @param reader Reader connected to the source data structure and
@@ -63,7 +63,7 @@ public class MemoryVariableList<T extends BaseEntity> extends BaseList<T> {
      *
      * @param reader Reader connected to the source data structure and
      * positioned to start reading
-     * @throws IOException
+     * @throws IOException indicates an I/O exception occurred
      */
     public void read(BinaryReader reader) throws IOException {
         for (int index = 0, offset = 0; index < header.getCount(); index++) {

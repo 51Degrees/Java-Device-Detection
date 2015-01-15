@@ -33,13 +33,13 @@ import java.io.IOException;
  * Lists can be stored as a set of related objects entirely within memory, or
  * the relevant objects loaded as required from a file or other permanent store
  * as required. <p> This class provides core functions needed for lists which
- * load objects as required. It implements the Cache<T> to store frequently
+ * load objects as required. It implements the Cache of type T to store frequently
  * requested objects and improve memory usage and performance. <p> Interface
  * implementations are used to create new instances of items to add to the list
  * in order to avoid creating many inherited list classes for each BaseEntity
  * type. <p> Should not be referenced directly.
  *
- * @param T The type of BaseEntity the list will contain
+ * @param <T> The type of BaseEntity the list will contain
  */
 public abstract class BaseList<T extends BaseEntity> implements
         ReadonlyList<T>, ICacheList, Disposable {
@@ -76,12 +76,13 @@ public abstract class BaseList<T extends BaseEntity> implements
     }
 
     /**
-     * Constructs a new instance of BaseList<T> ready to read entities from the
+     * Constructs a new instance of BaseList of type T ready to read entities from the
      * source.
      *
      * @param dataSet Dataset being created
      * @param reader Reader used to initialise the header only
      * @param source Source data file containing the entire data structure
+     * @param entityFactory a base entity factory to be used
      */
     public BaseList(Dataset dataSet, BinaryReader reader, Source source, BaseEntityFactory<T> entityFactory) {
         this.dataSet = dataSet;

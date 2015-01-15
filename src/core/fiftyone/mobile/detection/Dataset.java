@@ -46,7 +46,7 @@ import fiftyone.properties.DetectionConstants;
  * data sets. They can not be constructed directly from external code. <p> All
  * information about the detector data set is exposed in this class including
  * meta data and data used for device detection in the form of lists. <p>
- * Detector data sets created using the <see cref="Stream.Reader"/> factory
+ * Detector data sets created using the @see Stream#Reader factory
  * using a file must be disposed of to ensure any readers associated with the
  * file are closed elegantly. <p> For more information see
  * http://51degrees.mobi/Support/Documentation/Java
@@ -57,6 +57,8 @@ public class Dataset implements Disposable {
      * The percentage of requests for signatures which were not already
      * contained in the cache. <p> A value is only returned when operating in
      * Stream mode.
+     * @return double representing percentage of requests for signatures not 
+     * currently in cache, only for Stream Mode.
      */
     public double getPercentageSignatureCacheMisses() {
         if (signatures instanceof ICacheList) {
@@ -68,6 +70,8 @@ public class Dataset implements Disposable {
     /**
      * The percentage of requests for nodes which were not already contained in
      * the cache. <p> A value is only returned when operating in Stream mode.
+     * @return double representing percentage of requests for nodes not already 
+     * in cache. Stream Mode only.
      */
     public double getPercentageNodeCacheMisses() {
         if (nodes instanceof ICacheList) {
@@ -79,6 +83,8 @@ public class Dataset implements Disposable {
     /**
      * The percentage of requests for strings which were not already contained
      * in the cache. <p> A value is only returned when operating in Stream mode.
+     * @return double representing percentage of requests for strings that were 
+     * not already in cache.
      */
     public double getPercentageStringsCacheMisses() {
         if (strings instanceof ICacheList) {
@@ -90,6 +96,8 @@ public class Dataset implements Disposable {
     /**
      * The percentage of requests for profiles which were not already contained
      * in the cache. <p> A value is only returned when operating in Stream mode.
+     * @return double representing percentage of requests for profiles that were 
+     * not already in cache.
      */
     public double getPercentageProfilesCacheMisses() {
         if (profiles instanceof ICacheList) {
@@ -101,6 +109,8 @@ public class Dataset implements Disposable {
     /**
      * The percentage of requests for values which were not already contained in
      * the cache. <p> A value is only returned when operating in Stream mode.
+     * @return double representing percentage of requests for values that were 
+     * not already in cache.
      */
     public double getPercentageValuesCacheMisses() {
         if (values instanceof ICacheList) {
@@ -111,6 +121,7 @@ public class Dataset implements Disposable {
 
     /**
      * Indicates if the data set has been disposed.
+     * @return True if dataset has been disposed, False otherwise.
      */
     public boolean getDisposed() {
         return disposed;
@@ -193,7 +204,8 @@ public class Dataset implements Disposable {
     /**
      * The hardware component.
      *
-     * @throws IOException
+     * @return hardware component for the hardware platform
+     * @throws IOException signals an I/O exception occurred
      */
     public Component getHardware() throws IOException {
         if (hardware == null) {
@@ -209,8 +221,8 @@ public class Dataset implements Disposable {
 
     /**
      * The software component.
-     *
-     * @throws IOException
+     * @return software component for the software platform
+     * @throws IOException signals an I/O exception occurred
      */
     public Component getSoftware() throws IOException {
         if (software == null) {
@@ -226,8 +238,8 @@ public class Dataset implements Disposable {
 
     /**
      * The browser component.
-     *
-     * @throws IOException
+     * @return browser component for browser
+     * @throws IOException signals an I/O exception occurred
      */
     public Component getBrowsers() throws IOException {
         if (browsers == null) {
@@ -243,8 +255,8 @@ public class Dataset implements Disposable {
 
     /**
      * The crawler component.
-     *
-     * @throws IOException
+     * @return crawler component
+     * @throws IOException signals an I/O exception has occurred
      */
     public Component getCrawlers() throws IOException {
         if (crawlers == null) {
@@ -260,8 +272,8 @@ public class Dataset implements Disposable {
 
     /**
      * The copyright notice associated with the data set.
-     *
-     * @throws IOException
+     * @return string of text representing copyright notice for the data set
+     * @throws IOException signals an I/O exception occurred
      */
     public String getCopyright() throws IOException {
         if (copyright == null) {
@@ -278,8 +290,8 @@ public class Dataset implements Disposable {
 
     /**
      * The common name of the data set.
-     *
-     * @throws IOException
+     * @return name of the data set
+     * @throws IOException signals an I/O exception occurred
      */
     public String getName() throws IOException {
         if (name == null) {
@@ -296,8 +308,8 @@ public class Dataset implements Disposable {
 
     /**
      * The name of the property map used to create the dataset.
-     *
-     * @throws IOException
+     * @return name of the property map used to create dataset
+     * @throws IOException signals an I/O exception occurred
      */
     public String getFormat() throws IOException {
         if (format == null) {
@@ -314,6 +326,7 @@ public class Dataset implements Disposable {
 
     /**
      * A list of all the components the data set contains.
+     * @return a read-only list of all components contained in data set
      */
     public ReadonlyList<Component> getComponents() {
         return components;
@@ -322,6 +335,7 @@ public class Dataset implements Disposable {
 
     /**
      * A list of all property maps the data set contains.
+     * @return a read-only list of all maps contained in the data set
      */
     public ReadonlyList<Map> getMaps() {
         return maps;
@@ -330,6 +344,7 @@ public class Dataset implements Disposable {
 
     /**
      * A list of all properties the data set contains.
+     * @return a read-only list of all properties contained in the data set
      */
     public ReadonlyList<Property> getProperties() {
         return properties;
@@ -338,6 +353,7 @@ public class Dataset implements Disposable {
 
     /**
      * A list of all property values the data set contains.
+     * @return a read-only list of values contained in the data set
      */
     public ReadonlyList<Value> getValues() {
         return values;
@@ -346,6 +362,7 @@ public class Dataset implements Disposable {
 
     /**
      * List of signatures the data set contains.
+     * @return a read-only list of all signatures contained in the data set
      */
     public ReadonlyList<Signature> getSignatures() {
         return signatures;
@@ -388,6 +405,7 @@ public class Dataset implements Disposable {
      *
      * @param reader Reader connected to the source data structure and
      * positioned to start reading
+     * @throws java.io.IOException signals an I/O exception occurred
      */
     public Dataset(BinaryReader reader) throws IOException {
         // Read the detection data set headers.
@@ -447,6 +465,7 @@ public class Dataset implements Disposable {
 
     /**
      * List of nodes the data set contains.
+     * @return a read-only list of nodes contained in the data set
      */
     public ReadonlyList<Node> getNodes() {
         return nodes;
@@ -454,6 +473,7 @@ public class Dataset implements Disposable {
 
     /**
      * A list of all the possible profiles the data set contains.
+     * @return a read-only list of all profiles contained in the data set
      */
     public ReadonlyList<Profile> getProfiles() {
         return profiles;
@@ -468,7 +488,7 @@ public class Dataset implements Disposable {
      * initialisation steps that require other items in the data set can be
      * completed.
      *
-     * @throws IOException
+     * @throws IOException signals an I/O exception occurred
      */
     public void init() throws IOException {
 
@@ -515,9 +535,9 @@ public class Dataset implements Disposable {
     /**
      * Returns the Component associated with the name provided.
      *
-     * @param componentName
+     * @param componentName string representing name of the component to retrieve
      * @return The component matching the name, or null if no component is found
-     * @throws IOException
+     * @throws IOException signals an I/O exception occurred
      *
      */
     public Component getComponent(String componentName) throws IOException {
@@ -552,7 +572,7 @@ public class Dataset implements Disposable {
      *
      * @param profileId Id of the profile to be found
      * @return Profile related to the id, or null if none found
-     * @throws IOException
+     * @throws IOException signals an I/O exception occurred
      */
     public Profile findProfile(int profileId) throws IOException {
         int lower = 0;

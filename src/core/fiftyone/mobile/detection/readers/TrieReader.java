@@ -60,7 +60,8 @@ public class TrieReader {
      *
      * Creates the class by creating multiple ByteBuffers that can be read from.
      *
-     **** @param reader File channel to read from.
+     * @param reader File channel to read from.
+     * @throws java.io.IOException indicates an I/O exception occurred
      */
     public TrieReader(final FileChannel reader) throws IOException {
         _position = 0;
@@ -182,7 +183,7 @@ public class TrieReader {
      * Read an Unsigned integer from the file at the current location.
      *
      * @return The Value read.
-     * @throws IOException
+     * @throws IOException indicates an I/O exception occurred
      */
     public long readUInt() throws IOException {
         long l = 0;
@@ -208,7 +209,7 @@ public class TrieReader {
      * Read an signed integer from the file at the current location.
      *
      * @return The Value read.
-     * @throws IOException
+     * @throws IOException indicates an I/O exception occurred
      */
     public int readInt() throws IOException {
         int r = 0;
@@ -234,7 +235,6 @@ public class TrieReader {
      * Read an signed long from the file at the current location.
      *
      * @return The Value read.
-     * @throws IOException
      */
     public long readLong() {
         long l = 0;
@@ -253,7 +253,7 @@ public class TrieReader {
      *
      **** @param position Position to read from.
      * @return The value read.
-     * @throws IOException
+     * @throws IOException indicates an I/O exception occurred
      */
     public long readLong(long position) throws IOException {
         setPos(position);
@@ -334,7 +334,7 @@ public class TrieReader {
     /**
      * Clears the ByteBuffers and closes the File Channel.
      *
-     * @throws IOException
+     * @throws IOException indicates an I/O exception occurred
      */
     public void close() throws IOException {
         for (ByteBuffer b : _buffers) {

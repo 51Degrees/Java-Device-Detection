@@ -33,7 +33,8 @@ public class Map extends BaseEntity implements Comparable<Map> {
     /**
      * The name of the map.
      *
-     * @throws IOException
+     * @return name of the map.
+     * @throws java.io.IOException indicates an I/O exception occurred
      */
     public String getName() throws IOException {
         if (name == null) {
@@ -53,6 +54,7 @@ public class Map extends BaseEntity implements Comparable<Map> {
      *
      * @param dataSet The data set the node is contained within
      * @param index The index of this object in the Node
+     * @param reader BinaryReader object to be used
      */
     public Map(Dataset dataSet, int index, BinaryReader reader) {
         super(dataSet, index);

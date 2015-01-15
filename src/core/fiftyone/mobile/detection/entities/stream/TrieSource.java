@@ -53,6 +53,7 @@ public class TrieSource implements Disposable {
      * Creates a new reader and stores a reference to it.
      *
      * @return A reader open for read access to the stream
+     * @throws java.io.IOException indicates an I/O exception occurred
      */
     public synchronized TrieReader createReader() throws IOException {
         return new TrieReader(fileInputStream.getChannel());

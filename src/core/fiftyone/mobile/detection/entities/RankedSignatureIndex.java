@@ -45,7 +45,7 @@ public class RankedSignatureIndex extends BaseEntity {
     
     /**
      * Sets the associated signatures rank property.
-     * @throws IOException 
+     * @throws IOException indicates an I/O exception occurred
      */
     public void init() throws IOException {
         getDataSet().signatures.get(signatureIndex).rank = getIndex();

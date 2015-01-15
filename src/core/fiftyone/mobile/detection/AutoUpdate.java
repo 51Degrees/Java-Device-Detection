@@ -61,13 +61,15 @@ public class AutoUpdate {
         try {
             // Try to get the date the data was last modified. No existent files
             // or lite data do not need dates.
-            final File oldDataFile = new File(dataFilePath);
+            File oldDataFile = new File(dataFilePath);
             long lastModified = -1;
-            if (oldDataFile.exists()) {
+            boolean flag = oldDataFile.exists();
+            if (flag) {
                 final Dataset oldDataset = StreamFactory.create(dataFilePath);
                 if (!oldDataset.getName().contains("Lite")) {
                     lastModified = oldDataFile.lastModified();
                 }
+                oldDataset.dispose();
             }
             // Get data as byte array.
             final byte[] content = download(licenseKeys, lastModified);
@@ -78,13 +80,15 @@ public class AutoUpdate {
                 final Dataset newDataSet = StreamFactory.create(content);
 
                 boolean copyFile = true;
-                final File dataFile = new File(dataFilePath);
+                File dataFile = new File(dataFilePath);
                 // Confirm the new data is newer than current.
                 if (dataFile.exists()) {
 
                     final Dataset currentDataSet = StreamFactory.create(dataFilePath);
                     copyFile = newDataSet.published.getTime() > currentDataSet.published.getTime() || 
                                newDataSet.getName() != currentDataSet.getName();
+                    
+                    currentDataSet.dispose();
                 }
                 // Check this is new data based on publish data and number of
                 // available properties.
@@ -186,9 +190,11 @@ public class AutoUpdate {
      * with it.
      *
      * @param licenseKey the licence key to submit to the server
+     * @param dataFilePath path to the device data file
      * @return true for a successful update. False can indicate that data was
      * unavailable, corrupt, older than the current data or not enough memory
      * was available. In that case the current data is used.
+     * @throws AutoUpdateException exception detailing problem during the update
      */
     public static boolean update(final String licenseKey, String dataFilePath) throws AutoUpdateException {
         return update(new String[]{licenseKey}, dataFilePath);
@@ -200,9 +206,11 @@ public class AutoUpdate {
      * with it.
      *
      * @param licenseKeys the licence keys to submit to the server
+     * @param dataFilePath path to device data file
      * @return true for a successful update. False can indicate that data was
      * unavailable, corrupt, older than the current data or not enough memory
      * was available. In that case the current data is used.
+     * @throws AutoUpdateException exception detailing problem during the update
      */
     public static boolean update(final String[] licenseKeys, String dataFilePath) 
             throws AutoUpdateException {
@@ -218,6 +226,7 @@ public class AutoUpdate {
             // Download the provider getting an instance of a new provider.
             final Dataset dataset = getNewDataset(validKeys, dataFilePath);
             if (dataset != null) {
+                dataset.dispose();
                 return true;
             }
         } else {
@@ -284,9 +293,18 @@ public class AutoUpdate {
                     throw new AutoUpdateException("Device data update does not match hash values.");
                 }
             } else {
-                throw new AutoUpdateException("Unable to connect with 51Degrees update server. "
-                        + "The update server may be temporarily down or unreachable "
-                        + "from this location.");
+                //Server response was not 200. Data download can not commence.
+                StringBuilder message = new StringBuilder();
+                message.append("Could not commence data file download. ");
+                if(client.getResponseCode() == 429) {
+                    message.append("Server response: 429 - too many download attempts. ");
+                } else if (client.getResponseCode() == 304) {
+                    message.append("Server response: 304 - not modified. You already have the latest data. ");
+                } else {
+                    message.append("Server response: ");
+                    message.append(client.getResponseCode());
+                }
+                throw new AutoUpdateException(message.toString());
             }
         } catch (IOException ex) {
             throw new AutoUpdateException("Device data download failed: " + ex.getMessage());
