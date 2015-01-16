@@ -59,11 +59,12 @@ Added missing descriptions in comments that prevented generating Javadoc.
 
 Updated Lite data files (both Trie and Pattern) to the latest version.
 
-Fixed an issue in AutoUpdate that would cause the amount of threads created by the auto update 
-to increase with each iteration, using up more memory with every iteration.
+Fixed an issue in AutoUpdate that would cause the amount of threads created by
+the auto update to increase with each iteration, using up more memory with
+every iteration.
 
-The error message in AutoUpdate is now more informative. Server response code is now printed along with 
-the short message explaining what the cause might be.
+The error message in AutoUpdate is now more informative. Server response code
+is now printed along with the short message explaining what the cause might be.
 
 Version 3.1.4.10
 
