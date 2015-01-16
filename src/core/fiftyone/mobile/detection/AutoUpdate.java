@@ -61,10 +61,9 @@ public class AutoUpdate {
         try {
             // Try to get the date the data was last modified. No existent files
             // or lite data do not need dates.
-            File oldDataFile = new File(dataFilePath);
+            final File oldDataFile = new File(dataFilePath);
             long lastModified = -1;
-            boolean flag = oldDataFile.exists();
-            if (flag) {
+            if (oldDataFile.exists()) {
                 final Dataset oldDataset = StreamFactory.create(dataFilePath);
                 if (!oldDataset.getName().contains("Lite")) {
                     lastModified = oldDataFile.lastModified();
@@ -80,7 +79,7 @@ public class AutoUpdate {
                 final Dataset newDataSet = StreamFactory.create(content);
 
                 boolean copyFile = true;
-                File dataFile = new File(dataFilePath);
+                final File dataFile = new File(dataFilePath);
                 // Confirm the new data is newer than current.
                 if (dataFile.exists()) {
 
