@@ -52,6 +52,11 @@ This project uses SLF4J, using the MIT licence.
 http://www.slf4j.org/license.html
 
 --------------------------------------------------------------------------------
+Version 3.1.5.5
+Changes:
+
+Updated embedded data file.
+
 Version 3.1.5.4
 Changes:
 
