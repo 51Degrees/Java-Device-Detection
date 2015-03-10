@@ -40,6 +40,7 @@ import java.nio.channels.FileChannel.MapMode;
 public class Source implements Disposable {
 
     private final FileInputStream fileInputStream;
+    private FileChannel channel;
     private final byte[] data;
 
     public Source(String filename) throws FileNotFoundException {
@@ -60,6 +61,12 @@ public class Source implements Disposable {
             } catch (IOException ex) {
                 // Nothing we can do at this point. Ignore.
             }
+        }
+        if(channel != null) {
+         try {
+             channel.close();
+         }
+         catch(IOException ex){}
         }
     }
 
@@ -83,8 +90,8 @@ public class Source implements Disposable {
     }
 
     private MappedByteBuffer createMappedByteBuffer() throws IOException {
-        FileChannel channel = fileInputStream.getChannel();
-        MappedByteBuffer mappedBuffer = fileInputStream.getChannel().map(
+        channel = fileInputStream.getChannel();
+        MappedByteBuffer mappedBuffer = channel.map(
                 MapMode.READ_ONLY,
                 0,
                 channel.size());

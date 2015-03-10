@@ -54,6 +54,12 @@ import fiftyone.properties.DetectionConstants;
 public class Dataset implements Disposable {
 
     /**
+     * The BinaryReader used in entity lists. This is not used directly in
+     * Dataset but a reference is needed to dispose it later.
+     */
+    private BinaryReader reader;
+    
+    /**
      * The percentage of requests for signatures which were not already
      * contained in the cache. <p> A value is only returned when operating in
      * Stream mode.
@@ -408,6 +414,9 @@ public class Dataset implements Disposable {
      * @throws java.io.IOException signals an I/O exception occurred
      */
     public Dataset(BinaryReader reader) throws IOException {
+        
+        this.reader = reader;
+                
         // Read the detection data set headers.
         version = new Version(reader.readInt32(), reader.readInt32(),
                 reader.readInt32(), reader.readInt32());
@@ -596,6 +605,18 @@ public class Dataset implements Disposable {
     @Override
     public void dispose() {
         disposed = true;
+        
+        if(reader != null)
+        {
+            reader.dispose();
+            reader = null;
+        }
+        // We need to collect because the ByteBuffers in BinaryReader
+        // do not release the file channel until they're collected. This
+        // doesn't gurarantee their collection but it at least makes it
+        // more likely.
+        System.gc();
+        
         if (strings != null) {
             strings.dispose();
         }
@@ -620,5 +641,16 @@ public class Dataset implements Disposable {
         if (rootNodes != null) {
             rootNodes.dispose();
         }
+        if (rankedSignatureIndexes != null) {
+            rankedSignatureIndexes.dispose();
+        }
+        if (maps != null) {
+            maps.dispose();
+        }
+        if(profileOffsets != null) {
+            profileOffsets.dispose();
+        }
+        
+        System.gc();
     }
 }
