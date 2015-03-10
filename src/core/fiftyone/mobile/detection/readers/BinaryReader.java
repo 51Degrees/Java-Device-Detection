@@ -1,5 +1,6 @@
 package fiftyone.mobile.detection.readers;
 
+import fiftyone.mobile.detection.Disposable;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -29,14 +30,15 @@ import java.util.List;
  * This Source Code Form is ?Incompatible With Secondary Licenses?, as
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
-public class BinaryReader {
+public class BinaryReader implements Disposable {
 
     /**
      * List of integers used to create arrays of integers where the length of
      * the list is not known before reading starts.
      */
     public final List<Integer> list = new ArrayList<Integer>();
-    private final ByteBuffer byteBuffer;
+    private ByteBuffer byteBuffer;
+    private FileChannel channel;
 
     public BinaryReader(byte[] data) {
         byteBuffer = ByteBuffer.wrap(data);
@@ -44,8 +46,8 @@ public class BinaryReader {
     }
 
     public BinaryReader(FileInputStream fileInputStream) throws IOException {
-        FileChannel channel = fileInputStream.getChannel();
-        byteBuffer = fileInputStream.getChannel().map(
+        channel = fileInputStream.getChannel();
+        byteBuffer = channel.map(
                 MapMode.READ_ONLY,
                 0,
                 channel.size());
@@ -81,5 +83,21 @@ public class BinaryReader {
         byte[] bytes = new byte[length];
         byteBuffer.get(bytes);
         return bytes;
+    }
+    
+    @Override
+    public void dispose()
+    {
+        if(channel != null)
+        {
+            try
+            {
+                channel.close();
+            }
+            catch (IOException ex)
+            {
+            }
+        }
+        byteBuffer = null;
     }
 }

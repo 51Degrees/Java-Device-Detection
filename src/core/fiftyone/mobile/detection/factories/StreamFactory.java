@@ -75,7 +75,7 @@ public final class StreamFactory {
 
     static Dataset read(BinaryReader reader, Source source) throws IOException {
         Dataset dataSet = new Dataset(reader);
-
+        
         dataSet.strings = new StreamVariableList<AsciiString>(dataSet, reader,
                 source, new AsciiStringFactory());
         MemoryFixedList<Component> components = new MemoryFixedList<Component>(
@@ -102,7 +102,7 @@ public final class StreamFactory {
         dataSet.rootNodes = rootNodes;
         dataSet.profileOffsets = new StreamFixedList<ProfileOffset>(
                 dataSet, reader, source, new ProfileOffsetFactory());
-
+        
         // Read into memory all the small lists which are frequently accessed.
         reader.setPos(components.header.getStartPosition());
         components.read(reader);

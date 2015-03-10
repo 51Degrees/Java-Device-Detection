@@ -70,6 +70,7 @@ public class AutoUpdate {
                 }
                 oldDataset.dispose();
             }
+            System.gc();
             // Get data as byte array.
             final byte[] content = download(licenseKeys, lastModified);
             if (content == null) {
@@ -89,6 +90,7 @@ public class AutoUpdate {
                     
                     currentDataSet.dispose();
                 }
+                System.gc();
                 // Check this is new data based on publish data and number of
                 // available properties.
                 if (copyFile) {

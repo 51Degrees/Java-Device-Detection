@@ -74,6 +74,10 @@ public class Pool implements Disposable {
 
     @Override
     public void dispose() {
+        for(BinaryReader reader : readers)
+        {
+            reader.dispose();
+        }
         source.dispose();
     }
 }
