@@ -49,11 +49,127 @@ public class Command {
 
     public static void main(String[] args) throws IOException, AutoUpdateException, Exception {
 
-        System.out.println("Getting data file.");
-        fiftyone.mobile.detection.AutoUpdate.update("999999R2DS76ZAJAB22GAWJMF8CR44RYRC6U466CWL8HMQN333JPLRTCQKRLFHZETTDVNRM36X8KRPBRYUW9QZA", "C:\\Users\\tom\\Desktop\\JavaData.dat");
-        System.out.println("Get complete.");
+        // Set this parameter to the data set file name.
+        String patternFileName = args.length > 0 ? args[0] : "";
+        String trieFileName = args.length > 1 ? args[1]: "";
         
-        return;
+        TrieProvider t = null;
+        Provider p;
         
+        // Construct the provider based on the file names provided.
+        if (new File(patternFileName).exists()) 
+        {
+            // The file exists so use it to initialise the provider.
+            p = new Provider(StreamFactory.create(patternFileName));
+        } else {
+            // Uses the free "Lite" data embedded in the Core package 
+            // as the dataset. Additional data sets can be purchased
+            // from http://51degrees.com/products/store
+            p = new Provider();
+        }
+        
+        if (new File(trieFileName).exists()) {
+            t = TrieFactory.create(trieFileName);
+        }
+        
+        System.out.println("\t\t\t*** Data Set Information ***");
+        System.out.printf("Name\t\t\t%s\r\n", p.dataSet.getName());
+        System.out.printf("Published\t\t%tc\r\n", p.dataSet.published);
+        System.out.printf("Next Update\t\t%tc\r\n", p.dataSet.nextUpdate);
+        System.out.printf("Signatures\t\t%d\r\n", p.dataSet.signatures.size());
+        System.out.printf("Device Combinations\t%d\r\n", p.dataSet.deviceCombinations);
+
+        for (String userAgent : USERAGENTS) {
+
+            // Match the user agent to properties.
+            Match patternMatch = p.match(userAgent);
+
+            // Show the profiles that related to the patternMatch result.
+            System.out.println("\r\n\t\t\t*** Pattern Detection Results ***");
+            if (p.dataSet.getName().equals("Lite") == false) {
+                System.out.print("Found\t\t\t");
+                for (int i = 0; i < patternMatch.getProfiles().length; i++) {
+                    System.out.printf("%s", patternMatch.getProfiles()[i].toString());
+                    System.out.print(" ");
+                }
+            }
+
+            // Show how the result was determined.
+            System.out.print("\r\n");
+            System.out.printf("Target User Agent\t%s\r\n", patternMatch.getTargetUserAgent());
+            System.out.printf("Relevant Sub Strings\t%s\r\n", patternMatch.toString());
+            System.out.printf("Closest Sub Strings\t%s\r\n", patternMatch.getUserAgent());
+            System.out.printf("Difference\t\t%d\r\n", patternMatch.getDifference());
+            System.out.printf("Method\t\t\t%s\r\n", patternMatch.method.toString());
+            System.out.printf("Root Nodes Evaluated\t%d\r\n", patternMatch.getRootNodesEvaluated());
+            System.out.printf("Nodes Evaluated\t\t%d\r\n", patternMatch.getNodesEvaluated());
+            System.out.printf("Strings Read\t\t%d\r\n", patternMatch.getStringsRead());
+            System.out.printf("Signatures Read\t\t%d\r\n", patternMatch.getSignaturesRead());
+            System.out.printf("Signatures Compared\t%d\r\n", patternMatch.getSignaturesCompared());
+            System.out.printf("Closest Signatures\t%d\r\n", patternMatch.getClosestSignaturesCount());
+
+            // Demonstrate some example lite properties.
+            System.out.println("\r\n\t\t\t*** Example Lite Properties ***");
+
+            if (patternMatch.getValues("IsMobile") != null) {
+                System.out.printf("IsMobile\t\t%b\r\n", 
+                        patternMatch.getValues("IsMobile").toBool());
+            }
+            if (patternMatch.getValues("ScreenPixelsWidth") != null) {
+                System.out.printf("ScreenPixelsWidth\t%f\r\n", 
+                        patternMatch.getValues("ScreenPixelsWidth").toDouble());
+            }
+            if (patternMatch.getValues("ScreenPixelsHeight") != null) {
+                System.out.printf("ScreenPixelsHeight\t%f\r\n", 
+                        patternMatch.getValues("ScreenPixelsHeight").toDouble());
+            }
+
+            // Demonstrate some example Premium properties.	
+            if (p.dataSet.getName().equals("Lite") == false) {
+                System.out.println("\r\n\t\t\t*** Example Enhanced Properties ***");
+                if (patternMatch.getValues("IsMediaHub") != null) {
+                    System.out.printf("IsMediaHub\t\t%b\r\n", 
+                            patternMatch.getValues("IsMediaHub").toBool());
+                }
+                if (patternMatch.getValues("ScreenMMWidth") != null) {
+                    System.out.printf("ScreenMMWidth\t\t%f\r\n", 
+                            patternMatch.getValues("ScreenMMWidth").toDouble());
+                }
+                if (patternMatch.getValues("ScreenMMHeight") != null) {
+                    System.out.printf("ScreenMMHeight\t\t%f\r\n", 
+                            patternMatch.getValues("ScreenMMHeight").toDouble());
+                }
+            }
+            
+            // Detect the device using the trie data if a provider is available.
+            if (t != null) {
+                
+                System.out.println("\r\n\t\t\t*** Trie Detection Results ***");
+                System.out.print("\r\n");
+                System.out.printf("Target User Agent\t%s\r\n", 
+                        userAgent);
+                System.out.printf("Found User Agent \t%s\r\n", 
+                        t.getUserAgent(userAgent));
+                                
+                int trieDeviceIndex = t.getDeviceIndex(userAgent);
+                
+                System.out.println("\r\n\t\t\t*** Example Lite Properties ***");
+                
+                if (t.PropertyNames().contains("IsMobile")) {
+                    System.out.printf("IsMobile\t\t%s\r\n", 
+                            t.getPropertyValue(trieDeviceIndex, "IsMobile"));
+                }
+                if (t.PropertyNames().contains("ScreenPixelsWidth")) {
+                    System.out.printf("ScreenPixelsWidth\t%s\r\n", 
+                            t.getPropertyValue(trieDeviceIndex, "ScreenPixelsWidth"));
+                }
+                if (t.PropertyNames().contains("ScreenPixelsHeight")) {
+                    System.out.printf("ScreenPixelsHeight\t%s\r\n", 
+                            t.getPropertyValue(trieDeviceIndex, "ScreenPixelsHeight"));
+                }                
+            }
+        }
+
+        System.exit(0);
     }
 }
