@@ -52,6 +52,11 @@ This project uses SLF4J, using the MIT licence.
 http://www.slf4j.org/license.html
 
 --------------------------------------------------------------------------------
+Version 3.1.6.1
+Changes:
+
+Addressed a file lock exception when updating data.
+
 Version 3.1.5.5
 Changes:
 
