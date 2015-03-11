@@ -197,7 +197,7 @@ public class Controller {
      */
     private void evaluate(Match match) throws IOException {
 
-        while (match.nextCharacterPositionIndex > 0) {
+        while (match.nextCharacterPositionIndex >= 0) {
 
             // Increase the count of root nodes checked.
             match.rootNodesEvaluated++;
