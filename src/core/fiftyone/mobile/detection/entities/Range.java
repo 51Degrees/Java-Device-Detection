@@ -31,6 +31,6 @@ class Range {
     }
 
     boolean inRange(int value) {
-        return value >= lower && value < upper;
+        return value >= lower && value <= upper;
     }
 }
