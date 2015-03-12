@@ -141,11 +141,12 @@ public class Node extends BaseEntity implements Comparable<Node> {
      */
     public static final int MIN_LENGTH = 20;
     private static final Range[] ranges = new Range[]{
-        new Range((short) 0, (short) 10),
-        new Range((short) 10, (short) 100),
-        new Range((short) 100, (short) 1000),
+        new Range((short) 0, (short) 9),
+        new Range((short) 10, (short) 99),
+        new Range((short) 100, (short) 999),
         new Range((short) 1000, Short.MAX_VALUE)
     };
+
     /**
      * A list of all the signature indexes that relate to this node.
      */
