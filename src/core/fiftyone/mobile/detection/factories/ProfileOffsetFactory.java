@@ -39,4 +39,9 @@ public class ProfileOffsetFactory extends BaseEntityFactory<ProfileOffset> {
             BinaryReader reader) {
         return new ProfileOffset(dataSet, index, reader);
     }
+    
+    @Override
+    public int getLength() {
+        return ProfileOffset.RECORD_LENGTH;
+    }
 }
