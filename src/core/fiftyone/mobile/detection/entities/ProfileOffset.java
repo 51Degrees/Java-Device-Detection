@@ -28,11 +28,19 @@ import fiftyone.mobile.detection.readers.BinaryReader;
  */
 public class ProfileOffset extends BaseEntity {
 
+    /**
+     * The length in bytes of the profile offset record in the data file.
+     */
+    public static final int RECORD_LENGTH = (4 * 2);
+    
+    private int profileId;
+    
+    private int offset;
+    
     public int getProfileId() {
         return profileId;
     }
-    private int profileId;
-
+    
     /**
      * The position within the data file that the profile can be read from.
      *
@@ -41,12 +49,11 @@ public class ProfileOffset extends BaseEntity {
     public int getOffset() {
         return offset;
     }
-    private int offset;
-
+   
     public ProfileOffset(Dataset dataSet, int offset,
             BinaryReader reader) {
         super(dataSet, offset);
         profileId = reader.readInt32();
-        offset = reader.readInt32();
+        this.offset = reader.readInt32();
     }
 }
