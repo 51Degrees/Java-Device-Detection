@@ -1,23 +1,26 @@
 
 Description:
 
-    51Degrees Mobile Detection Software for Java V3
-    HomePage: <http://51Degrees.mobi?CATReferrer=1758>
+    The 51Degrees Java API is designed to be easy and quick to deploy and use even for low 
+    skill developers while providing accurate and reliable results in just a small fraction of 
+    a second. The API features perks like automatic image optimiser, sending detection results 
+    to the client side to integrate with existing JavaScript logic, data file metadata and more.
+    HomePage: <https://51degrees.com/support/documentation/java>
 
 For automatic updates, tablet, operating system and screen dimension detection
-see 51Degrees.mobi Premium Data at
-http://51degrees.mobi/Products/DeviceDetection.aspx
+see 51Degrees Premium Data at https://51degrees.com/products/device-detection
 
-For additional features including:
+Benefits of pay-for data subscription include:
 
     -Automatic Weekly Updates
+    -Bandwidth Monitoring
     -Device Type(such as Tablet)
     -Operating System
     -Screen Dimension
     -Input Method
 
-    See http://51degrees.mobi/Products/DeviceDetection.aspx for more information
-    on our Premium and Ultimate Data.
+    See https://51degrees.com/compare-data-options to compare the various device 
+    data options.
 
 Contents:
     -SRC: Contains the java files used to make the 51Degrees.mobi JAR files.
@@ -46,12 +49,22 @@ Contents:
       build script and use "ant" or "ant webapp" to build both JAR files.
 
 For more information and documentation about this project please visit 
-<http://51degrees.mobi/Support/Documentation/Java.aspx?CATReferrer=1758>.
+<https://51degrees.com/support/documentation/java>.
 
 This project uses SLF4J, using the MIT licence.
 http://www.slf4j.org/license.html
 
 --------------------------------------------------------------------------------
+Version 3.1.7.2
+Changes:
+
+Addressed an "Not yet implemented" exception that was thrown when trying to 
+invoke the findProfile method of the dataset object. Exception was only thrown 
+when Provider was constructed using the StreamFactory.
+
+Addressed an issue where findProfile method would often return the same profile 
+for different profile IDs.
+
 Version 3.1.6.1
 Changes:
 
