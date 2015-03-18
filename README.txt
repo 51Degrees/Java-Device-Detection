@@ -6,7 +6,7 @@ Description:
     fraction of a second. The API features perks like automatic image optimiser, 
     sending detection results to the client side to integrate with existing JavaScript 
     logic, data file metadata and more.
-    HomePage: <https://51degrees.com/support/documentation/java>
+    HomePage: <https://51degrees.com>
 
 For automatic updates, tablet, operating system and screen dimension detection
 see 51Degrees Premium Data at https://51degrees.com/products/device-detection
@@ -59,7 +59,7 @@ http://www.slf4j.org/license.html
 Version 3.1.7.2
 Changes:
 
-Addressed an "Not yet implemented" exception that was thrown when trying to 
+Addressed the "Not yet implemented" exception that was thrown when trying to 
 invoke the findProfile method of the dataset object. Exception was only thrown 
 when Provider was constructed using the StreamFactory.
 
