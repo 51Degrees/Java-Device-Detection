@@ -1,10 +1,11 @@
 
 Description:
 
-    The 51Degrees Java API is designed to be easy and quick to deploy and use even for low 
-    skill developers while providing accurate and reliable results in just a small fraction of 
-    a second. The API features perks like automatic image optimiser, sending detection results 
-    to the client side to integrate with existing JavaScript logic, data file metadata and more.
+    The 51Degrees Java API is designed to be easy and quick to deploy and use even for 
+    low skill developers while providing accurate and reliable results in just a small 
+    fraction of a second. The API features perks like automatic image optimiser, 
+    sending detection results to the client side to integrate with existing JavaScript 
+    logic, data file metadata and more.
     HomePage: <https://51degrees.com/support/documentation/java>
 
 For automatic updates, tablet, operating system and screen dimension detection
