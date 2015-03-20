@@ -506,29 +506,13 @@ public class Dataset implements Disposable {
         format = strings.get(formatOffset).toString();
         copyright = strings.get(copyrightOffset).toString();
 
-        // Initialise any objects that can be pre referenced to speed up
-        // initial matching.
-        for (Signature signature : signatures) {
-            signature.init();
-        }
-        for (Node node : nodes) {
-            node.init();
-        }
-        for (Profile profile : profiles) {
-            profile.init();
-        }
-        for (Component component : getComponents()) {
-            component.init();
-        }
-        for (Property property : getProperties()) {
-            property.init();
-        }
-        for (Value value : values) {
-            value.init();
-        }
-        for (RankedSignatureIndex rsi : rankedSignatureIndexes) {
-            rsi.init();
-        }
+        initSignatures();
+        initNodes();
+        initProfiles();
+        initComponents();
+        initProperties();
+        initValues();
+        initSignatureRanks();
 
         // We no longer need the strings data structure as all dependent
         // data has been taken from it.
@@ -539,6 +523,78 @@ public class Dataset implements Disposable {
         // components and signatures.
         profiles.dispose();
         profiles = null;
+    }
+
+    /**
+     * Preloads signatures to speed retrieval later at the expense of memory.
+     * This method doesn't need to be used if init() has already been called.
+     */
+    public void initSignatures() throws IOException {
+        // Initialise any objects that can be pre referenced to speed up
+        // initial matching.
+        for (Signature signature : signatures) {
+            signature.init();
+        }
+    }
+
+    /**
+     * Preloads nodes to speed retrieval later at the expense of memory.
+     * This method doesn't need to be used if init() has already been called.
+     */
+    public void initNodes() throws IOException {
+        for (Node node : nodes) {
+            node.init();
+        }
+    }
+
+    /**
+     * Preloads profiles to speed retrieval later at the expense of memory.
+     * This method doesn't need to be used if init() has already been called.
+     */
+    public void initProfiles() throws IOException {
+        for (Profile profile : profiles) {
+            profile.init();
+        }
+    }
+
+    /**
+     * Preloads components to speed retrieval later at the expense of memory.
+     * This method doesn't need to be used if init() has already been called.
+     */
+    public void initComponents() throws IOException {
+        for (Component component : getComponents()) {
+            component.init();
+        }
+    }
+
+    /**
+     * Preloads properties to speed retrieval later at the expense of memory.
+     * This method doesn't need to be used if init() has already been called.
+     */
+    public void initProperties() throws IOException {
+        for (Property property : getProperties()) {
+            property.init();
+        }
+    }
+
+    /**
+     * Preloads values to speed retrieval later at the expense of memory.
+     * This method doesn't need to be used if init() has already been called.
+     */
+    public void initValues() throws IOException {
+        for (Value value : values) {
+            value.init();
+        }
+    }
+
+    /**
+     * Preloads signature ranks to speed retrieval later at the expense of memory.
+     * This method doesn't need to be used if init() has already been called.
+     */
+    public void initSignatureRanks() throws IOException {
+        for (RankedSignatureIndex rsi : rankedSignatureIndexes) {
+            rsi.init();
+        }
     }
 
     /**
