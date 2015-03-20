@@ -44,7 +44,7 @@ public class StreamVariableListIterator<T extends BaseEntity> implements Iterato
     {
         this.varList = varList;
         size = varList.size();
-        int offset = 0;
+        offset = 0;
         
         index = 0;
     }
