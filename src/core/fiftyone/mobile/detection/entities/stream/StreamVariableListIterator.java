@@ -33,7 +33,6 @@ import java.util.List;
  */
 public class StreamVariableListIterator<T extends BaseEntity> implements Iterator<T> {
 
-    int entityLength;
     int size;
     int offset;
     
@@ -45,7 +44,6 @@ public class StreamVariableListIterator<T extends BaseEntity> implements Iterato
     {
         this.varList = varList;
         size = varList.size();
-        entityLength = varList.entityFactory.getLength();
         int offset = 0;
         
         index = 0;
@@ -69,7 +67,7 @@ public class StreamVariableListIterator<T extends BaseEntity> implements Iterato
     public T next() {
         try {
             T t = varList.get(offset);
-            offset += entityLength;
+            offset += varList.entityFactory.getLength(t);
             index++;
             return t;
         }
