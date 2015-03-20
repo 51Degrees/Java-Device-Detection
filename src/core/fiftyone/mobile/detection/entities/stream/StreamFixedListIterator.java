@@ -39,12 +39,13 @@ public class StreamFixedListIterator<T extends BaseEntity> implements Iterator<T
     
     /**
      * Constructs the StreamFixedListIterator.
-     * @param fixedList 
+     * 
+     * @param streamFixedList 
      */
-    public StreamFixedListIterator(StreamFixedList<T> fixedList)
+    public StreamFixedListIterator(StreamFixedList<T> streamFixedList)
     {
-        this.fixedList = fixedList;
-        size = fixedList.size();
+        fixedList = streamFixedList;
+        size = streamFixedList.size();
         
         index = 0;
     }

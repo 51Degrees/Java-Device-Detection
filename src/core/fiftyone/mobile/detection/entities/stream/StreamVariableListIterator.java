@@ -40,10 +40,15 @@ public class StreamVariableListIterator<T extends BaseEntity> implements Iterato
     
     int index;
     
-    public StreamVariableListIterator(StreamVariableList<T> varList)
+    /**
+     * Constructs the StreamVariableListIterator.
+     * 
+     * @param streamVariableList 
+     */
+    public StreamVariableListIterator(StreamVariableList<T> streamVariableList)
     {
-        this.varList = varList;
-        size = varList.size();
+        varList = streamVariableList;
+        size = streamVariableList.size();
         offset = 0;
         
         index = 0;
