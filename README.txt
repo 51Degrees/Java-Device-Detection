@@ -1,4 +1,4 @@
-
+﻿
 Description:
 
     The 51Degrees Java API is designed to be easy and quick to deploy and use even for 
@@ -56,6 +56,22 @@ This project uses SLF4J, using the MIT licence.
 http://www.slf4j.org/license.html
 
 --------------------------------------------------------------------------------
+Version 3.1.8.
+Changes:
+
+Added several methods to preload data on the Dataset object:
+  initSignatures()
+  initNodes()
+  initProfiles()
+  initComponents()
+  initProperties()
+  initValues()
+  initSignatureRanks()
+  
+Added iterators classes, StreamVariableListIterator and StreamFixedListIterator.
+These fixed a NotSupportedOperation exception on some Dataset collections when
+created with a StreamFactory.
+
 Version 3.1.7.2
 Changes:
 

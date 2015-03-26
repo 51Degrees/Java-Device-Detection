@@ -79,16 +79,6 @@ public class StreamVariableList<T extends BaseEntity> extends BaseList<T> {
 
     @Override
     public Iterator<T> iterator() {
-        try {
-            List<T> result = new ArrayList<T>();
-            for (int offset = 0; offset < header.getLength();) {
-                T entity = get(offset);
-                result.add(entity);
-                offset += entityFactory.getLength(entity);
-            }
-            return result.iterator();
-        } catch (IOException e) {
-            return null;
-        }
+        return new StreamVariableListIterator<T>(this);
     }
 }
