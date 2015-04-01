@@ -17,6 +17,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.zip.DataFormatException;
 import java.util.zip.GZIPInputStream;
@@ -86,23 +88,48 @@ public class AutoUpdate {
 
                     final Dataset currentDataSet = StreamFactory.create(dataFilePath);
                     copyFile = newDataSet.published.getTime() > currentDataSet.published.getTime() || 
-                               newDataSet.getName() != currentDataSet.getName();
+                            !newDataSet.getName().equals(currentDataSet.getName());
                     
                     currentDataSet.dispose();
                 }
                 System.gc();
-                // Check this is new data based on publish data and number of
-                // available properties.
+                //If the downloaded file is either newer, or has a different name.
                 if (copyFile) {
                     // Save the data.
-                    final FileOutputStream fos = new FileOutputStream(dataFile);
-                    fos.write(content);
+                    FileOutputStream fos = null;
+                    for (int i = 0; i < 5; i++) {
+                        try {
+                            fos = new FileOutputStream(dataFile);
+                            break;
+                        } catch(Exception ex) {
+                            Logger.getLogger(AutoUpdate.class.getName()).log(Level.SEVERE, "Problem opening file output stream to update existing data file. Retrying in 2 seconds.", ex);
+                            System.gc();
+                            //Wait for 2 seconds to wait for garbage collection 
+                            //to attempt to release file lock.
+                            try {
+                                Thread.sleep(2000);
+                            } catch (InterruptedException ex1) {
+                                Logger.getLogger(AutoUpdate.class.getName()).log(Level.SEVERE, null, ex1);
+                            }
+                        }
+                    }
+                    if (fos != null) {
+                        fos.write(content);
+                    } else {
+                        throw new AutoUpdateException("Failed to write to "
+                                + "original data file as it was locked");
+                    }
 
                     fos.close();
                     // Sets the last modified time of the file downloaded.
                     dataFile.setLastModified(newDataSet.published.getTime());
 
                     return newDataSet;
+                } else {
+                    //No need to update. File names are the same. Dates of both 
+                    //files do not indicate an update is required.
+                    Logger.getLogger(AutoUpdate.class.getName()).log(Level.INFO,"Data file is already up to date.");
+                    return null;
                 }
             }
         } catch (IOException ex) {
@@ -110,7 +137,6 @@ public class AutoUpdate {
                     "Exception reading data stream from server '%s'.",
                     DetectionConstants.AUTO_UPDATE_URL) + ex.getMessage());
         }
-        return null;
     }
 
     /**

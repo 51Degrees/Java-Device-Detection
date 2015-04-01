@@ -63,9 +63,9 @@ public class Source implements Disposable {
             }
         }
         if(channel != null) {
-         try {
-             channel.close();
-         }
+            try {
+               channel.close();
+            }
          catch(IOException ex){}
         }
     }
