@@ -79,6 +79,6 @@ public class StreamFixedList<T extends BaseEntity> extends BaseList<T> {
 
     @Override
     public Iterator<T> iterator() {
-        throw new UnsupportedOperationException();
+        return new StreamFixedListIterator<T>(this);
     }
 }
