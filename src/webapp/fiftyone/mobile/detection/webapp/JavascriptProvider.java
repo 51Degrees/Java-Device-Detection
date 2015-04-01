@@ -133,7 +133,7 @@ class JavascriptProvider {
         }
                 
         javascript.append(String.format("var FODF={%s};", 
-            stringJoin(",", features)));
+            stringJoin(",\r\n", features)));
         
         sendJavaScript(
             request, 
@@ -147,12 +147,13 @@ class JavascriptProvider {
             Map<String, String[]> results, List<String> features, Property property) throws IOException {
         String[] values = results.get(property.getName());
         if (values != null && values.length > 0) {
+            String propName = property.getName().replace("/", "").replace("-", "");
             switch (property.valueType) {
                 case BOOL:
                     try {
                         features.add(String.format(
                                 "%s:%s",
-                                property.getName().replace("/", ""),
+                                propName,
                                 Boolean.parseBoolean(values[0]) ? "true" : "false"));
                     } catch (NumberFormatException ex) {
                         // Ignore the property as there isn't a value that
@@ -163,7 +164,7 @@ class JavascriptProvider {
                     try {
                         features.add(String.format(
                                 "%s:%i",
-                                property.getName(),
+                                propName,
                                 Double.parseDouble(values[0])));
                     } catch (NumberFormatException ex) {
                         // Ignore the property as there isn't a value that
@@ -173,7 +174,7 @@ class JavascriptProvider {
                     try {
                         features.add(String.format(
                                 "%s:%s",
-                                property.getName(),
+                                propName,
                                 Double.parseDouble(values[0])));
                     } catch (NumberFormatException ex) {
                         // Ignore the property as there isn't a value that
@@ -183,7 +184,7 @@ class JavascriptProvider {
                 default:
                     features.add(String.format(
                             "%s:\"%s\"",
-                            property.getName(),
+                            propName,
                             stringJoin(fiftyone.properties.DetectionConstants.VALUE_SEPARATOR, values)));
                     break;
             }
