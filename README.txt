@@ -59,7 +59,7 @@ http://www.slf4j.org/license.html
 Version 3.1.8.4
 Changes:
 
-Added several methods to preload data on the Dataset object:
+Added several methods to pre-load data on the Dataset object:
   initSignatures()
   initNodes()
   initProfiles()
@@ -72,16 +72,16 @@ Added iterators classes, StreamVariableListIterator and StreamFixedListIterator.
 These fixed a NotSupportedOperation exception on some Dataset collections when
 created with a StreamFactory.
 
-Modified auto update logic where the auto update would always replace the original 
-data file regardless of the version due to an issue with file name comparisson 
-logic. Now the data file will only be replaced if the new data file has a more 
-recent published date or a different name.
+Modified auto update logic where the auto update would always replace the
+original data file regardless of the version due to an issue with file name
+comparison logic. Now the data file will only be replaced if the new data file
+has a more recent published date or a different name.
 
-Modified the behaviour of the file output stream when writing the new data 
-to the original file. The output stream will now attemp to pen the file 
-5 times and wait for two seconds if the attempt was unsucessful. This 
-is intended to help prevent exceptions caused by garbage collector not 
-being able to clear the dataset and remove file locks before the file is 
+Modified the behaviour of the file output stream when writing the new data
+to the original file. The output stream will now attempt to pen the file
+5 times and wait for two seconds if the attempt was unsuccessful. This
+is intended to help prevent exceptions caused by garbage collector not
+being able to clear the dataset and remove file locks before the file is
 written to.
 
 Version 3.1.7.2
@@ -192,12 +192,12 @@ Fixed defects in the 51Degrees.features.js javascript generation.
 
 Added checks for malformed querystrings with image optimiser.
 
-Moved functionality from the listenner to the WebProvider.
+Moved functionality from the listener to the WebProvider.
 
 Improved the quality of resized images from the optimiser.
 
 Removed memory constraint checking code in auto updater as V3 does not need
-to load the data file into memory inorder to validate it.
+to load the data file into memory in order to validate it.
 
 Stopped bandwidth server processing when the bandwidth monitoring javascript 
 is not included in the data set.
@@ -224,7 +224,7 @@ presorted lists for Nearest and Closest methods improving performance.
 
 Address minor issues with code formatting and comments.
 
-Fixed itermitent issue when no cookies present with profile override.
+Fixed intermittent issue when no cookies present with profile override.
 
 Version 3.0.7.3
 
@@ -347,7 +347,7 @@ the signature found. Therefore a value of 0 means 100% confidence and greater
  The Difference property associated with the detection result can be obtained 
  using the following method.
  
-   Match match = p.match("USERAGENT");
+  Match match = p.match("USERAGENT");
   int difference = match.getDifference();
 
 Core:
@@ -494,7 +494,7 @@ Becomes:
 <img src="E.gif" data-src="51D/Images/Test.jpg&w=auto" />
 
 E.gif is 1x1 pixel place holder for the image, and the data-src attribute should
-contain the location of the path of image preceeded with '51D/'. The optimiser
+contain the location of the path of image preceded with '51D/'. The optimiser
 script looks for img tags with the data-src attribute and calculates the size
 the image should be.
 
