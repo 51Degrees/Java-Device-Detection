@@ -56,7 +56,7 @@ This project uses SLF4J, using the MIT licence.
 http://www.slf4j.org/license.html
 
 --------------------------------------------------------------------------------
-Version 3.1.8.
+Version 3.1.8.4
 Changes:
 
 Added several methods to preload data on the Dataset object:

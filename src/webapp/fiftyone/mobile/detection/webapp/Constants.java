@@ -26,7 +26,7 @@ public class Constants {
     /**
      * The version of the API to report in usage sharing.
      */
-    public static final String VERSION = "3.1.6.1";
+    public static final String VERSION = "3.1.8.4";
     
     /**
      * Context parameter in the web.xml file for the file path.
