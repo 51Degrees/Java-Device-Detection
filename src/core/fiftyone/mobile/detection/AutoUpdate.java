@@ -2,14 +2,19 @@ package fiftyone.mobile.detection;
 
 import fiftyone.mobile.detection.factories.StreamFactory;
 import fiftyone.properties.DetectionConstants;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
@@ -17,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -46,21 +52,37 @@ import javax.net.ssl.HttpsURLConnection;
  * ********************************************************************* */
 
 /*
- * Used to fetch new device data from 51Degrees.mobi if a premium licence has
- * been installed.
+ * Used to fetch new device data from 51Degrees.com if a Premium or Enterprise 
+ * licence has been installed.
  */
 public class AutoUpdate {
 
+    //Path to the compressed data file.
+    private static String compressedTempFile = "";
+    //Path to the uncompressed data file.
+    private static String uncompressedTempFile = "";
+    
     /**
-     * Downloads the latest Premium data and saves to disk if the data has been
-     * downloaded correctly and is newer than data currently in that position
-     * (if any) in that path.
+     * Implements the main update logic. First the paths to temporary data files 
+     * are initialised. Then a request is made to 51Degrees.com to check for an 
+     * updated data file. One of the request headers is set to the last-modified 
+     * date of the data file (if any). If the local data file is already of the 
+     * latest version, then a 304 header 'Not Modified' is returned. Otherwise 
+     * the file is downloaded in to a temporary location and uncompressed. The 
+     * temporary file is then deleted. New data file is then validated and a 
+     * check is carried out to determine if the old data file needs to be 
+     * replaced. Finally, if the data file is replaced if required.
      *
-     * @returns a provider which has passed verification, or null if there was
-     * no new data or the data provided failed validation.
+     * @returns True if all stages completed successfully, False otherwise.
+     * @param dataFilePath string representing path to 51Degrees data file.
+     * @param licenseKeys An array of licence keys with at least one entry 
+     * represented as strings.
      */
-    private static Dataset getNewDataset(final String[] licenseKeys, final String dataFilePath) throws AutoUpdateException {
+    private static boolean getNewDataset(final String[] licenseKeys, 
+                final String dataFilePath) throws AutoUpdateException {
         try {
+            //Initialize paths to temporary files.
+            initTempFiles(dataFilePath);
             // Try to get the date the data was last modified. No existent files
             // or lite data do not need dates.
             final File oldDataFile = new File(dataFilePath);
@@ -73,95 +95,129 @@ public class AutoUpdate {
                 oldDataset.dispose();
             }
             System.gc();
-            // Get data as byte array.
-            final byte[] content = download(licenseKeys, lastModified);
-            if (content == null) {
-                throw new AutoUpdateException("Device data download unsucessful. Update aborted.");
+            // Download the data to the temporary data file.
+            if (!download(licenseKeys, lastModified, compressedTempFile)) {
+                throw new AutoUpdateException("Download failed");
+            }
+            //Decompress data.
+            decompressData(compressedTempFile, uncompressedTempFile);
+            //Delete compressed file.
+            File compressedFile = new File(compressedTempFile);
+            compressedFile.delete();
+            // Create a dataset and read the data in.
+            final Dataset newDataSet = StreamFactory.create(uncompressedTempFile);
+            //Test the new data and check if old one needs to be replaced.
+            boolean copyFile = true;
+            final File dataFile = new File(dataFilePath);
+            // Confirm the new data is newer than current.
+            if (dataFile.exists()) {
+
+                final Dataset currentDataSet = StreamFactory.create(dataFilePath);
+                copyFile = newDataSet.published.getTime() > currentDataSet.published.getTime() || 
+                        !newDataSet.getName().equals(currentDataSet.getName());
+
+                currentDataSet.dispose();
+            }
+            newDataSet.dispose();
+            System.gc();
+            //If the downloaded file is either newer, or has a different name.
+            if (copyFile) {
+                //Copy.
+                Path source = Paths.get(uncompressedTempFile);
+                Path destination = Paths.get(dataFilePath);
+                try {
+                    Files.copy(source, destination, REPLACE_EXISTING);
+                } catch (IOException ex) {
+                    StringBuilder sb = new StringBuilder();
+                    sb.append("Could not replace master data file with new one. ");
+                    sb.append("Please verify the master data file is not used ");
+                    sb.append("elsewhere in your program.");
+                    Logger.getLogger(AutoUpdate.class.getName()).log(Level.WARNING,
+                            sb.toString());
+                }
+                source = null;
+                destination = null;
+                //Try to delete temp file.
+                File tempMasterFile = new File(uncompressedTempFile);
+                int count = 5;
+                while (!tempMasterFile.delete()) {
+                    if (count <= 0) {
+                        StringBuilder sb = new StringBuilder();
+                        sb.append("Failed to delete the uncompressed temporary ");
+                        sb.append("data file.");
+                        throw new AutoUpdateException(sb.toString());
+                    }
+                    try {
+                        Thread.sleep(2000);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(AutoUpdate.class.getName()).log(Level.SEVERE, null, ex);
+                    } finally {
+                        count--;
+                    }
+                }
+                return true;
             } else {
-                // Create a provider and read the data in.
-                final Dataset newDataSet = StreamFactory.create(content);
-
-                boolean copyFile = true;
-                final File dataFile = new File(dataFilePath);
-                // Confirm the new data is newer than current.
-                if (dataFile.exists()) {
-
-                    final Dataset currentDataSet = StreamFactory.create(dataFilePath);
-                    copyFile = newDataSet.published.getTime() > currentDataSet.published.getTime() || 
-                            !newDataSet.getName().equals(currentDataSet.getName());
-                    
-                    currentDataSet.dispose();
-                }
-                System.gc();
-                //If the downloaded file is either newer, or has a different name.
-                if (copyFile) {
-                    // Save the data.
-                    FileOutputStream fos = null;
-                    for (int i = 0; i < 5; i++) {
-                        try {
-                            fos = new FileOutputStream(dataFile);
-                            break;
-                        } catch(Exception ex) {
-                            Logger.getLogger(AutoUpdate.class.getName()).log(Level.SEVERE, "Problem opening file output stream to update existing data file. Retrying in 2 seconds.", ex);
-                            System.gc();
-                            //Wait for 2 seconds to wait for garbage collection 
-                            //to attempt to release file lock.
-                            try {
-                                Thread.sleep(2000);
-                            } catch (InterruptedException ex1) {
-                                Logger.getLogger(AutoUpdate.class.getName()).log(Level.SEVERE, null, ex1);
-                            }
-                        }
-                    }
-                    if (fos != null) {
-                        fos.write(content);
-                    } else {
-                        throw new AutoUpdateException("Failed to write to "
-                                + "original data file as it was locked");
-                    }
-
-                    fos.close();
-                    // Sets the last modified time of the file downloaded.
-                    dataFile.setLastModified(newDataSet.published.getTime());
-
-                    return newDataSet;
-                } else {
-                    //No need to update. File names are the same. Dates of both 
-                    //files do not indicate an update is required.
-                    Logger.getLogger(AutoUpdate.class.getName()).log(Level.INFO,"Data file is already up to date.");
-                    return null;
-                }
+                //No need to update. File names are the same. Dates of both 
+                //files do not indicate an update is required.
+                Logger.getLogger(AutoUpdate.class.getName()).log(Level.INFO,"Data file is already up to date.");
+                File f = new File(uncompressedTempFile);
+                if (f.exists())
+                    f.delete();
+                return false;
             }
         } catch (IOException ex) {
             throw new AutoUpdateException(String.format(
                     "Exception reading data stream from server '%s'.",
                     DetectionConstants.AUTO_UPDATE_URL) + ex.getMessage());
+        } catch (DataFormatException ex) {
+            Logger.getLogger(AutoUpdate.class.getName()).log(Level.SEVERE, null, ex);
         }
+        return false;
     }
 
     /**
      *
      * Calculates the MD5 hash of the given data array.
      *
-     * @param value Data to calculate the hash with.
+     * @param pathToFile calculate md5 of this file.
      * @return The MD5 hash of the given data.
      */
-    private static String getMd5Hash(final byte[] value) {
-        MessageDigest md5;
+    private static String getMd5Hash(String pathToFile) {
         try {
-            md5 = MessageDigest.getInstance("MD5");
-        } catch (NoSuchAlgorithmException e) {
-            // We can't calculate so return null. This should never happen.
+            //Allocate resources.
+            FileInputStream fis = new FileInputStream(pathToFile);
+            MessageDigest md5 = MessageDigest.getInstance("MD5");
+            byte[] buffer = new byte[2048];
+            int bytesRead = -1;
+            
+            //Get the md5 and format as a string.
+            while((bytesRead = fis.read(buffer)) != -1) {
+                md5.update(buffer, 0, bytesRead);
+            }
+            byte[] md5Bytes = md5.digest();
+            StringBuilder hashBuilder = new StringBuilder();
+            for (int i = 0; i < md5Bytes.length; i++) {
+                hashBuilder.append(String.format("%02X ", md5Bytes[i]));
+            }
+            
+            //Release resources.
+            fis.close();
+            md5Bytes = null;
+            buffer = null;
+            
+            // The hash retrived from the responce header is in lower case with 
+            // no spaces, must make sure this hash conforms to the scheme too.
+            return hashBuilder.toString().toLowerCase().replaceAll(" ", "");
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(AutoUpdate.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        } catch (NoSuchAlgorithmException ex) {
+            Logger.getLogger(AutoUpdate.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        } catch (IOException ex) {
+            Logger.getLogger(AutoUpdate.class.getName()).log(Level.SEVERE, null, ex);
             return null;
         }
-        final byte[] data = md5.digest(value);
-        final StringBuilder hashBuilder = new StringBuilder();
-        for (int i = 0; i < data.length; i++) {
-            hashBuilder.append(String.format("%02X ", data[i]));
-        }
-        // The hash retrived from the responce header is in lower case with no
-        // spaces, so must make sure this hash conforms to the scheme too.
-        return hashBuilder.toString().toLowerCase().replaceAll(" ", "");
     }
 
     /**
@@ -171,17 +227,24 @@ public class AutoUpdate {
      * which is stored in a response header.
      *
      * @param client The Premium data download connection.
-     * @param data the data that has been downloaded.
+     * @param pathToFile path to compressed data file that has been downloaded.
      * @return True if the hashes match, else false.
      */
     private static boolean validateMD5(
             final HttpURLConnection client,
-            final byte[] data) {
+            String pathToFile) {
         final String serverHash = client.getHeaderField("Content-MD5");
-        final String downloadHash = getMd5Hash(data);
+        final String downloadHash = getMd5Hash(pathToFile);
         return serverHash != null && serverHash.equals(downloadHash);
     }
 
+    /**
+     * Method joins given number of strings separating each by the specified 
+     * separator. Used to construct the update URL.
+     * @param seperator what separates the strings.
+     * @param strings strings to join.
+     * @return all of the strings combined in to one and separated by separator.
+     */
     private static String joinString(final String seperator, final String[] strings) {
         final StringBuilder sb = new StringBuilder();
         int size = strings.length;
@@ -197,7 +260,8 @@ public class AutoUpdate {
     /**
      * Constructs the URL needed to download Premium data.
      *
-     * @return Premium data download url.
+     * @param licenseKeys Array of licence key strings.
+     * @return Premium data download URL.
      * @throws MalformedURLException
      */
     private static URL fullUrl(String[] licenseKeys) throws MalformedURLException {
@@ -223,10 +287,31 @@ public class AutoUpdate {
      * was available. In that case the current data is used.
      * @throws AutoUpdateException exception detailing problem during the update
      */
-    public static boolean update(final String licenseKey, String dataFilePath) throws AutoUpdateException {
+    public static boolean update(final String licenseKey, String dataFilePath) 
+            throws AutoUpdateException {
         return update(new String[]{licenseKey}, dataFilePath);
     }
 
+    /**
+     * Uses the given license key to perform a device data update. This method 
+     * allows you to specify the location of the original data file as well as 
+     * the two temporary data files used to store the data at intermediate 
+     * stages of the update.
+     * 
+     * @param licenseKey the licence key to use for the update request.
+     * @param dataFilePath where the original data file is located.
+     * @param compressedFile where the compressed data file should be located.
+     * @param uncompressedFile where the uncompressed data file should be located.
+     * @return True if update was successful, False otherwise.
+     * @throws AutoUpdateException 
+     */
+    public static boolean update(final String licenseKey, String dataFilePath, 
+            String compressedFile, String uncompressedFile) throws AutoUpdateException {
+        compressedTempFile = compressedFile;
+        uncompressedTempFile = uncompressedFile;
+        return update(new String[]{licenseKey}, dataFilePath);
+    }
+    
     /**
      * Uses the given license key to perform a device data update, writing the
      * data to the file system and filling providers from this factory instance
@@ -250,20 +335,20 @@ public class AutoUpdate {
         // If a valid license key exists then proceed
         final String[] validKeys = getValidKeys(licenseKeys);
         if (validKeys.length > 0) {
-            // Download the provider getting an instance of a new provider.
-            final Dataset dataset = getNewDataset(validKeys, dataFilePath);
-            if (dataset != null) {
-                dataset.dispose();
-                return true;
-            }
+            // Download and verify the data. Return the result.
+            return getNewDataset(validKeys, dataFilePath);
         } else {
             throw new AutoUpdateException(
                     "The license key(s) provided were invalid.");
         }
-        
-        return false;
     }
 
+    /**
+     * Validate the supplied keys to exclude keys from 3rd party products from 
+     * being used.
+     * @param licenseKeys an array of licence key strings to validate.
+     * @return an array of valid licence keys.
+     */
     private static String[] getValidKeys(final String[] licenseKeys) {
         final List<String> validKeys = new ArrayList<String>();
         for (String key : licenseKeys) {
@@ -282,7 +367,8 @@ public class AutoUpdate {
      * @param licenseKeys an array of keys to fetch a new data file with.
      * @return a decompressed byte array containing the data.
      */
-    private static byte[] download(final String[] licenseKeys, long lastModified) throws AutoUpdateException {
+    private static boolean download(final String[] licenseKeys, long lastModified, 
+            String pathToTempFile) throws AutoUpdateException {
         HttpURLConnection client = null;
         try {
             // Open the connection to download the latest data file.
@@ -298,24 +384,25 @@ public class AutoUpdate {
 
             // If data is available then see if it's a new data file.
             if (client.getResponseCode() == HttpsURLConnection.HTTP_OK) {
-
-                // Read the content into a byte array.
-                final byte[] content = new byte[client.getContentLength()];
-                int position = 0;
-                int bytesRead = client.getInputStream().read(content, position, content.length - position);
-                while (bytesRead >= 0) {
-                    position += bytesRead;
-                    bytesRead = client.getInputStream().read(content, position, content.length - position);
+                //Allocate resources for the download.
+                InputStream inputStream = client.getInputStream();
+                FileOutputStream outputStream = new FileOutputStream(pathToTempFile);
+                byte[] buffer = new byte[4096];
+                int bytesRead = -1;
+                
+                //Download.
+                while ((bytesRead = inputStream.read(buffer)) != -1) {
+                    outputStream.write(buffer, 0, bytesRead);
                 }
-
+                
+                //Release resources.
+                outputStream.close();
+                inputStream.close();
+                buffer = null;
+                
                 // now validate with md5 hash
-                if (validateMD5(client, content)) {
-                    try {
-                        return decompressData(content);
-                    } catch (DataFormatException ex) {
-                        throw new AutoUpdateException("Device data could not be decompressed. It is probably corrupt.");
-                    }
-
+                if (validateMD5(client, pathToTempFile)) {
+                    return true;
                 } else {
                     throw new AutoUpdateException("Device data update does not match hash values.");
                 }
@@ -326,7 +413,12 @@ public class AutoUpdate {
                 if(client.getResponseCode() == 429) {
                     message.append("Server response: 429 - too many download attempts. ");
                 } else if (client.getResponseCode() == 304) {
-                    message.append("Server response: 304 - not modified. You already have the latest data. ");
+                    message.append("Server response: 304 - not modified. ");
+                    message.append("You already have the latest data.");
+                } else if(client.getResponseCode() == 403) {
+                    message.append("Server response: 403 - forbidden. ");
+                    message.append("Your key is blacklisted. Please contact ");
+                    message.append("51Degrees support as soon as possible.");
                 } else {
                     message.append("Server response: ");
                     message.append(client.getResponseCode());
@@ -340,19 +432,73 @@ public class AutoUpdate {
         }
     }
 
-    private static byte[] decompressData(final byte[] content) throws IOException, DataFormatException {
-        final ByteArrayInputStream bytein = new java.io.ByteArrayInputStream(content);
-        final ByteArrayOutputStream bos = new ByteArrayOutputStream(content.length);
-        final GZIPInputStream gzin = new GZIPInputStream(bytein);
-        byte[] buf = new byte[1024];
-        while (gzin.available() != 0) {
-            int count = gzin.read(buf);
-            if (count > 0) {
-                bos.write(buf, 0, count);
+    /**
+     * Reads a source GZip file and writes the uncompressed data to destination 
+     * file.
+     * @param sourcePath path to GZip file to read from.
+     * @param destinationPath path to file to write the uncompressed data to.
+     * @throws IOException
+     * @throws DataFormatException 
+     */
+    private static void decompressData(String sourcePath, String destinationPath) 
+            throws IOException, DataFormatException {
+        //Allocate resources.
+        FileInputStream fis = new FileInputStream(sourcePath);
+        FileOutputStream fos = new FileOutputStream(destinationPath);
+        GZIPInputStream gzis = new GZIPInputStream(fis);
+        byte[] buffer = new byte[1024];
+        int len = 0;
+        
+        //Extract compressed content.
+        while ((len = gzis.read(buffer)) > 0) {
+            fos.write(buffer, 0, len);
+        }
+        
+        //Release resources.
+        fos.close();
+        fis.close();
+        gzis.close();
+        buffer = null;
+    }
+    
+    /**
+     * Method initialises path to the two temporary files used during the auto 
+     * update process. Depending on the access method used, the data files can 
+     * be set by the user in which case this method will do nothing. If the user 
+     * does not set the paths, then a path  will be derived from the path of the 
+     * original data file.
+     * 
+     * The original data file does not have to exist, but the directory provided 
+     * must exist and the path should not be a directory.
+     * 
+     * @param originalFile string path to the master (original) data file.
+     * @throws AutoUpdateException if directory is provided instead of file.
+     */
+    private static void initTempFiles(String originalFile) throws AutoUpdateException {
+        //Derive compressed data file path from original data fiel path.
+        if (compressedTempFile.isEmpty()) {
+            File dataFile = new File(originalFile);
+            if (!dataFile.isDirectory()) {
+                StringBuilder sb = new StringBuilder();
+                sb.append(dataFile.getAbsolutePath());
+                sb.append(".");
+                sb.append(UUID.randomUUID());
+                sb.append(".tmp");
+                compressedTempFile = sb.toString();
+            } else {
+                throw new AutoUpdateException("File path can not be a directory.");
             }
         }
-        bos.close();
-        byte[] fullData = bos.toByteArray();
-        return fullData;
+        if (uncompressedTempFile.isEmpty()) {
+            File dataFile = new File(originalFile);
+            if (!dataFile.isDirectory()) {
+                StringBuilder sb = new StringBuilder();
+                sb.append(dataFile.getAbsolutePath());
+                sb.append(".new");
+                uncompressedTempFile = sb.toString();
+            } else {
+                throw new AutoUpdateException("File path can not be a directory.");
+            }
+        }
     }
 }
