@@ -61,9 +61,14 @@ public class Provider {
      * Builds a new provider with the embedded data set.
      *
      * @throws IOException indicates an I/O exception occurred
+     * @deprecated since embedded data file was removed from package. Use the 
+     * provider constructor that requires a dataset created by the factory 
+     * instead.
      */
+    @Deprecated
     public Provider() throws IOException {
-        this(MemoryFactory.read(new BinaryReader(getEmbeddedByteArray()), false), 0);
+        throw new UnsupportedOperationException("No longer supported. Please "
+            + "use the provider constructors with Factory created datasets.");
     }
 
     /**
@@ -72,11 +77,14 @@ public class Provider {
      *
      * @param cacheServiceInterval cache service internal in seconds.
      * @throws IOException indicates an I/O exception occurred
+     * @deprecated since embedded data was removed from package. Use the 
+     * provider constructor that requires a dataset created by the factory 
+     * instead.
      */
+    @Deprecated
     public Provider(int cacheServiceInterval) throws IOException {
-        this(MemoryFactory.read(
-                new BinaryReader(getEmbeddedByteArray()), false), 
-                cacheServiceInterval);
+        throw new UnsupportedOperationException("No longer supported. Please "
+            + "use the provider constructors with Factory created datasets.");
     }
     
     /**
@@ -85,18 +93,11 @@ public class Provider {
      *
      * @return
      * @throws IOException
+     * @deprecated since embedded data was removed from the package.
      */
+    @Deprecated
     private static byte[] getEmbeddedByteArray() throws IOException {
-        byte[] buffer = new byte[1048576];
-        InputStream input = Thread.currentThread().getContextClassLoader().getResourceAsStream(
-                DetectionConstants.EMBEDDED_DATA_RESOURCE_NAME);
-        ByteArrayOutputStream output = new ByteArrayOutputStream();
-        int count = input.read(buffer);
-        while (count > 0) {
-            output.write(buffer, 0, count);
-            count = input.read(buffer);
-        }
-        return output.toByteArray();
+        throw new UnsupportedOperationException("No longer supported.");
     }
 
     /**
