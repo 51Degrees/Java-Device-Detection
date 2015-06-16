@@ -614,7 +614,24 @@ public class Dataset implements Disposable {
         return null;
     }
 
+    /**
+     * Method searches for a property with the given name and returns one if 
+     * found.
+     * @param propertyName name of the property to find.
+     * @return Property object or null if no property with requested name exists
+     */
     public Property get(String propertyName) throws IOException {
+        return getPropertyByName(propertyName);
+    }
+    
+    /**
+     * Method searches for a property with the given name and returns the 
+     * Property if found. Returns null otherwise.
+     * @param propertyName name of the property to find as a string.
+     * @return Property object or null if no property with requested name exists
+     * @throws IOException 
+     */
+    public Property getPropertyByName(String propertyName) throws IOException {
         for (Property property : properties) {
             if (propertyName.equals(property.getName())) {
                 return property;
