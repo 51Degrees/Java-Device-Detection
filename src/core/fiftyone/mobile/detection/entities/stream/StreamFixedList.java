@@ -1,6 +1,5 @@
 package fiftyone.mobile.detection.entities.stream;
 
-import fiftyone.mobile.detection.Dataset;
 import fiftyone.mobile.detection.entities.BaseEntity;
 import fiftyone.mobile.detection.factories.BaseEntityFactory;
 import fiftyone.mobile.detection.readers.BinaryReader;
@@ -58,8 +57,8 @@ import java.util.Iterator;
 public class StreamFixedList<T extends BaseEntity> extends BaseList<T> {
 
     public StreamFixedList(Dataset dataSet, BinaryReader reader,
-            Source source, BaseEntityFactory<T> entityFactory) {
-        super(dataSet, reader, source, entityFactory);
+            BaseEntityFactory<T> entityFactory, int cacheSize) {
+        super(dataSet, reader, entityFactory, cacheSize);
     }
 
     /**

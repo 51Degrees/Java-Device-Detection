@@ -1,6 +1,5 @@
 package fiftyone.mobile.detection.entities.stream;
 
-import fiftyone.mobile.detection.Dataset;
 import fiftyone.mobile.detection.entities.BaseEntity;
 import fiftyone.mobile.detection.factories.BaseEntityFactory;
 import fiftyone.mobile.detection.readers.BinaryReader;
@@ -56,11 +55,11 @@ public class StreamVariableList<T extends BaseEntity> extends BaseList<T> {
      * @param reader Reader connected to the source data structure and
      * positioned to start reading
      * @param entityFactory Factory to build entities of type T
-     * @param source Reference to the underlying data structure
+     * @param cacheSize number of items in cache.
      */
     public StreamVariableList(Dataset dataSet, BinaryReader reader,
-            Source source, BaseEntityFactory<T> entityFactory) {
-        super(dataSet, reader, source, entityFactory);
+            BaseEntityFactory<T> entityFactory, int cacheSize) {
+        super(dataSet, reader, entityFactory, cacheSize);
     }
 
     /**

@@ -25,10 +25,10 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Used to speed the retrieval of detection results over duplicate requests.
  *
- * @param K
- * @param V
+ * @param <K>
+ * @param <V>
  */
-class Cache<K, V> {
+public class Cache<K, V> {
 
     /**
      * The next time the caches should be switched.
@@ -37,25 +37,36 @@ class Cache<K, V> {
     /**
      * The time between cache services.
      */
-    private int serviceIntervalMS;
+    private final int cacheServiceSize;
     /**
      * The active cache.
      */
-    private ConcurrentHashMap<K, V> active;
+    public ConcurrentHashMap<K, V> active;
     /**
      * The background cache.
      */
     private ConcurrentHashMap<K, V> background;
+    
+    private final int cacheSize;
+    
+    public long requests;
+    
+    public long misses;
+    
+    private long switches;
 
     /**
      * Constructs a new instance of the cache.
-     * @param serviceInterval number of seconds between switching the cache.
+     * @param cacheSize number of items in this cache lists.
      */
-    public Cache(int serviceInterval) {
-        serviceIntervalMS = serviceInterval + 1000;
-        nextCacheService = System.currentTimeMillis() + serviceIntervalMS;
-        active = new ConcurrentHashMap<K, V>();
-        background = new ConcurrentHashMap<K, V>();
+    public Cache(int cacheSize) {
+        this.requests = 0;
+        this.switches = 0;
+        this.misses = 0;
+        this.cacheSize = cacheSize;
+        cacheServiceSize = (cacheSize / 2);
+        active = new ConcurrentHashMap<K, V>(this.cacheSize);
+        background = new ConcurrentHashMap<K, V>(this.cacheSize);
     }
 
     /**
@@ -63,22 +74,36 @@ class Cache<K, V> {
      * passed.
      */
     private void service() {
-        if (nextCacheService < System.currentTimeMillis()) {
-            synchronized(this) {
-                if (nextCacheService < System.currentTimeMillis()) {
-                    // Switch the cache dictionaries over.
-                    ConcurrentHashMap<K, V> tempCache = active;
-                    active = background;
-                    background = tempCache;
+        synchronized(this) {
+            // Switch the cache dictionaries over.
+            ConcurrentHashMap<K, V> tempCache = active;
+            active = background;
+            background = tempCache;
 
-                    // Clear the background cache before continuing.
-                    background.clear();
-                    
-                    // Set the next service interval.
-                    nextCacheService = System.currentTimeMillis() + 
-                            serviceIntervalMS;
+            // Clear the background cache before continuing.
+            background.clear();
+            switches++;
+        }
+    }
+    
+    /**
+     * Add new entry to the background list. Once background list becomes 
+     * larger than the active list, the lists are switched. The background list 
+     * becomes active and vice versa. Service task is also run.
+     * @param key item key.
+     * @param value item value.
+     */
+    public void addRecent(K key, V value) {
+        setBackground(key, value);
+        if (background.size() > cacheServiceSize) {
+            Thread t = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    service();
                 }
             }
+            );
+            t.start();
         }
     }
 
@@ -95,6 +120,17 @@ class Cache<K, V> {
 
     void setBackground(K key, V result) {
         background.putIfAbsent(key, result);
-        service();
+    }
+    
+    /**
+     * Returns the percentage of times cache request did not return a result.
+     * @return Percentage or -1 if an exception occurred.
+     */
+    public double getPercentageMisses() {
+        try {
+            return ((double)misses / (double)requests);
+        } catch (ArithmeticException aex) {
+            return -1;
+        }
     }
 }

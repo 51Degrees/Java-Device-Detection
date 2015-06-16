@@ -1,6 +1,5 @@
 package fiftyone.mobile.detection.entities.stream;
 
-import fiftyone.mobile.detection.Dataset;
 import fiftyone.mobile.detection.Disposable;
 import fiftyone.mobile.detection.ReadonlyList;
 import fiftyone.mobile.detection.entities.BaseEntity;
@@ -51,10 +50,6 @@ public abstract class BaseList<T extends BaseEntity> implements
      */
     public final Cache<T> cache;
     /**
-     * Pools of binary readers connected to the data source.
-     */
-    final Pool pool;
-    /**
      * The dataset which contains the list.
      */
     protected final Dataset dataSet;
@@ -62,6 +57,9 @@ public abstract class BaseList<T extends BaseEntity> implements
      * Information about the data structure the list is associated with.
      */
     final Header header;
+    /**
+     * Entity factory.
+     */
     final BaseEntityFactory<T> entityFactory;
 
     protected abstract T createEntity(int offset, BinaryReader reader) throws IOException;
@@ -81,15 +79,15 @@ public abstract class BaseList<T extends BaseEntity> implements
      *
      * @param dataSet Dataset being created
      * @param reader Reader used to initialise the header only
-     * @param source Source data file containing the entire data structure
      * @param entityFactory a base entity factory to be used
+     * @param cacheSize number of items in cache.
      */
-    public BaseList(Dataset dataSet, BinaryReader reader, Source source, BaseEntityFactory<T> entityFactory) {
+    public BaseList(Dataset dataSet, BinaryReader reader, 
+            BaseEntityFactory<T> entityFactory, int cacheSize) {
         this.dataSet = dataSet;
-        this.pool = new Pool(source);
         this.header = new Header(reader);
-        this.cache = new Cache<T>(entityFactory);
         this.entityFactory = entityFactory;
+        this.cache = new Cache<T>(cacheSize);
     }
 
     /**
@@ -97,22 +95,23 @@ public abstract class BaseList<T extends BaseEntity> implements
      *
      * @param offsetOrIndex Index or offset of the record required
      * @return A new instance of the item at the offset or index
+     * @throws java.io.IOException
      */
     @Override
     public T get(int offsetOrIndex) throws IOException {
         T item;
-        item = cache.itemsActive.get(offsetOrIndex);
+        item = (T)cache.active.get(offsetOrIndex);
         if (item == null) {
-            BinaryReader reader = pool.getReader();
+            BinaryReader reader = dataSet.pool.getReader();
             item = createEntity(offsetOrIndex, reader);
-            pool.release(reader);
+            dataSet.pool.release(reader);
             // if we get a collision in here, doesn't really matter - better
             // a collision here than having each read queued
-            cache.itemsActive.put(offsetOrIndex, item);
-            cache.misses.incrementAndGet();
+            cache.active.put(offsetOrIndex, item);
+            cache.misses++;
         }
         cache.addRecent(offsetOrIndex, item);
-        cache.requests.incrementAndGet();
+        cache.requests++;
         return item;
     }
 
@@ -121,8 +120,7 @@ public abstract class BaseList<T extends BaseEntity> implements
      */
     @Override
     public void dispose() {
-        cache.dispose();
-        pool.dispose();
+        dataSet.pool.dispose();
     }
 
     @Override
