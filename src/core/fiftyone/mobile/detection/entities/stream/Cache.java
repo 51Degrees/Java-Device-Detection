@@ -1,13 +1,5 @@
 package fiftyone.mobile.detection.entities.stream;
 
-import fiftyone.mobile.detection.Disposable;
-import fiftyone.mobile.detection.factories.BaseEntityFactory;
-import fiftyone.properties.DetectionConstants;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
-
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
  * Copyright 2014 51Degrees Mobile Experts Limited, 5 Charlotte Close,
@@ -41,57 +33,25 @@ import java.util.concurrent.atomic.AtomicInteger;
  * becomes the active list. i.e. all the items that were requested since the
  * cache was last serviced are now in the cache. A new inactive list is created
  * to store all items being requested since the cache was last serviced.
- *
- * @param T The type of BaseEntity the cache will contain
+ * @param <T>
  */
-public class Cache<T> implements Disposable {
-
-    // The active list of cached items.
-    ConcurrentHashMap<Integer, T> itemsActive = new ConcurrentHashMap<Integer, T>();
-    // The list of inactive cached items.
-    ConcurrentHashMap<Integer, T> itemsInactive = new ConcurrentHashMap<Integer, T>();
-    // Timer thread used to service the cache.
-    private final Timer cacheServiceTimer;
-    // The number of requests made to the cache.
-    AtomicInteger requests = new AtomicInteger();
-    // The number of times an item was not available.
-    AtomicInteger misses = new AtomicInteger();
-    final BaseEntityFactory<T> entityFactory;
+public class Cache<T> extends fiftyone.mobile.detection.Cache {
 
     /**
      * Constructs a new instance of the cache.
      *
-     * @param serviceCacheInternal Time between cache services
+     * @param cacheSize number of items in cache.
      */
-    Cache(BaseEntityFactory<T> creator) {
-        this.entityFactory = creator;
-        this.cacheServiceTimer = new Timer();
-        cacheServiceTimer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                ConcurrentHashMap<Integer, T> temp = itemsInactive;
-                itemsInactive = new ConcurrentHashMap<Integer, T>();
-                itemsActive = temp;
-            }
-        }, DetectionConstants.CACHE_SERVICE_INTERVAL * 1000,
-                DetectionConstants.CACHE_SERVICE_INTERVAL * 1000);
+    public Cache(int cacheSize) {
+        super(cacheSize);
     }
 
+    /**
+     * Adds a new item to cache.
+     * @param index index of the item.
+     * @param item item to add.
+     */
     void addRecent(int index, T item) {
-        itemsInactive.put(index, item);
-    }
-
-    double getPercentageMisses() {
-        return misses.doubleValue() / requests.doubleValue();
-    }
-
-    interface EntityCreator<T> {
-
-        T create(int offsetOrIndex);
-    }
-
-    @Override
-    public void dispose() {
-        cacheServiceTimer.cancel();
+        super.addRecent(index, item);
     }
 }

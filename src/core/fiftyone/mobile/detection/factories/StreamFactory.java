@@ -1,6 +1,6 @@
 package fiftyone.mobile.detection.factories;
 
-import fiftyone.mobile.detection.Dataset;
+import fiftyone.mobile.detection.entities.stream.Dataset;
 import fiftyone.mobile.detection.entities.AsciiString;
 import fiftyone.mobile.detection.entities.Component;
 import fiftyone.mobile.detection.entities.Map;
@@ -12,10 +12,10 @@ import fiftyone.mobile.detection.entities.RankedSignatureIndex;
 import fiftyone.mobile.detection.entities.Signature;
 import fiftyone.mobile.detection.entities.Value;
 import fiftyone.mobile.detection.entities.memory.MemoryFixedList;
-import fiftyone.mobile.detection.entities.stream.Source;
 import fiftyone.mobile.detection.entities.stream.StreamFixedList;
 import fiftyone.mobile.detection.entities.stream.StreamVariableList;
 import fiftyone.mobile.detection.readers.BinaryReader;
+import fiftyone.properties.DetectionConstants;
 import java.io.FileInputStream;
 import java.io.IOException;
 
@@ -54,30 +54,48 @@ import java.io.IOException;
  */
 public final class StreamFactory {
 
+    /**
+     * Constructor creates a new dataset from the supplied bytes array.
+     * @param data a byte array containing the data file.
+     * @return Stream Dataset object.
+     * @throws IOException 
+     */
     public static Dataset create(byte[] data) throws IOException {
-        return read(
-                new BinaryReader(data),
-                new Source(data));
+        Dataset dataSet = null;
+        BinaryReader br = new BinaryReader(data);
+        dataSet = new Dataset(br, data);
+        read(br, dataSet);
+        return dataSet;
     }
 
+    /**
+     * Constructor creates a new dataset from the supplied data file.
+     * @param filename name of the file (with path to file) to read data from.
+     * @return Stream Dataset object.
+     * @throws IOException 
+     */
     public static Dataset create(String filename) throws IOException {
-        FileInputStream fileInputStream = new FileInputStream(filename);
-        try {
-            return read(
-                    new BinaryReader(fileInputStream),
-                    new Source(filename));
-        } catch (Exception e) {
-            return null;
-        } finally {
-            fileInputStream.close();
-        }
+        Dataset dataSet = null;
+        FileInputStream fis = new FileInputStream(filename);
+        BinaryReader br = new BinaryReader(fis);
+        dataSet = new Dataset(br, filename);
+        read(br, dataSet);
+        return dataSet;
     }
 
-    static Dataset read(BinaryReader reader, Source source) throws IOException {
-        Dataset dataSet = new Dataset(reader);
+    /**
+     * Uses the provided BinaryReader to read the necessary values from the data 
+     * file in to the Dataset. Stream mode only loads the essential information 
+     * such as file headers.
+     * @param reader BinaryReader to use for reading data in to the dataset.
+     * @param dataSet The dataset object to read in to.
+     * @return Stream Dataset object that has just been written to.
+     * @throws IOException 
+     */
+    static Dataset read(BinaryReader reader, Dataset dataSet) throws IOException {
         
         dataSet.strings = new StreamVariableList<AsciiString>(dataSet, reader,
-                source, new AsciiStringFactory());
+                new AsciiStringFactory(), DetectionConstants.STRINGS_CACHE_SIZE);
         MemoryFixedList<Component> components = new MemoryFixedList<Component>(
                 dataSet, reader, new ComponentFactory());
         dataSet.components = components;
@@ -87,21 +105,23 @@ public final class StreamFactory {
         MemoryFixedList<Property> properties = new MemoryFixedList<Property>(
                 dataSet, reader, new PropertyFactory());
         dataSet.properties = properties;
-        dataSet.values = new StreamFixedList<Value>(dataSet, reader, source,
-                new ValueFactory());
+        dataSet.values = new StreamFixedList<Value>(dataSet, reader, 
+                new ValueFactory(), DetectionConstants.VALUES_CACHE_SIZE);
         dataSet.profiles = new StreamVariableList<Profile>(dataSet, reader,
-                source, new ProfileFactory());
+                new ProfileFactory(), DetectionConstants.PROFILE_CACHE_SIZE);
         dataSet.signatures = new StreamFixedList<Signature>(dataSet, reader,
-                source, new SignatureFactory(dataSet));
+                new SignatureFactory(dataSet), 
+                DetectionConstants.SIGNATURES_CACHE_SIZE);
         dataSet.rankedSignatureIndexes = new StreamFixedList<RankedSignatureIndex>(
-                dataSet, reader, source, new RankedSignatureIndexFactory());
-        dataSet.nodes = new StreamVariableList<Node>(dataSet, reader, source,
-                new NodeFactory());
+                dataSet, reader, new RankedSignatureIndexFactory(), 
+                DetectionConstants.RANKED_SIGNATURE_CACHE_SIZE);
+        dataSet.nodes = new StreamVariableList<Node>(dataSet, reader,
+                new NodeFactory(), DetectionConstants.NODES_CACHE_SIZE);
         MemoryFixedList<Node> rootNodes = new MemoryFixedList<Node>(dataSet,
                 reader, new RootNodeFactory());
         dataSet.rootNodes = rootNodes;
-        dataSet.profileOffsets = new StreamFixedList<ProfileOffset>(
-                dataSet, reader, source, new ProfileOffsetFactory());
+        dataSet.profileOffsets = new MemoryFixedList<ProfileOffset>(
+                dataSet, reader, new ProfileOffsetFactory());
         
         // Read into memory all the small lists which are frequently accessed.
         reader.setPos(components.header.getStartPosition());

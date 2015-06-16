@@ -93,4 +93,28 @@ public class DetectionConstants {
         "X-Device-User-Agent",
         "X-OperaMini-Phone-UA"
     };
+    /**
+     * Number of cache entries for dataset strings.
+     */
+    public static final int STRINGS_CACHE_SIZE = 3000;
+    /**
+     * Number of cache entries for dataset values.
+     */
+    public static final int VALUES_CACHE_SIZE = 3000;
+    /**
+     * Number of cache entries for dataset profiles.
+     */
+    public static final int PROFILE_CACHE_SIZE = 300;
+    /**
+     * Number of cache entries for dataset signatures.
+     */
+    public static final int SIGNATURES_CACHE_SIZE = 16000;
+    /**
+     * Number of cache entries for dataset ranked signatures.
+     */
+    public static final int RANKED_SIGNATURE_CACHE_SIZE = 16000;
+    /**
+     * Number of cache entries for dataset nodes.
+     */
+    public static final int NODES_CACHE_SIZE = 30000;
 }
