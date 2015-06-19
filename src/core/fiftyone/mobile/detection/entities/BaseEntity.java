@@ -39,7 +39,7 @@ public class BaseEntity {
     /**
      * The data set the item relates to.
      */
-    private final Dataset dataSet;
+    public final Dataset dataSet;
     /**
      * The unique index of the item in the collection of items, or the unique
      * offset to the item in the source data structure.
@@ -93,7 +93,7 @@ public class BaseEntity {
      * @param count The number of integers to read to form the array
      * @return An array of integers
      */
-    static int[] readIntegerArray(BinaryReader reader, int count) {
+    protected static int[] readIntegerArray(BinaryReader reader, int count) {
         int[] array = new int[count];
         for (int i = 0; i < count; i++) {
             array[i] = reader.readInt32();

@@ -8,6 +8,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
 
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
@@ -44,9 +45,9 @@ public class Provider {
      * @return total number of detections performed by this data set
      */
     public long getDetectionCount() {
-        return detectionCount;
+        return detectionCount.longValue();
     }
-    private long detectionCount;
+    private AtomicLong detectionCount;
     /**
      * The number of detections performed using the method.
      */
@@ -112,11 +113,11 @@ public class Provider {
     /**
      * Constructs a new provided using the data set.
      *
-     * @param cacheServiceInterval cache service internal in seconds.
      * @param dataSet Data set to use for device detection
+     * @param cacheSize
      */
-    public Provider(Dataset dataSet, int cacheServiceInterval) {
-        this(dataSet, new Controller(), cacheServiceInterval);
+    public Provider(Dataset dataSet, int cacheSize) {
+        this(dataSet, new Controller(), cacheSize);
     }
 
     /**
@@ -126,7 +127,8 @@ public class Provider {
      * @param controller
      * @param cacheServiceInternal 
      */
-    Provider(Dataset dataSet, Controller controller, int cacheServiceInternal) {
+    Provider(Dataset dataSet, Controller controller, int cacheSize) {
+        this.detectionCount = new AtomicLong();
         this.dataSet = dataSet;
         this.controller = controller;
         this.methodCounts = new SortedList<MatchMethods, Long>();
@@ -135,9 +137,41 @@ public class Provider {
         this.methodCounts.add(MatchMethods.NUMERIC, 0l);
         this.methodCounts.add(MatchMethods.EXACT, 0l);
         this.methodCounts.add(MatchMethods.NONE, 0l);
-        userAgentCache = cacheServiceInternal > 0 ? new Cache<String, MatchState>(cacheServiceInternal) : null;
+        userAgentCache = cacheSize > 0 ? new Cache<String, MatchState>(cacheSize) : null;
     }
 
+    public double getPercentageCacheMisses() {
+        if (userAgentCache != null) {
+            return userAgentCache.getPercentageMisses();
+        } else {
+            return 0;
+        }
+    }
+    
+    public long getCacheSwitches() {
+        if (userAgentCache != null) {
+            return userAgentCache.getCacheSwitches();
+        } else {
+            return -1;
+        }
+    }
+    
+    public double getCacheRequests() {
+        if (userAgentCache != null) {
+            return userAgentCache.getCacheRequests();
+        } else {
+            return -1;
+        }
+    }
+    
+    public long getCacheMisses() {
+        if (userAgentCache != null) {
+            return userAgentCache.getCacheMisses();
+        } else {
+            return -1;
+        }
+    }
+    
     /**
      * Creates a new match object to be used for matching.
      *
@@ -232,6 +266,9 @@ public class Provider {
         MatchState state;
 
         if (userAgentCache != null && targetUserAgent != null) {
+            //Increase cache requests.
+            userAgentCache.incrementRequestsByOne();
+            
             state = userAgentCache.tryGetValue(targetUserAgent);
             if (state == null) {
                 // The user agent has not been checked previously. Therefore perform
@@ -240,13 +277,17 @@ public class Provider {
 
                 // Record the match state in the cache for next time.
                 state = match.new MatchState(match);
-                userAgentCache.setActive(targetUserAgent, state);
+                //userAgentCache.setActive(targetUserAgent, state);
+                userAgentCache.active.put(targetUserAgent, state);
+                
+                //Implement Atomic increase in misses.
+                userAgentCache.incrementMissesByOne();
             } else {
                 // The state of a previous match exists so the match should
                 // be configured based on the results of the previous state.
                 match.setState(state);
             }
-            userAgentCache.setBackground(targetUserAgent, state);
+            userAgentCache.addRecent(targetUserAgent, state);
         } else {
             // The cache does not exist so call the non caching method.
             matchNoCache(targetUserAgent, match);
@@ -260,7 +301,7 @@ public class Provider {
         controller.match(match);
 
         // Update the counts for the provider.
-        detectionCount++;
+        detectionCount.incrementAndGet();
         synchronized (methodCounts) {
             MatchMethods method = match.getMethod();
             Long count = methodCounts.get(method);

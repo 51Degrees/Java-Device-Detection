@@ -1,7 +1,7 @@
 package fiftyone.mobile.detection.entities.stream;
 
-import fiftyone.mobile.detection.readers.BinaryReader;
 import java.io.IOException;
+import java.util.Date;
 
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
@@ -32,17 +32,17 @@ public class Dataset extends fiftyone.mobile.detection.Dataset {
     /**
      * A pool of data readers.
      */
-    protected final Pool pool;
+    public final Pool pool;
     
     /**
      * Creates a dataset object with a pool of readers used to retrieve data 
      * from the data file. Only useful in stram mode.
-     * @param reader BinaryReader used to read from file.
+     * @param lastModified
      * @param fileName name of the file to read from.
      * @throws IOException 
      */
-    public Dataset(BinaryReader reader, String fileName) throws IOException {
-        super(reader);
+    public Dataset(String fileName, Date lastModified) throws IOException {
+        super(lastModified);
         this.pool = new Pool(new Source(fileName));
     }
     
@@ -50,12 +50,11 @@ public class Dataset extends fiftyone.mobile.detection.Dataset {
      * Creates a dataset object with a pool of readers used to retrieve data 
      * from the data file represented as an array of bytes. Only useful in 
      * stram mode.
-     * @param reader BinaryReader used to read from array of bytes.
      * @param data array of bytes to read from.
      * @throws IOException 
      */
-    public Dataset(BinaryReader reader, byte[] data) throws IOException {
-        super(reader);
+    public Dataset(byte[] data) throws IOException {
+        super(new Date(Long.MIN_VALUE));
         this.pool = new Pool(new Source(data));
     }
     
@@ -67,4 +66,5 @@ public class Dataset extends fiftyone.mobile.detection.Dataset {
         super.dispose();
         pool.dispose();
     }
+    
 }

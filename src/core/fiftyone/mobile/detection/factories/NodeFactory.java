@@ -24,11 +24,11 @@ import fiftyone.mobile.detection.readers.BinaryReader;
  * This Source Code Form is "Incompatible With Secondary Licenses", as
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
-public class NodeFactory extends BaseEntityFactory<Node> {
+public abstract class NodeFactory extends BaseEntityFactory<Node> {
 
     @Override
     public Node create(Dataset dataSet, int index, BinaryReader reader) {
-        return new Node(dataSet, index, reader);
+        return construct(dataSet, index, reader);
     }
 
     @Override
@@ -38,4 +38,6 @@ public class NodeFactory extends BaseEntityFactory<Node> {
                 + (entity.getNumericChildrenLength() * Node.NODE_NUMERIC_INDEX_LENGTH)
                 + +(entity.getRankedSignatureIndexes().length * 4);
     }
+    
+    protected abstract Node construct(Dataset dataSet, int index, BinaryReader reader);
 }

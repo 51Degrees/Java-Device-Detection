@@ -104,7 +104,7 @@ public class AutoUpdate {
             //Delete compressed file.
             File compressedFile = new File(compressedTempFile);
             compressedFile.delete();
-            // Create a dataset and read the data in.
+            // Create a dataset and load the data in.
             final Dataset newDataSet = StreamFactory.create(uncompressedTempFile);
             //Test the new data and check if old one needs to be replaced.
             boolean copyFile = true;
@@ -435,7 +435,7 @@ public class AutoUpdate {
     /**
      * Reads a source GZip file and writes the uncompressed data to destination 
      * file.
-     * @param sourcePath path to GZip file to read from.
+     * @param sourcePath path to GZip file to load from.
      * @param destinationPath path to file to write the uncompressed data to.
      * @throws IOException
      * @throws DataFormatException 
