@@ -108,10 +108,10 @@ public abstract class BaseList<T extends BaseEntity> implements
             // if we get a collision in here, doesn't really matter - better
             // a collision here than having each read queued
             cache.active.put(offsetOrIndex, item);
-            cache.misses++;
+            cache.incrementMissesByOne();
         }
         cache.addRecent(offsetOrIndex, item);
-        cache.requests++;
+        cache.incrementRequestsByOne();
         return item;
     }
 

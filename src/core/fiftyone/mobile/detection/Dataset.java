@@ -18,7 +18,6 @@ import fiftyone.mobile.detection.entities.Value;
 import fiftyone.mobile.detection.entities.Version;
 import fiftyone.mobile.detection.entities.stream.ICacheList;
 import fiftyone.mobile.detection.readers.BinaryReader;
-import fiftyone.properties.DetectionConstants;
 
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
@@ -53,6 +52,18 @@ import fiftyone.properties.DetectionConstants;
  */
 public class Dataset implements Disposable {
 
+    public Calendar lastModified;
+    public int formatOffset;
+    public String format;
+    public int nameOffset;
+    public String name;
+    public String copyright;
+    public int copyrightOffset;
+    /**
+     * The percentage of requests for signatures which were not already 
+     * contained in the cache.
+     */
+    public double percentageSignatureCacheMisses;
     /**
      * The BinaryReader used in entity lists. This is not used directly in
      * Dataset but a reference is needed to dispose it later.
@@ -136,76 +147,76 @@ public class Dataset implements Disposable {
     /**
      * The date the data set was published.
      */
-    public final Date published;
+    public Date published;
     /**
      * The date the data set is next expected to be updated by 51Degrees.
      */
-    public final Date nextUpdate;
+    public Date nextUpdate;
     /**
      * The minimum number of times a user agent should have been seen before it
      * was included in the dataset.
      */
-    public final int minUserAgentCount;
+    public int minUserAgentCount;
     /**
      * The version of the data set.
      */
-    public final Version version;
+    public Version version;
     /**
      * The maximum length of a user agent string.
      */
-    public final short maxUserAgentLength;
+    public short maxUserAgentLength;
     /**
      * The minimum length of a user agent string.
      */
-    private final short minUserAgentLength;
+    public short minUserAgentLength;
     /**
      * The lowest character the character trees can contain.
      */
-    public final byte lowestCharacter;
+    public byte lowestCharacter;
     /**
      * The highest character the character trees can contain.
      */
-    public final byte highestCharacter;
+    public byte highestCharacter;
     /**
      * The number of unique device combinations available in the data set.
      */
-    public final int deviceCombinations;
+    public int deviceCombinations;
     /**
      * The maximum number of signatures that can be checked. Needed to avoid
      * bogus user agents which deliberately require so many signatures to be
      * checked that performance is degraded.
      */
-    public final int maxSignatures;
+    public int maxSignatures;
     /**
      * The maximum number of values that can be returned by a profile and a
      * property supporting a list of values.
      */
-    public final short maxValues;
+    public short maxValues;
     /**
      * The number of bytes to allocate to a buffer returning CSV format data for
      * a match.
      */
-    public final int csvBufferLength;
+    public int csvBufferLength;
     /**
      * The number of bytes to allocate to a buffer returning JSON format data
      * for a match.
      */
-    public final int jsonBufferLength;
+    public int jsonBufferLength;
     /**
      * The number of bytes to allocate to a buffer returning XML format data for
      * a match.
      */
-    public final int xmlBufferLength;
+    public int xmlBufferLength;
     /**
      * The maximum number of signatures that could possibly be returned during a
      * closest match.
      */
-    public final int maxSignaturesClosest;
-    public final Guid guid;
+    public int maxSignaturesClosest;
+    public Guid guid;
     /**
      * Age of the data in months when exported.
      */
-    public final int age;
+    public int age;
 
     /**
      * The hardware component.
@@ -291,8 +302,6 @@ public class Dataset implements Disposable {
         }
         return copyright;
     }
-    protected String copyright;
-    protected final int copyrightOffset;
 
     /**
      * The common name of the data set.
@@ -309,8 +318,6 @@ public class Dataset implements Disposable {
         }
         return name;
     }
-    protected final int nameOffset;
-    private String name;
 
     /**
      * The name of the property map used to create the dataset.
@@ -327,8 +334,7 @@ public class Dataset implements Disposable {
         }
         return format;
     }
-    protected final int formatOffset;
-    protected String format;
+
 
     /**
      * A list of all the components the data set contains.
@@ -403,73 +409,18 @@ public class Dataset implements Disposable {
      * A list of ASCII byte arrays for strings used by the dataset.
      */
     public ReadonlyList<AsciiString> strings;
-    private int signatureProfilesCount;
-    private int signatureNodesCount;
+    public int signatureProfilesCount;
+    public int signatureNodesCount;
 
     /**
      * Constructs a new data set ready to have lists of data assigned to it.
      *
-     * @param reader Reader connected to the source data structure and
-     * positioned to start reading
+     * @param lastModified
      * @throws java.io.IOException signals an I/O exception occurred
      */
-    public Dataset(BinaryReader reader) throws IOException {
-        
-        this.reader = reader;
-                
-        // Read the detection data set headers.
-        version = new Version(reader.readInt32(), reader.readInt32(),
-                reader.readInt32(), reader.readInt32());
-
-        // Throw exception if the data file does not have the correct
-        // version in formation.
-        if (version.major != DetectionConstants.FormatVersion.major
-                || version.minor != DetectionConstants.FormatVersion.minor) {
-            throw new IOException(String.format(
-                    "Version mismatch. Data is version '%s' for '%s' reader",
-                    version,
-                    DetectionConstants.FormatVersion));
-        }
-
-        guid = new Guid(reader.readBytes(16));
-        copyrightOffset = reader.readInt32();
-        age = reader.readInt16();
-        minUserAgentCount = reader.readInt32();
-        nameOffset = reader.readInt32();
-        formatOffset = reader.readInt32();
-        published = readDate(reader);
-        nextUpdate = readDate(reader);
-        deviceCombinations = reader.readInt32();
-        maxUserAgentLength = reader.readInt16();
-        minUserAgentLength = reader.readInt16();
-        lowestCharacter = reader.readByte();
-        highestCharacter = reader.readByte();
-        maxSignatures = reader.readInt32();
-        signatureProfilesCount = reader.readInt32();
-        signatureNodesCount = reader.readInt32();
-        maxValues = reader.readInt16();
-        csvBufferLength = reader.readInt32();
-        jsonBufferLength = reader.readInt32();
-        xmlBufferLength = reader.readInt32();
-        maxSignaturesClosest = reader.readInt32();
-
-        nodes = null;
-    }
-
-    /**
-     * Reads a date in year, month and day order from the reader.
-     *
-     * @param reader Reader positioned at the start of the date
-     * @return A date time with the year, month and day set from the reader
-     */
-    private static Date readDate(BinaryReader reader) {
-        int year = reader.readInt16();
-        int month = reader.readByte() - 1;
-        int day = reader.readByte();
-        Calendar cal = Calendar.getInstance();
-        cal.clear();
-        cal.set(year, month, day);
-        return cal.getTime();
+    public Dataset(Date lastModified) throws IOException {
+        this.lastModified = Calendar.getInstance();
+        this.lastModified.setTime(lastModified);
     }
 
     /**
@@ -505,23 +456,21 @@ public class Dataset implements Disposable {
         name = strings.get(nameOffset).toString();
         format = strings.get(formatOffset).toString();
         copyright = strings.get(copyrightOffset).toString();
-
-        initSignatures();
-        initNodes();
-        initProfiles();
+        
         initComponents();
         initProperties();
         initValues();
+        initProfiles();
+        initNodes();
+        initSignatures();
         initSignatureRanks();
 
         // We no longer need the strings data structure as all dependent
         // data has been taken from it.
-        strings.dispose();
         strings = null;
 
         // The list of profiles is no longer needed as they've been assigned
         // components and signatures.
-        profiles.dispose();
         profiles = null;
     }
 

@@ -42,92 +42,7 @@ import java.io.IOException;
 /**
  * A node in the trie data structures held at each character position.
  */
-public class Node extends BaseEntity implements Comparable<Node> {
-
-    class NodeNumericIndexIterator {
-
-        private final NodeNumericIndex[] array;
-        private final int target;
-        private final Range range;
-        private int lowIndex;
-        private int highIndex;
-        private boolean lowInRange;
-        private boolean highInRange;
-
-        /**
-         *
-         * @param range the range of values the iterator can return
-         * @param array array of items that could be returned
-         * @param target the target value
-         * @param startIndex start index in the array
-         */
-        NodeNumericIndexIterator(
-                Range range, NodeNumericIndex[] array,
-                int target, int startIndex) {
-            this.range = range;
-            this.array = array;
-            this.target = target;
-
-            lowIndex = startIndex;
-            highIndex = startIndex + 1;
-
-            // Determine if the low and high indexes are in range.
-            lowInRange = lowIndex >= 0 && lowIndex < array.length
-                    && range.inRange(array[lowIndex].getValue());
-            highInRange = highIndex < array.length && highIndex >= 0
-                    && range.inRange(array[highIndex].getValue());
-        }
-
-        boolean hasNext() {
-            return lowInRange || highInRange;
-        }
-
-        NodeNumericIndex next() {
-            int index = -1;
-
-            if (lowInRange && highInRange) {
-                // Get the differences between the two values.
-                int lowDifference = Math.abs(array[lowIndex].getValue() - target);
-                int highDifference = Math.abs(array[highIndex].getValue() - target);
-
-                // Favour the lowest value where the differences are equal.
-                if (lowDifference <= highDifference) {
-                    index = lowIndex;
-
-                    // Move to the next low index.
-                    lowIndex--;
-                    lowInRange = lowIndex >= 0
-                            && range.inRange(array[lowIndex].getValue());
-                } else {
-                    index = highIndex;
-
-                    // Move to the next high index.
-                    highIndex++;
-                    highInRange = highIndex < array.length
-                            && range.inRange(array[highIndex].getValue());
-                }
-            } else if (lowInRange) {
-                index = lowIndex;
-
-                // Move to the next low index.
-                lowIndex--;
-                lowInRange = lowIndex >= 0
-                        && range.inRange(array[lowIndex].getValue());
-            } else {
-                index = highIndex;
-
-                // Move to the next high index.
-                highIndex++;
-                highInRange = highIndex < array.length
-                        && range.inRange(array[highIndex].getValue());
-            }
-
-            if (index >= 0) {
-                return array[index];
-            }
-            return null;
-        }
-    }
+public abstract class Node extends BaseEntity implements Comparable<Node> {
     /**
      * The length of a node index.
      */
@@ -146,11 +61,19 @@ public class Node extends BaseEntity implements Comparable<Node> {
         new Range((short) 100, (short) 999),
         new Range((short) 1000, Short.MAX_VALUE)
     };
-
+    /**
+     * The characters that make up the node if it's a complete node or null 
+     * if it's incomplete.
+     */
+    private byte[] characters;
+    /**
+     * Number of numeric children associated with the node.
+     */
+    protected short numericChildrenCount;
     /**
      * A list of all the signature indexes that relate to this node.
      */
-    private final int[] signatureIndexes;
+    protected int[] signatureIndexes;
     /**
      * A list of all the child node indexes.
      */
@@ -158,11 +81,11 @@ public class Node extends BaseEntity implements Comparable<Node> {
     /**
      * An array of all the numeric children.
      */
-    private final NodeNumericIndex[] numericChildren;
+    protected NodeNumericIndex[] numericChildren;
     /**
      * The parent index for this node.
      */
-    final int parentIndex;
+    final int parentOffset;
     /**
      * The offset in the strings data structure to the string that contains all
      * the characters of the node. Or -1 if the node is not complete and no
@@ -179,6 +102,12 @@ public class Node extends BaseEntity implements Comparable<Node> {
      * or target user agent.
      */
     public final short position;
+    
+    protected short childrenCount;
+    
+
+    
+    protected int signatureCount;
 
     /**
      * Returns the root node for this node.
@@ -201,10 +130,10 @@ public class Node extends BaseEntity implements Comparable<Node> {
      * Returns the parent node for this node.
      */
     Node getParent() throws IOException {
-        if (parentIndex >= 0 && parent == null) {
+        if (parentOffset >= 0 && parent == null) {
             synchronized (this) {
                 if (parent == null) {
-                    parent = getDataSet().getNodes().get(parentIndex);
+                    parent = getDataSet().getNodes().get(parentOffset);
                 }
             }
         }
@@ -244,11 +173,9 @@ public class Node extends BaseEntity implements Comparable<Node> {
         }
         return characters;
     }
-    private byte[] characters = null;
+    
 
-    public int[] getRankedSignatureIndexes() {
-        return signatureIndexes;
-    }
+    public abstract int[] getRankedSignatureIndexes();
 
     public int getChildrenLength() {
         return children.length;
@@ -257,6 +184,8 @@ public class Node extends BaseEntity implements Comparable<Node> {
     public int getNumericChildrenLength() {
         return numericChildren.length;
     }
+    
+    public abstract NodeNumericIndex[] getNumericChildren();
 
     /**
      * Constructs a new instance of Node
@@ -269,14 +198,12 @@ public class Node extends BaseEntity implements Comparable<Node> {
         super(dataSet, offset);
         this.position = reader.readInt16();
         this.nextCharacterPosition = reader.readInt16();
-        this.parentIndex = reader.readInt32();
+        this.parentOffset = reader.readInt32();
         this.characterStringOffset = reader.readInt32();
-        short childrenCount = reader.readInt16();
-        short numericChildrenCount = reader.readInt16();
-        int signatureCount = reader.readInt32();
+        this.childrenCount = reader.readInt16();
+        this.numericChildrenCount = reader.readInt16();
+        this.signatureCount = reader.readInt32();
         this.children = readNodeIndexes(dataSet, reader, offset + MIN_LENGTH, childrenCount);
-        this.numericChildren = readNodeNumericIndexes(dataSet, reader, numericChildrenCount);
-        this.signatureIndexes = BaseEntity.readIntegerArray(reader, signatureCount);
     }
 
     /**
@@ -289,7 +216,7 @@ public class Node extends BaseEntity implements Comparable<Node> {
      * @param count The number of elements to read into the array
      * @return An array of child numeric node indexes for the node
      */
-    private static NodeNumericIndex[] readNodeNumericIndexes(Dataset dataSet,
+    protected static NodeNumericIndex[] readNodeNumericIndexes(Dataset dataSet,
             BinaryReader reader, short count) {
         NodeNumericIndex[] array = new NodeNumericIndex[count];
         for (int i = 0; i < array.length; i++) {
@@ -328,8 +255,8 @@ public class Node extends BaseEntity implements Comparable<Node> {
      * @throws java.io.IOException indicates an I/O exception occurred
      */
     public void init() throws IOException {
-        if (parentIndex >= 0) {
-            parent = getDataSet().getNodes().get(parentIndex);
+        if (parentOffset >= 0) {
+            parent = getDataSet().getNodes().get(parentOffset);
         }
         root = getParent() == null ? this : getParent().getRoot();
         for (NodeIndex child : children) {
@@ -337,7 +264,7 @@ public class Node extends BaseEntity implements Comparable<Node> {
         }
         getCharacters();
     }
-
+    
     public Node getCompleteNumericNode(Match match) throws IOException {
         Node node = null;
 
@@ -607,5 +534,90 @@ public class Node extends BaseEntity implements Comparable<Node> {
      */
     public int compareTo(Node other) {
         return getIndex() - other.getIndex();
+    }
+    
+    class NodeNumericIndexIterator {
+
+        private final NodeNumericIndex[] array;
+        private final int target;
+        private final Range range;
+        private int lowIndex;
+        private int highIndex;
+        private boolean lowInRange;
+        private boolean highInRange;
+
+        /**
+         *
+         * @param range the range of values the iterator can return
+         * @param array array of items that could be returned
+         * @param target the target value
+         * @param startIndex start index in the array
+         */
+        NodeNumericIndexIterator(
+                Range range, NodeNumericIndex[] array,
+                int target, int startIndex) {
+            this.range = range;
+            this.array = array;
+            this.target = target;
+
+            lowIndex = startIndex;
+            highIndex = startIndex + 1;
+
+            // Determine if the low and high indexes are in range.
+            lowInRange = lowIndex >= 0 && lowIndex < array.length
+                    && range.inRange(array[lowIndex].getValue());
+            highInRange = highIndex < array.length && highIndex >= 0
+                    && range.inRange(array[highIndex].getValue());
+        }
+
+        boolean hasNext() {
+            return lowInRange || highInRange;
+        }
+
+        NodeNumericIndex next() {
+            int index = -1;
+
+            if (lowInRange && highInRange) {
+                // Get the differences between the two values.
+                int lowDifference = Math.abs(array[lowIndex].getValue() - target);
+                int highDifference = Math.abs(array[highIndex].getValue() - target);
+
+                // Favour the lowest value where the differences are equal.
+                if (lowDifference <= highDifference) {
+                    index = lowIndex;
+
+                    // Move to the next low index.
+                    lowIndex--;
+                    lowInRange = lowIndex >= 0
+                            && range.inRange(array[lowIndex].getValue());
+                } else {
+                    index = highIndex;
+
+                    // Move to the next high index.
+                    highIndex++;
+                    highInRange = highIndex < array.length
+                            && range.inRange(array[highIndex].getValue());
+                }
+            } else if (lowInRange) {
+                index = lowIndex;
+
+                // Move to the next low index.
+                lowIndex--;
+                lowInRange = lowIndex >= 0
+                        && range.inRange(array[lowIndex].getValue());
+            } else {
+                index = highIndex;
+
+                // Move to the next high index.
+                highIndex++;
+                highInRange = highIndex < array.length
+                        && range.inRange(array[highIndex].getValue());
+            }
+
+            if (index >= 0) {
+                return array[index];
+            }
+            return null;
+        }
     }
 }

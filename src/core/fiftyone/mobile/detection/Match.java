@@ -90,7 +90,7 @@ public class Match {
             signaturesRead = match.getSignaturesRead();
             stringsRead = match.getStringsRead();
             closestSignaturesCount = match.getClosestSignaturesCount();
-            lowestScore = match.lowestScore;
+            lowestScore = match.getLowestScore();
             targetUserAgent = match.getTargetUserAgent();
             targetUserAgentArray = match.getTargetUserAgentArray();
             nodes = new ArrayList<Node>(match.nodes);
@@ -264,7 +264,7 @@ public class Match {
     /**
      * The data set used for the detection.
      */
-    private final Dataset dataSet;
+    public final Dataset dataSet;
     /**
      * The next character position to be checked.
      */
@@ -680,7 +680,10 @@ public class Match {
     }
 
     public Integer getLowestScore() {
-        return lowestScore;
+        if (lowestScore != null)
+            return lowestScore;
+        else
+            return 0;
     }
 
     public void setLowestScore(Integer lowestScore) {

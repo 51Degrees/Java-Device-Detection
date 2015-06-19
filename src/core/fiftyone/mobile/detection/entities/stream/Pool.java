@@ -55,7 +55,7 @@ public class Pool implements Disposable {
      *
      * @return Reader open and ready to read from the temp file
      */
-    BinaryReader getReader() throws IOException {
+    public BinaryReader getReader() throws IOException {
         BinaryReader reader = readers.poll();
         if (reader == null) {
             reader = source.createReader();
@@ -68,8 +68,10 @@ public class Pool implements Disposable {
      *
      * @param reader Reader open and ready to read from the temp file
      */
-    void release(BinaryReader reader) {
-        readers.add(reader);
+    public void release(BinaryReader reader) {
+        synchronized(this) {
+            readers.add(reader);
+        }
     }
 
     @Override

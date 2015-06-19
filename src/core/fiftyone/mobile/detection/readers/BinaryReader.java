@@ -44,7 +44,7 @@ public class BinaryReader implements Disposable {
         byteBuffer = ByteBuffer.wrap(data);
         byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
     }
-
+    
     public BinaryReader(FileInputStream fileInputStream) throws IOException {
         channel = fileInputStream.getChannel();
         byteBuffer = channel.map(
@@ -61,6 +61,10 @@ public class BinaryReader implements Disposable {
 
     public void setPos(int pos) {
         byteBuffer.position(pos);
+    }
+    
+    public int getPos() {
+        return byteBuffer.position();
     }
 
     public byte readByte() {

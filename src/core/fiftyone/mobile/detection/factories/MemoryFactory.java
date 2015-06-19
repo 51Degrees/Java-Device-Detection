@@ -16,7 +16,11 @@ import fiftyone.mobile.detection.entities.Signature;
 import fiftyone.mobile.detection.entities.Value;
 import fiftyone.mobile.detection.entities.memory.MemoryFixedList;
 import fiftyone.mobile.detection.entities.memory.MemoryVariableList;
+import fiftyone.mobile.detection.factories.memory.NodeMemoryFactory;
+import fiftyone.mobile.detection.factories.memory.ProfileMemoryFactory;
 import fiftyone.mobile.detection.readers.BinaryReader;
+import java.io.File;
+import java.util.Date;
 
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
@@ -55,27 +59,67 @@ import fiftyone.mobile.detection.readers.BinaryReader;
  * default setting is to initialise the data set. <p> For more information see
  * http://51degrees.mobi/Support/Documentation/Java
  */
-public final class MemoryFactory {
-
+public class MemoryFactory {
+    /**
+     * Creates a new Dataset from the byte array.
+     * @param data Array of bytes to build the data set from.
+     * @return A Dataset filled with data from the array.
+     * @throws IOException 
+     */
     public static Dataset create(byte[] data) throws IOException {
         return create(data, false);
     }
-
+    /**
+     * Creates a new Dataset from the byte array.
+     * @param data Array of bytes to build the data set from
+     * @param init True to indicate that the data set should be filling 
+     * initialised
+     * @return filled with data from the array.
+     * @throws IOException 
+     */
     public static Dataset create(byte[] data, boolean init) throws IOException {
-        return read(new BinaryReader(data), init);
+        Dataset dataSet = new Dataset(new Date(Long.MIN_VALUE));
+        BinaryReader reader = new BinaryReader(data);
+        load(dataSet, reader, init);
+        return dataSet;
     }
-
+    /**
+     * Creates a new <see cref="DataSet"/> from the file provided. The last 
+     * modified date of the data set is the last write time of the data file
+     * provided.
+     * @param filename Uncompressed file containing the data for the data set.
+     * @return filled with data from the array.
+     * @throws IOException 
+     */
     public static Dataset create(String filename) throws IOException {
-        return create(filename, false);
+        File f = new File(filename);
+        if (!f.exists() || !f.isFile())
+            throw new Error("Could not construct the dataset. Binary file does +"
+                    + "nor exist or is a directory.");
+        Date lm = new Date(f.lastModified());
+        return create(filename, false, lm);
     }
-
-    public static Dataset create(String filename, boolean init) throws IOException {
+    /**
+     * Creates a new Dataset from the file provided.
+     * @param filename Uncompressed file containing the data for the data set.
+     * @param init True to indicate that the data set should be filling 
+     * initialised.
+     * @param lastModified Date and time the source data was last modified.
+     * @return filled with data from the array.
+     * @throws IOException 
+     */
+    public static Dataset create(String filename, boolean init, 
+            Date lastModified) throws IOException {
+        Dataset dataSet = new Dataset(lastModified);
         FileInputStream fileInputStream = new FileInputStream(filename);
+        BinaryReader reader = null;
         try {
-            return read(new BinaryReader(fileInputStream), init);
+            reader = new BinaryReader(fileInputStream);
+            load(dataSet, reader, init);
         } finally {
             fileInputStream.close();
         }
+        return dataSet;
     }
 
     /*
@@ -92,9 +136,8 @@ public final class MemoryFactory {
      *            True to indicate that the data set should be fully initialised
      * @return A DetectorDataSet filled with data from the reader
      */
-    public static Dataset read(BinaryReader reader, boolean init) throws IOException {
-        Dataset dataSet = new Dataset(reader);
-
+    public static void load(Dataset dataSet, BinaryReader reader, boolean init) throws IOException {
+        CommonFactory.loadHeader(dataSet, reader);
         MemoryVariableList<AsciiString> strings = new MemoryVariableList<AsciiString>(
                 dataSet, reader, new AsciiStringFactory());
         MemoryFixedList<Component> components = new MemoryFixedList<Component>(
@@ -106,14 +149,14 @@ public final class MemoryFactory {
         MemoryFixedList<Value> values = new MemoryFixedList<Value>(dataSet,
                 reader, new ValueFactory());
         MemoryVariableList<Profile> profiles = new MemoryVariableList<Profile>(
-                dataSet, reader, new ProfileFactory());
+                dataSet, reader, new ProfileMemoryFactory());
         MemoryFixedList<Signature> signatures = new MemoryFixedList<Signature>(
                 dataSet, reader, new SignatureFactory(dataSet));
         MemoryFixedList<RankedSignatureIndex> rankedSignatureIndexes =
                 new MemoryFixedList<RankedSignatureIndex>(
                 dataSet, reader, new RankedSignatureIndexFactory());
         MemoryVariableList<Node> nodes = new MemoryVariableList<Node>(dataSet,
-                reader, new NodeFactory());
+                reader, new NodeMemoryFactory());
         MemoryFixedList<Node> rootNodes = new MemoryFixedList<Node>(dataSet,
                 reader, new RootNodeFactory());
         MemoryFixedList<ProfileOffset> profileOffsets = new MemoryFixedList<ProfileOffset>(
@@ -150,7 +193,5 @@ public final class MemoryFactory {
             // request garbage collection as a lot of memory has been freed.
             System.gc();
         }
-
-        return dataSet;
     }
 }

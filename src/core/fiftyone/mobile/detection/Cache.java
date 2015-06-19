@@ -1,6 +1,8 @@
 package fiftyone.mobile.detection;
 
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
@@ -29,11 +31,6 @@ import java.util.concurrent.ConcurrentHashMap;
  * @param <V>
  */
 public class Cache<K, V> {
-
-    /**
-     * The next time the caches should be switched.
-     */
-    private long nextCacheService;
     /**
      * The time between cache services.
      */
@@ -49,26 +46,30 @@ public class Cache<K, V> {
     
     private final int cacheSize;
     
-    public long requests;
+    private AtomicLong requests;
     
-    public long misses;
+    private AtomicLong misses;
     
-    private long switches;
+    private AtomicInteger switches;
 
     /**
      * Constructs a new instance of the cache.
      * @param cacheSize number of items in this cache lists.
      */
     public Cache(int cacheSize) {
-        this.requests = 0;
-        this.switches = 0;
-        this.misses = 0;
+        this.requests = new AtomicLong(0);
+        this.switches = new AtomicInteger(0);
+        this.misses = new AtomicLong(0);
         this.cacheSize = cacheSize;
         cacheServiceSize = (cacheSize / 2);
         active = new ConcurrentHashMap<K, V>(this.cacheSize);
         background = new ConcurrentHashMap<K, V>(this.cacheSize);
     }
 
+    public int getCacheSwitches() {
+        return this.switches.intValue();
+    }
+    
     /**
      * Service the cache by switching the lists if the next service time has
      * passed.
@@ -82,7 +83,7 @@ public class Cache<K, V> {
 
             // Clear the background cache before continuing.
             background.clear();
-            switches++;
+            switches.incrementAndGet();
         }
     }
     
@@ -96,6 +97,7 @@ public class Cache<K, V> {
     public void addRecent(K key, V value) {
         setBackground(key, value);
         if (background.size() > cacheServiceSize) {
+            System.out.println("CACHE SERVICE");
             Thread t = new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -104,6 +106,7 @@ public class Cache<K, V> {
             }
             );
             t.start();
+            
         }
     }
 
@@ -128,9 +131,25 @@ public class Cache<K, V> {
      */
     public double getPercentageMisses() {
         try {
-            return ((double)misses / (double)requests);
+            return ((double)getCacheMisses() / (double)getCacheRequests() * 100);
         } catch (ArithmeticException aex) {
             return -1;
         }
+    }
+    
+    public void incrementRequestsByOne() {
+        requests.incrementAndGet();
+    }
+    
+    public double getCacheRequests() {
+        return requests.doubleValue();
+    }
+    
+    public long getCacheMisses() {
+        return misses.get();
+    }
+    
+    public void incrementMissesByOne() {
+        misses.incrementAndGet();
     }
 }
