@@ -20,7 +20,20 @@ package fiftyone.mobile.detection.entities.stream;
  * This Source Code Form is "Incompatible With Secondary Licenses", as
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
+/**
+ * Lists that use a cache can return information about the cache
+ * misses for performance analysis. They implement this interface
+ * to provide this data to the DataSet.
+ */
 public interface ICacheList {
-
+    /**
+     * Returns the percentage of cache misses.
+     * @return the percentage of cache misses.
+     */
     double getPercentageMisses();
+    /**
+     * The number of times the lists have been switched.
+     * @return The number of times the lists have been switched.
+     */
+    long getSwitches();
 }
