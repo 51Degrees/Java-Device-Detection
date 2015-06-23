@@ -42,7 +42,6 @@ import java.io.IOException;
  */
 public abstract class BaseList<T extends BaseEntity> implements
         ReadonlyList<T>, ICacheList, Disposable {
-
     /**
      * Used to store previously accessed items to improve performance and reduce
      * memory consumption associated with creating new instances of entities
@@ -56,7 +55,7 @@ public abstract class BaseList<T extends BaseEntity> implements
     /**
      * Information about the data structure the list is associated with.
      */
-    final Header header;
+    protected final Header header;
     /**
      * Entity factory.
      */
@@ -64,13 +63,22 @@ public abstract class BaseList<T extends BaseEntity> implements
 
     protected abstract T createEntity(int offset, BinaryReader reader) throws IOException;
 
+    /**
+     * Percentage of request that were not already held in the cache.
+     * @return Percentage of request that were not already held in the cache.
+     */
     @Override
     public double getPercentageMisses() {
         return cache.getPercentageMisses();
     }
 
-    public int getCount() {
-        return header.getCount();
+    /**
+     * The number of times the cache has been switched.
+     * @return The number of times the cache has been switched.
+     */
+    @Override
+    public long getSwitches() {
+        return cache.getCacheSwitches();
     }
 
     /**
