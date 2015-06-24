@@ -120,7 +120,7 @@ public class DetectionConstants {
     /**
      * Sizes of variables.
      */
-    private static final int SIZE_OF_LONG = 8,
+    public static final int SIZE_OF_LONG = 8,
             SIZE_OF_UINT = 4,
             SIZE_OF_INT = 4,
             SIZE_OF_USHORT = 2,
