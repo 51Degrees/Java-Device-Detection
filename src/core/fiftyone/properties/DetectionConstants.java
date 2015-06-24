@@ -117,4 +117,15 @@ public class DetectionConstants {
      * Number of cache entries for dataset nodes.
      */
     public static final int NODES_CACHE_SIZE = 30000;
+    /**
+     * Sizes of variables.
+     */
+    private static final int SIZE_OF_LONG = 8,
+            SIZE_OF_UINT = 4,
+            SIZE_OF_INT = 4,
+            SIZE_OF_USHORT = 2,
+            SIZE_OF_SHORT = 2,
+            SIZE_OF_UBYTE = 1,
+            SIZE_OF_BYTE = 1,
+            SIZE_OF_BOOL = 1;
 }
