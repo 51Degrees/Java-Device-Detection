@@ -48,16 +48,36 @@ import fiftyone.mobile.detection.readers.BinaryReader;
  * Detector data sets created using the @see Stream#Reader factory
  * using a file must be disposed of to ensure any readers associated with the
  * file are closed elegantly. <p> For more information see
- * http://51degrees.mobi/Support/Documentation/Java
+ * http://51degrees.com/Support/Documentation/Java
  */
 public class Dataset implements Disposable {
-
+    /**
+     * When the data was last modified.
+     */
     public Calendar lastModified;
+    /**
+     * The offset for the name of the property map used to create the dataset.
+     */
     public int formatOffset;
+    /**
+     * The name of the property map used to create the dataset.
+     */
     public String format;
+    /**
+     * The offset for the common name of the data set.
+     */
     public int nameOffset;
+    /**
+     * The common name of the data set.
+     */
     public String name;
+    /**
+     * The copyright notice associated with the data set.
+     */
     public String copyright;
+    /**
+     * The offset for the copyright notice associated with the data set.
+     */
     public int copyrightOffset;
     /**
      * The percentage of requests for signatures which were not already 
@@ -69,81 +89,10 @@ public class Dataset implements Disposable {
      * Dataset but a reference is needed to dispose it later.
      */
     private BinaryReader reader;
-    
     /**
-     * The percentage of requests for signatures which were not already
-     * contained in the cache. <p> A value is only returned when operating in
-     * Stream mode.
-     * @return double representing percentage of requests for signatures not 
-     * currently in cache, only for Stream Mode.
+     * Flag to indicate if the dataset is disposed.
      */
-    public double getPercentageSignatureCacheMisses() {
-        if (signatures instanceof ICacheList) {
-            return ((ICacheList) signatures).getPercentageMisses();
-        }
-        return 0;
-    }
-
-    /**
-     * The percentage of requests for nodes which were not already contained in
-     * the cache. <p> A value is only returned when operating in Stream mode.
-     * @return double representing percentage of requests for nodes not already 
-     * in cache. Stream Mode only.
-     */
-    public double getPercentageNodeCacheMisses() {
-        if (nodes instanceof ICacheList) {
-            return ((ICacheList) nodes).getPercentageMisses();
-        }
-        return 0;
-    }
-
-    /**
-     * The percentage of requests for strings which were not already contained
-     * in the cache. <p> A value is only returned when operating in Stream mode.
-     * @return double representing percentage of requests for strings that were 
-     * not already in cache.
-     */
-    public double getPercentageStringsCacheMisses() {
-        if (strings instanceof ICacheList) {
-            return ((ICacheList) strings).getPercentageMisses();
-        }
-        return 0;
-    }
-
-    /**
-     * The percentage of requests for profiles which were not already contained
-     * in the cache. <p> A value is only returned when operating in Stream mode.
-     * @return double representing percentage of requests for profiles that were 
-     * not already in cache.
-     */
-    public double getPercentageProfilesCacheMisses() {
-        if (profiles instanceof ICacheList) {
-            return ((ICacheList) profiles).getPercentageMisses();
-        }
-        return 0;
-    }
-
-    /**
-     * The percentage of requests for values which were not already contained in
-     * the cache. <p> A value is only returned when operating in Stream mode.
-     * @return double representing percentage of requests for values that were 
-     * not already in cache.
-     */
-    public double getPercentageValuesCacheMisses() {
-        if (values instanceof ICacheList) {
-            return ((ICacheList) values).getPercentageMisses();
-        }
-        return 0;
-    }
-
-    /**
-     * Indicates if the data set has been disposed.
-     * @return True if dataset has been disposed, False otherwise.
-     */
-    public boolean getDisposed() {
-        return disposed;
-    }
-    private boolean disposed = false;
+    private boolean disposed;
     /**
      * The date the data set was published.
      */
@@ -212,11 +161,74 @@ public class Dataset implements Disposable {
      * closest match.
      */
     public int maxSignaturesClosest;
+    /**
+     * Guid.
+     */
     public Guid guid;
     /**
      * Age of the data in months when exported.
      */
     public int age;
+    
+    /**
+     * The percentage of requests for signatures which were not already
+     * contained in the cache. <p> A value is only returned when operating in
+     * Stream mode.
+     * @return double representing percentage of requests for signatures not 
+     * currently in cache, only for Stream Mode.
+     */
+    public double getPercentageSignatureCacheMisses() {
+        return getPercentageMisses(signatures);
+    }
+
+    /**
+     * The percentage of requests for nodes which were not already
+     * contained in the cache. A value is only returned when operating in 
+     * Stream mode.
+     * @return double representing percentage of requests for nodes not already 
+     * in cache. Stream Mode only.
+     */
+    public double getPercentageNodeCacheMisses() {
+        return getPercentageMisses(nodes);
+    }
+
+    /**
+     * The percentage of requests for strings which were not already contained
+     * in the cache. <p> A value is only returned when operating in Stream mode.
+     * @return double representing percentage of requests for strings that were 
+     * not already in cache.
+     */
+    public double getPercentageStringsCacheMisses() {
+        return getPercentageMisses(strings);
+    }
+
+    /**
+     * The percentage of requests for profiles which were not already contained
+     * in the cache. <p> A value is only returned when operating in Stream mode.
+     * @return double representing percentage of requests for profiles that were 
+     * not already in cache.
+     */
+    public double getPercentageProfilesCacheMisses() {
+        return getPercentageMisses(profiles);
+    }
+
+    /**
+     * The percentage of requests for values which were not already contained in
+     * the cache. <p> A value is only returned when operating in Stream mode.
+     * @return double representing percentage of requests for values that were 
+     * not already in cache.
+     */
+    public double getPercentageValuesCacheMisses() {
+        return getPercentageMisses(values);
+    }
+
+    /**
+     * Indicates if the data set has been disposed.
+     * @return True if dataset has been disposed, False otherwise.
+     */
+    public boolean getDisposed() {
+        return disposed;
+    }
 
     /**
      * The hardware component.
@@ -409,7 +421,13 @@ public class Dataset implements Disposable {
      * A list of ASCII byte arrays for strings used by the dataset.
      */
     public ReadonlyList<AsciiString> strings;
+    /**
+     * The number of profiles each signature can contain.
+     */
     public int signatureProfilesCount;
+    /**
+     * The number of nodes each signature can contain.
+     */
     public int signatureNodesCount;
 
     /**
@@ -419,6 +437,7 @@ public class Dataset implements Disposable {
      * @throws java.io.IOException signals an I/O exception occurred
      */
     public Dataset(Date lastModified) throws IOException {
+        this.disposed  = false;
         this.lastModified = Calendar.getInstance();
         this.lastModified.setTime(lastModified);
     }
@@ -477,6 +496,7 @@ public class Dataset implements Disposable {
     /**
      * Preloads signatures to speed retrieval later at the expense of memory.
      * This method doesn't need to be used if init() has already been called.
+     * @throws java.io.IOException
      */
     public void initSignatures() throws IOException {
         // Initialise any objects that can be pre referenced to speed up
@@ -489,6 +509,7 @@ public class Dataset implements Disposable {
     /**
      * Preloads nodes to speed retrieval later at the expense of memory.
      * This method doesn't need to be used if init() has already been called.
+     * @throws java.io.IOException
      */
     public void initNodes() throws IOException {
         for (Node node : nodes) {
@@ -499,6 +520,7 @@ public class Dataset implements Disposable {
     /**
      * Preloads profiles to speed retrieval later at the expense of memory.
      * This method doesn't need to be used if init() has already been called.
+     * @throws java.io.IOException
      */
     public void initProfiles() throws IOException {
         for (Profile profile : profiles) {
@@ -509,6 +531,7 @@ public class Dataset implements Disposable {
     /**
      * Preloads components to speed retrieval later at the expense of memory.
      * This method doesn't need to be used if init() has already been called.
+     * @throws java.io.IOException
      */
     public void initComponents() throws IOException {
         for (Component component : getComponents()) {
@@ -519,6 +542,7 @@ public class Dataset implements Disposable {
     /**
      * Preloads properties to speed retrieval later at the expense of memory.
      * This method doesn't need to be used if init() has already been called.
+     * @throws java.io.IOException
      */
     public void initProperties() throws IOException {
         for (Property property : getProperties()) {
@@ -529,6 +553,7 @@ public class Dataset implements Disposable {
     /**
      * Preloads values to speed retrieval later at the expense of memory.
      * This method doesn't need to be used if init() has already been called.
+     * @throws java.io.IOException
      */
     public void initValues() throws IOException {
         for (Value value : values) {
@@ -539,6 +564,7 @@ public class Dataset implements Disposable {
     /**
      * Preloads signature ranks to speed retrieval later at the expense of memory.
      * This method doesn't need to be used if init() has already been called.
+     * @throws java.io.IOException
      */
     public void initSignatureRanks() throws IOException {
         for (RankedSignatureIndex rsi : rankedSignatureIndexes) {
@@ -568,6 +594,7 @@ public class Dataset implements Disposable {
      * found.
      * @param propertyName name of the property to find.
      * @return Property object or null if no property with requested name exists
+     * @throws java.io.IOException
      */
     public Property get(String propertyName) throws IOException {
         return getPropertyByName(propertyName);
@@ -589,10 +616,19 @@ public class Dataset implements Disposable {
         return null;
     }
 
+    /**
+     * Returns the number of profiles each signature can contain.
+     * @return The number of profiles each signature can contain.
+     */
     public int getProfilesCount() {
         return signatureProfilesCount;
     }
 
+    
+    /**
+     * Returns the number of nodes each signature can contain.
+     * @return The number of nodes each signature can contain.
+     */
     public int getNodesCount() {
         return signatureNodesCount;
     }
@@ -624,55 +660,102 @@ public class Dataset implements Disposable {
         return null;
     }
 
+    /**
+     * Disposes of the data set.
+     */
     @Override
     public void dispose() {
         disposed = true;
-        
-        if(reader != null)
-        {
-            reader.dispose();
-            reader = null;
+    }
+    
+    /**
+     * The percentage of requests for ranked signatures which were not already
+     * contained in the cache.
+     * A value is only returned when operating in Stream mode.
+     * @return The percentage of requests for ranked signatures which were 
+     * not already contained in the cache.
+     */
+    public double getPercentageRankedSignatureCacheMisses() {
+        return getPercentageMisses(rankedSignatureIndexes);
+    }
+    
+    /**
+     * Number of times the signature cache was switched.
+     * A value is only returned when operating in Stream mode.
+     * @return Number of times the signature cache was switched.
+     */
+    public long getSignatureCacheSwitches() {
+        return getSwitches(signatures);
+    }
+    
+    /**
+     * Number of times the node cache was switched.
+     * A value is only returned when operating in Stream mode.
+     * @return Number of times the node cache was switched.
+     */
+    public long getNodeCacheSwitches() {
+        return getSwitches(nodes);
+    }
+    
+    /**
+     * Number of times the strings cache was switched.
+     * A value is only returned when operating in Stream mode.
+     * @return Number of times the strings cache was switched.
+     */
+    public long getStringsCacheSwitches() {
+        return getSwitches(strings);
+    }
+    
+    /**
+     * Number of times the profiles cache was switched.
+     * A value is only returned when operating in Stream mode.
+     * @return Number of times the profiles cache was switched.
+     */
+    public long getProfilesCacheSwitches() {
+        return getSwitches(profiles);
+    }
+    
+    /**
+     * Number of times the values cache was switched.
+     * A value is only returned when operating in Stream mode.
+     * @return Number of times the values cache was switched.
+     */
+    public long getValuesCacheSwitches() {
+        return getSwitches(values);
+    }
+    
+    /**
+     * Number of times the ranked signature cache was switched.
+     * A value is only returned when operating in Stream mode.
+     * @return Number of times the ranked signature cache was switched.
+     */
+    public long getRankedSignatureCacheSwitches() {
+        return getSwitches(rankedSignatureIndexes);
+    }
+    
+    /**
+     * Returns the percentage of requests that weren't serviced by the cache.
+     * @param list a Cache object to get percentage from.
+     * @return 0 if object is not Cache, percentage otherwise.
+     */
+    private static double getPercentageMisses(Object list) {
+        if (list instanceof ICacheList) {
+            ICacheList c = (ICacheList)list;
+            return c.getPercentageMisses();
         }
-        // We need to collect because the ByteBuffers in BinaryReader
-        // do not release the file channel until they're collected. This
-        // doesn't gurarantee their collection but it at least makes it
-        // more likely.
-        System.gc();
-        
-        if (strings != null) {
-            strings.dispose();
+        return -1;
+    }
+    
+    /**
+     * Returns the number of times the cache lists were switched.
+     * @param list a Cache object to get percentage from.
+     * @return 0 if object is not Cache, percentage otherwise.
+     */
+    private static long getSwitches(Object list) {
+        if (list instanceof ICacheList) {
+            ICacheList c = (ICacheList)list;
+            return c.getSwitches();
         }
-        if (components != null) {
-            components.dispose();
-        }
-        if (properties != null) {
-            properties.dispose();
-        }
-        if (values != null) {
-            values.dispose();
-        }
-        if (signatures != null) {
-            signatures.dispose();
-        }
-        if (profiles != null) {
-            profiles.dispose();
-        }
-        if (nodes != null) {
-            nodes.dispose();
-        }
-        if (rootNodes != null) {
-            rootNodes.dispose();
-        }
-        if (rankedSignatureIndexes != null) {
-            rankedSignatureIndexes.dispose();
-        }
-        if (maps != null) {
-            maps.dispose();
-        }
-        if(profileOffsets != null) {
-            profileOffsets.dispose();
-        }
-        
-        System.gc();
+        return -1;
     }
 }
