@@ -43,14 +43,22 @@ public class Cache<K, V> {
      * The background cache.
      */
     private ConcurrentHashMap<K, V> background;
-    
+    /**
+     * Number of items in cache.
+     */
     private final int cacheSize;
-    
-    private AtomicLong requests;
-    
-    private AtomicLong misses;
-    
-    private AtomicInteger switches;
+    /**
+     * Total number of requests to cache.
+     */
+    private final AtomicLong requests;
+    /**
+     * The number of requests that could not be found in active cache.
+     */
+    private final AtomicLong misses;
+    /**
+     * Number of times background list had to be switched with the active list.
+     */
+    private final AtomicInteger switches;
 
     /**
      * Constructs a new instance of the cache.
@@ -66,6 +74,10 @@ public class Cache<K, V> {
         background = new ConcurrentHashMap<K, V>(this.cacheSize);
     }
 
+    /**
+     * Returns the number of times active and inactive lists had to be swapped.
+     * @return the number of times active and inactive lists had to be swapped.
+     */
     public int getCacheSwitches() {
         return this.switches.intValue();
     }
@@ -97,7 +109,6 @@ public class Cache<K, V> {
     public void addRecent(K key, V value) {
         setBackground(key, value);
         if (background.size() > cacheServiceSize) {
-            System.out.println("CACHE SERVICE");
             Thread t = new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -106,7 +117,6 @@ public class Cache<K, V> {
             }
             );
             t.start();
-            
         }
     }
 
@@ -117,10 +127,21 @@ public class Cache<K, V> {
         return active.get(key);
     }
 
+    /**
+     * Add a new entry to the active list if entry is not already in the list.
+     * @param key Some identified that can later be used for entry lookup.
+     * @param result The value corresponding to the key.
+     */
     void setActive(K key, V result) {
         active.putIfAbsent(key, result);
     }
 
+    /**
+     * Add a new entry to the background list if entry is not already in the 
+     * list.
+     * @param key Some identified that can later be used for entry lookup.
+     * @param result The value corresponding to the key.
+     */
     void setBackground(K key, V result) {
         background.putIfAbsent(key, result);
     }
@@ -137,18 +158,32 @@ public class Cache<K, V> {
         }
     }
     
+    /**
+     * Increment the total number of requests to cache by one.
+     */
     public void incrementRequestsByOne() {
         requests.incrementAndGet();
     }
     
+    /**
+     * Returns the current number of total requests to cache.
+     * @return the current number of total requests to cache.
+     */
     public double getCacheRequests() {
         return requests.doubleValue();
     }
     
+    /**
+     * Returns the total number of misses for the current cache.
+     * @return the total number of misses for the current cache.
+     */
     public long getCacheMisses() {
         return misses.get();
     }
     
+    /**
+     * Increments the number of misses for the current cache by one.
+     */
     public void incrementMissesByOne() {
         misses.incrementAndGet();
     }
