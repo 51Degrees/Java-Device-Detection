@@ -46,7 +46,7 @@ import fiftyone.mobile.detection.entities.Profile;
  * returned. <p> The characteristics of the detection data set will determine
  * the accuracy of the result match. Older data sets that are unaware of the
  * latest devices, or user agent formats in use will be less accurate. <p> For
- * more information see http://51degrees.mobi/Support/Documentation/Java
+ * more information see http://51degrees.com/Support/Documentation/Java
  */
 public class Controller {
 
