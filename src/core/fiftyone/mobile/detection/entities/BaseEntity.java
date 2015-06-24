@@ -29,7 +29,7 @@ import fiftyone.mobile.detection.readers.BinaryReader;
  * this functionality along with many common methods used by multiple entities.
  * <p>
  *
- * For more information see http://51degrees.mobi/Support/Documentation/Java
+ * For more information see http://51degrees.com/Support/Documentation/Java
  */
 /**
  * Common properties and methods for all data types contained in the data set.
