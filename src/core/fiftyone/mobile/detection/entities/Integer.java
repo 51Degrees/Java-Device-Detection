@@ -9,7 +9,7 @@ import fiftyone.mobile.detection.Dataset;
 import fiftyone.mobile.detection.readers.BinaryReader;
 
 /**
- * A integer item in a list of integers.
+ * An integer item in a list of integers.
  */
 public class Integer extends BaseEntity {
     /**
