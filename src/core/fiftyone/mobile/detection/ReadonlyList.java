@@ -26,7 +26,7 @@ import java.io.IOException;
 /**
  * A list which only provides those features needed to read items from the list.
  *
- * @param T The type of BaseEntity the list will contain
+ * @param <T> The type of BaseEntity the list will contain.
  */
 public interface ReadonlyList<T extends BaseEntity> extends Iterable<T>,
         Disposable {
