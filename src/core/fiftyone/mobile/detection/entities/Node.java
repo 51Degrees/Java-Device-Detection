@@ -71,7 +71,8 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
      */
     protected short numericChildrenCount;
     /**
-     * A list of all the signature indexes that relate to this node.
+     * An array of the ranked signature indexes for the node.
+     * rankedSignatureIndexes;
      */
     protected int[] signatureIndexes;
     /**
@@ -105,7 +106,7 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
     
     protected short childrenCount;
     
-
+    //public int[] rankedSignatureIndexes;
     
     protected int signatureCount;
 
@@ -159,6 +160,20 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
     }
 
     /**
+     * Reads the ranked signature count as an integer. V31 uses a 4 byte 
+     * integer for the count. V32 uses a 2 byte ushort for the count. In both 
+     * data formats no more than ushort.MaxValue signatures can be associated 
+     * with a node.
+     * @param reader Reader connected to the source data structure and 
+     * positioned to start reading.
+     * @return The count of ranked signatures associated with the node.
+     */
+    public abstract int readerRankedSignatureCount(BinaryReader reader);
+    
+    protected abstract NodeIndex[] readNodeIndexes(
+            Dataset dataSet, BinaryReader reader, int offset, int count);
+    
+    /**
      * Gets an array containing all the characters of the node.
      * @return array containing all the characters of the node
      * @throws java.io.IOException indicates an I/O exception occurred
@@ -196,14 +211,16 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
      */
     public Node(Dataset dataSet, int offset, BinaryReader reader) {
         super(dataSet, offset);
+        int readerPosition = reader.getPos(); 
         this.position = reader.readInt16();
         this.nextCharacterPosition = reader.readInt16();
         this.parentOffset = reader.readInt32();
         this.characterStringOffset = reader.readInt32();
         this.childrenCount = reader.readInt16();
         this.numericChildrenCount = reader.readInt16();
-        this.signatureCount = reader.readInt32();
-        this.children = readNodeIndexes(dataSet, reader, offset + MIN_LENGTH, childrenCount);
+        this.signatureCount = readerRankedSignatureCount(reader);
+        this.children = readNodeIndexes(dataSet, reader, 
+            (int)(offset + reader.getPos() - readerPosition), childrenCount);
     }
 
     /**
@@ -236,6 +253,7 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
      * @param count The number of elements to read into the array
      * @return An array of child node indexes for the node
      */
+    /*
     private static NodeIndex[] readNodeIndexes(Dataset dataSet,
             BinaryReader reader, int offset, short count) {
         NodeIndex[] array = new NodeIndex[count];
@@ -247,6 +265,7 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
         }
         return array;
     }
+    */
 
     /**
      * Called after the entire data set has been loaded to ensure any further
