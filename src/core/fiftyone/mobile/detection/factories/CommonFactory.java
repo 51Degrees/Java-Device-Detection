@@ -34,17 +34,29 @@ public class CommonFactory {
         } catch (Exception ex) {
             StringBuilder message = new StringBuilder();
             message.append("Data file is invalid. Check that the data file ");
-            message.append(" is decompressed and is the latest version format.");
+            message.append("is decompressed and is the latest version format:");
+            message.append(
+                    DetectionConstants.supportedPatternFormatVersions.toString()
+            );
             throw new Error(message.toString());
         }
-        //Throw exception if the data file does not have the correct
-        //version in formation.
-        if (dataSet.version.major != DetectionConstants.FormatVersion.major || 
-                dataSet.version.minor != DetectionConstants.FormatVersion.minor) {
-            throw new IllegalArgumentException("Version mismatch. Data is of "
-                    + "an incorrect format.");
+        
+        if (!DetectionConstants.supportedPatternFormatVersions.
+                contains(dataSet.version)) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("Version mismatch. Data is version ");
+            sb.append(dataSet.version);
+            sb.append("for ");
+            sb.append(DetectionConstants.supportedPatternFormatVersions.toString());
+            sb.append("reader");
+            throw new IllegalArgumentException(sb.toString());
         }
         
+        // Set the enum format version value for easier if logic.
+        dataSet.versionEnum = DetectionConstants.
+                supportedPatternFormatVersions.getEnumIfExists(dataSet.version);
+        
+        // Read the common header fields.
         dataSet.guid = new Guid(reader.readBytes(16));
         dataSet.copyrightOffset = reader.readInt32();
         dataSet.age = reader.readInt16();
@@ -66,6 +78,11 @@ public class CommonFactory {
         dataSet.jsonBufferLength = reader.readInt32();
         dataSet.xmlBufferLength = reader.readInt32();
         dataSet.maxSignaturesClosest = reader.readInt32();
+        
+        // Read the V32 headers specifically.
+        if (dataSet.versionEnum == DetectionConstants.FORMAT_VERSIONS.PatternV32) {
+            dataSet.maximumRank = reader.readInt32();
+        }
     }
     
     /**
