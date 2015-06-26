@@ -7,6 +7,7 @@ import java.util.Date;
 import fiftyone.mobile.detection.entities.AsciiString;
 import fiftyone.mobile.detection.entities.Component;
 import fiftyone.mobile.detection.entities.Guid;
+import fiftyone.mobile.detection.entities.IntegerEntity;
 import fiftyone.mobile.detection.entities.Map;
 import fiftyone.mobile.detection.entities.Node;
 import fiftyone.mobile.detection.entities.Profile;
@@ -18,6 +19,7 @@ import fiftyone.mobile.detection.entities.Value;
 import fiftyone.mobile.detection.entities.Version;
 import fiftyone.mobile.detection.entities.stream.ICacheList;
 import fiftyone.mobile.detection.readers.BinaryReader;
+import fiftyone.properties.DetectionConstants;
 
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
@@ -169,6 +171,22 @@ public class Dataset implements Disposable {
      * Age of the data in months when exported.
      */
     public int age;
+    /**
+     * The version of the data set as an enum.
+     */
+    public DetectionConstants.FORMAT_VERSIONS versionEnum;
+    /**
+     * The largest rank value that can be returned.
+     */
+    public int maximumRank;
+    /**
+     * List of integers that represent ranked signature indexes.
+     */
+    public FixedList<IntegerEntity> nodeRankedSignatureIndexes;
+    /**
+     * List of integers that represent signature node offsets.
+     */
+    public FixedList<IntegerEntity> signatureNodeOffsets;
     
     /**
      * The percentage of requests for signatures which were not already
@@ -222,6 +240,21 @@ public class Dataset implements Disposable {
         return getPercentageMisses(values);
     }
 
+    /**
+     * The largest rank value that can be returned.
+     * @return The largest rank value that can be returned.
+     */
+    public int getMaximumRank() {
+        if (maximumRank == 0 && rankedSignatureIndexes != null) {
+            synchronized(this) {
+                if (maximumRank == 0 && rankedSignatureIndexes != null) {
+                    maximumRank = rankedSignatureIndexes.size();
+                }
+            }
+        }
+        return maximumRank;
+    }
+    
     /**
      * Indicates if the data set has been disposed.
      * @return True if dataset has been disposed, False otherwise.
@@ -396,11 +429,11 @@ public class Dataset implements Disposable {
      */
     public ReadonlyList<Signature> signatures;
     /**
-     * A list of signature indexes ordered in ascending order of rank. Used by
-     * the node ranked signature indexes lists to identify the corresponding
+     * A list of signature indexes ordered in ascending order of rank. Used by 
+     * the node ranked signature indexes lists to identify the corresponding 
      * signature.
      */
-    public ReadonlyList<RankedSignatureIndex> rankedSignatureIndexes;
+    public FixedList<IntegerEntity> rankedSignatureIndexes;
     /**
      * A list of all the possible profiles the data set contains.
      */
@@ -437,6 +470,7 @@ public class Dataset implements Disposable {
      * @throws java.io.IOException signals an I/O exception occurred
      */
     public Dataset(Date lastModified) throws IOException {
+        this.maximumRank = 0;
         this.disposed  = false;
         this.lastModified = Calendar.getInstance();
         this.lastModified.setTime(lastModified);
@@ -463,6 +497,22 @@ public class Dataset implements Disposable {
     }
 
     /**
+     * Returns a list of integers that represent signature node offsets.
+     * @return list of integers that represent signature node offsets.
+     */
+    public FixedList<IntegerEntity> getSignatureNodeOffsets() {
+        return signatureNodeOffsets;
+    }
+    
+    /**
+     * Returns a list of integers that represent ranked signature indexes.
+     * @return a list of integers that represent ranked signature indexes.
+     */
+    public FixedList<IntegerEntity> getNodeRankedSignatureIndexes() {
+        return nodeRankedSignatureIndexes;
+    }
+    
+    /**
      * Called after the entire data set has been loaded to ensure any further
      * initialisation steps that require other items in the data set can be
      * completed.
@@ -482,7 +532,6 @@ public class Dataset implements Disposable {
         initProfiles();
         initNodes();
         initSignatures();
-        initSignatureRanks();
 
         // We no longer need the strings data structure as all dependent
         // data has been taken from it.
@@ -558,17 +607,6 @@ public class Dataset implements Disposable {
     public void initValues() throws IOException {
         for (Value value : values) {
             value.init();
-        }
-    }
-
-    /**
-     * Preloads signature ranks to speed retrieval later at the expense of memory.
-     * This method doesn't need to be used if init() has already been called.
-     * @throws java.io.IOException
-     */
-    public void initSignatureRanks() throws IOException {
-        for (RankedSignatureIndex rsi : rankedSignatureIndexes) {
-            rsi.init();
         }
     }
 
@@ -723,6 +761,14 @@ public class Dataset implements Disposable {
     public long getValuesCacheSwitches() {
         return getSwitches(values);
     }
+    
+    /**
+     * Returns a list of signature indexes ordered in ascending order of rank.
+     * @return A list of signature indexes ordered in ascending order of rank.
+     */
+    public FixedList<IntegerEntity> getRankedSignatureIndexes() {
+        return rankedSignatureIndexes;
+    } 
     
     /**
      * Number of times the ranked signature cache was switched.
