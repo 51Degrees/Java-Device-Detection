@@ -9,6 +9,7 @@ import fiftyone.mobile.detection.entities.Version;
 import fiftyone.properties.DetectionConstants.FORMAT_VERSIONS;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map.Entry;
 import java.util.Set;
 
 /**
@@ -98,5 +99,23 @@ public class KeyValuePair{
      */
     public boolean contains(Version version) {
         return container.containsValue(version);
+    }
+    
+    /**
+     * Method iterates through the entry set of the HashMap searching for a 
+     * specific version. If such version was found it returns the corresponding 
+     * key. Null returned if this version is not in the corresponding map.
+     * @param version
+     * @return 
+     */
+    public FORMAT_VERSIONS getEnumIfExists(Version version) {
+        if (container.containsValue(version)) {
+            //We know the version is in the map. Find it.
+            for (Entry<FORMAT_VERSIONS, Version> entry : container.entrySet()) {
+                if (entry.getValue() == version)
+                    return entry.getKey();
+            }
+        }
+        return null;
     }
 }
