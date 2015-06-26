@@ -8,6 +8,8 @@ package fiftyone.properties;
 import fiftyone.mobile.detection.entities.Version;
 import fiftyone.properties.DetectionConstants.FORMAT_VERSIONS;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Set;
 
 /**
  * This class implements mapping of a Format Version to the Version object.
@@ -60,5 +62,41 @@ public class KeyValuePair{
         if (matchTechnology.equals("pattern"))
             return true;
         return false;
+    }
+    
+    /**
+     * Returns the number of elements in map.
+     * @return the number of elements in map.
+     */
+    public int size() {
+        if (container.isEmpty())
+            return 0;
+        else
+            return container.size();
+    }
+    
+    /**
+     * Returns all versions as a string.
+     * @return all versions as a string.
+     */
+    @Override
+    public String toString() {
+        Set<FORMAT_VERSIONS> formatVersions = container.keySet();
+        StringBuilder sb = new StringBuilder();
+        for (FORMAT_VERSIONS fv : formatVersions) {
+            sb.append(container.get(fv));
+            sb.append(" ");
+        }
+        return sb.toString();
+    }
+    
+    /**
+     * Check if a specific version is present in the list of values.
+     * @param version Version object to check for.
+     * @return True if provided Version is contained in the list of values, 
+     * false otherwise.
+     */
+    public boolean contains(Version version) {
+        return container.containsValue(version);
     }
 }
