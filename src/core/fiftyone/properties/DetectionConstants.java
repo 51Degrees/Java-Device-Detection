@@ -1,6 +1,12 @@
 package fiftyone.properties;
 
 import fiftyone.mobile.detection.entities.Version;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 /* *********************************************************************
@@ -28,10 +34,39 @@ import java.util.regex.Pattern;
  */
 public class DetectionConstants {
 
+    public enum FORMAT_VERSIONS {
+        /**
+         * First released in May 2014 for version 3 device deteciton.
+         */
+        PatternV31,
+        /**
+         * Contains the same data as V3.1 but organises the information more 
+         * efficiently to reduce data file size and improve performance.
+         */
+        PatternV32,
+        /**
+         * The binary data file format used with Trie version 3 device
+         * detection.
+         */
+        TrieV30
+    }
+    /**
+     * An array of pattern format versions that this API will support.
+     */
+    public static final KeyValuePair supportedPatternFormatVersions = 
+            new KeyValuePair("pattern");
+    /**
+     * An array of trie format versions that this API will support.
+     */
+    public static final KeyValuePair supportedTrieFormatVersions = 
+            new KeyValuePair("trie");
+    
     /**
      * The format version of the binary data contained in the file header. This
      * much match with the data file for the file to be read.
+     * Deprecated since this release supports both 3.1 and 3.2.
      */
+    @Deprecated
     public static final Version FormatVersion = new Version(3, 1, 0, 0);
     /**
      * Character to use when combining values from properties that support lists
