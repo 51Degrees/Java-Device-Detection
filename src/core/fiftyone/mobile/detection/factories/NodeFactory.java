@@ -73,6 +73,14 @@ public abstract class NodeFactory extends BaseEntityFactory<Node> {
     }
     
     /**
+     * Returns The length of a numeric node index.
+     * @return The length of a numeric node index.
+     */
+    public int getNodeNumericIndexLength() {
+        return NODE_NUMERIC_INDEX_LENGTH;
+    }
+    
+    /**
      * Implements the creation of a new instance of Node. Needs to be 
      * implemented in a subclass.
      * @param dataSet The data set whose node list the node is contained within.
