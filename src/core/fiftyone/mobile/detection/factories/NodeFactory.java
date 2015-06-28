@@ -65,6 +65,14 @@ public abstract class NodeFactory extends BaseEntityFactory<Node> {
     }
     
     /**
+     * Returns the basic length of a node for all supported versions.
+     * @return the basic length of a node for all supported versions.
+     */
+    public int getBaseLength() {
+        return BASE_LENGTH;
+    }
+    
+    /**
      * Implements the creation of a new instance of Node. Needs to be 
      * implemented in a subclass.
      * @param dataSet The data set whose node list the node is contained within.
