@@ -1,28 +1,42 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package fiftyone.mobile.detection.entities.stream;
 
-import fiftyone.mobile.detection.entities.BaseEntity;
 import fiftyone.mobile.detection.entities.NodeNumericIndex;
 import fiftyone.mobile.detection.readers.BinaryReader;
 
+/* *********************************************************************
+ * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
+ * Copyright © 2014 51Degrees Mobile Experts Limited, 5 Charlotte Close,
+ * Caversham, Reading, Berkshire, United Kingdom RG4 7BY
+ * 
+ * This Source Code Form is the subject of the following patent 
+ * applications, owned by 51Degrees Mobile Experts Limited of 5 Charlotte
+ * Close, Caversham, Reading, Berkshire, United Kingdom RG4 7BY: 
+ * European Patent Application No. 13192291.6; and
+ * United States Patent Application Nos. 14/085,223 and 14/085,301.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0.
+ * 
+ * If a copy of the MPL was not distributed with this file, You can obtain
+ * one at http://mozilla.org/MPL/2.0/.
+ * 
+ * This Source Code Form is “Incompatible With Secondary Licenses”, as
+ * defined by the Mozilla Public License, v. 2.0.
+ * ********************************************************************* */
 /**
  * Represents Node which can be used with the Stream data set. NumericChidren 
  * and RankedSignatureIndexes are not loaded into memory when the entity is 
  * constructed, they're only loaded from the data source when requested.
  */
-public class Node extends fiftyone.mobile.detection.entities.Node {
+public abstract class Node extends fiftyone.mobile.detection.entities.Node {
     /**
      * The position in the data set where the NumericChildren start.
      */
-    private final int position;
+    protected final int position;
     /**
      * Pool used to load NumericChildren and RankedSignatureIndexes.
      */
-    private final Pool pool;
+    protected final Pool pool;
 
     /**
      * Constructs a new instance of Node.
@@ -52,8 +66,9 @@ public class Node extends fiftyone.mobile.detection.entities.Node {
                         reader = pool.getReader();
                         reader.setPos(position);
                         super.numericChildren = 
-                                fiftyone.mobile.detection.entities.Node.readNodeNumericIndexes(dataSet, reader, 
-                                        numericChildrenCount);
+                            fiftyone.mobile.detection.entities.Node.
+                                readNodeNumericIndexes(dataSet, reader, 
+                                                        numericChildrenCount);
                     } catch(Exception ex) {
                         throw new Error("Cannot obtain numeric Children: "+ex);
                     } finally {
@@ -65,30 +80,4 @@ public class Node extends fiftyone.mobile.detection.entities.Node {
         }
         return numericChildren;
     }
-    
-    /**
-     * A list of all the signature indexes that relate to this node.
-     * @return list of all the signature indexes that relate to this node.
-     */
-    @Override
-    public int[] getRankedSignatureIndexes() {
-        if (super.signatureIndexes == null) {
-            synchronized(this) {
-                if (super.signatureIndexes == null) {
-                    BinaryReader reader = null;
-                    try {
-                        reader = pool.getReader();
-                        reader.setPos(position+((2 + 4)*super.numericChildrenCount));
-                        signatureIndexes = BaseEntity.readIntegerArray(reader, super.signatureCount);
-                    } catch(Exception ex) {
-                        throw new Error("Cannot to obtain signature indexes"+ex);
-                    } finally {
-                        if (reader != null)
-                            pool.release(reader);
-                    }
-                }
-            }
-        }
-        return signatureIndexes;
-    } 
 }
