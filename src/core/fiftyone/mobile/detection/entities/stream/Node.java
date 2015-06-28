@@ -24,9 +24,7 @@ import fiftyone.mobile.detection.readers.BinaryReader;
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
 /**
- * Represents Node which can be used with the Stream data set. NumericChidren 
- * and RankedSignatureIndexes are not loaded into memory when the entity is 
- * constructed, they're only loaded from the data source when requested.
+ * Represents Node which can be used with the Stream data set.
  */
 public abstract class Node extends fiftyone.mobile.detection.entities.Node {
     /**
