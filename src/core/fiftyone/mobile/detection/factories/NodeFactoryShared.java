@@ -46,6 +46,22 @@ public class NodeFactoryShared {
             DetectionConstants.SIZE_OF_INT;
     
     /**
+     * Returns the The length of a node index in V3.1 format data.
+     * @return The length of a node index in V3.1 format data.
+     */
+    public int getNodeIndexLengthV31() {
+        return NODE_INDEX_LENGTH_V31;
+    }
+    
+    /**
+     * Returns the length of a node index in V3.2 format data.
+     * @return The length of a node index in V3.2 format data.
+     */
+    public int getNodeIndexLengthV32() {
+        return NODE_INDEX_LENGTH_V32;
+    }
+    
+    /**
      * Used by the constructor to read the variable length list of child
      * node indexes associated with the node in V3.1 format.
      * @param dataSet The data set the node is contained within.
