@@ -40,7 +40,7 @@ import java.io.IOException;
  * Read method is called. <p> The class supports source stream that do not
  * support seeking. <p> Should not be referenced directly.
  *
- * @param T The type of BaseEntity the list will contain
+ * @param <T> The type of BaseEntity the list will contain
  *
  */
 public class MemoryFixedList<T extends BaseEntity> extends BaseList<T> {
