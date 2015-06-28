@@ -4,8 +4,10 @@ import java.io.FileInputStream;
 import java.io.IOException;
 
 import fiftyone.mobile.detection.Dataset;
+import fiftyone.mobile.detection.FixedList;
 import fiftyone.mobile.detection.entities.AsciiString;
 import fiftyone.mobile.detection.entities.Component;
+import fiftyone.mobile.detection.entities.IntegerEntity;
 import fiftyone.mobile.detection.entities.Map;
 import fiftyone.mobile.detection.entities.Node;
 import fiftyone.mobile.detection.entities.Profile;
@@ -16,7 +18,8 @@ import fiftyone.mobile.detection.entities.Signature;
 import fiftyone.mobile.detection.entities.Value;
 import fiftyone.mobile.detection.entities.memory.MemoryFixedList;
 import fiftyone.mobile.detection.entities.memory.MemoryVariableList;
-import fiftyone.mobile.detection.factories.memory.NodeMemoryFactory;
+import fiftyone.mobile.detection.factories.memory.NodeMemoryFactoryV31;
+import fiftyone.mobile.detection.factories.memory.NodeMemoryFactoryV32;
 import fiftyone.mobile.detection.factories.memory.ProfileMemoryFactory;
 import fiftyone.mobile.detection.readers.BinaryReader;
 import java.io.File;
@@ -94,7 +97,7 @@ public class MemoryFactory {
     public static Dataset create(String filename) throws IOException {
         File f = new File(filename);
         if (!f.exists() || !f.isFile())
-            throw new Error("Could not construct the dataset. Binary file does +"
+            throw new Error("Could not construct dataset. Binary file does +"
                     + "nor exist or is a directory.");
         Date lm = new Date(f.lastModified());
         return create(filename, false, lm);
@@ -136,8 +139,10 @@ public class MemoryFactory {
      *            True to indicate that the data set should be fully initialised
      * @return A DetectorDataSet filled with data from the reader
      */
-    public static void load(Dataset dataSet, BinaryReader reader, boolean init) throws IOException {
+    public static void load(Dataset dataSet, BinaryReader reader, boolean init) 
+            throws IOException {
         CommonFactory.loadHeader(dataSet, reader);
+        
         MemoryVariableList<AsciiString> strings = new MemoryVariableList<AsciiString>(
                 dataSet, reader, new AsciiStringFactory());
         MemoryFixedList<Component> components = new MemoryFixedList<Component>(
@@ -150,13 +155,40 @@ public class MemoryFactory {
                 reader, new ValueFactory());
         MemoryVariableList<Profile> profiles = new MemoryVariableList<Profile>(
                 dataSet, reader, new ProfileMemoryFactory());
-        MemoryFixedList<Signature> signatures = new MemoryFixedList<Signature>(
-                dataSet, reader, new SignatureFactory(dataSet));
-        MemoryFixedList<RankedSignatureIndex> rankedSignatureIndexes =
-                new MemoryFixedList<RankedSignatureIndex>(
-                dataSet, reader, new RankedSignatureIndexFactory());
-        MemoryVariableList<Node> nodes = new MemoryVariableList<Node>(dataSet,
-                reader, new NodeMemoryFactory());
+        MemoryFixedList<Signature> signatures = null;
+        MemoryFixedList<IntegerEntity> signatureNodeOffsets = null;
+        MemoryFixedList<IntegerEntity> nodeRankedSignatureIndexes = null;
+        
+        switch(dataSet.versionEnum) {
+            case PatternV31:
+                signatures = new MemoryFixedList<Signature>(
+                        dataSet, reader, new SignatureFactoryV31(dataSet));
+                break;
+            case PatternV32:
+                signatures = new MemoryFixedList<Signature>(
+                        dataSet, reader, new SignatureFactoryV32(dataSet));
+                signatureNodeOffsets = new MemoryFixedList<IntegerEntity>(
+                        dataSet, reader, new IntegerEntityFactory());
+                nodeRankedSignatureIndexes = new MemoryFixedList<IntegerEntity>(
+                        dataSet, reader, new IntegerEntityFactory());
+                break;
+        }
+        
+        MemoryFixedList<IntegerEntity> rankedSignatureIndexes =
+                new MemoryFixedList<IntegerEntity>(
+                dataSet, reader, new IntegerEntityFactory());
+        MemoryVariableList<Node> nodes = null;
+        switch (dataSet.versionEnum) {
+            case PatternV31:
+                nodes = new MemoryVariableList<Node>(
+                        dataSet, reader, new NodeMemoryFactoryV31());
+                break;
+            case PatternV32:
+                nodes = new MemoryVariableList<Node>(
+                        dataSet, reader, new NodeMemoryFactoryV32());
+                break;
+        }
+        
         MemoryFixedList<Node> rootNodes = new MemoryFixedList<Node>(dataSet,
                 reader, new RootNodeFactory());
         MemoryFixedList<ProfileOffset> profileOffsets = new MemoryFixedList<ProfileOffset>(
@@ -169,7 +201,16 @@ public class MemoryFactory {
         dataSet.values = values;
         dataSet.profiles = profiles;
         dataSet.signatures = signatures;
-        dataSet.rankedSignatureIndexes = rankedSignatureIndexes;
+        dataSet.rankedSignatureIndexes = (FixedList)rankedSignatureIndexes;
+        
+        switch(dataSet.versionEnum) {
+            case PatternV32:
+                dataSet.signatureNodeOffsets = (FixedList)signatureNodeOffsets;
+                dataSet.nodeRankedSignatureIndexes = 
+                        (FixedList)nodeRankedSignatureIndexes;
+                break;
+        }
+        
         dataSet.nodes = nodes;
         dataSet.rootNodes = rootNodes;
         dataSet.profileOffsets = profileOffsets;
@@ -181,6 +222,14 @@ public class MemoryFactory {
         values.read(reader);
         profiles.read(reader);
         signatures.read(reader);
+        
+        switch(dataSet.versionEnum) {
+            case PatternV32:
+                signatureNodeOffsets.read(reader);
+                nodeRankedSignatureIndexes.read(reader);
+                break;
+        }
+        
         rankedSignatureIndexes.read(reader);
         nodes.read(reader);
         rootNodes.read(reader);
