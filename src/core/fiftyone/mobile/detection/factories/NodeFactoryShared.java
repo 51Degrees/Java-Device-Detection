@@ -49,7 +49,7 @@ public class NodeFactoryShared {
      * Returns the The length of a node index in V3.1 format data.
      * @return The length of a node index in V3.1 format data.
      */
-    public int getNodeIndexLengthV31() {
+    public static int getNodeIndexLengthV31() {
         return NODE_INDEX_LENGTH_V31;
     }
     
@@ -57,7 +57,7 @@ public class NodeFactoryShared {
      * Returns the length of a node index in V3.2 format data.
      * @return The length of a node index in V3.2 format data.
      */
-    public int getNodeIndexLengthV32() {
+    public static int getNodeIndexLengthV32() {
         return NODE_INDEX_LENGTH_V32;
     }
     
