@@ -1,7 +1,6 @@
 package fiftyone.mobile.detection.factories.memory;
 
 import fiftyone.mobile.detection.Dataset;
-import fiftyone.mobile.detection.entities.Node;
 import fiftyone.mobile.detection.factories.NodeFactory;
 import fiftyone.mobile.detection.factories.NodeFactoryShared;
 import fiftyone.mobile.detection.readers.BinaryReader;
@@ -33,8 +32,7 @@ import fiftyone.properties.DetectionConstants;
 public class NodeMemoryFactoryV31 extends NodeFactory {
 
     /**
-     * Implements the creation of a new instance of Node. Needs to be 
-     * implemented in a subclass.
+     * Implements the creation of a new instance of Node version 3.1.
      * @param dataSet The data set whose node list the node is contained within.
      * @param index The offset to the start of the node within the string data 
      * structure.
@@ -62,7 +60,8 @@ public class NodeMemoryFactoryV31 extends NodeFactory {
                         NodeFactoryShared.getNodeIndexLengthV31()) + 
                 (entity.getNumericChildrenLength() * 
                         getNodeNumericIndexLength()) +
-                entity.signatureIndexes.length;
+                (entity.signatureIndexes.length * 
+                        DetectionConstants.SIZE_OF_INT);
                 
     }
     
