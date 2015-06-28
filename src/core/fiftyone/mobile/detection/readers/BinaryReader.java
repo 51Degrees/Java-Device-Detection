@@ -74,6 +74,12 @@ public class BinaryReader implements Disposable {
     public short readInt16() {
         return byteBuffer.getShort();
     }
+    
+    public int readUInt16() {
+        short s = byteBuffer.getShort();
+        int intVal = s >= 0 ? s : 0x10000 + s; 
+        return intVal;
+    }
 
     public int readInt32() {
         return byteBuffer.getInt();
