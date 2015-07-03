@@ -40,7 +40,25 @@ import java.io.IOException;
  * represent a sub string within the user agent.
  */
 /**
- * A node in the trie data structures held at each character position.
+ * A node in the tree of characters for each character position.
+ * 
+ * Every character position in the string contains a tree of nodes
+ * which are evaluated until either a complete node is found, or 
+ * no nodes are found that match at the character position.
+ * 
+ * The list of Signature entities is in ascending order of 
+ * the complete nodes which form the sub strings of the signature.
+ * Complete nodes are found at detection time for the target user agent
+ * and then used to search for a corresponding signature. If one does
+ * not exist then Signatures associated with the nodes that were found 
+ * are evaluated to find one that is closest to the target user agent.
+ * 
+ * Root nodes are the first node at a character position. It's children
+ * are based on sequences of characters that if present lead to the 
+ * next node. A complete node will represent a sub string within
+ * the user agent.
+ * 
+ * For more information see https://51degrees.com/Support/Documentation/Java
  */
 public abstract class Node extends BaseEntity implements Comparable<Node> {
     /**
