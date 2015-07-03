@@ -117,6 +117,29 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
     private Node root;
 
     /**
+     * Constructs a new instance of Node
+     *
+     * @param dataSet The data set the node is contained within
+     * @param offset The offset in the data structure to the node
+     * @param reader BinaryReader object to be used
+     */
+    public Node(Dataset dataSet, int offset, BinaryReader reader) {
+        super(dataSet, offset);
+        int readerPosition = reader.getPos(); 
+        this.position = reader.readInt16();
+        this.nextCharacterPosition = reader.readInt16();
+        this.parentOffset = reader.readInt32();
+        this.characterStringOffset = reader.readInt32();
+        //childrenCount only used in the constructor.
+        short childrenCount = reader.readInt16();
+        this.numericChildrenCount = reader.readInt16();
+        //TODO: Refactor signatureCount to rankedSignatureCount.
+        this.signatureCount = readerRankedSignatureCount(reader);
+        this.children = readNodeIndexes(dataSet, reader, 
+            (int)(offset + reader.getPos() - readerPosition), childrenCount);
+    }
+    
+    /**
      * Returns the root node for this node.
      * @return root node for this node
      * @throws java.io.IOException indicates an I/O exception occurred
@@ -134,6 +157,7 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
 
     /**
      * Returns the parent node for this node.
+     * @reurn the parent node for this node.
      */
     Node getParent() throws IOException {
         if (parentOffset >= 0 && parent == null) {
@@ -233,29 +257,6 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
      * @return an array of all the numeric children.
      */
     public abstract NodeNumericIndex[] getNumericChildren();
-
-    /**
-     * Constructs a new instance of Node
-     *
-     * @param dataSet The data set the node is contained within
-     * @param offset The offset in the data structure to the node
-     * @param reader BinaryReader object to be used
-     */
-    public Node(Dataset dataSet, int offset, BinaryReader reader) {
-        super(dataSet, offset);
-        int readerPosition = reader.getPos(); 
-        this.position = reader.readInt16();
-        this.nextCharacterPosition = reader.readInt16();
-        this.parentOffset = reader.readInt32();
-        this.characterStringOffset = reader.readInt32();
-        //childrenCount only used in the constructor.
-        short childrenCount = reader.readInt16();
-        this.numericChildrenCount = reader.readInt16();
-        //TODO: Refactor signatureCount to rankedSignatureCount.
-        this.signatureCount = readerRankedSignatureCount(reader);
-        this.children = readNodeIndexes(dataSet, reader, 
-            (int)(offset + reader.getPos() - readerPosition), childrenCount);
-    }
 
     /**
      * Called after the entire data set has been loaded to ensure any further
@@ -514,7 +515,7 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
                 }
             }
 
-            for (int i = 0; i < characters.length; i++) {
+            for (int i = 0; i < getLength(); i++) {
                 values[position + i + 1] = characters[i];
             }
 
