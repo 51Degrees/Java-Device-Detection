@@ -24,7 +24,10 @@ import fiftyone.mobile.detection.readers.BinaryReader;
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
 /**
- * Represents Node which can be used with the Stream data set.
+ * Represents a Entities.Node which can be used with the 
+ * Stream data set. NumericChidren and RankedSignatureIndexes are not loaded
+ * into memory when the entity is constructed, they're only loaded from the
+ * data source when requested.
  */
 public abstract class Node extends fiftyone.mobile.detection.entities.Node {
     /**
@@ -63,10 +66,8 @@ public abstract class Node extends fiftyone.mobile.detection.entities.Node {
                     try {
                         reader = pool.getReader();
                         reader.setPos(position);
-                        super.numericChildren = 
-                            fiftyone.mobile.detection.entities.Node.
-                                readNodeNumericIndexes(dataSet, reader, 
-                                                        numericChildrenCount);
+                        super.numericChildren = readNodeNumericIndexes(dataSet, 
+                                                reader, numericChildrenCount);
                     } catch(Exception ex) {
                         throw new Error("Cannot obtain numeric Children: "+ex);
                     } finally {
