@@ -245,7 +245,26 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
         }
         return characters;
     }
-    
+
+    /**
+     * Used by the constructor to read the variable length list of child
+     * indexes that contain numeric values.
+     * @param dataSet The data set the node is contained within.
+     * @param reader Reader connected to the source data structure and 
+     * positioned to start reading.
+     * @param count The number of node indexes that need to be read.
+     * @return variable length list of child indexes that contain numeric 
+     * values.
+     */
+    public NodeNumericIndex[] readNodeNumericIndexes(Dataset dataSet, 
+                                            BinaryReader reader, short count) {
+        NodeNumericIndex[] array = new NodeNumericIndex[count];
+        for (int i = 0; i < array.length; i++) {
+            array[i] = new NodeNumericIndex(dataSet, 
+                                    reader.readInt16(), reader.readInt32());
+        }
+        return array;
+    }
 
     /**
      * Returns an array of the ranked signature indexes for the node.
