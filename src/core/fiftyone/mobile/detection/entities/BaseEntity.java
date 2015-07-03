@@ -1,6 +1,7 @@
 package fiftyone.mobile.detection.entities;
 
 import fiftyone.mobile.detection.Dataset;
+import fiftyone.mobile.detection.factories.IEnumerableFactory;
 import fiftyone.mobile.detection.readers.BinaryReader;
 
 /* *********************************************************************
@@ -37,6 +38,11 @@ import fiftyone.mobile.detection.readers.BinaryReader;
 public class BaseEntity {
 
     /**
+     * TODO: get description.
+     */
+    private final static int[] POWERS = new int[] { 1, 10, 100, 1000, 10000 };
+    
+    /**
      * The data set the item relates to.
      */
     public final Dataset dataSet;
@@ -44,8 +50,29 @@ public class BaseEntity {
      * The unique index of the item in the collection of items, or the unique
      * offset to the item in the source data structure.
      */
-    private final int offsetOrIndex;
+    private final int index;
 
+    /**
+     * An enumerable that can be used to read through the entries.
+     * @param reader Reader set to the position at the start of the list.
+     * @param count The number of integers to read to form the array.
+     * @return Iterator to read each integer entry.
+     */
+    public static IEnumerable getIntegerEnumerator(
+            BinaryReader reader, int count) {
+        IEnumerable ie = IEnumerableFactory.create(reader, count);
+        return ie;
+    }
+    
+    /**
+     * Determines if the value is an ASCII numeric value.
+     * @param value Byte value to be checked.
+     * @return True if the value is an ASCII numeric character.
+     */
+    public static boolean getIsNumeric(byte value) {
+        return (value >= (byte)'0' && value <= (byte)'9');
+    }
+    
     /**
      * Constructs the base item for the data set and index provided.
      *
@@ -54,9 +81,24 @@ public class BaseEntity {
      */
     BaseEntity(Dataset dataSet, int offsetOrIndex) {
         this.dataSet = dataSet;
-        this.offsetOrIndex = offsetOrIndex;
+        this.index = offsetOrIndex;
     }
 
+    /**
+     * Compares entities based on their Index properties.
+     * @param other The entity to be compared against.
+     * @return The position of one entity over the other.
+     */
+    public int compareTo(BaseEntity other) {
+        // Following is equivalnt to Index.CompareTo(other.Index) in c#.
+        if (this.index > other.index)
+            return 1;
+        else if (this.index == other.index)
+            return 0;
+        else
+            return -1;
+    }
+    
     /**
      * Uses a divide and conquer method to search the ordered list of indexes.
      *
@@ -71,7 +113,7 @@ public class BaseEntity {
 
         while (lower <= upper) {
             int middle = lower + (upper - lower) / 2;
-            int comparisonResult = list[middle].offsetOrIndex
+            int comparisonResult = list[middle].index
                     - indexOrOffset;
             if (comparisonResult == 0) {
                 return middle;
@@ -100,12 +142,30 @@ public class BaseEntity {
         }
         return array;
     }
+    
+    /**
+     * Returns an integer representation of the characters between start and 
+     * end. Assumes that all the characters are numeric characters.
+     * @param array Array of characters with numeric characters present 
+     * between start and end.
+     * @param start The first character to use to convert to a number.
+     * @param length The number of characters to use in the conversion.
+     * @return integer representation of the characters between start and end.
+     */
+    public static int getNumber(byte[] array, int start, int length) {
+        int value = 0;
+        for (int i = (start + length - 1), p = 0; i >= start 
+                      && p < POWERS.length; i--, p++) {
+            value += POWERS[p] * ((byte)array[i] - (byte)'0');
+        }
+        return value;
+    }
 
     protected Dataset getDataSet() {
         return dataSet;
     }
 
     public int getIndex() {
-        return offsetOrIndex;
+        return index;
     }
 }
