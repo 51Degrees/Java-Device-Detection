@@ -104,11 +104,17 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
      */
     public final short position;
     
-    protected short childrenCount;
-    
-    //public int[] rankedSignatureIndexes;
-    
+    //TODO: verify
+    //Same as ranked signature count
     protected int signatureCount;
+    /**
+     * Parent node for this node.
+     */
+    private Node parent = null;
+    /**
+     * Root node for this node.
+     */
+    private Node root;
 
     /**
      * Returns the root node for this node.
@@ -125,7 +131,6 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
         }
         return root;
     }
-    private Node root;
 
     /**
      * Returns the parent node for this node.
@@ -140,7 +145,6 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
         }
         return parent;
     }
-    private Node parent = null;
 
     /**
      * Returns true if this node represents a completed sub string and the next
@@ -170,6 +174,16 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
      */
     public abstract int readerRankedSignatureCount(BinaryReader reader);
     
+    /**
+     * Used by the constructor to read the variable length list of child node 
+     * indexes associated with the node.
+     * @param dataSet The data set the node is contained within.
+     * @param reader Reader connected to the source data structure and 
+     * positioned to start reading.
+     * @param offset The offset in the data structure to the node.
+     * @param count The number of node indexes that need to be read.
+     * @return An array of child node indexes for the node.
+     */
     protected abstract NodeIndex[] readNodeIndexes(
             Dataset dataSet, BinaryReader reader, int offset, int count);
     
@@ -182,7 +196,8 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
         if (characters == null && characterStringOffset >= 0) {
             synchronized (this) {
                 if (characters == null) {
-                    characters = super.getDataSet().strings.get(characterStringOffset).value;
+                    characters = super.getDataSet().strings.
+                            get(characterStringOffset).value;
                 }
             }
         }
@@ -190,16 +205,33 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
     }
     
 
+    /**
+     * Returns an array of the ranked signature indexes for the node.
+     * @return An array of the ranked signature indexes for the node.
+     */
     public abstract int[] getRankedSignatureIndexes();
 
+    
+    /**
+     * Returns number of elements in the children array.
+     * @return number of elements in the children array.
+     */
     public int getChildrenLength() {
         return children.length;
     }
 
+    /**
+     * Returns number of element in the numericChildren array.
+     * @return number of element in the numericChildren array.
+     */
     public int getNumericChildrenLength() {
         return numericChildren.length;
     }
     
+    /**
+     * Returns an array of all the numeric children.
+     * @return an array of all the numeric children.
+     */
     public abstract NodeNumericIndex[] getNumericChildren();
 
     /**
@@ -216,56 +248,14 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
         this.nextCharacterPosition = reader.readInt16();
         this.parentOffset = reader.readInt32();
         this.characterStringOffset = reader.readInt32();
-        this.childrenCount = reader.readInt16();
+        //childrenCount only used in the constructor.
+        short childrenCount = reader.readInt16();
         this.numericChildrenCount = reader.readInt16();
+        //TODO: Refactor signatureCount to rankedSignatureCount.
         this.signatureCount = readerRankedSignatureCount(reader);
         this.children = readNodeIndexes(dataSet, reader, 
             (int)(offset + reader.getPos() - readerPosition), childrenCount);
     }
-
-    /**
-     * Used by the constructor to read the variable length list of child node
-     * numeric indexes associated with the node.
-     *
-     * @param dataSet The data set the node is contained within
-     * @param reader Reader connected to the source data structure and
-     * positioned to start reading
-     * @param count The number of elements to read into the array
-     * @return An array of child numeric node indexes for the node
-     */
-    protected static NodeNumericIndex[] readNodeNumericIndexes(Dataset dataSet,
-            BinaryReader reader, short count) {
-        NodeNumericIndex[] array = new NodeNumericIndex[count];
-        for (int i = 0; i < array.length; i++) {
-            array[i] = new NodeNumericIndex(dataSet, reader.readInt16(), reader.readInt32());
-        }
-        return array;
-    }
-
-    /**
-     * Used by the constructor to read the variable length list of child node
-     * indexes associated with the node.
-     *
-     * @param dataSet The data set the node is contained within
-     * @param reader Reader connected to the source data structure and
-     * positioned to start reading
-     * @param offset The offset in the data structure to the node
-     * @param count The number of elements to read into the array
-     * @return An array of child node indexes for the node
-     */
-    /*
-    private static NodeIndex[] readNodeIndexes(Dataset dataSet,
-            BinaryReader reader, int offset, short count) {
-        NodeIndex[] array = new NodeIndex[count];
-        offset += 2;
-        for (int i = 0; i < array.length; i++) {
-            array[i] = new NodeIndex(dataSet, offset, reader.readBoolean(),
-                    reader.readBytes(4), reader.readInt32());
-            offset += NODE_INDEX_LENGTH;
-        }
-        return array;
-    }
-    */
 
     /**
      * Called after the entire data set has been loaded to ensure any further
@@ -284,6 +274,14 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
         getCharacters();
     }
     
+    /**
+     * Gets a complete node, or if one isn't available exactly the closest 
+     * numeric one to the target user agent at the current position.
+     * @param match Match results including the target user agent.
+     * @return a complete node, or if one isn't available exactly the closest 
+     * numeric one.
+     * @throws IOException 
+     */
     public Node getCompleteNumericNode(Match match) throws IOException {
         Node node = null;
 
@@ -299,17 +297,21 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
             // difference.
             Integer target = getCurrentPositionAsNumeric(match);
             if (target != null) {
-                NodeNumericIndexIterator iterator = getNumericNodeIterator(target);
+                NodeNumericIndexIterator iterator = 
+                                                getNumericNodeIterator(target);
                 if (iterator != null) {
                     while (iterator.hasNext()) {
                         NodeNumericIndex current = iterator.next();
                         node = current.getNode().getCompleteNumericNode(match);
                         if (node != null) {
-                            int difference = Math.abs(target - current.getValue());
+                            int difference = 
+                                        Math.abs(target - current.getValue());
                             if (match.getLowestScore() == null) {
                                 match.setLowestScore(difference);
                             } else {
-                                match.setLowestScore(match.getLowestScore() + difference);
+                                match.setLowestScore(
+                                        match.getLowestScore() + difference
+                                        );
                             }
                             break;
                         }
@@ -341,7 +343,8 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
                 startIndex = ~startIndex - 1;
             }
 
-            return new NodeNumericIndexIterator(range, numericChildren, target, startIndex);
+            return new NodeNumericIndexIterator(range, numericChildren, 
+                                                target, startIndex);
         }
 
         return null;
@@ -370,6 +373,7 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
      * as an integer
      */
     private Integer getCurrentPositionAsNumeric(Match match) {
+        // Find the left most numeric character from the current position.
         int i = position;
         while (i >= 0
                 && match.getTargetUserAgentArray()[i] >= (byte) '0'
@@ -382,25 +386,22 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
                     i + 1,
                     position - i);
         }
-        return null;
+        return -1;
     }
 
     /**
-     * Returns an integer representation of the characters between start and
-     * end. Assumes that all the characters are numeric characters.
-     *
-     * @param array Array of characters with numeric characters present between
-     * start and end
-     * @param start The first character to use to convert to a number
-     * @param length The number of characters to use in the conversion
-     * @return
+     * TODO: get description.
+     * @param array
+     * @param startIndex
+     * @param length
+     * @return 
      */
-    private Integer getNumber(byte[] array, int start, int length) {
-        int value = 0;
-        for (int i = start + length - 1, p = 0; i >= start; i--, p++) {
-            value += (int) (Math.pow(10, p)) * ((byte) array[i] - (byte) '0');
+    private boolean isNumeric(byte[] array, int startIndex, int length) {
+        for (int i = startIndex; i < (startIndex + length); i++) {
+            if (getIsNumeric(array[i]) == false)
+                return false;
         }
-        return value;
+        return true;
     }
 
     /**
@@ -551,6 +552,7 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
      * @return -1 if this node is lower than the other, 1 if higher or 0 if
      * equal.
      */
+    @Override
     public int compareTo(Node other) {
         return getIndex() - other.getIndex();
     }
