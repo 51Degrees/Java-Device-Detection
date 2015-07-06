@@ -58,8 +58,8 @@ import java.util.logging.Logger;
  * recordLength The length of the records in bytes.
  * @param <T> extends base entity
  */
-public class StreamFixedList<T extends BaseEntity> extends BaseList<T> implements IFixedList<T> {
-
+public class StreamFixedList<T extends BaseEntity> extends BaseList<T> 
+                                                    implements IFixedList<T> {
     /**
      * Constructs a new instance of BaseList{T} ready to read entities from the 
      * source.
@@ -99,12 +99,12 @@ public class StreamFixedList<T extends BaseEntity> extends BaseList<T> implement
     }
 
     /**
-     * Not implemented. Do not use.
-     * @return 
+     * Returns The number of items in the list.
+     * @return The number of items in the list.
      */
     @Override
     public int size() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return super.size();
     }
 
     /**
@@ -140,5 +140,13 @@ public class StreamFixedList<T extends BaseEntity> extends BaseList<T> implement
         reader.setPos(header.getStartPosition() 
                         + (entityFactory.getLength() * index));
         return entityFactory.create(dataSet, index, reader);
+    }
+    
+    /**
+     * Returns An enumeration for the underlying list.
+     * @return An enumeration for the underlying list.
+     */
+    public StreamEnumerable getEnumerator() {
+        return getRange(0, size());
     }
 }
