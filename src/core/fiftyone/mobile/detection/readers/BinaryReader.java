@@ -1,6 +1,6 @@
 package fiftyone.mobile.detection.readers;
 
-import fiftyone.mobile.detection.Disposable;
+import fiftyone.mobile.detection.IDisposable;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -30,7 +30,7 @@ import java.util.List;
  * This Source Code Form is ?Incompatible With Secondary Licenses?, as
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
-public class BinaryReader implements Disposable {
+public class BinaryReader implements IDisposable {
 
     /**
      * List of integers used to create arrays of integers where the length of
