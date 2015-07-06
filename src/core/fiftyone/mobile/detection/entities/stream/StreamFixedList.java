@@ -1,10 +1,14 @@
 package fiftyone.mobile.detection.entities.stream;
 
+import fiftyone.mobile.detection.IFixedList;
 import fiftyone.mobile.detection.entities.BaseEntity;
+import fiftyone.mobile.detection.entities.IEnumerable;
 import fiftyone.mobile.detection.factories.BaseEntityFactory;
 import fiftyone.mobile.detection.readers.BinaryReader;
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
@@ -54,11 +58,59 @@ import java.util.Iterator;
  * recordLength The length of the records in bytes.
  * @param <T> extends base entity
  */
-public class StreamFixedList<T extends BaseEntity> extends BaseList<T> {
+public class StreamFixedList<T extends BaseEntity> extends BaseList<T> implements IFixedList<T> {
 
-    public StreamFixedList(Dataset dataSet, BinaryReader reader,
-            BaseEntityFactory<T> entityFactory, int cacheSize) {
-        super(dataSet, reader, entityFactory, cacheSize);
+    /**
+     * Constructs a new instance of BaseList{T} ready to read entities from the 
+     * source.
+     * @param dataSet Dataset being created.
+     * @param reader Reader used to initialise the header only.
+     * @param entityFactory Used to create new instances of the entity.
+     */
+    public StreamFixedList(Dataset dataSet, BinaryReader reader, 
+                            BaseEntityFactory<T> entityFactory) {
+        super(dataSet, reader, entityFactory);
+    }
+
+    /**
+     * An enumerator for the list between the range provided.
+     * @param index read from.
+     * @param count how many entries.
+     * @return An enumerator for the list.
+     */
+    @Override
+    public StreamEnumerable<T> getRange(int index, int count) {
+        BinaryReader reader = null;
+        StreamEnumerable enumerable = null;
+        try {
+            reader = dataSet.pool.getReader();
+            reader.setPos(header.getStartPosition() 
+                            + (entityFactory.getLength() * index));
+            enumerable = new StreamEnumerable(reader, index, entityFactory, 
+                                                dataSet, count);
+        } catch (IOException ex) {
+            Logger.getLogger(StreamFixedList.class.getName())
+                    .log(Level.SEVERE, null, ex);
+        } finally {
+            if (reader != null)
+                dataSet.pool.release(reader);
+        }
+        return enumerable;
+    }
+
+    @Override
+    public int size() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Iterator<BaseEntity> iterator() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void dispose() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     /**
@@ -74,10 +126,5 @@ public class StreamFixedList<T extends BaseEntity> extends BaseList<T> {
     protected T createEntity(int index, BinaryReader reader) throws IOException {
         reader.setPos(header.getStartPosition() + (entityFactory.getLength() * index));
         return entityFactory.create(dataSet, index, reader);
-    }
-
-    @Override
-    public Iterator<T> iterator() {
-        return new StreamFixedListIterator<T>(this);
     }
 }
