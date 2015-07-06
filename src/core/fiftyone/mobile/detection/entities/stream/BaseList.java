@@ -1,7 +1,7 @@
 package fiftyone.mobile.detection.entities.stream;
 
-import fiftyone.mobile.detection.Disposable;
-import fiftyone.mobile.detection.ReadonlyList;
+import fiftyone.mobile.detection.IDisposable;
+import fiftyone.mobile.detection.IReadonlyList;
 import fiftyone.mobile.detection.entities.BaseEntity;
 import fiftyone.mobile.detection.entities.headers.Header;
 import fiftyone.mobile.detection.factories.BaseEntityFactory;
@@ -41,7 +41,7 @@ import java.io.IOException;
  * @param <T> The type of BaseEntity the list will contain
  */
 public abstract class BaseList<T extends BaseEntity> implements
-        ReadonlyList<T>, ICacheList, Disposable {
+        IReadonlyList<T>, ICacheList, IDisposable {
     /**
      * Used to store previously accessed items to improve performance and reduce
      * memory consumption associated with creating new instances of entities
