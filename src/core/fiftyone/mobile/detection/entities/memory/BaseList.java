@@ -1,8 +1,8 @@
 package fiftyone.mobile.detection.entities.memory;
 
 import fiftyone.mobile.detection.Dataset;
-import fiftyone.mobile.detection.Disposable;
-import fiftyone.mobile.detection.ReadonlyList;
+import fiftyone.mobile.detection.IDisposable;
+import fiftyone.mobile.detection.IReadonlyList;
 import fiftyone.mobile.detection.entities.BaseEntity;
 import fiftyone.mobile.detection.entities.headers.Header;
 import fiftyone.mobile.detection.factories.BaseEntityFactory;
@@ -43,7 +43,7 @@ import java.util.List;
  * @param <T> The type the list will contain.
  */
 public abstract class BaseList<T extends BaseEntity> implements
-        ReadonlyList<T>, Disposable {
+        IReadonlyList<T>, IDisposable {
 
     /**
      * Information about the data structure the list is associated with.
