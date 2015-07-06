@@ -27,7 +27,7 @@ import fiftyone.mobile.detection.entities.BaseEntity;
  * a ranged enumerable.
  * @param <T> Type of entity the list contains.
  */
-public interface FixedList<T> extends ReadonlyList<BaseEntity> {
+public abstract class FixedList<T extends BaseEntity> implements IReadonlyList<BaseEntity> {
     /**
      * Returns an enumerable starting at the index provided until count number 
      * of iterations have been performed.
@@ -35,6 +35,7 @@ public interface FixedList<T> extends ReadonlyList<BaseEntity> {
      * @param count Number of iterations to perform.
      * @return An enumerable to iterate over the range specified.
      */
-    Iterable<T> getRange(int index, int count);
+    public abstract Iterable<T> getRange(int index, int count);
     
+    //TODO: change implementation of getRange
 }
