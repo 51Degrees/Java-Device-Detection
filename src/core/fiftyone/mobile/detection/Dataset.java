@@ -52,7 +52,7 @@ import fiftyone.properties.DetectionConstants;
  * file are closed elegantly. <p> For more information see
  * http://51degrees.com/Support/Documentation/Java
  */
-public class Dataset implements Disposable {
+public class Dataset implements IDisposable {
     /**
      * When the data was last modified.
      */
@@ -385,49 +385,49 @@ public class Dataset implements Disposable {
      * A list of all the components the data set contains.
      * @return a read-only list of all components contained in data set
      */
-    public ReadonlyList<Component> getComponents() {
+    public IReadonlyList<Component> getComponents() {
         return components;
     }
-    public ReadonlyList<Component> components;
+    public IReadonlyList<Component> components;
 
     /**
      * A list of all property maps the data set contains.
      * @return a read-only list of all maps contained in the data set
      */
-    public ReadonlyList<Map> getMaps() {
+    public IReadonlyList<Map> getMaps() {
         return maps;
     }
-    public ReadonlyList<Map> maps;
+    public IReadonlyList<Map> maps;
 
     /**
      * A list of all properties the data set contains.
      * @return a read-only list of all properties contained in the data set
      */
-    public ReadonlyList<Property> getProperties() {
+    public IReadonlyList<Property> getProperties() {
         return properties;
     }
-    public ReadonlyList<Property> properties;
+    public IReadonlyList<Property> properties;
 
     /**
      * A list of all property values the data set contains.
      * @return a read-only list of values contained in the data set
      */
-    public ReadonlyList<Value> getValues() {
+    public IReadonlyList<Value> getValues() {
         return values;
     }
-    public ReadonlyList<Value> values;
+    public IReadonlyList<Value> values;
 
     /**
      * List of signatures the data set contains.
      * @return a read-only list of all signatures contained in the data set
      */
-    public ReadonlyList<Signature> getSignatures() {
+    public IReadonlyList<Signature> getSignatures() {
         return signatures;
     }
     /**
      * A list of all the signatures the data set contains.
      */
-    public ReadonlyList<Signature> signatures;
+    public IReadonlyList<Signature> signatures;
     /**
      * A list of signature indexes ordered in ascending order of rank. Used by 
      * the node ranked signature indexes lists to identify the corresponding 
@@ -437,23 +437,23 @@ public class Dataset implements Disposable {
     /**
      * A list of all the possible profiles the data set contains.
      */
-    public ReadonlyList<Profile> profiles;
+    public IReadonlyList<Profile> profiles;
     /**
      * List of nodes the data set contains.
      */
-    public ReadonlyList<Node> nodes;
+    public IReadonlyList<Node> nodes;
     /**
      * Nodes for each of the possible character positions in the user agent.
      */
-    public ReadonlyList<Node> rootNodes;
+    public IReadonlyList<Node> rootNodes;
     /**
      * List of profile offsets the data set contains.
      */
-    public ReadonlyList<ProfileOffset> profileOffsets;
+    public IReadonlyList<ProfileOffset> profileOffsets;
     /**
      * A list of ASCII byte arrays for strings used by the dataset.
      */
-    public ReadonlyList<AsciiString> strings;
+    public IReadonlyList<AsciiString> strings;
     /**
      * The number of profiles each signature can contain.
      */
@@ -480,7 +480,7 @@ public class Dataset implements Disposable {
      * List of nodes the data set contains.
      * @return a read-only list of nodes contained in the data set
      */
-    public ReadonlyList<Node> getNodes() {
+    public IReadonlyList<Node> getNodes() {
         return nodes;
     }
 
@@ -488,7 +488,7 @@ public class Dataset implements Disposable {
      * A list of all the possible profiles the data set contains.
      * @return a read-only list of all profiles contained in the data set
      */
-    public ReadonlyList<Profile> getProfiles() {
+    public IReadonlyList<Profile> getProfiles() {
         return profiles;
     }
 
