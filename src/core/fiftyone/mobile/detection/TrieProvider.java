@@ -36,7 +36,7 @@ import java.util.Map;
 /**
  * Decision trie data structure provider.
  */
-public class TrieProvider implements Disposable {
+public class TrieProvider implements IDisposable {
 
     /**
      * The type of integers used to represent the offset to the children.
