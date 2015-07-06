@@ -1,5 +1,6 @@
 package fiftyone.mobile.detection;
 
+import java.text.DecimalFormat;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
@@ -25,46 +26,65 @@ import java.util.concurrent.atomic.AtomicLong;
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
 /**
- * Used to speed the retrieval of detection results over duplicate requests.
+ * Many of the entities used by the detector data set are requested repeatedly. 
+ * The cache improves memory usage and reduces strain on the garbage collector
+ * by storing previously requested entities for a short period of time to avoid 
+ * the need to re-fetch them from the underlying storage mechanism.
+ * 
+ * The cache works by maintaining two dictionaries of entities keyed on their 
+ * offset or index. The inactive list contains all items requested since the 
+ * cache was created or last serviced. The active list contains all the items 
+ * currently in the cache. The inactive list is always updated when an item is 
+ * requested.
+ * 
+ * When the cache is serviced the active list is destroyed and the inactive list
+ * becomes the active list. i.e. all the items that were requested since the 
+ * cache was last serviced are now in the cache. A new inactive list is created 
+ * to store all items being requested since the cache was last serviced.
  *
- * @param <K>
- * @param <V>
+ * @param <K> Key for the cache items.
+ * @param <V> Value for the cache items.
  */
 public class Cache<K, V> {
     /**
-     * The time between cache services.
+     * When this number of items are in the cache the lists should be switched.
      */
     private final int cacheServiceSize;
     /**
-     * The active cache.
+     * The active list of cached items.
      */
     public ConcurrentHashMap<K, V> active;
     /**
-     * The background cache.
+     * The list of inactive cached items.
      */
-    private ConcurrentHashMap<K, V> background;
+    public ConcurrentHashMap<K, V> background;
     /**
-     * Number of items in cache.
+     * The number of items the cache lists should have capacity for.
      */
     private final int cacheSize;
     /**
-     * Total number of requests to cache.
+     * The number of requests made to the cache.
      */
     private final AtomicLong requests;
     /**
-     * The number of requests that could not be found in active cache.
+     * The number of times an item was not available.
      */
     private final AtomicLong misses;
     /**
-     * Number of times background list had to be switched with the active list.
+     * The number of times the cache was switched.
      */
     private final AtomicInteger switches;
+    /**
+     * Indicates a switch operation is in progress.
+     */
+    private boolean switching;
 
     /**
      * Constructs a new instance of the cache.
-     * @param cacheSize number of items in this cache lists.
+     * @param cacheSize The number of items to store in the cache.
      */
     public Cache(int cacheSize) {
+        this.switching = false;
         this.requests = new AtomicLong(0);
         this.switches = new AtomicInteger(0);
         this.misses = new AtomicLong(0);
@@ -87,36 +107,43 @@ public class Cache<K, V> {
      * passed.
      */
     private void service() {
-        synchronized(this) {
-            // Switch the cache dictionaries over.
-            ConcurrentHashMap<K, V> tempCache = active;
-            active = background;
-            background = tempCache;
+        // Switch the cache dictionaries over.
+        ConcurrentHashMap<K, V> tempCache = active;
+        active = background;
+        background = tempCache;
 
-            // Clear the background cache before continuing.
-            background.clear();
-            switches.incrementAndGet();
-        }
+        // Clear the background cache before continuing.
+        background.clear();
+        switches.incrementAndGet();
+        
+        //Make sure future service will be able to access this block of code.
+        switching = false;
     }
     
     /**
-     * Add new entry to the background list. Once background list becomes 
-     * larger than the active list, the lists are switched. The background list 
-     * becomes active and vice versa. Service task is also run.
+     * Indicates an item has been retrieved from the data set and should be 
+     * reset in the cache so it's not removed at the next service. If the 
+     * inactive cache is now more than 1/2 the total cache size the the lists 
+     * should be switched.
      * @param key item key.
      * @param value item value.
      */
     public void addRecent(K key, V value) {
         setBackground(key, value);
-        if (background.size() > cacheServiceSize) {
-            Thread t = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    service();
+        if (background.size() > cacheServiceSize && !switching) {
+            synchronized(this) {
+                if (background.size() > cacheServiceSize && !switching) {
+                    switching = true;
+                    Thread t = new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            service();
+                        }
+                    }
+                    );
+                    t.start();
                 }
             }
-            );
-            t.start();
         }
     }
 
@@ -152,7 +179,7 @@ public class Cache<K, V> {
      */
     public double getPercentageMisses() {
         try {
-            return ((double)getCacheMisses() / (double)getCacheRequests() * 100);
+            return (getCacheMisses() / getCacheRequests()) * 100;
         } catch (ArithmeticException aex) {
             return -1;
         }
@@ -186,5 +213,40 @@ public class Cache<K, V> {
      */
     public void incrementMissesByOne() {
         misses.incrementAndGet();
+    }
+    
+    /**
+     * Clear the active list.
+     */
+    public void clearActiveList() {
+        this.active.clear();
+    }
+    
+    /**
+     * Clear the background list.
+     */
+    public void clearBackgroundList() {
+        this.background.clear();
+    }
+    
+    /**
+     * Reset the value of misses to 0.
+     */
+    public void clearMisses() {
+        this.misses.set(0);
+    }
+    
+    /**
+     * Reset the value of switches to 0.
+     */
+    public void clearSwitches() {
+        this.switches.set(0);
+    }
+    
+    /**
+     * Reset the value of requests to 0.
+     */
+    public void clearRequests() {
+        this.requests.set(0);
     }
 }
