@@ -31,9 +31,15 @@ public interface ICacheList {
      * @return the percentage of cache misses.
      */
     double getPercentageMisses();
+    
     /**
      * The number of times the lists have been switched.
      * @return The number of times the lists have been switched.
      */
     long getSwitches();
+    
+    /**
+     * Resets the cache used by the list.
+     */
+    void resetCache();
 }
