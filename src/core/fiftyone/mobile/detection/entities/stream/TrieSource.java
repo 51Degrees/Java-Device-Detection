@@ -1,6 +1,6 @@
 package fiftyone.mobile.detection.entities.stream;
 
-import fiftyone.mobile.detection.Disposable;
+import fiftyone.mobile.detection.IDisposable;
 import fiftyone.mobile.detection.readers.TrieReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -32,7 +32,7 @@ import java.io.IOException;
  * readers are closed and the file free for other uses. Does not need to be
  * disposed if a byte array is used.
  */
-public class TrieSource implements Disposable {
+public class TrieSource implements IDisposable {
 
     private final FileInputStream fileInputStream;
 
