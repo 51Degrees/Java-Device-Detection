@@ -43,12 +43,6 @@ import java.io.IOException;
 public abstract class BaseList<T extends BaseEntity> implements
         IReadonlyList<T>, ICacheList, IDisposable {
     /**
-     * Used to store previously accessed items to improve performance and reduce
-     * memory consumption associated with creating new instances of entities
-     * already in use.
-     */
-    public final Cache<T> cache;
-    /**
      * The dataset which contains the list.
      */
     protected final Dataset dataSet;
@@ -64,62 +58,40 @@ public abstract class BaseList<T extends BaseEntity> implements
     protected abstract T createEntity(int offset, BinaryReader reader) throws IOException;
 
     /**
-     * Percentage of request that were not already held in the cache.
-     * @return Percentage of request that were not already held in the cache.
-     */
-    @Override
-    public double getPercentageMisses() {
-        return cache.getPercentageMisses();
-    }
-
-    /**
-     * The number of times the cache has been switched.
-     * @return The number of times the cache has been switched.
-     */
-    @Override
-    public long getSwitches() {
-        return cache.getCacheSwitches();
-    }
-
-    /**
      * Constructs a new instance of BaseList of type T ready to read entities from the
      * source.
      *
      * @param dataSet Dataset being created
      * @param reader Reader used to initialise the header only
      * @param entityFactory a base entity factory to be used
-     * @param cacheSize number of items in cache.
      */
     public BaseList(Dataset dataSet, BinaryReader reader, 
-            BaseEntityFactory<T> entityFactory, int cacheSize) {
+            BaseEntityFactory<T> entityFactory) {
         this.dataSet = dataSet;
         this.header = new Header(reader);
         this.entityFactory = entityFactory;
-        this.cache = new Cache<T>(cacheSize);
     }
 
     /**
      * Retrieves the record at the offset or index requested
      *
-     * @param offsetOrIndex Index or offset of the record required
+     * @param key Index or offset of the record required
      * @return A new instance of the item at the offset or index
      * @throws java.io.IOException
      */
     @Override
-    public T get(int offsetOrIndex) throws IOException {
-        T item;
-        item = (T)cache.active.get(offsetOrIndex);
-        if (item == null) {
-            BinaryReader reader = dataSet.pool.getReader();
-            item = createEntity(offsetOrIndex, reader);
-            dataSet.pool.release(reader);
-            // if we get a collision in here, doesn't really matter - better
-            // a collision here than having each read queued
-            cache.active.put(offsetOrIndex, item);
-            cache.incrementMissesByOne();
+    public T get(int key) throws IOException {
+        T item = null;
+        BinaryReader reader = null;
+        try {
+            reader = dataSet.pool.getReader();
+            item = createEntity(key, reader);
+        } catch (Exception e) {
+            
+        } finally {
+            if (reader != null)
+                dataSet.pool.release(reader);
         }
-        cache.addRecent(offsetOrIndex, item);
-        cache.incrementRequestsByOne();
         return item;
     }
 
