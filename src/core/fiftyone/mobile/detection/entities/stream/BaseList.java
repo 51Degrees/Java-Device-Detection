@@ -1,7 +1,5 @@
 package fiftyone.mobile.detection.entities.stream;
 
-import fiftyone.mobile.detection.IDisposable;
-import fiftyone.mobile.detection.IReadonlyList;
 import fiftyone.mobile.detection.entities.BaseEntity;
 import fiftyone.mobile.detection.entities.headers.Header;
 import fiftyone.mobile.detection.factories.BaseEntityFactory;
@@ -29,19 +27,19 @@ import java.io.IOException;
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
 /**
- * Lists can be stored as a set of related objects entirely within memory, or
+ * Lists can be stored as a set of related objects entirely within memory, or 
  * the relevant objects loaded as required from a file or other permanent store
- * as required. <p> This class provides core functions needed for lists which
- * load objects as required. It implements the Cache of type T to store frequently
- * requested objects and improve memory usage and performance. <p> Interface
- * implementations are used to create new instances of items to add to the list
- * in order to avoid creating many inherited list classes for each BaseEntity
- * type. <p> Should not be referenced directly.
+ * as required.
+ * 
+ * Delegate methods are used to create new instances of items to add to the 
+ * list in order to avoid creating many inherited list classes for each 
+ * BaseEntity type.
+ * 
+ * Should not be referenced directly.
  *
  * @param <T> The type of BaseEntity the list will contain
  */
-public abstract class BaseList<T extends BaseEntity> implements
-        IReadonlyList<T>, ICacheList, IDisposable {
+public abstract class BaseList<T extends BaseEntity> {
     /**
      * The dataset which contains the list.
      */
@@ -51,11 +49,22 @@ public abstract class BaseList<T extends BaseEntity> implements
      */
     protected final Header header;
     /**
-     * Entity factory.
+     * Factory used to create new instances of the entity.
      */
     final BaseEntityFactory<T> entityFactory;
 
-    protected abstract T createEntity(int offset, BinaryReader reader) throws IOException;
+    /**
+     * Used to create a new entity of type T when an item is required from the 
+     * list.
+     * @param key The offset position in the data structure to the entity to 
+     * be returned from the list, or the index of the entity to be returned 
+     * from the list.
+     * @param reader Reader connected to the source data structure and 
+     * positioned to start reading.
+     * @return A new instance of type T.
+     * @throws IOException 
+     */
+    protected abstract T createEntity(int key, BinaryReader reader) throws IOException;
 
     /**
      * Constructs a new instance of BaseList of type T ready to read entities from the
@@ -74,12 +83,10 @@ public abstract class BaseList<T extends BaseEntity> implements
 
     /**
      * Retrieves the record at the offset or index requested
-     *
      * @param key Index or offset of the record required
      * @return A new instance of the item at the offset or index
      * @throws java.io.IOException
      */
-    @Override
     public T get(int key) throws IOException {
         T item = null;
         BinaryReader reader = null;
@@ -96,14 +103,9 @@ public abstract class BaseList<T extends BaseEntity> implements
     }
 
     /**
-     * Disposes of the pool of readers.
+     * Returns The number of items in the list.
+     * @return The number of items in the list.
      */
-    @Override
-    public void dispose() {
-        dataSet.pool.dispose();
-    }
-
-    @Override
     public int size() {
         return header.getCount();
     }
