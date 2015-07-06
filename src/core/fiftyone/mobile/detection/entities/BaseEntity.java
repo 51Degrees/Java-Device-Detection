@@ -58,9 +58,9 @@ public class BaseEntity {
      * @param count The number of integers to read to form the array.
      * @return Iterator to read each integer entry.
      */
-    public static IEnumerable getIntegerEnumerator(
+    public static Enumerable getIntegerEnumerator(
             BinaryReader reader, int count) {
-        IEnumerable ie = IEnumerableFactory.create(reader, count);
+        Enumerable ie = IEnumerableFactory.create(reader, count);
         return ie;
     }
     
