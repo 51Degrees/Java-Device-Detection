@@ -182,11 +182,11 @@ public class Dataset implements IDisposable {
     /**
      * List of integers that represent ranked signature indexes.
      */
-    public FixedList<IntegerEntity> nodeRankedSignatureIndexes;
+    public IFixedList<IntegerEntity> nodeRankedSignatureIndexes;
     /**
      * List of integers that represent signature node offsets.
      */
-    public FixedList<IntegerEntity> signatureNodeOffsets;
+    public IFixedList<IntegerEntity> signatureNodeOffsets;
     
     /**
      * The percentage of requests for signatures which were not already
@@ -433,7 +433,7 @@ public class Dataset implements IDisposable {
      * the node ranked signature indexes lists to identify the corresponding 
      * signature.
      */
-    public FixedList<IntegerEntity> rankedSignatureIndexes;
+    public IFixedList<IntegerEntity> rankedSignatureIndexes;
     /**
      * A list of all the possible profiles the data set contains.
      */
@@ -500,7 +500,7 @@ public class Dataset implements IDisposable {
      * Returns a list of integers that represent signature node offsets.
      * @return list of integers that represent signature node offsets.
      */
-    public FixedList<IntegerEntity> getSignatureNodeOffsets() {
+    public IFixedList<IntegerEntity> getSignatureNodeOffsets() {
         return signatureNodeOffsets;
     }
     
@@ -508,7 +508,7 @@ public class Dataset implements IDisposable {
      * Returns a list of integers that represent ranked signature indexes.
      * @return a list of integers that represent ranked signature indexes.
      */
-    public FixedList<IntegerEntity> getNodeRankedSignatureIndexes() {
+    public IFixedList<IntegerEntity> getNodeRankedSignatureIndexes() {
         return nodeRankedSignatureIndexes;
     }
     
@@ -766,7 +766,7 @@ public class Dataset implements IDisposable {
      * Returns a list of signature indexes ordered in ascending order of rank.
      * @return A list of signature indexes ordered in ascending order of rank.
      */
-    public FixedList<IntegerEntity> getRankedSignatureIndexes() {
+    public IFixedList<IntegerEntity> getRankedSignatureIndexes() {
         return rankedSignatureIndexes;
     } 
     
