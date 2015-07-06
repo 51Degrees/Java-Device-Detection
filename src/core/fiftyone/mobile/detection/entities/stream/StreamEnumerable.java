@@ -62,6 +62,8 @@ public class StreamEnumerable<T> implements IEnumerable<T> {
      * @param reader Reader set to the position at the start of the list.
      * @param max 
      * @param entityFactory 
+     * @param dataSet 
+     * @param start 
      */
     public StreamEnumerable(BinaryReader reader, int max, 
             BaseEntityFactory<T> entityFactory, Dataset dataSet, int start) {
@@ -78,15 +80,19 @@ public class StreamEnumerable<T> implements IEnumerable<T> {
      */
     @Override
     public boolean hasNext() {
+        if (current >= max)
+            dataSet.pool.release(reader);
         return current < max;
     }
 
     /**
      * Reads the next integer and returns it.
-     * @return the next integer in a sequence. Null if current > max.
+     * @return An enumerator for the list
      */
     @Override
     public T next() {
+        if (!hasNext())
+            return null;
         T result = null;
         try {
             //T result;
