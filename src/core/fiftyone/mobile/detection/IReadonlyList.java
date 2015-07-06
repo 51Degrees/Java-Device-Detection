@@ -29,7 +29,7 @@ import java.io.IOException;
  * @param <T> The type of BaseEntity the list will contain.
  */
 public interface IReadonlyList<T extends BaseEntity> extends Iterable<T>,
-        Disposable {
+        IDisposable {
     /**
      * Accessor for the list.
      * @param i Index or offset of the entity required.
