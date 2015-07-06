@@ -98,24 +98,36 @@ public class StreamFixedList<T extends BaseEntity> extends BaseList<T> implement
         return enumerable;
     }
 
+    /**
+     * Not implemented. Do not use.
+     * @return 
+     */
     @Override
     public int size() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
+    /**
+     * Not implemented. Do not use.
+     * @return 
+     */
     @Override
     public Iterator<BaseEntity> iterator() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException("Not supported yet."); 
+        //To change body of generated methods, choose Tools | Templates.
     }
 
+    /**
+     * Not implemented. Do not use.
+     */
     @Override
     public void dispose() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException("Not supported yet."); 
+        //To change body of generated methods, choose Tools | Templates.
     }
 
     /**
      * Creates a new entity of type T.
-     *
      * @param index The index of the entity being created.
      * @param reader Reader connected to the source data structure and
      * positioned to start reading.
@@ -123,8 +135,10 @@ public class StreamFixedList<T extends BaseEntity> extends BaseList<T> implement
      * @throws IOException indicates an I/O exception occurred
      */
     @Override
-    protected T createEntity(int index, BinaryReader reader) throws IOException {
-        reader.setPos(header.getStartPosition() + (entityFactory.getLength() * index));
+    protected T createEntity(int index, BinaryReader reader) 
+                                                throws IOException {
+        reader.setPos(header.getStartPosition() 
+                        + (entityFactory.getLength() * index));
         return entityFactory.create(dataSet, index, reader);
     }
 }
