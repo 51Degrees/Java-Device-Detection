@@ -29,16 +29,20 @@ import java.util.List;
 /**
  * Every device can be split into the major components of hardware, operating
  * system and browser. The properties and values associated with these
- * components are accessed via this class. <p> As there are a small number of
- * components they are always held in memory. <p> For more information see
- * http://51degrees.mobi/Support/Documentation/Java
+ * components are accessed via this class. 
+ * 
+ * As there are a small number of components they are always held in memory.
+ * 
+ * For more information see:
+ * http://51degrees.com/Support/Documentation/Java
  */
 /**
  * Every device can be split into the major components of hardware, operating
  * system and browser. These the properties and values associated with these
  * components are represented via this class.
  */
-public class Component extends BaseEntity implements Comparable<Component> {
+public abstract class Component extends BaseEntity 
+                                implements Comparable<Component> {
     /**
      * The default profile that should be returned for the component.
      */
@@ -68,6 +72,11 @@ public class Component extends BaseEntity implements Comparable<Component> {
      * Array of properties associated with the component.
      */
     private Property[] properties;
+    /**
+     * List of http headers that should be checked in order to perform a 
+     * detection where more headers than User-Agent are available.
+     */
+    public String[] HttpHeaders;
 
     /**
      * Constructs a new instance of Component
@@ -225,4 +234,12 @@ public class Component extends BaseEntity implements Comparable<Component> {
             return null;
         }
     }
+    
+    /**
+     * List of HTTP headers that should be checked in order to perform a 
+     * detection where more headers than User-Agent are available. This data 
+     * is used by methods that can HTTP Header collections.
+     * @return 
+     */
+    public abstract String[] getHttpheaders();
 }
