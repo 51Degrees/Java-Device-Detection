@@ -1,8 +1,11 @@
 package fiftyone.mobile.detection.factories;
 
+import fiftyone.mobile.detection.IFixedList;
 import fiftyone.mobile.detection.entities.stream.Dataset;
 import fiftyone.mobile.detection.entities.AsciiString;
+import fiftyone.mobile.detection.entities.BaseEntity;
 import fiftyone.mobile.detection.entities.Component;
+import fiftyone.mobile.detection.entities.IntegerEntity;
 import fiftyone.mobile.detection.entities.Map;
 import fiftyone.mobile.detection.entities.Node;
 import fiftyone.mobile.detection.entities.Profile;
@@ -12,6 +15,8 @@ import fiftyone.mobile.detection.entities.RankedSignatureIndex;
 import fiftyone.mobile.detection.entities.Signature;
 import fiftyone.mobile.detection.entities.Value;
 import fiftyone.mobile.detection.entities.memory.MemoryFixedList;
+import fiftyone.mobile.detection.entities.memory.PropertiesList;
+import fiftyone.mobile.detection.entities.stream.FixedCacheList;
 import fiftyone.mobile.detection.entities.stream.StreamFixedList;
 import fiftyone.mobile.detection.entities.stream.StreamVariableList;
 import fiftyone.mobile.detection.factories.stream.NodeStreamFactory;
@@ -101,7 +106,7 @@ public final class StreamFactory {
 
     /**
      * Uses the provided BinaryReader to load the necessary values from the data 
- file in to the Dataset. Stream mode only loads the essential information 
+     * file in to the Dataset. Stream mode only loads the essential information 
      * such as file headers.
      * @param reader BinaryReader to use for reading data in to the dataset.
      * @param dataSet The dataset object to load in to.
@@ -117,19 +122,35 @@ public final class StreamFactory {
             
             dataSet.strings = new StreamVariableList<AsciiString>(dataSet, reader,
                     new AsciiStringFactory(), DetectionConstants.STRINGS_CACHE_SIZE);
-            MemoryFixedList<Component> components = new MemoryFixedList<Component>(
-                    dataSet, reader, new ComponentFactory());
+            MemoryFixedList<Component> components = null;
+            switch (dataSet.versionEnum) {
+                case PatternV31:
+                    components = new MemoryFixedList<Component>(dataSet, reader, 
+                                                    new ComponentFactoryV31());
+                    break;
+                case PatternV32:
+                    components = new MemoryFixedList<Component>(dataSet, reader, 
+                                                    new ComponentFactoryV32());
+                    break;
+            }
             dataSet.components = components;
+            
             MemoryFixedList<Map> maps = new MemoryFixedList<Map>(
-                    dataSet, reader, new MapFactory());
+                                        dataSet, reader, new MapFactory());
             dataSet.maps = maps;
-            MemoryFixedList<Property> properties = new MemoryFixedList<Property>(
-                    dataSet, reader, new PropertyFactory());
+            
+            PropertiesList properties = new PropertiesList(dataSet, reader, 
+                                                        new PropertyFactory());
             dataSet.properties = properties;
-            dataSet.values = new StreamFixedList<Value>(dataSet, reader, 
+            
+            
+            dataSet.values = new FixedCacheList<Value>(dataSet, reader, 
                     new ValueFactory(), DetectionConstants.VALUES_CACHE_SIZE);
+            
             dataSet.profiles = new StreamVariableList<Profile>(dataSet, reader,
-                    new ProfileStreamFactory(dataSet.pool), DetectionConstants.PROFILE_CACHE_SIZE);
+                                        new ProfileStreamFactory(dataSet.pool), 
+                                        DetectionConstants.PROFILE_CACHE_SIZE);
+            /*
             dataSet.signatures = new StreamFixedList<Signature>(dataSet, reader,
                     new SignatureFactory(dataSet), 
                     DetectionConstants.SIGNATURES_CACHE_SIZE);
@@ -138,11 +159,44 @@ public final class StreamFactory {
                     DetectionConstants.RANKED_SIGNATURE_CACHE_SIZE);
             dataSet.nodes = new StreamVariableList<Node>(dataSet, reader,
                     new NodeStreamFactory(dataSet.pool), DetectionConstants.NODES_CACHE_SIZE);
+                    */
+            
+            switch (dataSet.versionEnum) {
+                case PatternV31:
+                    dataSet.signatures = 
+                            new FixedCacheList<Signature>(dataSet, reader, 
+                                    new SignatureFactoryV31(dataSet), 
+                                    DetectionConstants.SIGNATURES_CACHE_SIZE);
+                case PatternV32:
+                    dataSet.signatures = new FixedCacheList<Signature>(
+                            dataSet, reader, new SignatureFactoryV32(dataSet), 
+                                    DetectionConstants.SIGNATURES_CACHE_SIZE);
+                    dataSet.signatureNodeOffsets = new StreamFixedList<IntegerEntity>(
+                            dataSet, reader, new IntegerEntityFactory());
+                    dataSet.nodeRankedSignatureIndexes = 
+                            new StreamFixedList<IntegerEntity>(dataSet, reader, new IntegerEntityFactory());
+            }
+            
+            dataSet.rankedSignatureIndexes = new FixedCacheList<IntegerEntity>(dataSet, reader, new IntegerEntityFactory(), DetectionConstants.RANKED_SIGNATURE_CACHE_SIZE);
+            
+            switch (dataSet.versionEnum) {
+                case PatternV31:
+                    dataSet.nodes = new StreamVariableList<Node>(dataSet, reader, new NodeStreamFactoryV31(dataSet.pool), DetectionConstants.NODES_CACHE_SIZE);
+                    break;
+                case PatternV32:
+                    dataSet.nodes = new StreamVariableList<Node>(dataSet, reader, new NodeStreamFactoryV32(dataSet.pool), DetectionConstants.NODES_CACHE_SIZE);
+                    break;
+            }
+            
+            
             MemoryFixedList<Node> rootNodes = new MemoryFixedList<Node>(dataSet,
                     reader, new RootNodeFactory());
             dataSet.rootNodes = rootNodes;
-            dataSet.profileOffsets = new MemoryFixedList<ProfileOffset>(
+            
+            //!!!
+            MemoryFixedList<ProfileOffset> profileOffsets = new MemoryFixedList<ProfileOffset>(
                     dataSet, reader, new ProfileOffsetFactory());
+             dataSet.profileOffsets = profileOffsets;
 
             // Read into memory all the small lists which are frequently accessed.
             reader.setPos(components.header.getStartPosition());
@@ -153,6 +207,8 @@ public final class StreamFactory {
             properties.read(reader);
             reader.setPos(rootNodes.header.getStartPosition());
             rootNodes.read(reader);
+            reader.setPos(profileOffsets.header.getStartPosition());
+            profileOffsets.read(reader);
         } finally {
             if (reader != null)
                 dataSet.pool.release(reader);
