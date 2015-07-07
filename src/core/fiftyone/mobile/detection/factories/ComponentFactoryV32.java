@@ -39,6 +39,7 @@ public class ComponentFactoryV32 extends ComponentFactory {
      * positioned to start reading.
      * @return A new instance of ComponentV32.
      */
+    @Override
     public Component create(Dataset dataSet, int index, BinaryReader reader) {
         return new ComponentV32(dataSet, index, reader);
     }
