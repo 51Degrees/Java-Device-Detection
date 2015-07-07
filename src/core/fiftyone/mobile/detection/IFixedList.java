@@ -29,7 +29,7 @@ import fiftyone.mobile.detection.entities.IEnumerable;
  * @param <T> Type of entity the list contains.
  */
 public interface IFixedList<T extends BaseEntity> 
-                                        extends IReadonlyList<BaseEntity> {
+                                        extends IReadonlyList<T> {
     /**
      * Returns an enumerable starting at the index provided until count number 
      * of iterations have been performed.
