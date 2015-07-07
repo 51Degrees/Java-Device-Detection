@@ -28,7 +28,7 @@ import fiftyone.mobile.detection.readers.BinaryReader;
 /**
  * Factory that creates ComponentV31 objects.
  */
-public class ComponentFactoryV31 extends CommonFactory {
+public class ComponentFactoryV31 extends ComponentFactory {
     /**
      * Constructs a new instance of ComponentV31.
      * @param dataSet The data set whose components list the component is 
@@ -38,6 +38,7 @@ public class ComponentFactoryV31 extends CommonFactory {
      * positioned to start reading.
      * @return A new instance of ComponentV31.
      */
+    @Override
     public Component create(Dataset dataSet, int index, BinaryReader reader) {
         return new ComponentV31(dataSet, index, reader);
     }
