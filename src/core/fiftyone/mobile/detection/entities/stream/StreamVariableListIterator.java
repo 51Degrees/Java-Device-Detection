@@ -1,10 +1,7 @@
 package fiftyone.mobile.detection.entities.stream;
 
 import fiftyone.mobile.detection.entities.BaseEntity;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
@@ -28,45 +25,54 @@ import java.util.List;
  * ********************************************************************* */
 
 /**
- * A general class that iterates over entities in StreamVariableLists. The iteration
- * lazy loads for low memory and quick start retrieval.
+ * A general class that iterates over entities in StreamVariableLists. 
+ * The iteration lazy loads for low memory and quick start retrieval.
+ * @param <T> The type of BaseEntity the list will contain.
  */
-public class StreamVariableListIterator<T extends BaseEntity> implements Iterator<T> {
+public class StreamVariableListIterator<T extends BaseEntity> 
+                                            implements Iterator<T> {
 
+    /**
+     * Contains the output of Header.getSize(). Number of entries.
+     */
     int size;
+    /**
+     * Offset of the entity to get.
+     */
     int offset;
-    
+    /**
+     * List to iterate over.
+     */
     StreamVariableList<T> varList;
-    
+    /**
+     * Current index.
+     */
     int index;
     
     /**
      * Constructs the StreamVariableListIterator.
-     * 
      * @param streamVariableList 
      */
     public StreamVariableListIterator(StreamVariableList<T> streamVariableList)
     {
+        //What to iterate over.
         varList = streamVariableList;
+        //Returns Header.getSize();
         size = streamVariableList.size();
         offset = 0;
-        
         index = 0;
     }
     
     /**
      * Gets if there are any more entities in the list.
-     * 
      * @return true if there are more entities to iterate.
      */
     public boolean hasNext() {
-    
         return index < size;
     }
 
     /**
      * Gets the next entity for retrieval and increments the iteration.
-     * 
      * @return the next entity in the list.
      */
     public T next() {
@@ -81,6 +87,10 @@ public class StreamVariableListIterator<T extends BaseEntity> implements Iterato
         }
     }
 
+    /**
+     * Unsupported.
+     */
+    @Override
     public void remove() {
         throw new UnsupportedOperationException();
     }
