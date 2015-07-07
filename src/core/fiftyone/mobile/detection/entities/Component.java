@@ -72,11 +72,6 @@ public abstract class Component extends BaseEntity
      * Array of properties associated with the component.
      */
     private Property[] properties;
-    /**
-     * List of http headers that should be checked in order to perform a 
-     * detection where more headers than User-Agent are available.
-     */
-    public String[] HttpHeaders;
 
     /**
      * Constructs a new instance of Component
