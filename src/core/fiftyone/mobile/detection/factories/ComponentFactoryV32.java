@@ -1,5 +1,10 @@
 package fiftyone.mobile.detection.factories;
 
+import fiftyone.mobile.detection.Dataset;
+import fiftyone.mobile.detection.entities.Component;
+import fiftyone.mobile.detection.entities.ComponentV32;
+import fiftyone.mobile.detection.readers.BinaryReader;
+
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
  * Copyright 2014 51Degrees Mobile Experts Limited, 5 Charlotte Close,
@@ -21,8 +26,20 @@ package fiftyone.mobile.detection.factories;
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
 /**
- * 
+ * Factory that creates ComponentV32 objects.
  */
-public class ComponentFactoryV32 {
+public class ComponentFactoryV32 extends ComponentFactory {
     
+    /**
+     * Creates a new instance of ComponentV32.
+     * @param dataSet The data set whose components list the component is 
+     * contained within.
+     * @param index Index of the entity within the list.
+     * @param reader Reader connected to the source data structure and 
+     * positioned to start reading.
+     * @return A new instance of ComponentV32.
+     */
+    public Component create(Dataset dataSet, int index, BinaryReader reader) {
+        return new ComponentV32(dataSet, index, reader);
+    }
 }
