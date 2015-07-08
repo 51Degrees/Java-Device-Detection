@@ -1,7 +1,7 @@
 package fiftyone.mobile.detection.entities;
 
 import fiftyone.mobile.detection.Dataset;
-import fiftyone.mobile.detection.entities.memory.BaseList;
+import fiftyone.mobile.detection.entities.memory.MemoryBaseList;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
@@ -67,7 +67,7 @@ public class NodeIndex extends BaseEntity implements Comparable<NodeIndex> {
             return node;
         }
 
-        if (getDataSet().nodes instanceof BaseList) {
+        if (getDataSet().nodes instanceof MemoryBaseList) {
             if (node == null) {
                 synchronized (this) {
                     if (node == null) {
