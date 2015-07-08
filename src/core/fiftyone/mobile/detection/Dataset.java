@@ -21,6 +21,8 @@ import fiftyone.mobile.detection.entities.memory.MemoryFixedList;
 import fiftyone.mobile.detection.entities.memory.PropertiesList;
 import fiftyone.mobile.detection.entities.stream.ICacheList;
 import fiftyone.properties.DetectionConstants;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /* *********************************************************************
@@ -553,17 +555,6 @@ public class Dataset implements IDisposable {
         return signatures;
     }
     
-    
-    
-
-    
-    
-    
-    
-    
-
-    
-
     /**
      * List of nodes the data set contains.
      * @return a read-only list of nodes contained in the data set
@@ -601,6 +592,29 @@ public class Dataset implements IDisposable {
     }
     
     /**
+     * Creates a list of HTTP headers if one does not already exist.
+     * @return list of HTTP headers as Strings.
+     */
+    public String[] getHttpHeaders() {
+        if (httpHeaders == null) {
+            synchronized(httpHeaders) {
+                if (httpHeaders == null) {
+                    List<String> tempList = new ArrayList<String>();
+                    for (Component c : components) {
+                       for (String s : c.getHttpheaders()) {
+                           if (!tempList.contains(s))
+                               tempList.add(s);
+                       }
+                    }
+                    httpHeaders = new String[tempList.size()];
+                    httpHeaders = tempList.toArray(httpHeaders);
+                }
+            }
+        }
+        return httpHeaders;
+    }
+    
+    /**
      * Called after the entire data set has been loaded to ensure any further
      * initialisation steps that require other items in the data set can be
      * completed.
@@ -624,10 +638,6 @@ public class Dataset implements IDisposable {
         // We no longer need the strings data structure as all dependent
         // data has been taken from it.
         strings = null;
-
-        // The list of profiles is no longer needed as they've been assigned
-        // components and signatures.
-        profiles = null;
     }
 
     /**
