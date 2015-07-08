@@ -1,6 +1,7 @@
 package fiftyone.mobile.detection.entities.memory;
 
 import fiftyone.mobile.detection.Dataset;
+import fiftyone.mobile.detection.IReadonlyList;
 import fiftyone.mobile.detection.entities.BaseEntity;
 import fiftyone.mobile.detection.factories.BaseEntityFactory;
 import fiftyone.mobile.detection.readers.BinaryReader;
@@ -50,7 +51,8 @@ import java.util.logging.Logger;
  *
  * @param <T> The type of BaseEntity the list will contain
  */
-public class MemoryVariableList<T extends BaseEntity> extends MemoryBaseList<T> {
+public class MemoryVariableList<T extends BaseEntity> extends MemoryBaseList<T> 
+                                                    implements IReadonlyList<T>{
 
     /**
      * Constructs a new instance of VariableList of type T
