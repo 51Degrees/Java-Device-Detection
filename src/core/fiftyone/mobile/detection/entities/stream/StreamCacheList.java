@@ -44,8 +44,8 @@ import java.util.logging.Logger;
  * 
  * @param <T> The type of BaseEntity the list will contain
  */
-public abstract class StreamCacheList<T extends BaseEntity> extends BaseList<T> 
-                                                        implements ICacheList {
+public abstract class StreamCacheList<T extends BaseEntity> 
+                            extends StreamBaseList<T> implements ICacheList {
     /**
      * Used to store previously accessed items to improve performance and
      * reduce memory consumption associated with creating new instances of 
@@ -54,8 +54,8 @@ public abstract class StreamCacheList<T extends BaseEntity> extends BaseList<T>
     private final Cache<T> cache;
     
     /**
-     * Constructs a new instance of BaseList{T} ready to read entities from 
-     * the source.
+     * Constructs a new instance of StreamBaseList{T} ready to read entities 
+     * from the source.
      * @param dataSet Dataset being created.
      * @param reader Reader used to initialise the header only.
      * @param entityFactory Used to create new instances of the entity.
