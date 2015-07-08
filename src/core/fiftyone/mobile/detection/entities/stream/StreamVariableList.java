@@ -31,23 +31,22 @@ import java.util.Iterator;
  * A readonly list of variable length entity types held on persistent storage
  * rather than in memory.
  * 
- * Entities in the underlying data structure are
- * either fixed length where the data that represents them always contains the
- * same number of bytes, or variable length where the number of bytes to
- * represent the entity varies.
+ * Entities in the underlying data structure are either fixed length where 
+ * the data that represents them always contains the same number of bytes, 
+ * or variable length where the number of bytes to represent the entity varies.
  * 
- * This class uses the offset of the first byte
- * of the entities data in the underlying data structure in the accessor. As
- * such the list isn't being used as a traditional list because items are not
- * retrieved by their index in the list, but by there offset in the underlying
- * data structure.
+ * This class uses the offset of the first byte of the entities data in the 
+ * underlying data structure in the accessor. As such the list isn't being used 
+ * as a traditional list because items are not retrieved by their index in the 
+ * list, but by there offset in the underlying data structure.
  * 
- * The constructor will read the header information about
- * the underlying data structure. The data for each entity is only loaded when
- * requested via the accessor. A cache is used to avoid creating duplicate
- * objects when requested multiple times. <p> Data sources which don't support
- * seeking can not be used. Specifically compressed data structures can not be
- * used with these lists.
+ * The constructor will read the header information about the underlying data 
+ * structure. The data for each entity is only loaded when requested via the 
+ * accessor. A cache is used to avoid creating duplicate objects when requested 
+ * multiple times. 
+ * 
+ * Data sources which don't support seeking can not be used. Specifically 
+ * compressed data structures can not be used with these lists.
  * 
  * Should not be referenced directly.
  *
@@ -103,10 +102,36 @@ public class StreamVariableList<T extends BaseEntity> extends StreamCacheList<T>
     }
     
     /**
-     * Unsupported.
+     * Not supported.
      */
     @Override
     public void dispose() {
+        throw new UnsupportedOperationException("Not supported.");
+    }
+
+    /**
+     * Not supported.
+     * @return nothing.
+     */
+    @Override
+    public boolean hasNext() {
+        throw new UnsupportedOperationException("Not supported.");
+    }
+
+    /**
+     * Not supported.
+     * @return nothing.
+     */
+    @Override
+    public T next() {
+        throw new UnsupportedOperationException("Not supported.");
+    }
+
+    /**
+     * Not supported.
+     */
+    @Override
+    public void remove() {
         throw new UnsupportedOperationException("Not supported.");
     }
 }
