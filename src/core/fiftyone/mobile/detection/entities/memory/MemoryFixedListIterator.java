@@ -1,6 +1,7 @@
 package fiftyone.mobile.detection.entities.memory;
 
 import fiftyone.mobile.detection.entities.BaseEntity;
+import fiftyone.mobile.detection.entities.IEnumerable;
 import java.util.Iterator;
 
 /* *********************************************************************
@@ -28,7 +29,7 @@ import java.util.Iterator;
  * @param <T> The type of BaseEntity the list will contain
  */
 public class MemoryFixedListIterator<T extends BaseEntity> 
-                                                implements Iterator<T> {
+                                                implements IEnumerable {
     /**
      * List to iterate over.
      */
@@ -94,6 +95,15 @@ public class MemoryFixedListIterator<T extends BaseEntity>
      */
     @Override
     public void remove() {
+        throw new UnsupportedOperationException("Not supported.");
+    }
+
+    /**
+     * Not supported.
+     * @return nothing.
+     */
+    @Override
+    public Iterator iterator() {
         throw new UnsupportedOperationException("Not supported.");
     }
     
