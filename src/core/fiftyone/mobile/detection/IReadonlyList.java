@@ -1,6 +1,7 @@
 package fiftyone.mobile.detection;
 
 import fiftyone.mobile.detection.entities.BaseEntity;
+import fiftyone.mobile.detection.entities.IEnumerable;
 import java.io.IOException;
 
 /* *********************************************************************
@@ -25,10 +26,9 @@ import java.io.IOException;
  * ********************************************************************* */
 /**
  * A list which only provides those features needed to read items from the list.
- *
  * @param <T> The type of BaseEntity the list will contain.
  */
-public interface IReadonlyList<T extends BaseEntity> extends Iterable<T>,
+public interface IReadonlyList<T extends BaseEntity> extends IEnumerable<T>,
         IDisposable {
     /**
      * Accessor for the list.
