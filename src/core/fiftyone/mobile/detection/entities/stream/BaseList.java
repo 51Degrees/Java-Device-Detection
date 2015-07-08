@@ -64,12 +64,12 @@ public abstract class BaseList<T extends BaseEntity> {
      * @return A new instance of type T.
      * @throws IOException 
      */
-    protected abstract T createEntity(int key, BinaryReader reader) throws IOException;
+    protected abstract T createEntity(int key, BinaryReader reader) 
+                                                        throws IOException;
 
     /**
-     * Constructs a new instance of BaseList of type T ready to read entities from the
-     * source.
-     *
+     * Constructs a new instance of BaseList of type T ready to read 
+     * entities from the source.
      * @param dataSet Dataset being created
      * @param reader Reader used to initialise the header only
      * @param entityFactory a base entity factory to be used
@@ -82,9 +82,9 @@ public abstract class BaseList<T extends BaseEntity> {
     }
 
     /**
-     * Retrieves the record at the offset or index requested
-     * @param key Index or offset of the record required
-     * @return A new instance of the item at the offset or index
+     * Retrieves the record at the offset or index requested.
+     * @param key Index or offset of the record required.
+     * @return A new instance of the item at the offset or index.
      * @throws java.io.IOException
      */
     public T get(int key) throws IOException {
