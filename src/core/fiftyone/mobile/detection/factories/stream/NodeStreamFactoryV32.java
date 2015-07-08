@@ -30,13 +30,30 @@ import fiftyone.mobile.detection.readers.BinaryReader;
  */
 public class NodeStreamFactoryV32 extends NodeStreamFactory {
 
+    /**
+     * Constructs a new instance of NodeStreamFactoryV32.
+     * @param pool Pool from the data set to be used when 
+     * creating new Entities.Node entities.
+     */
     public NodeStreamFactoryV32(Pool pool) {
         super(pool);
     }
 
+    /**
+     * Constructs a new "Entities.Stream.NodeV32 entity from 
+     * the offset provided.
+     * @param dataSet The data set the node is contained within.
+     * @param index The offset in the data structure to the node.
+     * @param reader  Reader connected to the source data structure and 
+     * positioned to start reading.
+     * @return A new Entities.Node entity from the data set.
+     */
     @Override
     protected Node construct(Dataset dataSet, int index, BinaryReader reader) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return new fiftyone.mobile.detection.entities.stream.NodeV32(
+                (fiftyone.mobile.detection.entities.stream.Dataset)dataSet, 
+                index, 
+                reader);
     }
     
 }
