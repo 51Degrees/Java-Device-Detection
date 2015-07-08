@@ -57,7 +57,12 @@ public class CommonFactory {
                 supportedPatternFormatVersions.getEnumIfExists(dataSet.version);
         
         // Read the common header fields.
-        dataSet.guid = new Guid(reader.readBytes(16));
+        dataSet.tag = new Guid(reader.readBytes(16));
+        switch (dataSet.versionEnum) {
+            case PatternV32:
+                dataSet.export =new Guid(reader.readBytes(16));
+                break;
+        }
         dataSet.copyrightOffset = reader.readInt32();
         dataSet.age = reader.readInt16();
         dataSet.minUserAgentCount = reader.readInt32();
