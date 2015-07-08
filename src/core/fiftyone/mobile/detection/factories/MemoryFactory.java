@@ -13,7 +13,6 @@ import fiftyone.mobile.detection.entities.Modes;
 import fiftyone.mobile.detection.entities.Node;
 import fiftyone.mobile.detection.entities.Profile;
 import fiftyone.mobile.detection.entities.ProfileOffset;
-import fiftyone.mobile.detection.entities.Property;
 import fiftyone.mobile.detection.entities.Signature;
 import fiftyone.mobile.detection.entities.Value;
 import fiftyone.mobile.detection.entities.memory.MemoryFixedList;
