@@ -1,10 +1,14 @@
 package fiftyone.mobile.detection.entities.memory;
 
 import fiftyone.mobile.detection.Dataset;
+import fiftyone.mobile.detection.IFixedList;
 import fiftyone.mobile.detection.entities.BaseEntity;
+import fiftyone.mobile.detection.entities.IEnumerable;
 import fiftyone.mobile.detection.factories.BaseEntityFactory;
 import fiftyone.mobile.detection.readers.BinaryReader;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
@@ -43,12 +47,12 @@ import java.io.IOException;
  * @param <T> The type of BaseEntity the list will contain
  *
  */
-public class MemoryFixedList<T extends BaseEntity> extends BaseList<T> {
+public class MemoryFixedList<T extends BaseEntity> extends MemoryBaseList<T> 
+                                                   implements IFixedList<T>{
 
     /**
-     * Constructs a new instance of FixedList
-     *
-     * @param dataSet The DetectorDataSet being created
+     * Constructs a new instance of MemoryFixedList
+     * @param dataSet The DataSet being created
      * @param reader Reader connected to the source data structure and
      * positioned to start reading
      * @param entityFactory Interface implementation used to create new entities
@@ -61,25 +65,65 @@ public class MemoryFixedList<T extends BaseEntity> extends BaseList<T> {
 
     /**
      * Reads the list into memory
-     *
      * @param reader Reader connected to the source data structure and
      * positioned to start reading
-     * @throws IOException indicates an I/O exception occurred
      */
-    public void read(BinaryReader reader) throws IOException {
-        for (int index = 0; index < header.getCount(); index++) {
-            array.add(entityFactory.create(dataSet, index, reader));
+    @Override
+    public void read(BinaryReader reader) {
+        try {
+            for (int index = 0; index < header.getCount(); index++) {
+                array.add(entityFactory.create(dataSet, index, reader));
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(MemoryFixedList.class.getName())
+                                            .log(Level.SEVERE, null, ex);
         }
     }
 
     /**
      * Accessor for the fixed list
-     *
-     * @param i The index of the entity to be returned from the list
-     * @return Entity at the index requested
+     * @param i The index of the entity to be returned from the list.
+     * @return Entity at the index requested.
      */
     @Override
     public T get(int i) {
         return array.get(i);
+    }
+
+    /**
+     * Not supported.
+     * @return nothing.
+     */
+    @Override
+    public boolean hasNext() {
+        throw new UnsupportedOperationException("Not supported."); 
+    }
+
+    /**
+     * Not supported.
+     * @return nothing.
+     */
+    @Override
+    public T next() {
+        throw new UnsupportedOperationException("Not supported.");
+    }
+
+    /**
+     * Not supported.
+     */
+    @Override
+    public void remove() {
+        throw new UnsupportedOperationException("Not supported.");
+    }
+
+    /**
+     * Returns the MemoryFixedListIterator for specific range.
+     * @param index start at this element.
+     * @param count finish at this element.
+     * @return the MemoryFixedListIterator for specific range.
+     */
+    @Override
+    public IEnumerable<T> getRange(int index, int count) {
+        return new MemoryFixedListIterator<T>(this, index, count);
     }
 }
