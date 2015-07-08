@@ -9,17 +9,19 @@ import fiftyone.mobile.detection.entities.Component;
 import fiftyone.mobile.detection.entities.Guid;
 import fiftyone.mobile.detection.entities.IntegerEntity;
 import fiftyone.mobile.detection.entities.Map;
+import fiftyone.mobile.detection.entities.Modes;
 import fiftyone.mobile.detection.entities.Node;
 import fiftyone.mobile.detection.entities.Profile;
 import fiftyone.mobile.detection.entities.ProfileOffset;
-import fiftyone.mobile.detection.entities.RankedSignatureIndex;
 import fiftyone.mobile.detection.entities.Property;
 import fiftyone.mobile.detection.entities.Signature;
 import fiftyone.mobile.detection.entities.Value;
 import fiftyone.mobile.detection.entities.Version;
+import fiftyone.mobile.detection.entities.memory.MemoryFixedList;
+import fiftyone.mobile.detection.entities.memory.PropertiesList;
 import fiftyone.mobile.detection.entities.stream.ICacheList;
-import fiftyone.mobile.detection.readers.BinaryReader;
 import fiftyone.properties.DetectionConstants;
+import java.util.concurrent.TimeUnit;
 
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
@@ -54,25 +56,17 @@ import fiftyone.properties.DetectionConstants;
  */
 public class Dataset implements IDisposable {
     /**
-     * When the data was last modified.
+     * Age of the data in months when exported.
      */
-    public Calendar lastModified;
+    public int age;
     /**
-     * The offset for the name of the property map used to create the dataset.
+     * The browser component.
      */
-    public int formatOffset;
+    private Component browsers;
     /**
-     * The name of the property map used to create the dataset.
+     * A list of all the components the data set contains.
      */
-    public String format;
-    /**
-     * The offset for the common name of the data set.
-     */
-    public int nameOffset;
-    /**
-     * The common name of the data set.
-     */
-    public String name;
+    public MemoryFixedList<Component> components;
     /**
      * The copyright notice associated with the data set.
      */
@@ -82,56 +76,64 @@ public class Dataset implements IDisposable {
      */
     public int copyrightOffset;
     /**
-     * The percentage of requests for signatures which were not already 
-     * contained in the cache.
+     * The crawler component.
      */
-    public double percentageSignatureCacheMisses;
+    private Component crawlers;
     /**
-     * The BinaryReader used in entity lists. This is not used directly in
-     * Dataset but a reference is needed to dispose it later.
+     * The number of bytes to allocate to a buffer returning CSV format data for
+     * a match.
      */
-    private BinaryReader reader;
+    public int csvBufferLength;
+    /**
+     * The number of unique device combinations available in the data set.
+     */
+    public int deviceCombinations;
+    /**
+     * A unique Tag for the exported data.
+     */
+    public Guid export;
     /**
      * Flag to indicate if the dataset is disposed.
      */
     private boolean disposed;
     /**
-     * The date the data set was published.
+     * The name of the property map used to create the dataset.
      */
-    public Date published;
+    public String format;
     /**
-     * The date the data set is next expected to be updated by 51Degrees.
+     * The offset for the name of the property map used to create the dataset.
      */
-    public Date nextUpdate;
+    public int formatOffset;
     /**
-     * The minimum number of times a user agent should have been seen before it
-     * was included in the dataset.
+     * The hardware component.
      */
-    public int minUserAgentCount;
-    /**
-     * The version of the data set.
-     */
-    public Version version;
-    /**
-     * The maximum length of a user agent string.
-     */
-    public short maxUserAgentLength;
-    /**
-     * The minimum length of a user agent string.
-     */
-    public short minUserAgentLength;
-    /**
-     * The lowest character the character trees can contain.
-     */
-    public byte lowestCharacter;
+    private Component hardware;
     /**
      * The highest character the character trees can contain.
      */
     public byte highestCharacter;
     /**
-     * The number of unique device combinations available in the data set.
+     * List of unique HTTP Headers that the data set needs to consider to 
+     * perform the most accurate matches.
      */
-    public int deviceCombinations;
+    private String[] httpHeaders;
+    /**
+     * The number of bytes to allocate to a buffer returning JSON format data
+     * for a match.
+     */
+    public int jsonBufferLength;
+    /**
+     * When the data was last modified.
+     */
+    public Calendar lastModified;
+    /**
+     * The lowest character the character trees can contain.
+     */
+    public byte lowestCharacter;
+    /**
+     * A list of all the maps the data set contains.
+     */
+    public MemoryFixedList<Map> maps;
     /**
      * The maximum number of signatures that can be checked. Needed to avoid
      * bogus user agents which deliberately require so many signatures to be
@@ -139,54 +141,183 @@ public class Dataset implements IDisposable {
      */
     public int maxSignatures;
     /**
-     * The maximum number of values that can be returned by a profile and a
-     * property supporting a list of values.
-     */
-    public short maxValues;
-    /**
-     * The number of bytes to allocate to a buffer returning CSV format data for
-     * a match.
-     */
-    public int csvBufferLength;
-    /**
-     * The number of bytes to allocate to a buffer returning JSON format data
-     * for a match.
-     */
-    public int jsonBufferLength;
-    /**
-     * The number of bytes to allocate to a buffer returning XML format data for
-     * a match.
-     */
-    public int xmlBufferLength;
-    /**
      * The maximum number of signatures that could possibly be returned during a
      * closest match.
      */
     public int maxSignaturesClosest;
     /**
-     * Guid.
+     * The maximum length of a user agent string.
      */
-    public Guid guid;
+    public short maxUserAgentLength;
     /**
-     * Age of the data in months when exported.
+     * The maximum number of values that can be returned by a profile and a
+     * property supporting a list of values.
      */
-    public int age;
-    /**
-     * The version of the data set as an enum.
-     */
-    public DetectionConstants.FORMAT_VERSIONS versionEnum;
+    public short maxValues;
     /**
      * The largest rank value that can be returned.
      */
     public int maximumRank;
     /**
+     * The minimum number of times a user agent should have been seen before it
+     * was included in the dataset.
+     */
+    public int minUserAgentCount;
+    /**
+     * The minimum length of a user agent string.
+     */
+    public short minUserAgentLength;
+    /**
+     * The mode of operation the data set is using.
+     */
+    public Modes mode;
+    /**
+     * The common name of the data set.
+     */
+    public String name;
+    /**
+     * The offset for the common name of the data set.
+     */
+    public int nameOffset;
+    /**
+     * The date the data set is next expected to be updated by 51Degrees.
+     */
+    public Date nextUpdate;
+    /**
+     * List of nodes the data set contains.
+     */
+    public IReadonlyList<Node> nodes;
+    /**
      * List of integers that represent ranked signature indexes.
      */
     public IFixedList<IntegerEntity> nodeRankedSignatureIndexes;
     /**
+     * The percentage of requests for signatures which were not already 
+     * contained in the cache.
+     */
+    public double percentageSignatureCacheMisses;
+    /**
+     * A list of all the possible profiles the data set contains.
+     */
+    public IReadonlyList<Profile> profiles;
+    /**
+     * List of profile offsets the data set contains.
+     */
+    public IReadonlyList<ProfileOffset> profileOffsets;
+    /**
+     * A list of all properties the data set contains.
+     */
+    public PropertiesList properties;
+    /**
+     * The date the data set was published.
+     */
+    public Date published;
+    /**
+     * A list of signature indexes ordered in ascending order of rank. Used by 
+     * the node ranked signature indexes lists to identify the corresponding 
+     * signature.
+     */
+    public IFixedList<IntegerEntity> rankedSignatureIndexes;
+    /**
+     * Nodes for each of the possible character positions in the user agent.
+     */
+    public IReadonlyList<Node> rootNodes;
+    /**
+     * The number of nodes each signature can contain.
+     */
+    public int signatureNodesCount;
+     /**
      * List of integers that represent signature node offsets.
      */
     public IFixedList<IntegerEntity> signatureNodeOffsets;
+    /**
+     * The number of profiles each signature can contain.
+     */
+    public int signatureProfilesCount;
+    /**
+     * A list of all the signatures the data set contains.
+     */
+    public IReadonlyList<Signature> signatures;
+    /**
+     * The software component.
+     */
+    private Component software;
+    /**
+     * A list of ASCII byte arrays for strings used by the dataset.
+     */
+    public IReadonlyList<AsciiString> strings;
+    /**
+     * A unique Tag for the data set.
+     */
+    public Guid tag;
+    /**
+     * A list of all property values the data set contains.
+     */
+    public IReadonlyList<Value> values;
+    /**
+     * The version of the data set.
+     */
+    public Version version;
+    /**
+     * The version of the data set as an enum.
+     */
+    public DetectionConstants.FORMAT_VERSIONS versionEnum;
+    /**
+     * The number of bytes to allocate to a buffer returning XML format data for
+     * a match.
+     */
+    public int xmlBufferLength;
+    
+    /**
+     * Constructs a new data set ready to have lists of data assigned to it.
+     * @param lastModified The date and time the source of the data was 
+     * last modified.
+     * @param mode The mode of operation the data set will be using.
+     * @throws java.io.IOException signals an I/O exception occurred
+     */
+    public Dataset(Date lastModified, Modes mode) throws IOException {
+        this.maximumRank = 0;
+        this.disposed = false;
+        this.lastModified = Calendar.getInstance();
+        this.lastModified.setTime(lastModified);
+        this.mode = mode;
+    }
+    
+    /**
+     * Returns time that has elapsed since the data in the data set was current.
+     * @return time in seconds between now and when data file was published.
+     */
+    public long getAge() {
+        Date now = new Date();
+        Date was = new Date(age);
+        long difference = now.getTime() - was.getTime();
+        long diffInSeconds = TimeUnit.MILLISECONDS.toSeconds(difference);
+        return diffInSeconds;
+    }
+    
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+    
+    
+   
     
     /**
      * The percentage of requests for signatures which were not already
@@ -279,7 +410,7 @@ public class Dataset implements IDisposable {
         }
         return hardware;
     }
-    private Component hardware;
+    
 
     /**
      * The software component.
@@ -296,7 +427,7 @@ public class Dataset implements IDisposable {
         }
         return software;
     }
-    private Component software;
+    
 
     /**
      * The browser component.
@@ -313,7 +444,6 @@ public class Dataset implements IDisposable {
         }
         return browsers;
     }
-    private Component browsers;
 
     /**
      * The crawler component.
@@ -330,7 +460,6 @@ public class Dataset implements IDisposable {
         }
         return crawlers;
     }
-    private Component crawlers;
 
     /**
      * The copyright notice associated with the data set.
@@ -388,7 +517,7 @@ public class Dataset implements IDisposable {
     public IReadonlyList<Component> getComponents() {
         return components;
     }
-    public IReadonlyList<Component> components;
+    
 
     /**
      * A list of all property maps the data set contains.
@@ -397,7 +526,6 @@ public class Dataset implements IDisposable {
     public IReadonlyList<Map> getMaps() {
         return maps;
     }
-    public IReadonlyList<Map> maps;
 
     /**
      * A list of all properties the data set contains.
@@ -406,7 +534,7 @@ public class Dataset implements IDisposable {
     public IReadonlyList<Property> getProperties() {
         return properties;
     }
-    public IReadonlyList<Property> properties;
+    
 
     /**
      * A list of all property values the data set contains.
@@ -415,7 +543,7 @@ public class Dataset implements IDisposable {
     public IReadonlyList<Value> getValues() {
         return values;
     }
-    public IReadonlyList<Value> values;
+    
 
     /**
      * List of signatures the data set contains.
@@ -424,57 +552,17 @@ public class Dataset implements IDisposable {
     public IReadonlyList<Signature> getSignatures() {
         return signatures;
     }
-    /**
-     * A list of all the signatures the data set contains.
-     */
-    public IReadonlyList<Signature> signatures;
-    /**
-     * A list of signature indexes ordered in ascending order of rank. Used by 
-     * the node ranked signature indexes lists to identify the corresponding 
-     * signature.
-     */
-    public IFixedList<IntegerEntity> rankedSignatureIndexes;
-    /**
-     * A list of all the possible profiles the data set contains.
-     */
-    public IReadonlyList<Profile> profiles;
-    /**
-     * List of nodes the data set contains.
-     */
-    public IReadonlyList<Node> nodes;
-    /**
-     * Nodes for each of the possible character positions in the user agent.
-     */
-    public IReadonlyList<Node> rootNodes;
-    /**
-     * List of profile offsets the data set contains.
-     */
-    public IReadonlyList<ProfileOffset> profileOffsets;
-    /**
-     * A list of ASCII byte arrays for strings used by the dataset.
-     */
-    public IReadonlyList<AsciiString> strings;
-    /**
-     * The number of profiles each signature can contain.
-     */
-    public int signatureProfilesCount;
-    /**
-     * The number of nodes each signature can contain.
-     */
-    public int signatureNodesCount;
+    
+    
+    
 
-    /**
-     * Constructs a new data set ready to have lists of data assigned to it.
-     *
-     * @param lastModified
-     * @throws java.io.IOException signals an I/O exception occurred
-     */
-    public Dataset(Date lastModified) throws IOException {
-        this.maximumRank = 0;
-        this.disposed  = false;
-        this.lastModified = Calendar.getInstance();
-        this.lastModified.setTime(lastModified);
-    }
+    
+    
+    
+    
+    
+
+    
 
     /**
      * List of nodes the data set contains.
