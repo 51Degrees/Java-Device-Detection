@@ -2,8 +2,8 @@ package fiftyone.mobile.detection.entities.memory;
 
 import fiftyone.mobile.detection.Dataset;
 import fiftyone.mobile.detection.IDisposable;
-import fiftyone.mobile.detection.IReadonlyList;
 import fiftyone.mobile.detection.entities.BaseEntity;
+import fiftyone.mobile.detection.entities.IEnumerable;
 import fiftyone.mobile.detection.entities.headers.Header;
 import fiftyone.mobile.detection.factories.BaseEntityFactory;
 import fiftyone.mobile.detection.readers.BinaryReader;
@@ -34,21 +34,27 @@ import java.util.List;
 /**
  * Lists can be stored as a set of related objects entirely within memory, or
  * the relevant objects loaded as required from a file or other permanent store
- * as required. <p> This class provides base functions for lists implemented in
- * memory using arrays of type T. <p> Interfaces are used to create new
- * instances of items to add to the list in order to avoid creating many
- * inherited list classes for each type. <p> The data is held in the private
- * variable array. <p> Should not be referenced directly.
+ * as required. 
+ * 
+ * This class provides base functions for lists implemented in
+ * memory using arrays of type T. 
+ * 
+ * Interfaces are used to create new instances of items to add to the list in 
+ * order to avoid creating many inherited list classes for each type. 
+ * 
+ * The data is held in the private variable array. 
+ * 
+ * Should not be referenced directly.
  *
  * @param <T> The type the list will contain.
  */
 public abstract class MemoryBaseList<T extends BaseEntity> implements
-        IReadonlyList<T>, IDisposable {
+                                            IEnumerable<T>, IDisposable {
 
     /**
-     * Information about the data structure the list is associated with.
+     * Array of items contained in the list.
      */
-    public final Header header;
+    protected final List<T> array;
     /**
      * The dataset which contains the list.
      */
@@ -58,9 +64,9 @@ public abstract class MemoryBaseList<T extends BaseEntity> implements
      */
     protected final BaseEntityFactory<T> entityFactory;
     /**
-     * Array of items contained in the list.
+     * Information about the data structure the list is associated with.
      */
-    protected final List<T> array;
+    public final Header header;
 
     /**
      * Constructs a new instance of <T>. The read method needs to be called
@@ -73,7 +79,7 @@ public abstract class MemoryBaseList<T extends BaseEntity> implements
      * the read method
      */
     MemoryBaseList(Dataset dataSet, BinaryReader reader,
-            BaseEntityFactory<T> entityFactory) {
+                                    BaseEntityFactory<T> entityFactory) {
         this.dataSet = dataSet;
         this.entityFactory = entityFactory;
         this.header = new Header(reader);
@@ -81,7 +87,7 @@ public abstract class MemoryBaseList<T extends BaseEntity> implements
     }
 
     /**
-     * Dispose of any items the list holds open. Currently unimplemented.
+     * Dispose of any items the list holds open.
      */
     @Override
     public void dispose() {
@@ -89,6 +95,7 @@ public abstract class MemoryBaseList<T extends BaseEntity> implements
     }
 
     /**
+     * Returns An iterator to the array of items.
      * @return An iterator to the array of items.
      */
     @Override
@@ -97,10 +104,17 @@ public abstract class MemoryBaseList<T extends BaseEntity> implements
     }
 
     /**
+     * Returns The number of entities the list contains.
      * @return The number of entities the list contains.
      */
-    @Override
     public int size() {
         return array.size();
     }
+    
+    /**
+     * Reads all the records to be added to the list.
+     * @param reader Reader connected to the source data structure and 
+     * positioned to start reading.
+     */
+    public abstract void read(BinaryReader reader);
 }
