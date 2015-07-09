@@ -9,6 +9,8 @@ import fiftyone.mobile.detection.Dataset;
 import fiftyone.mobile.detection.SortedList;
 import fiftyone.mobile.detection.readers.BinaryReader;
 import fiftyone.properties.DetectionConstants;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
@@ -75,6 +77,10 @@ public abstract class Signature extends BaseEntity implements Comparable<Signatu
      */
     private Profile[] profiles;
     /**
+     * An array of nodes associated with the signature.
+     */
+    private Node[] nodes;
+    /**
      * The unique Device Id for the signature.
      */
     private String deviceId;
@@ -101,7 +107,8 @@ public abstract class Signature extends BaseEntity implements Comparable<Signatu
      */
     public Signature(Dataset dataSet, int index, BinaryReader reader) {
         super(dataSet, index);
-        profileOffsets = ReadOffsets(dataSet, reader, dataSet.getProfilesCount());
+        profileOffsets = ReadOffsets(dataSet, reader, dataSet.signatureProfilesCount);
+        this.nodes = null;
         this.profiles = null;
         this.nameToValues = null;
     }
@@ -221,10 +228,29 @@ public abstract class Signature extends BaseEntity implements Comparable<Signatu
      * @return an array of nodes associated with the signature.
      * @throws java.io.IOException
      */
-    protected Node[] getNodes() throws IOException {
-        Node[] nodes = new Node[nodeOffsets.length];
+    protected Node[] doGetNodes() throws IOException {
+        Node[] nodesLocal = new Node[nodeOffsets.length];
         for (int i = 0; i < nodeOffsets.length; i++) {
-            nodes[i] = dataSet.nodes.get(nodeOffsets[i]);
+            nodesLocal[i] = dataSet.nodes.get(nodeOffsets[i]);
+        }
+        return nodesLocal;
+    }
+    
+    /**
+     * An array of nodes associated with the signature.
+     * @return  An array of nodes associated with the signature.
+     */
+    public Node[] getNodes() {
+        if (nodes == null) {
+            synchronized(this) {
+                if (nodes == null) {
+                    try {
+                        nodes = doGetNodes();
+                    } catch (IOException ex) {
+                        Logger.getLogger(Signature.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+            }
         }
         return nodes;
     }
@@ -239,7 +265,7 @@ public abstract class Signature extends BaseEntity implements Comparable<Signatu
      * @param length The number of offsets to read in
      * @return An array of the offsets as integers read from the reader
      */
-    private int[] ReadOffsets(Dataset dataSet, BinaryReader reader, int length) {
+    public int[] ReadOffsets(Dataset dataSet, BinaryReader reader, int length) {
         reader.list.clear();
         for (int i = 0; i < length; i++) {
             int profileIndex = reader.readInt32();
@@ -262,13 +288,14 @@ public abstract class Signature extends BaseEntity implements Comparable<Signatu
      * @throws IOException indicates an I/O exception occurred
      */
     public void init() throws IOException {
-        profiles = getProfiles(profileOffsets);
-        values = initGetValues();
-        deviceId = initGetDeviceId();
-
-        // Set the profile offsets to null as they're no longer
-        // needed and can be freed for garbage collection.
-        profileOffsets = null;
+        if (nodes == null)
+            nodes = getNodes();
+        if (profiles == null)
+            profiles = getProfiles();
+        if (values == null)
+            values = getValues();
+        if (deviceId == null)
+            deviceId = getDeviceId();
     }
 
     private String initGetDeviceId() throws IOException {
