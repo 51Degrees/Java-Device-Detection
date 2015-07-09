@@ -1,5 +1,11 @@
 package fiftyone.mobile.detection.entities.stream;
 
+import fiftyone.mobile.detection.IDisposable;
+import fiftyone.mobile.detection.readers.BinaryReader;
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.List;
+
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
  * Copyright 2014 51Degrees Mobile Experts Limited, 5 Charlotte Close,
@@ -23,7 +29,45 @@ package fiftyone.mobile.detection.entities.stream;
 /**
  * Providers the base for a data source containing the uncompressed data 
  * structures used by the data set.
+ * 
+ * Must be disposed to ensure that the readers are closed and any resources
+ * free for other uses.
  */
-public class SourceBase {
+public abstract class SourceBase implements IDisposable {
+
+    /**
+     * List of binary readers opened against the data source. 
+     */
+    private final List<BinaryReader> readers = new ArrayList<BinaryReader>();
     
+    /**
+     * Creates a new reader and stores a reference to it.
+     * @return A reader open for read access to the stream
+     */
+    public BinaryReader createReader() {
+        BinaryReader reader = new BinaryReader(createStream());
+        synchronized(this) {
+            readers.add(reader);
+        }
+        return reader;
+    }
+    
+    /**
+     * Releases the reference to memory and forces garbage collection.
+     */
+    @Override
+    public void dispose() {
+        synchronized(readers) {
+            for (BinaryReader br : readers) {
+                br.dispose();
+            }
+            readers.clear();
+        }
+    }
+    
+    /**
+     * Creates a new stream from the data source.
+     * @return A freshly opened stream to the data source.
+     */
+    public abstract ByteBuffer createStream();
 }
