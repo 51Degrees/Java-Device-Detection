@@ -54,7 +54,7 @@ public class CommonFactory {
         
         // Set the enum format version value for easier if logic.
         dataSet.versionEnum = DetectionConstants.
-                supportedPatternFormatVersions.getEnumIfExists(dataSet.version);
+                supportedPatternFormatVersions.getEnum(dataSet.version);
         
         // Read the common header fields.
         dataSet.tag = new Guid(reader.readBytes(16));
