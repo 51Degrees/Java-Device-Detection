@@ -59,4 +59,12 @@ public abstract class SourceFileBase extends SourceBase {
             } 
         }
     }
+    
+    /**
+     * Returns the file used to construct this Source.
+     * @return  the file used to construct this Source.
+     */
+    public File getFile() {
+        return fileInfo;
+    }
 }
