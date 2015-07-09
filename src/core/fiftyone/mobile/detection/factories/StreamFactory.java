@@ -5,6 +5,7 @@ import fiftyone.mobile.detection.entities.AsciiString;
 import fiftyone.mobile.detection.entities.Component;
 import fiftyone.mobile.detection.entities.IntegerEntity;
 import fiftyone.mobile.detection.entities.Map;
+import fiftyone.mobile.detection.entities.Modes;
 import fiftyone.mobile.detection.entities.Node;
 import fiftyone.mobile.detection.entities.Profile;
 import fiftyone.mobile.detection.entities.ProfileOffset;
@@ -66,7 +67,7 @@ public final class StreamFactory {
      * @throws IOException 
      */
     public static Dataset create(byte[] data) throws IOException {
-        Dataset dataSet = new Dataset(data);
+        Dataset dataSet = new Dataset(data, Modes.MEMORY_MAPPED);
         load(dataSet);
         return dataSet;
     }
@@ -97,7 +98,7 @@ public final class StreamFactory {
      */
     public static Dataset create(String filepath, Date lastModified) 
                                                         throws IOException {
-        Dataset dataSet = new Dataset(filepath, lastModified);
+        Dataset dataSet = new Dataset(filepath, lastModified, Modes.FILE);
         load(dataSet);
         return dataSet;
     }
@@ -120,111 +121,80 @@ public final class StreamFactory {
             CommonFactory.loadHeader(dataSet, reader);
             
             dataSet.strings = new StreamVariableList<AsciiString>(
-                                        dataSet, 
-                                        reader,
-                                        new AsciiStringFactory(), 
-                                        DetectionConstants.STRINGS_CACHE_SIZE);
+                    dataSet, reader, new AsciiStringFactory(), 
+                    DetectionConstants.STRINGS_CACHE_SIZE);
             
             MemoryFixedList<Component> components = null;
             switch (dataSet.versionEnum) {
                 case PatternV31:
                     components = new MemoryFixedList<Component>(
-                                        dataSet, 
-                                        reader, 
-                                        new ComponentFactoryV31());
+                            dataSet, reader, new ComponentFactoryV31());
                     break;
                 case PatternV32:
                     components = new MemoryFixedList<Component>(
-                                        dataSet, 
-                                        reader, 
-                                        new ComponentFactoryV32());
+                            dataSet, reader, new ComponentFactoryV32());
                     break;
             }
             dataSet.components = components;
             
             MemoryFixedList<Map> maps = new MemoryFixedList<Map>(
-                                        dataSet, 
-                                        reader, 
-                                        new MapFactory());
+                    dataSet, reader, new MapFactory());
             dataSet.maps = maps;
             
             PropertiesList properties = new PropertiesList(
-                                        dataSet, 
-                                        reader, 
-                                        new PropertyFactory());
+                    dataSet, reader, new PropertyFactory());
             dataSet.properties = properties;
             
             
             dataSet.values = new FixedCacheList<Value>(
-                                        dataSet, 
-                                        reader, 
-                                        new ValueFactory(), 
-                                        DetectionConstants.VALUES_CACHE_SIZE);
+                    dataSet, reader, new ValueFactory(), 
+                    DetectionConstants.VALUES_CACHE_SIZE);
             
             dataSet.profiles = new StreamVariableList<Profile>(
-                                        dataSet, 
-                                        reader,
-                                        new ProfileStreamFactory(dataSet.pool), 
-                                        DetectionConstants.PROFILE_CACHE_SIZE);
+                    dataSet, reader, new ProfileStreamFactory(dataSet.pool), 
+                    DetectionConstants.PROFILE_CACHE_SIZE);
             
             switch (dataSet.versionEnum) {
                 case PatternV31:
                     dataSet.signatures = new FixedCacheList<Signature>(
-                                        dataSet, 
-                                        reader, 
-                                        new SignatureFactoryV31(dataSet), 
-                                        DetectionConstants.SIGNATURES_CACHE_SIZE);
+                            dataSet, reader, new SignatureFactoryV31(dataSet), 
+                            DetectionConstants.SIGNATURES_CACHE_SIZE);
                 case PatternV32:
                     dataSet.signatures = new FixedCacheList<Signature>(
-                                        dataSet, 
-                                        reader, 
-                                        new SignatureFactoryV32(dataSet), 
-                                        DetectionConstants.SIGNATURES_CACHE_SIZE);
+                            dataSet, reader, new SignatureFactoryV32(dataSet), 
+                            DetectionConstants.SIGNATURES_CACHE_SIZE);
                     dataSet.signatureNodeOffsets = new StreamFixedList<IntegerEntity>(
-                                        dataSet, 
-                                        reader, 
-                                        new IntegerEntityFactory());
-                    dataSet.nodeRankedSignatureIndexes = 
-                            new StreamFixedList<IntegerEntity>(
-                                        dataSet, 
-                                        reader, 
-                                        new IntegerEntityFactory());
+                            dataSet, reader, new IntegerEntityFactory());
+                    dataSet.nodeRankedSignatureIndexes = new StreamFixedList<IntegerEntity>(
+                           dataSet, reader, new IntegerEntityFactory());
             }
             
             dataSet.rankedSignatureIndexes = new FixedCacheList<IntegerEntity>(
-                                        dataSet, 
-                                        reader, 
-                                        new IntegerEntityFactory(), 
-                                        DetectionConstants.RANKED_SIGNATURE_CACHE_SIZE);
+                    dataSet, reader, new IntegerEntityFactory(), 
+                    DetectionConstants.RANKED_SIGNATURE_CACHE_SIZE);
             
             switch (dataSet.versionEnum) {
                 case PatternV31:
                     dataSet.nodes = new StreamVariableList<Node>(
-                                        dataSet, 
-                                        reader, 
-                                        new NodeStreamFactoryV31(dataSet.pool), 
-                                        DetectionConstants.NODES_CACHE_SIZE);
+                            dataSet, reader, 
+                            new NodeStreamFactoryV31(dataSet.pool), 
+                            DetectionConstants.NODES_CACHE_SIZE);
                     break;
                 case PatternV32:
                     dataSet.nodes = new StreamVariableList<Node>(
-                                        dataSet, 
-                                        reader, 
-                                        new NodeStreamFactoryV32(dataSet.pool), 
-                                        DetectionConstants.NODES_CACHE_SIZE);
+                            dataSet, reader, 
+                            new NodeStreamFactoryV32(dataSet.pool), 
+                            DetectionConstants.NODES_CACHE_SIZE);
                     break;
             }
             
             
             MemoryFixedList<Node> rootNodes = new MemoryFixedList<Node>(
-                                        dataSet,
-                                        reader, 
-                                        new RootNodeFactory());
+                    dataSet, reader, new RootNodeFactory());
             dataSet.rootNodes = rootNodes;
             
             MemoryFixedList<ProfileOffset> profileOffsets = new MemoryFixedList<ProfileOffset>(
-                                        dataSet, 
-                                        reader, 
-                                        new ProfileOffsetFactory());
+                    dataSet, reader, new ProfileOffsetFactory());
              dataSet.profileOffsets = profileOffsets;
 
             //Read into memory all small lists which are frequently accessed.
