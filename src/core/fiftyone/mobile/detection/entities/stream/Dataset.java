@@ -1,5 +1,6 @@
 package fiftyone.mobile.detection.entities.stream;
 
+import fiftyone.mobile.detection.entities.Modes;
 import java.io.IOException;
 import java.util.Date;
 
@@ -25,8 +26,8 @@ import java.util.Date;
  * ********************************************************************* */
 /**
  * A data set returned from the stream factory which includes a pool of
- * data readers that are used to fetch data from the source when
- * the data set is used to retrieve data not already in memory.
+ * data readers that are used to fetch data from the source when the data 
+ * set is used to retrieve data not already in memory.
  */
 public class Dataset extends fiftyone.mobile.detection.Dataset {
     /**
@@ -37,13 +38,14 @@ public class Dataset extends fiftyone.mobile.detection.Dataset {
     /**
      * Creates a dataset object with a pool of readers used to retrieve data 
      * from the data file. Only useful in stram mode.
-     * @param lastModified
-     * @param fileName name of the file to read from.
+     * @param lastModified Date and time the source data was last modified.
+     * @param fileName Valid path to the uncompressed data set file.
+     * @param mode Mode The mode of operation the data set will be using.
      * @throws IOException 
      */
-    public Dataset(String fileName, Date lastModified) throws IOException {
-        super(lastModified);
-        this.pool = new Pool(new Source(fileName));
+    public Dataset(String fileName, Date lastModified, Modes mode) throws IOException {
+        super(lastModified, mode);
+        this.pool = new Pool(new SourceFile(fileName));
     }
     
     /**
@@ -51,11 +53,12 @@ public class Dataset extends fiftyone.mobile.detection.Dataset {
      * from the data file represented as an array of bytes. Only useful in 
      * stram mode.
      * @param data array of bytes to read from.
+     * @param mode The mode of operation the data set will be using.
      * @throws IOException 
      */
-    public Dataset(byte[] data) throws IOException {
-        super(new Date(Long.MIN_VALUE));
-        this.pool = new Pool(new Source(data));
+    public Dataset(byte[] data, Modes mode) throws IOException {
+        super(new Date(Long.MIN_VALUE), mode);
+        this.pool = new Pool(new SourceMemory(data));
     }
     
     /**
@@ -63,8 +66,21 @@ public class Dataset extends fiftyone.mobile.detection.Dataset {
      */
     @Override
     public void dispose() {
-        super.dispose();
         pool.dispose();
+        super.dispose();
     }
     
+    /**
+     * Resets the cache for the data set.
+     */
+    @Override
+    public void resetCache() {
+        super.resetCache();
+        ((ICacheList)super.signatures).resetCache();
+        ((ICacheList)super.nodes).resetCache();
+        ((ICacheList)super.strings).resetCache();
+        ((ICacheList)super.profiles).resetCache();
+        ((ICacheList)super.values).resetCache();
+        ((ICacheList)super.rankedSignatureIndexes).resetCache();
+    }
 }
