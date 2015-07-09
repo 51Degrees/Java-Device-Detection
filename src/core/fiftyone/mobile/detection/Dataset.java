@@ -902,4 +902,11 @@ public class Dataset implements IDisposable {
         }
         return -1;
     }
+    
+    /**
+     * If there are cached lists being used the states are reset for them.
+     */
+    public void resetCache() {
+        //Do nothing in this implementation.
+    }
 }
