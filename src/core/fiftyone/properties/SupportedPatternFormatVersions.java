@@ -47,7 +47,24 @@ public class SupportedPatternFormatVersions {
      * @return True if such Version object exists.
      */
     public boolean contains(Version version) {
-        return patternVersions.containsValue(version);
+        for (Entry entry : patternVersions.entrySet()) {
+            Version v = (Version)entry.getValue();
+            if (isSameVersion(v, version))
+                return true;
+        }
+        return false;
+    }
+    
+    /**
+     * Compare the two version objects. In order for the two versions to be the 
+     * same they must have the same value for each part of the version.
+     * @param one first Version object to compare to second.
+     * @param two second Version object to compare to first.
+     * @return True if all version parts match.
+     */
+    private boolean isSameVersion(Version one, Version two) {
+        return (one.build == two.build && one.major == two.major 
+                && one.minor == two.minor && one.revision == two.revision);
     }
     
     /**
@@ -70,7 +87,7 @@ public class SupportedPatternFormatVersions {
         if (contains(version)) {
             for (Entry entry : patternVersions.entrySet()) {
                 Version vT = (Version)entry.getValue();
-                if (vT == version)
+                if (isSameVersion(vT, version))
                     return (DetectionConstants.FORMAT_VERSIONS)entry.getKey();
             }
         }
