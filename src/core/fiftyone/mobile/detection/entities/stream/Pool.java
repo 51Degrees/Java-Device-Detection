@@ -29,31 +29,36 @@ import java.util.concurrent.LinkedBlockingDeque;
 /**
  * As multiple threads need to read from the Source concurrently this class
  * provides a mechanism for readers to be recycled across threads and requests.
- * <p> Used by the BaseList of type T to provide multiple readers for the list. <p> The
- * DetectorDataSet must be disposed of to ensure the readers in the pool are
- * closed.
+ * 
+ * Used by the BaseList of type T to provide multiple readers for the list.
+ * 
+ * The DetectorDataSet must be disposed of to ensure the readers in the pool 
+ * are closed.
  */
 public class Pool implements IDisposable {
 
-    // List of readers available to be used.
+    /**
+     * List of readers available to be used.
+     */
     private final Queue<BinaryReader> readers = new LinkedBlockingDeque<BinaryReader>();
-    // A pool of file readers to use to read data from the file.
-    private final Source source;
+    /**
+     * A pool of file readers to use to read data from the file.
+     */
+    private final SourceBase source;
 
     /**
-     * Constructs a new pool of readers for the source provided.
-     *
+     * Constructs a new pool of readers for the SourceBase provided.
      * @param source The data source for the list
      */
-    Pool(Source source) {
+    Pool(SourceBase source) {
         this.source = source;
     }
 
     /**
      * Returns a reader to the temp file for exclusive use. Release method must
      * be called to return the reader to the pool when finished.
-     *
      * @return Reader open and ready to read from the temp file
+     * @throws java.io.IOException
      */
     public BinaryReader getReader() throws IOException {
         BinaryReader reader = readers.poll();
@@ -65,7 +70,6 @@ public class Pool implements IDisposable {
 
     /**
      * Returns the reader to the pool to be used by another process later.
-     *
      * @param reader Reader open and ready to read from the temp file
      */
     public void release(BinaryReader reader) {
@@ -74,6 +78,9 @@ public class Pool implements IDisposable {
         }
     }
 
+    /**
+     * Disposes of the source ensuring all the readers are also closed.
+     */
     @Override
     public void dispose() {
         for(BinaryReader reader : readers)
