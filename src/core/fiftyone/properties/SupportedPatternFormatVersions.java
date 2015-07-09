@@ -76,4 +76,20 @@ public class SupportedPatternFormatVersions {
         }
         return null;
     }
+    
+    /**
+     * Converts the list to string.
+     * @return List as string.
+     */
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        for (Entry entry : patternVersions.entrySet()) {
+            sb.append(entry.getKey().toString());
+            sb.append(": ");
+            sb.append(entry.getValue().toString());
+            sb.append(" ");
+        }
+        return sb.toString();
+    }
 }
