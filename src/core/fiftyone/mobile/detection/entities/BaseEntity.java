@@ -50,7 +50,7 @@ public class BaseEntity {
      * The unique index of the item in the collection of items, or the unique
      * offset to the item in the source data structure.
      */
-    private final int index;
+    public final int index;
 
     /**
      * An enumerable that can be used to read through the entries.
