@@ -44,16 +44,12 @@ public class DetectionConstants {
          */
         TrieV30
     }
+    
     /**
-     * An array of pattern format versions that this API will support.
+     * 
      */
-    public static final KeyValuePair supportedPatternFormatVersions = 
-            new KeyValuePair("pattern");
-    /**
-     * An array of trie format versions that this API will support.
-     */
-    public static final KeyValuePair supportedTrieFormatVersions = 
-            new KeyValuePair("trie");
+    public static final SupportedPatternFormatVersions 
+            supportedPatternFormatVersions = new SupportedPatternFormatVersions();
     
     /**
      * The format version of the binary data contained in the file header. This
