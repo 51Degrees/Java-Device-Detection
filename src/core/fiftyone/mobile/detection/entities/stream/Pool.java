@@ -5,6 +5,7 @@ import fiftyone.mobile.detection.readers.BinaryReader;
 import java.io.IOException;
 import java.util.Queue;
 import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
@@ -45,6 +46,11 @@ public class Pool implements IDisposable {
      * A pool of file readers to use to read data from the file.
      */
     private final SourceBase source;
+    /**
+     * The number of readers that have been created. May not be the same as 
+     * the readers in the queue as some may be in use.
+     */
+    private AtomicInteger readerCount;
 
     /**
      * Constructs a new pool of readers for the SourceBase provided.
@@ -52,6 +58,7 @@ public class Pool implements IDisposable {
      */
     Pool(SourceBase source) {
         this.source = source;
+        this.readerCount = new AtomicInteger(0);
     }
 
     /**
@@ -61,11 +68,12 @@ public class Pool implements IDisposable {
      * @throws java.io.IOException
      */
     public BinaryReader getReader() throws IOException {
-        BinaryReader reader = readers.poll();
-        if (reader == null) {
-            reader = source.createReader();
+        synchronized(readers) {
+            if (!readers.isEmpty())
+                return readers.poll();
         }
-        return reader;
+        readerCount.incrementAndGet();
+        return source.createReader();
     }
 
     /**
@@ -83,10 +91,24 @@ public class Pool implements IDisposable {
      */
     @Override
     public void dispose() {
-        for(BinaryReader reader : readers)
-        {
-            reader.dispose();
-        }
+        readers.clear();
         source.dispose();
+    }
+    
+    /**
+     * The number of readers that have been created. May not be the same as 
+     * the readers in the queue as some may be in use.
+     * @return The number of readers that have been created.
+     */
+    public int getReaderCount() {
+        return readerCount.intValue();
+    }
+    
+    /**
+     * Returns The number of readers in the queue.
+     * @return The number of readers in the queue.
+     */
+    public int readersQueued() {
+        return readers.size();
     }
 }
