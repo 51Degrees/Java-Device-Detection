@@ -33,7 +33,7 @@ import java.io.IOException;
 public class SignatureFactoryV31 extends BaseEntityFactory<Signature>{
     
     /**
-     * >Length of the signature in bytes.
+     * Length of the signature in bytes.
      */
     private final int recordLength;
     
@@ -43,8 +43,8 @@ public class SignatureFactoryV31 extends BaseEntityFactory<Signature>{
      */
     public SignatureFactoryV31(Dataset dataSet) {
         recordLength = 
-            (dataSet.signatureProfilesCount * DetectionConstants.SIZE_OF_INT +
-             dataSet.signatureNodesCount * DetectionConstants.SIZE_OF_INT);
+            (dataSet.signatureProfilesCount * DetectionConstants.SIZE_OF_INT) +
+             (dataSet.signatureNodesCount * DetectionConstants.SIZE_OF_INT);
     }
     
     /**
