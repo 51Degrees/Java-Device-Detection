@@ -51,7 +51,7 @@ public class Command {
 
         // Set this parameter to the data set file name.
         String patternFileName = args.length > 0 ? args[0] : "../../data/51Degrees-LiteV3.1.dat";
-        String trieFileName = args.length > 1 ? args[1]: "../../data/51Degrees-LiteV3.2.trie";
+        String trieFileName = args.length > 1 ? args[1]: "../../data/51Degrees-LiteV3.0.trie";
         
         TrieProvider t = null;
         Provider p;
@@ -70,7 +70,7 @@ public class Command {
         }
         
         if (new File(trieFileName).exists()) {
-            // t = TrieFactory.create(trieFileName);
+            t = TrieFactory.create(trieFileName);
         } else {
             // Uses the free "Lite" data embedded in the Core package 
             // as the dataset. Additional data sets can be purchased
@@ -108,6 +108,9 @@ public class Command {
             System.out.printf("Closest Sub Strings\t%s\r\n", patternMatch.getUserAgent());
             System.out.printf("Difference\t\t%d\r\n", patternMatch.getDifference());
             System.out.printf("Method\t\t\t%s\r\n", patternMatch.method.toString());
+            if (patternMatch.getSignature() != null) {
+                System.out.printf("Signature Rank:\t\t%d\r\n", patternMatch.getSignature().getRank());
+            }
             System.out.printf("Root Nodes Evaluated\t%d\r\n", patternMatch.getRootNodesEvaluated());
             System.out.printf("Nodes Evaluated\t\t%d\r\n", patternMatch.getNodesEvaluated());
             System.out.printf("Strings Read\t\t%d\r\n", patternMatch.getStringsRead());
