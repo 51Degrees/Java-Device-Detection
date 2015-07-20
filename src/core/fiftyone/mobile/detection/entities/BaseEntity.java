@@ -1,7 +1,6 @@
 package fiftyone.mobile.detection.entities;
 
 import fiftyone.mobile.detection.Dataset;
-import fiftyone.mobile.detection.factories.IEnumerableFactory;
 import fiftyone.mobile.detection.readers.BinaryReader;
 
 /* *********************************************************************
@@ -52,18 +51,6 @@ public class BaseEntity {
      */
     public final int index;
 
-    /**
-     * An enumerable that can be used to read through the entries.
-     * @param reader Reader set to the position at the start of the list.
-     * @param count The number of integers to read to form the array.
-     * @return Iterator to read each integer entry.
-     */
-    public static Enumerable getIntegerEnumerator(
-            BinaryReader reader, int count) {
-        Enumerable ie = IEnumerableFactory.create(reader, count);
-        return ie;
-    }
-    
     /**
      * Determines if the value is an ASCII numeric value.
      * @param value Byte value to be checked.
