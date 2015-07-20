@@ -229,9 +229,9 @@ public abstract class Signature extends BaseEntity implements Comparable<Signatu
      * @throws java.io.IOException
      */
     protected Node[] doGetNodes() throws IOException {
-        Node[] nodesLocal = new Node[nodeOffsets.length];
-        for (int i = 0; i < nodeOffsets.length; i++) {
-            nodesLocal[i] = dataSet.nodes.get(nodeOffsets[i]);
+        Node[] nodesLocal = new Node[getNodeOffsets().length];
+        for (int i = 0; i < getNodeOffsets().length; i++) {
+            nodesLocal[i] = dataSet.nodes.get(getNodeOffsets()[i]);
         }
         return nodesLocal;
     }
@@ -366,19 +366,19 @@ public abstract class Signature extends BaseEntity implements Comparable<Signatu
      * @return Indication of relative value based on the node offsets
      */
     public int compareTo(List<Node> nodes) {
-        int length = Math.min(this.nodeOffsets.length, nodes.size());
+        int length = Math.min(getNodeOffsets().length, nodes.size());
 
         for (int i = 0; i < length; i++) {
-            int difference = this.nodeOffsets[i] - nodes.get(i).getIndex();
+            int difference = getNodeOffsets()[i] - nodes.get(i).getIndex();
             if (difference != 0) {
                 return difference;
             }
         }
 
-        if (this.nodeOffsets.length < nodes.size()) {
+        if (getNodeOffsets().length < nodes.size()) {
             return -1;
         }
-        if (this.nodeOffsets.length > nodes.size()) {
+        if (getNodeOffsets().length > nodes.size()) {
             return 1;
         }
 
@@ -394,19 +394,19 @@ public abstract class Signature extends BaseEntity implements Comparable<Signatu
      */
     @Override
     public int compareTo(Signature other) {
-        int length = Math.min(nodeOffsets.length, other.nodeOffsets.length);
+        int length = Math.min(getNodeOffsets().length, other.getNodeOffsets().length);
 
         for (int i = 0; i < length; i++) {
-            int difference = nodeOffsets[i] - other.nodeOffsets[i];
+            int difference = getNodeOffsets()[i] - other.getNodeOffsets()[i];
             if (difference != 0) {
                 return difference;
             }
         }
 
-        if (nodeOffsets.length < other.nodeOffsets.length) {
+        if (getNodeOffsets().length < other.getNodeOffsets().length) {
             return -1;
         }
-        if (nodeOffsets.length > other.nodeOffsets.length) {
+        if (getNodeOffsets().length > other.getNodeOffsets().length) {
             return 1;
         }
 
