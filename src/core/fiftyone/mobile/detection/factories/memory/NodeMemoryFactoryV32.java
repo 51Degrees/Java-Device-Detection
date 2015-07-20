@@ -53,15 +53,7 @@ public class NodeMemoryFactoryV32 extends NodeFactory {
      */
     @Override
     public int getLength(fiftyone.mobile.detection.entities.Node entity) {
-        return getBaseLength() +
-                // Length of the ranked signatures count number.
-                DetectionConstants.SIZE_OF_USHORT +
-                (entity.getChildrenLength() * 
-                        NodeFactoryShared.getNodeIndexLengthV32()) +
-                (entity.getNumericChildrenLength() * 
-                        getNodeNumericIndexLength()) +
-                //entity.RankedSignatureCount == 0 ? 0 : sizeof(int)
-                (entity.signatureIndexes.length == 
-                        0 ? 0 : DetectionConstants.SIZE_OF_INT );
+        return getBaseLength() + DetectionConstants.SIZE_OF_USHORT + (entity.getChildrenLength() * NodeFactoryShared.getNodeIndexLengthV32()) + (entity.getNumericChildrenLength() * getNodeNumericIndexLength()) + (entity.getRankedSignatureIndexes().length == 0 ? 0 : DetectionConstants.SIZE_OF_INT );
+        //return getBaseLength() + DetectionConstants.SIZE_OF_USHORT + (entity.getChildrenLength() * NodeFactoryShared.getNodeIndexLengthV32()) + (entity.getNumericChildrenLength() * getNodeNumericIndexLength()) + (entity.signatureIndexes.length == 0 ? 0 : DetectionConstants.SIZE_OF_INT );
     }
 }
