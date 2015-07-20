@@ -124,7 +124,7 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
     /**
      * Number of ranked signature indexes associated with the node.
      */
-    protected int rankedSignatureCount;
+    protected final int rankedSignatureCount;
     /**
      * Parent node for this node.
      */

@@ -26,6 +26,7 @@ import java.util.logging.Logger;
  * This Source Code Form is “Incompatible With Secondary Licenses”, as
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
+
 /**
  * Signature of a user agent in version 3.1 data format.
  */
@@ -50,7 +51,7 @@ public class SignatureV31 extends Signature {
      */
     public SignatureV31(Dataset ds, int index, BinaryReader reader) {
         super(ds, index, reader);
-        nodeOffsets = ReadOffsets(ds, reader, ds.signatureNodesCount);
+        nodeOffsets = readOffsets(ds, reader, ds.signatureNodesCount);
     }
 
     /**

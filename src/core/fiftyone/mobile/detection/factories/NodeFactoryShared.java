@@ -125,7 +125,7 @@ public class NodeFactoryShared {
      */
     private static byte[] readValue(BinaryReader reader, boolean isString) {
         byte[] byteValue = reader.readBytes(DetectionConstants.SIZE_OF_INT);
-        if (!isString) {
+        if (isString == false) {
             int i;
             for (i = 0; i < byteValue.length; i++)
                 if (byteValue[i] == 0) break;
@@ -133,7 +133,6 @@ public class NodeFactoryShared {
             byte[] tempValue = new byte[i];
             System.arraycopy(byteValue, 0, tempValue, 0, i);
             byteValue = tempValue;
-            tempValue = null;
         }
         return byteValue;
     }
