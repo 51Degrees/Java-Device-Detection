@@ -3,10 +3,10 @@ package fiftyone.mobile.detection.entities.memory;
 import fiftyone.mobile.detection.Dataset;
 import fiftyone.mobile.detection.IFixedList;
 import fiftyone.mobile.detection.entities.BaseEntity;
-import fiftyone.mobile.detection.entities.IEnumerable;
 import fiftyone.mobile.detection.factories.BaseEntityFactory;
 import fiftyone.mobile.detection.readers.BinaryReader;
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -91,39 +91,13 @@ public class MemoryFixedList<T extends BaseEntity> extends MemoryBaseList<T>
     }
 
     /**
-     * Not supported.
-     * @return nothing.
-     */
-    @Override
-    public boolean hasNext() {
-        throw new UnsupportedOperationException("Not supported."); 
-    }
-
-    /**
-     * Not supported.
-     * @return nothing.
-     */
-    @Override
-    public T next() {
-        throw new UnsupportedOperationException("Not supported.");
-    }
-
-    /**
-     * Not supported.
-     */
-    @Override
-    public void remove() {
-        throw new UnsupportedOperationException("Not supported.");
-    }
-
-    /**
      * Returns the MemoryFixedListIterator for specific range.
      * @param index start at this element.
      * @param count finish at this element.
      * @return the MemoryFixedListIterator for specific range.
      */
     @Override
-    public IEnumerable<T> getRange(int index, int count) {
+    public Iterator<T> getRange(int index, int count) {
         return new MemoryFixedListIterator<T>(this, index, count);
     }
 }
