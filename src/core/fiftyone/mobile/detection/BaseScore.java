@@ -90,15 +90,15 @@ abstract class BaseScore {
         int matchNodeIndex = 0;
         int signatureNodeIndex = 0;
 
-        while (signatureNodeIndex < signature.nodeOffsets.length
+        while (signatureNodeIndex < signature.getNodeOffsets().length
                 && runningScore < match.getLowestScore()) {
             int matchNodeOffset = matchNodeIndex >= match.getNodes().size() ? Integer.MAX_VALUE : match.getNodes().get(matchNodeIndex).getIndex();
-            int signatureNodeOffset = signature.nodeOffsets[signatureNodeIndex];
+            int signatureNodeOffset = signature.getNodeOffsets()[signatureNodeIndex];
             if (matchNodeOffset > signatureNodeOffset) {
                 // The matched node is either not available, or is higher than
                 // the current signature node. The signature node is not contained
                 // in the match so we must score it.
-                int score = getScore(match, match.getDataSet().nodes.get(signature.nodeOffsets[signatureNodeIndex]));
+                int score = getScore(match, match.getDataSet().nodes.get(signature.getNodeOffsets()[signatureNodeIndex]));
 
                 // If the score is less than zero then a score could not be 
                 // determined and the signature can't be compared to the target
