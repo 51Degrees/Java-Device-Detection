@@ -544,19 +544,12 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
      */
     public void addCharacters(byte[] values) throws IOException {
         if (getParent() != null) {
-            byte[] characters = null;
-            for (NodeIndex child : getParent().children) {
-                if (child.relatedNodeOffset == getIndex()) {
-                    characters = child.getCharacters();
-                    break;
-                }
-            }
-
+            byte[] nodeCharacters = this.characters == null ?
+                    this.dataSet.strings.get(this.characterStringOffset).value :
+                    this.getCharacters();
             for (int i = 0; i < getLength(); i++) {
-                values[position + i + 1] = characters[i];
+                values[position + i + 1] = nodeCharacters[i];
             }
-
-            getParent().addCharacters(values);
         }
     }
 
