@@ -7,6 +7,7 @@ import fiftyone.mobile.detection.factories.NodeFactoryShared;
 import fiftyone.mobile.detection.readers.BinaryReader;
 import fiftyone.properties.DetectionConstants;
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -110,21 +111,15 @@ public class NodeV32 extends Node {
                     // If the count is greater than one then the value is the 
                     // index of the first ranked signature index in the merged 
                     // list.
-                    Iterable<IntegerEntity> range = 
+                    Iterator<IntegerEntity> range = 
                             dataSet.getNodeRankedSignatureIndexes()
                                     .getRange(index, signatureCount);
                     
-                    //Determine the number of elements in the rsi array.
-                    int arraySize = 0;
-                    while (range.iterator().hasNext()) {
-                        arraySize++;
-                    }
-                    
                     //Fill the array with values.
                     int currentIndex = 0;
-                    rsi = new int[arraySize];
-                    while (range.iterator().hasNext()) {
-                        IntegerEntity ie = range.iterator().next();
+                    rsi = new int[signatureCount];
+                    while (range.hasNext()) {
+                        IntegerEntity ie = range.next();
                         rsi[currentIndex] = ie.getValue();
                         currentIndex++;
                     }
