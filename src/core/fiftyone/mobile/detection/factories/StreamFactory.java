@@ -21,6 +21,7 @@ import fiftyone.mobile.detection.factories.stream.NodeStreamFactoryV32;
 import fiftyone.mobile.detection.factories.stream.ProfileStreamFactory;
 import fiftyone.mobile.detection.readers.BinaryReader;
 import fiftyone.properties.DetectionConstants;
+import java.io.Console;
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
@@ -140,11 +141,10 @@ public final class StreamFactory {
             MemoryFixedList<Map> maps = new MemoryFixedList<Map>(
                     dataSet, reader, new MapFactory());
             dataSet.maps = maps;
-            
+                      
             PropertiesList properties = new PropertiesList(
                     dataSet, reader, new PropertyFactory());
-            dataSet.properties = properties;
-            
+            dataSet.properties = properties; 
             
             dataSet.values = new FixedCacheList<Value>(
                     dataSet, reader, new ValueFactory(), 
@@ -159,6 +159,7 @@ public final class StreamFactory {
                     dataSet.signatures = new FixedCacheList<Signature>(
                             dataSet, reader, new SignatureFactoryV31(dataSet), 
                             DetectionConstants.SIGNATURES_CACHE_SIZE);
+                    break;
                 case PatternV32:
                     dataSet.signatures = new FixedCacheList<Signature>(
                             dataSet, reader, new SignatureFactoryV32(dataSet), 
@@ -167,6 +168,7 @@ public final class StreamFactory {
                             dataSet, reader, new IntegerEntityFactory());
                     dataSet.nodeRankedSignatureIndexes = new StreamFixedList<IntegerEntity>(
                            dataSet, reader, new IntegerEntityFactory());
+                    break;
             }
             
             dataSet.rankedSignatureIndexes = new FixedCacheList<IntegerEntity>(
@@ -188,7 +190,6 @@ public final class StreamFactory {
                     break;
             }
             
-            
             MemoryFixedList<Node> rootNodes = new MemoryFixedList<Node>(
                     dataSet, reader, new RootNodeFactory());
             dataSet.rootNodes = rootNodes;
@@ -196,7 +197,7 @@ public final class StreamFactory {
             MemoryFixedList<ProfileOffset> profileOffsets = new MemoryFixedList<ProfileOffset>(
                     dataSet, reader, new ProfileOffsetFactory());
              dataSet.profileOffsets = profileOffsets;
-
+             
             //Read into memory all small lists which are frequently accessed.
             reader.setPos(components.header.getStartPosition());
             components.read(reader);
@@ -208,6 +209,7 @@ public final class StreamFactory {
             rootNodes.read(reader);
             reader.setPos(profileOffsets.header.getStartPosition());
             profileOffsets.read(reader);
+            
         } finally {
             if (reader != null)
                 dataSet.pool.release(reader);
