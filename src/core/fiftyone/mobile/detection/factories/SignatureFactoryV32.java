@@ -40,7 +40,8 @@ public class SignatureFactoryV32 extends BaseEntityFactory<Signature> {
     private static final int NODES_LENGTH = 
             DetectionConstants.SIZE_OF_BYTE +
             DetectionConstants.SIZE_OF_INT +
-            DetectionConstants.SIZE_OF_INT;
+            DetectionConstants.SIZE_OF_INT +
+            DetectionConstants.SIZE_OF_BYTE;
     
     /**
      * Length of the signature in bytes.
