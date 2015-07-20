@@ -50,8 +50,8 @@ public class Command {
     public static void main(String[] args) throws IOException, AutoUpdateException, Exception {
 
         // Set this parameter to the data set file name.
-        String patternFileName = args.length > 0 ? args[0] : "";
-        String trieFileName = args.length > 1 ? args[1]: "";
+        String patternFileName = args.length > 0 ? args[0] : "../../data/51Degrees-LiteV3.1.dat";
+        String trieFileName = args.length > 1 ? args[1]: "../../data/51Degrees-LiteV3.2.trie";
         
         TrieProvider t = null;
         Provider p;
@@ -65,11 +65,18 @@ public class Command {
             // Uses the free "Lite" data embedded in the Core package 
             // as the dataset. Additional data sets can be purchased
             // from http://51degrees.com/products/store
-            p = new Provider();
+            throw new IOException(String.format(
+                    "File '%s' data file can't be found.", patternFileName));
         }
         
         if (new File(trieFileName).exists()) {
-            t = TrieFactory.create(trieFileName);
+            // t = TrieFactory.create(trieFileName);
+        } else {
+            // Uses the free "Lite" data embedded in the Core package 
+            // as the dataset. Additional data sets can be purchased
+            // from http://51degrees.com/products/store
+            throw new IOException(String.format(
+                    "File '%s' data file can't be found.", trieFileName));
         }
         
         System.out.println("\t\t\t*** Data Set Information ***");
