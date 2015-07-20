@@ -2,8 +2,8 @@ package fiftyone.mobile.detection.entities.memory;
 
 import fiftyone.mobile.detection.Dataset;
 import fiftyone.mobile.detection.IDisposable;
+import fiftyone.mobile.detection.IReadonlyList;
 import fiftyone.mobile.detection.entities.BaseEntity;
-import fiftyone.mobile.detection.entities.IEnumerable;
 import fiftyone.mobile.detection.entities.headers.Header;
 import fiftyone.mobile.detection.factories.BaseEntityFactory;
 import fiftyone.mobile.detection.readers.BinaryReader;
@@ -49,7 +49,7 @@ import java.util.List;
  * @param <T> The type the list will contain.
  */
 public abstract class MemoryBaseList<T extends BaseEntity> implements
-                                            IEnumerable<T>, IDisposable {
+                                            IReadonlyList<T>, IDisposable {
 
     /**
      * Array of items contained in the list.
@@ -80,10 +80,11 @@ public abstract class MemoryBaseList<T extends BaseEntity> implements
      */
     MemoryBaseList(Dataset dataSet, BinaryReader reader,
                                     BaseEntityFactory<T> entityFactory) {
+        this.header = new Header(reader);
+        int count = this.header.getCount();
+        this.array = new ArrayList<T>(count);
         this.dataSet = dataSet;
         this.entityFactory = entityFactory;
-        this.header = new Header(reader);
-        this.array = new ArrayList<T>(header.getCount());
     }
 
     /**
@@ -107,6 +108,7 @@ public abstract class MemoryBaseList<T extends BaseEntity> implements
      * Returns The number of entities the list contains.
      * @return The number of entities the list contains.
      */
+    @Override
     public int size() {
         return array.size();
     }
