@@ -13,3 +13,8 @@
 /Netbeans/Servlets/dist/
 /Netbeans/WebSite/build/
 /Netbeans/WebSite/dist/
+/Netbeans/Console/build/
+*Enterprise*
+*Premium*
+*.lic
+*.pfk
