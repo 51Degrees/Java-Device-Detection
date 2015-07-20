@@ -121,10 +121,10 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
      * or target user agent.
      */
     public final short position;
-    
-    //TODO: verify
-    //Same as ranked signature count
-    protected int signatureCount;
+    /**
+     * Number of ranked signature indexes associated with the node.
+     */
+    protected int rankedSignatureCount;
     /**
      * Parent node for this node.
      */
@@ -151,8 +151,7 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
         //childrenCount only used in the constructor.
         short childrenCount = reader.readInt16();
         this.numericChildrenCount = reader.readInt16();
-        //TODO: Refactor signatureCount to rankedSignatureCount.
-        this.signatureCount = readerRankedSignatureCount(reader);
+        this.rankedSignatureCount = readerRankedSignatureCount(reader);
         this.children = readNodeIndexes(dataSet, reader, 
             (int)(offset + reader.getPos() - readerPosition), childrenCount);
     }
