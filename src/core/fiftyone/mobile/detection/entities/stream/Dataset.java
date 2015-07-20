@@ -45,7 +45,7 @@ public class Dataset extends fiftyone.mobile.detection.Dataset {
      */
     public Dataset(String fileName, Date lastModified, Modes mode) throws IOException {
         super(lastModified, mode);
-        this.pool = new Pool(new SourceFile(fileName));
+        this.pool = new Pool(new SourceFile(fileName, false));
     }
     
     /**
