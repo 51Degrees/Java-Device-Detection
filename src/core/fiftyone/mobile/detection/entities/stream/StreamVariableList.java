@@ -82,56 +82,14 @@ public class StreamVariableList<T extends BaseEntity> extends StreamCacheList<T>
         reader.setPos(header.getStartPosition() + offset);
         return entityFactory.create(dataSet, offset, reader);
     }
-    
-    /**
-     * Returns the iterator that can be used to get the next() and hasNext();
-     * @return iterator for the variable stream list.
-     */
-    @Override
-    public Iterator<T> iterator() {
-        return new StreamVariableListIterator<T>(this);
-    }
 
-    /**
-     * Another method to access the iterator for this list. Added for the 
-     * purpose of making the API as close to the C# foundation API as possible.
-     * @return returns an iterator over this list.
-     */
-    public Iterator<T> getEnumerable() {
-        return iterator();
-    }
-    
-    /**
-     * Not supported.
-     */
     @Override
     public void dispose() {
-        throw new UnsupportedOperationException("Not supported.");
+        // Nothing to do.
     }
 
-    /**
-     * Not supported.
-     * @return nothing.
-     */
     @Override
-    public boolean hasNext() {
-        throw new UnsupportedOperationException("Not supported.");
-    }
-
-    /**
-     * Not supported.
-     * @return nothing.
-     */
-    @Override
-    public T next() {
-        throw new UnsupportedOperationException("Not supported.");
-    }
-
-    /**
-     * Not supported.
-     */
-    @Override
-    public void remove() {
-        throw new UnsupportedOperationException("Not supported.");
+    public Iterator<T> iterator() {
+        return new StreamVariableListIterator(this);
     }
 }
