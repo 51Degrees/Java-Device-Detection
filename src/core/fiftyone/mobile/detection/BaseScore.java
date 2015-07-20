@@ -56,7 +56,7 @@ abstract class BaseScore {
                 && count < match.getDataSet().maxSignatures) {
             rankedSignatureIndex = closestSignatures.next();
             signatureIndex = match.getDataSet().rankedSignatureIndexes.get(
-                    rankedSignatureIndex).getIndex();
+                    rankedSignatureIndex).getValue();
             evaluateSignature(
                     match,
                     match.getDataSet().signatures.get(signatureIndex),

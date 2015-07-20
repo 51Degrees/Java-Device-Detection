@@ -98,7 +98,7 @@ public abstract class Signature extends BaseEntity implements Comparable<Signatu
      */
     public Signature(Dataset dataSet, int index, BinaryReader reader) {
         super(dataSet, index);
-        profileOffsets = ReadOffsets(dataSet, reader, dataSet.signatureProfilesCount);
+        profileOffsets = readOffsets(dataSet, reader, dataSet.signatureProfilesCount);
         this.nodes = null;
         this.profiles = null;
         this.nameToValues = null;
@@ -256,7 +256,7 @@ public abstract class Signature extends BaseEntity implements Comparable<Signatu
      * @param length The number of offsets to read in
      * @return An array of the offsets as integers read from the reader
      */
-    public int[] ReadOffsets(Dataset dataSet, BinaryReader reader, int length) {
+    protected int[] readOffsets(Dataset dataSet, BinaryReader reader, int length) {
         reader.list.clear();
         for (int i = 0; i < length; i++) {
             int profileIndex = reader.readInt32();
@@ -426,7 +426,7 @@ public abstract class Signature extends BaseEntity implements Comparable<Signatu
                         }
                         stringValue = new String(buffer, "US-ASCII");
                     } catch (IOException e) {
-                        return super.toString();
+                        return e.getMessage();
                     }
                 }
             }
