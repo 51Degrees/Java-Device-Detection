@@ -203,8 +203,7 @@ public class Controller {
             match.rootNodesEvaluated++;
 
             // See if a leaf node will match from this list.
-            Node node = match.getDataSet().rootNodes.get(match.nextCharacterPositionIndex).
-                    getCompleteNode(match);
+            Node node = match.getDataSet().rootNodes.get(match.nextCharacterPositionIndex).getCompleteNode(match);
 
             if (node != null) {
                 match.getNodes().add(0, node);

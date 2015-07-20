@@ -1,7 +1,8 @@
 package fiftyone.mobile.detection;
 
 import fiftyone.mobile.detection.entities.BaseEntity;
-import fiftyone.mobile.detection.entities.IEnumerable;
+import java.io.IOException;
+import java.util.Iterator;
 
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
@@ -28,8 +29,7 @@ import fiftyone.mobile.detection.entities.IEnumerable;
  * a ranged enumerable.
  * @param <T> Type of entity the list contains.
  */
-public interface IFixedList<T extends BaseEntity> 
-                                        extends IReadonlyList<T> {
+public interface IFixedList<T extends BaseEntity> extends IReadonlyList<T> {
     /**
      * Returns an enumerable starting at the index provided until count number 
      * of iterations have been performed.
@@ -37,5 +37,5 @@ public interface IFixedList<T extends BaseEntity>
      * @param count Number of iterations to perform.
      * @return An enumerable to iterate over the range specified.
      */
-    public abstract IEnumerable<T> getRange(int index, int count);
+    public abstract Iterator<T> getRange(int index, int count) throws IOException;
 }
