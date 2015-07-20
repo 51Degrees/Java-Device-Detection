@@ -4,6 +4,7 @@ import fiftyone.mobile.detection.Dataset;
 import fiftyone.mobile.detection.readers.BinaryReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -86,22 +87,24 @@ public class SignatureV32 extends Signature {
      * offset of the node.
      * @return List of the node offsets the signature relates to ordered by 
      * offset of the node.
+     * @throws java.io.IOException
      */
     @Override
     public int[] getNodeOffsets() {
         if (this.nodeOffsets == null) {
             synchronized(this) {
                 if (this.nodeOffsets == null) {
-                    List<IntegerEntity> tempList = new ArrayList<IntegerEntity>();
-                    for (IntegerEntity ie : dataSet.signatureNodeOffsets
-                                .getRange(firstNodeOffsetIndex, nodeCount)) {
-                        tempList.add(ie);
+                    int[] nodeOffsets = new int[nodeCount];
+                    try {
+                        Iterator<IntegerEntity> iterator = dataSet.signatureNodeOffsets.getRange(   
+                                    firstNodeOffsetIndex, nodeCount);
+                        for (int i = 0; i < nodeCount; i++) {
+                            nodeOffsets[i] = iterator.next().value;
+                        }
+                    } catch (IOException ex) {
+                        Logger.getLogger(SignatureV32.class.getName()).log(Level.SEVERE, null, ex);
                     }
-                    this.nodeOffsets = new int[tempList.size()];
-                    for (int i = 0; i < tempList.size(); i++) {
-                        this.nodeOffsets[i] = tempList.get(i).value;
-                    }
-                    tempList.clear();
+                    this.nodeOffsets = nodeOffsets;
                 }
             }
         }
