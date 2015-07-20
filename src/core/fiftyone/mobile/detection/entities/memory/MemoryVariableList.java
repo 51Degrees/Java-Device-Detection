@@ -51,8 +51,8 @@ import java.util.logging.Logger;
  *
  * @param <T> The type of BaseEntity the list will contain
  */
-public class MemoryVariableList<T extends BaseEntity> extends MemoryBaseList<T> 
-                                                    implements IReadonlyList<T>{
+public class MemoryVariableList<T extends BaseEntity> extends 
+        MemoryBaseList<T> {
 
     /**
      * Constructs a new instance of VariableList of type T
@@ -75,15 +75,15 @@ public class MemoryVariableList<T extends BaseEntity> extends MemoryBaseList<T>
      */
     @Override
     public void read(BinaryReader reader) {
+        int offset = 0;
         try {
-            for (int index = 0, offset = 0; index < header.getCount(); index++) {
-                T entity = entityFactory.create(dataSet, offset, reader);
-                array.add(index, entity);
+            for (int index = 0; index < header.getCount(); index++) {
+                T entity = (T)entityFactory.create(dataSet, offset, reader);
+                super.array.add(entity);
                 offset += entityFactory.getLength(entity);
             }
         } catch (IOException ex) {
-            Logger.getLogger(MemoryVariableList.class.getName())
-                                               .log(Level.SEVERE, null, ex);
+            Logger.getLogger(MemoryVariableList.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -96,8 +96,12 @@ public class MemoryVariableList<T extends BaseEntity> extends MemoryBaseList<T>
      * be returned from the list
      * @return Entity at the offset requested
      */
+    @Override
     public T get(int offset) {
-        return array.get(binarySearch(offset));
+        int index = binarySearch(offset);
+        if (index >= 0)
+            return array.get(index);
+        return null;
     }
 
     /**
@@ -127,29 +131,4 @@ public class MemoryVariableList<T extends BaseEntity> extends MemoryBaseList<T>
         return -1;
     }
 
-    /**
-     * Not supported.
-     * @return nothing.
-     */
-    @Override
-    public boolean hasNext() {
-        throw new UnsupportedOperationException("Not supported.");
-    }
-
-    /**
-     * Not supported.
-     * @return nothing.
-     */
-    @Override
-    public T next() {
-        throw new UnsupportedOperationException("Not supported.");
-    }
-
-    /**
-     * Not supported.
-     */
-    @Override
-    public void remove() {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
 }
