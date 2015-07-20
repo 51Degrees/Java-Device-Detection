@@ -35,14 +35,22 @@ public abstract class SourceFileBase extends SourceBase {
      * The file containing the source data.
      */
     private final File fileInfo;
+    /**
+     * True if the file is temporary and should be deleted when the source 
+     * is disposed of.
+     */
+    private final boolean isTempFile;
     
     /**
      * Construct a new source from file on disk.
      * @param fileName File source of the data.
+     * @param isTempFile True if the file should be deleted when the 
+     * source is disposed.
      */
-    public SourceFileBase(String fileName) {
+    public SourceFileBase(String fileName, boolean isTempFile) {
         this.fileInfo = new File(fileName);
         this.fileInfo.setReadOnly();
+        this.isTempFile = isTempFile;
     }
     
     /**
