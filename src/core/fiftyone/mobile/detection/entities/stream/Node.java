@@ -33,7 +33,7 @@ public abstract class Node extends fiftyone.mobile.detection.entities.Node {
     /**
      * The position in the data set where the NumericChildren start.
      */
-    protected final int position;
+    protected final int numericChildrenPosition;
     /**
      * Pool used to load NumericChildren and RankedSignatureIndexes.
      */
@@ -49,7 +49,7 @@ public abstract class Node extends fiftyone.mobile.detection.entities.Node {
     public Node(Dataset dataSet, int offset, BinaryReader reader) {
         super(dataSet, offset, reader);
         this.pool = dataSet.pool;
-        this.position = reader.getPos();
+        this.numericChildrenPosition = reader.getPos();
         getNumericChildren();
     }
     
@@ -65,7 +65,7 @@ public abstract class Node extends fiftyone.mobile.detection.entities.Node {
                     BinaryReader reader = null;
                     try {
                         reader = pool.getReader();
-                        reader.setPos(position);
+                        reader.setPos(numericChildrenPosition);
                         super.numericChildren = readNodeNumericIndexes(dataSet, 
                                                 reader, numericChildrenCount);
                     } catch(Exception ex) {

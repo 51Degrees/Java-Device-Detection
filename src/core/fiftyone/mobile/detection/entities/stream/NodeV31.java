@@ -85,22 +85,21 @@ public class NodeV31 extends Node {
                     BinaryReader reader = null;
                     try {
                         reader = pool.getReader();
-                        reader.setPos(position + 
+                        reader.setPos(numericChildrenPosition + 
                             ((DetectionConstants.SIZE_OF_SHORT + 
                               DetectionConstants.SIZE_OF_INT) * 
                                     getNumericChildrenLength()));
-                        rankedSignatureIndexes = readIntegerArray(
-                                reader, signatureCount);
+                        rankedSignatureIndexes = readIntegerArray(reader, rankedSignatureCount);
                     } catch (IOException ex) {
                         Logger.getLogger(NodeV31.class.getName()).log(Level.SEVERE, null, ex);
                     } finally {
-                        if (reader != null)
+                        if (reader != null) {
                             pool.release(reader);
+                        }
                     }
                 }
             }
         }
         return rankedSignatureIndexes;
     }
-    
 }

@@ -44,8 +44,7 @@ public class NodeV31 extends Node{
      */
     public NodeV31(Dataset dataSet, int offset, BinaryReader reader) {
         super(dataSet, offset, reader);
-        rankedSignatureIndexes = BaseEntity.readIntegerArray(
-                reader, signatureCount);
+        rankedSignatureIndexes = BaseEntity.readIntegerArray(reader, rankedSignatureCount);
     }
     
     /**

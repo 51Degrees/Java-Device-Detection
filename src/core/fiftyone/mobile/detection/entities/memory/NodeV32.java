@@ -47,7 +47,7 @@ public class NodeV32 extends Node{
      */
     public NodeV32(Dataset dataSet, int offset, BinaryReader reader) {
         super(dataSet, offset, reader);
-        if (signatureCount > 0) {
+        if (rankedSignatureCount > 0) {
             nodeRankedSignatureValue = reader.readInt32();
         }
     }
@@ -72,16 +72,16 @@ public class NodeV32 extends Node{
      * @throws IOException 
      */
     private int[] getRankedSignatureIndexesAsArray() throws IOException {
-        int[] rsi = new int[signatureCount];
-        if (signatureCount == 1) {
+        int[] rsi = new int[rankedSignatureCount];
+        if (rankedSignatureCount == 1) {
             // The value of _nodeRankedSignatureIndex is the ranked signature
             // index when the node only relates to 1 signature.
             rsi[0] = nodeRankedSignatureValue;
-        } else if (signatureCount > 1) {
+        } else if (rankedSignatureCount > 1) {
             // Where the node relates to multiple signatures the 
             // _nodeRankedSignatureIndex relates to the first ranked signature 
             // index in DataSet.NodeRankedSignatureIndexes.
-            for (int i = 0; i < signatureCount; i++) {
+            for (int i = 0; i < rankedSignatureCount; i++) {
                 IntegerEntity ie = (IntegerEntity)dataSet.
                         nodeRankedSignatureIndexes.
                         get(nodeRankedSignatureValue + i);

@@ -87,7 +87,7 @@ public class NodeV32 extends Node {
      */
     private int[] getRankedSignatureIndexesAsArray() {
         int[] rsi = null;
-        if (signatureCount == 0) {
+        if (rankedSignatureCount == 0) {
             rsi = new int[0];
         } else {
             BinaryReader reader = null;
@@ -95,17 +95,18 @@ public class NodeV32 extends Node {
                 reader = pool.getReader();
                 
                 // Position the reader after the numeric children.
-                reader.setPos(position + ((DetectionConstants.SIZE_OF_SHORT + 
-                                           DetectionConstants.SIZE_OF_INT) * 
-                                                getNumericChildrenLength()));
+                reader.setPos(numericChildrenPosition + ((
+                        DetectionConstants.SIZE_OF_SHORT + 
+                        DetectionConstants.SIZE_OF_INT) * 
+                        getNumericChildrenLength()));
                 
                 // Read the index.
                 int index = reader.readInt32();
                 
-                if (signatureCount == 1) {
+                if (rankedSignatureCount == 1) {
                     // If the count is one then the value is the 
                     // ranked signature index.
-                    rsi = new int[signatureCount];
+                    rsi = new int[rankedSignatureCount];
                     rsi[0] = index;
                 } else {
                     // If the count is greater than one then the value is the 
@@ -113,14 +114,13 @@ public class NodeV32 extends Node {
                     // list.
                     Iterator<IntegerEntity> range = 
                             dataSet.getNodeRankedSignatureIndexes()
-                                    .getRange(index, signatureCount);
+                                    .getRange(index, rankedSignatureCount);
                     
-                    //Fill the array with values.
+                    // Fill the array with values.
                     int currentIndex = 0;
-                    rsi = new int[signatureCount];
+                    rsi = new int[rankedSignatureCount];
                     while (range.hasNext()) {
-                        IntegerEntity ie = range.next();
-                        rsi[currentIndex] = ie.getValue();
+                        rsi[currentIndex] = range.next().getValue();
                         currentIndex++;
                     }
                 }
