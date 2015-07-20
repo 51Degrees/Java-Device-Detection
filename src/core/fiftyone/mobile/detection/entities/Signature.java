@@ -64,15 +64,6 @@ public abstract class Signature extends BaseEntity implements Comparable<Signatu
      */
     private int[] profileOffsets;
     /**
-     * Array of node offsets associated with the signature.
-     */
-    public int[] nodeOffsets;
-    /**
-     * Rank of signature. Lower number means the signature is more popular, of
-     * the signature compared to other signatures.
-     */
-    public int rank;
-    /**
      * List of the profiles the signature relates to.
      */
     private Profile[] profiles;
@@ -451,7 +442,7 @@ public abstract class Signature extends BaseEntity implements Comparable<Signatu
     
     /**
      * The number of characters in the signature.
-     * @return The number of characters in the signature    .
+     * @return The number of characters in the signature.
      */
     protected abstract int getSignatureLength();
     
