@@ -60,25 +60,17 @@ public class StreamFixedList<T extends BaseEntity> extends StreamBaseList<T>
      * @param index read from.
      * @param count how many entries.
      * @return An enumerator for the list.
+     * @throws java.io.IOException
      */
     @Override
-    public StreamEnumerable<T> getRange(int index, int count) {
-        BinaryReader reader = null;
-        StreamEnumerable enumerable = null;
-        try {
-            reader = dataSet.pool.getReader();
-            reader.setPos(header.getStartPosition() 
-                            + (entityFactory.getLength() * index));
-            enumerable = new StreamEnumerable(reader, index, entityFactory, 
-                                                dataSet, count);
-        } catch (IOException ex) {
-            Logger.getLogger(StreamFixedList.class.getName())
-                    .log(Level.SEVERE, null, ex);
-        } finally {
-            if (reader != null)
-                dataSet.pool.release(reader);
-        }
-        return enumerable;
+    public StreamFixedListRangeIterator<T> getRange(int index, int count) throws IOException {
+        return new StreamFixedListRangeIterator<T>(
+                entityFactory, 
+                dataSet,
+                header.getStartPosition() 
+                    + (entityFactory.getLength() * index),
+                index,
+                count);
     }
 
     /**
@@ -114,47 +106,9 @@ public class StreamFixedList<T extends BaseEntity> extends StreamBaseList<T>
                         + (entityFactory.getLength() * index));
         return entityFactory.create(dataSet, index, reader);
     }
-    
-    /**
-     * Returns An enumeration for the underlying list.
-     * @return An enumeration for the underlying list.
-     */
-    public StreamEnumerable getEnumerator() {
-        return getRange(0, size());
-    }
 
-    /**
-     * Not supported.
-     * @return nothing.
-     */
     @Override
     public Iterator<T> iterator() {
-        throw new UnsupportedOperationException("Not supported.");
-    }
-
-    /**
-     * Not supported.
-     * @return nothing.
-     */
-    @Override
-    public boolean hasNext() {
-        throw new UnsupportedOperationException("Not supported.");
-    }
-
-    /**
-     * Not supported.
-     * @return nothing.
-     */
-    @Override
-    public T next() {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    /**
-     * Not supported.
-     */
-    @Override
-    public void remove() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return new StreamFixedListIterator(this);
     }
 }
