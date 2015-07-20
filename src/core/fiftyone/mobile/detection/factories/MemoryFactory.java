@@ -168,7 +168,7 @@ public class MemoryFactory {
     public static void load(Dataset dataSet, BinaryReader reader, boolean init) 
             throws IOException {
         CommonFactory.loadHeader(dataSet, reader);
-        
+
         MemoryVariableList<AsciiString> strings = new MemoryVariableList<AsciiString>(
                 dataSet, reader, new AsciiStringFactory());
         
@@ -271,7 +271,7 @@ public class MemoryFactory {
         nodes.read(reader);
         rootNodes.read(reader);
         profileOffsets.read(reader);
-
+  
         if (init) {
             // Set references between objects.
             dataSet.init();
