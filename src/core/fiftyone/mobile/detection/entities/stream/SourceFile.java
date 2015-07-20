@@ -46,8 +46,14 @@ public class SourceFile extends SourceFileBase {
      */
     private FileChannel channel;
     
-    public SourceFile(String fileName) {
-        super(fileName);
+    /**
+     * Creates the source from the file provided.
+     * @param fileName File source of the data.
+     * @param isTempFile True if the file should be deleted when the source 
+     * is disposed.
+     */
+    public SourceFile(String fileName, boolean isTempFile) {
+        super(fileName, isTempFile);
     }
 
     /**
