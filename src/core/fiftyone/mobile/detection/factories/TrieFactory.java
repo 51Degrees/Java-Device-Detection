@@ -1,6 +1,10 @@
 package fiftyone.mobile.detection.factories;
 
 import fiftyone.mobile.detection.TrieProvider;
+import fiftyone.mobile.detection.TrieProviderV3;
+import fiftyone.mobile.detection.TrieProviderV32;
+import fiftyone.mobile.detection.entities.stream.TriePool;
+import fiftyone.mobile.detection.entities.stream.TrieSource;
 import fiftyone.mobile.detection.readers.TrieReader;
 import java.io.*;
 
@@ -31,56 +35,83 @@ import java.io.*;
 public class TrieFactory {
 
     /**
-     * Creates a new provider from the binary file supplied.
+     * Creates a new provider from the supplied pool of readers.
      *
-     * @param fileName Binary file to use to create the provider.
-     * @return A new provider initialised with data from the file provided.
+     * @param pool Pool of readers to use.
+     * @return A new provider initialised using the pool of readers.
      * @throws IOException indicates an I/O exception occurred
      */
-    public static TrieProvider create(String fileName) throws IOException {
-        File file = new File(fileName);
-        if (file.exists()) {
-            FileInputStream stream = new FileInputStream(file);
-
-            TrieReader reader = new TrieReader(stream.getChannel());
-
-            // Check the version number is correct for this API.
-            //Version version = new Version(reader.readInt(), reader.readInt(),
-            //		reader.readInt(), reader.readInt());
-
+    public static TrieProvider create(TriePool pool) throws IOException {
+        TrieReader reader = pool.getReader();
+        
+        try {
             int version = reader.readUShort();
-
-            // Add this
-                /*if (version != BinaryConstants.FormatVersion.Major)
-             {
-             throw new MobileException(String.Format(
-             "Version mismatch. Data is version '{0}' for '{1}' reader",
-             version,
-             BinaryConstants.FormatVersion.Major));
-             }*/
-
-            // Create the new provider.
-            return new TrieProvider(
-                    new String(reader.readBytes((int) reader.readUInt())),
-                    ReadStrings(reader),
-                    ReadProperties(reader),
-                    ReadDevices(reader),
-                    ReadLookupList(reader),
-                    reader.readLong(),
-                    reader.getPos(),
-                    fileName);
-
-        } else {
-            return null;
+            switch (version) {
+                case 3:
+                    return new TrieProviderV3(
+                        new String(reader.readBytes((int) reader.readUInt())), 
+                        ReadStrings(reader), 
+                        ReadProperties(reader), 
+                        ReadDevices(reader), 
+                        ReadLookupList(reader), 
+                        reader.readLong(), 
+                        reader.getPos(), 
+                        pool);
+                case 32:
+                    return new TrieProviderV32(
+                        new String(reader.readBytes((int) reader.readUInt())), 
+                        ReadStrings(reader), 
+                        ReadHeaders(reader), 
+                        ReadProperties(reader), 
+                        ReadDevices(reader), 
+                        ReadLookupList(reader), 
+                        reader.readLong(), 
+                        reader.getPos(), 
+                        pool);
+                default:
+                    throw new Error("The file you are trying to use is either "
+                            + "of the wrong format, compressed or is not "
+                            + "supported by this version of the API.");
+            }
+        } finally {
+            pool.release(reader);
+        }
+    }
+    
+    /**
+     * Creates a new provider from the byte array supplied.
+     * @param array byte array to use to create the provider from.
+     * @return a new provider from the byte array supplied.
+     */
+    public static TrieProvider create(byte[] array) {
+        return create(new TriePool(new TrieSource(array)));
+    }
+    
+    /**
+     * Creates a new provider from the binary file supplied.
+     * @param file Binary file to use to create the provider.
+     * @return A new provider initialised with data from the file provided.
+     */
+    public static TrieProvider create(String file) {
+        return create(file, false);
+    }
+    
+    public static TrieProvider create(String file, boolean isTempFile) throws IOException {
+        File f = new File(file);
+        if (f.exists() && f.isFile()) {
+            return create(new TriePool(new TrieSource(file, isTempFile)));
         }
     }
 
-    private static short[] ReadLookupList(TrieReader reader) throws IOException {
+    private static byte[] ReadLookupList(TrieReader reader) throws IOException {
+        return reader.readBytes((int)reader.readUInt());
+        /*
         short[] lookupList = new short[reader.readInt()];
         for (int i = 0; i < lookupList.length; i++) {
             lookupList[i] = reader.readUByte();
         }
         return lookupList;
+                */
     }
 
     private static byte[] ReadStrings(TrieReader reader) throws IOException {
@@ -93,5 +124,9 @@ public class TrieFactory {
 
     private static byte[] ReadDevices(TrieReader reader) throws IOException {
         return reader.readBytes(reader.readInt());
+    }
+
+    private static byte[] ReadHeaders(TrieReader reader) throws IOException {
+        return reader.readBytes((int)reader.readUInt());
     }
 }
