@@ -1,5 +1,6 @@
 package fiftyone.mobile.detection;
 
+import fiftyone.mobile.detection.entities.stream.Pool;
 import fiftyone.mobile.detection.entities.stream.TriePool;
 import fiftyone.mobile.detection.entities.stream.TrieSource;
 import fiftyone.mobile.detection.readers.TrieReader;
@@ -12,6 +13,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
@@ -36,7 +40,7 @@ import java.util.Map;
 /**
  * Decision trie data structure provider.
  */
-public class TrieProvider implements IDisposable {
+public abstract class TrieProvider implements IDisposable {
 
     /**
      * The type of integers used to represent the offset to the children.
@@ -86,7 +90,7 @@ public class TrieProvider implements IDisposable {
     /**
      * Byte array of the available properties.
      */
-    private ByteBuffer _properties;
+    protected ByteBuffer _properties;
     /**
      * Byte array of the devices list.
      */
@@ -98,7 +102,7 @@ public class TrieProvider implements IDisposable {
     /**
      * A pool of readers that can be used in multi threaded operation.
      */
-    private TriePool _pool;
+    private TriePool pool;
     /**
      * The position in the source data file of the nodes.
      */
@@ -106,16 +110,24 @@ public class TrieProvider implements IDisposable {
     /**
      * Dictionary of property names to indexes.
      */
-    private final Map<String, Integer> _propertyIndex = new HashMap<String, Integer>();
+    protected final Map<String, Integer> _propertyIndex = new HashMap<String, Integer>();
     /**
      * List of the available property names.
      */
-    private final List<String> _propertyNames = new ArrayList<String>();
+    protected final List<String> _propertyNames = new ArrayList<String>();
     /**
      * The number of properties available in total.
+     * TODO: remove
      */
-    private int _propertyCount = 0;
-
+    //private int _propertyCount = 0;
+    /**
+     * List of Http headers for each property index.
+     */
+    protected final List<String[]> propertyHttpHeaders = new ArrayList<String[]>();
+    /**
+     * A list of Http headers that the provider can use for device detection.
+     */
+    private List<String> httpHeaders;
     /**
      * List of all property names for the provider.
      * @return list of all property names for the provider
@@ -135,32 +147,49 @@ public class TrieProvider implements IDisposable {
      * @param nodesLength The length of the node data.
      * @param nodesOffset The position of the start of the nodes in the file
      * provided.
-     * @param fileName Name of the source data file used to create the provider.
+     * @param pool Pool connected to the data source.
      * @throws FileNotFoundException indicates device data file was not found.
      */
     public TrieProvider(String copyright, byte[] strings, byte[] properties, byte[] devices,
-            short[] lookupList, long nodesLength, long nodesOffset, String fileName) throws FileNotFoundException {
+            short[] lookupList, long nodesLength, long nodesOffset, TriePool pool) throws FileNotFoundException {
         Copyright = copyright;
         _Strings = ByteBuffer.wrap(strings);
         _properties = ByteBuffer.wrap(properties);
         _devices = ByteBuffer.wrap(devices);
         _lookupList = lookupList;
         _nodesOffset = nodesOffset;
+        
+        // Creates a pool to use to access the source data file.
+        this.pool = pool;
 
         _Strings.order(ByteOrder.LITTLE_ENDIAN);
         _properties.order(ByteOrder.LITTLE_ENDIAN);
         _devices.order(ByteOrder.LITTLE_ENDIAN);
-
-        // Creates a pool to use to access the source data file.
-        _pool = new TriePool(new TrieSource(fileName));
-
-        // Store the maximum number of properties.
-        _propertyCount = properties.length / SIZE_OF_INT;
-
-        // Get the names of all the properties.
-        initPropertyNames();
     }
 
+    /**
+     * Returns a list of Http headers that the provider can use for 
+     * device detection.
+     * @return a list of Http headers that the provider can use for 
+     * device detection.
+     */
+    public List<String> getHttpHeaders() {
+        if (httpHeaders == null) {
+            synchronized(this) {
+                if (httpHeaders == null) {
+                    httpHeaders = new ArrayList<String>();
+                    for (String[] sa : propertyHttpHeaders) {
+                        for (String s : sa) {
+                            if (!httpHeaders.contains(s))
+                                httpHeaders.add(s);
+                        }
+                    }
+                }
+            }
+        }
+        return httpHeaders;
+    }
+    
     /**
      * Returns the user agent matched against the one provided.
      *
@@ -170,7 +199,7 @@ public class TrieProvider implements IDisposable {
      */
     public String getUserAgent(String userAgent) throws Exception {
         StringBuilder matchedUserAgent = new StringBuilder();
-        TrieReader reader = _pool.getReader();
+        TrieReader reader = pool.getReader();
         reader.setPos(_nodesOffset);
         getDeviceIndex(
                 reader,
@@ -178,7 +207,7 @@ public class TrieProvider implements IDisposable {
                 0,
                 0,
                 matchedUserAgent);
-        _pool.release(reader);
+        pool.release(reader);
         return matchedUserAgent.toString();
     }
 
@@ -192,14 +221,19 @@ public class TrieProvider implements IDisposable {
      * @throws Exception indicates an exception occurred
      */
     public int getDeviceIndex(String userAgent) throws Exception {
-        TrieReader reader = _pool.getReader();
-        reader.setPos(_nodesOffset);
-        int index = getDeviceIndex(
-                reader,
-                getUserAgentByteArray(userAgent),
-                0,
-                0);
-        _pool.release(reader);
+        int index;
+        TrieReader reader = pool.getReader();
+        try {
+            reader.setPos(_nodesOffset);
+            index = getDeviceIndex(
+                    reader,
+                    getUserAgentByteArray(userAgent),
+                    0,
+                    0
+                    );
+        } finally {
+            pool.release(reader);
+        }
         return index;
     }
 
@@ -214,6 +248,34 @@ public class TrieProvider implements IDisposable {
     }
 
     /**
+     * Returns a collection of device indexes for each of the relevant HTTP 
+     * headers provided. Those headers which are unrelated to device detection 
+     * are ignored.
+     * @param headers Collection of HTTP headers and values.
+     * @return Collection of headers and device indexes for each one.
+     */
+    public Map<String, Integer> getDeviceIndexes(NameValueCollection headers) {
+        Map<String, Integer> indexes = new TreeMap<String, Integer>();
+        if (headers != null) {
+            TrieReader reader = null;
+            try {
+                reader = pool.getReader();
+                for (String header : headers.keys) {
+                    if (Collections.binarySearch(httpHeaders, header) > 0) {
+                        indexes.put(header, getDeviceIndex(headers.get(header).getValue().toString()));
+                    }
+                }
+            } catch (Exception ex) {
+                Logger.getLogger(TrieProvider.class.getName()).log(Level.SEVERE, null, ex);
+            } finally {
+                if (reader != null)
+                    pool.release(reader);
+            }
+        }
+        return indexes;
+    }
+    
+    /**
      * Returns the property value based on the useragent provided.
      *
      * @param deviceIndex The index of the device whose property should be
@@ -222,80 +284,78 @@ public class TrieProvider implements IDisposable {
      * @return The value of the property for the given device index.
      */
     public String getPropertyValue(int deviceIndex, String property) {
-        return getPropertyValue(deviceIndex, getPropertyIndex(property));
+        return getPropertyValue(deviceIndex, _propertyIndex.get(property));
     }
 
+    /**
+     * Returns the property value based on the device indexes provided.
+     * @param deviceIndexes Http headers and their device index.
+     * @param property The name of the property required.
+     * @return The value of the property for the given device index.
+     */
+    public String getPropertyValue(Map<String, Integer> deviceIndexes, String property) {
+        return getPropertyValue(deviceIndexes, _propertyIndex.get(property));
+    }
+    
+    /**
+     * Returns the value of the property index provided from the device indexes 
+     * provided. Matches the Http header to the property index.
+     * @param deviceIndexes Indexes for the device.
+     * @param propertyIndex Index of the property required.
+     * @return The value of the property for the given device indexes.
+     */
+    public String getPropertyValue(Map<String, Integer> deviceIndexes, int propertyIndex) {
+        Integer deviceIndex;
+        for (String header : propertyHttpHeaders.get(propertyIndex)) {
+            deviceIndex = deviceIndexes.get(header);
+            if (deviceIndex != null) {
+                return getPropertyValue(deviceIndex, propertyIndex);
+            }
+        }
+        return null;
+    }
+    
     /**
      * Returns the value of the property index provided for the device index
      * provided.
      *
      * @param deviceIndex Index for the device.
      * @param propertyIndex Index of the property required.
-     * @return value of the property index provided for the device index 
-     * provided.
+     * @return The value of the property index for the given device index.
      */
     public String getPropertyValue(int deviceIndex, int propertyIndex) {
-        int devicePosition = deviceIndex * _propertyCount * SIZE_OF_INT;
+        int devicePosition = deviceIndex * _propertyNames.size() * SIZE_OF_INT;
         int offset = devicePosition + (propertyIndex * SIZE_OF_INT);
         return getStringValue(_devices.getInt(offset));
     }
 
     /**
-     * Returns the integer index of the property in the list of values
-     * associated with the device.
-     *
-     * @param property property to return index of
-     * @return integer index of the property in the list of values associated 
-     * with the device.
+     * Returns the value of the property for the user agent provided.
+     * @param userAgent User agent of the request.
+     * @param propertyName Name of the property required.
+     * @return The value of the property for the given user agent.
+     * @throws java.lang.Exception
      */
-    public int getPropertyIndex(String property) {
-        int index = -1;
-        if (_propertyIndex.containsKey(property)) {
-
-            index = _propertyIndex.get(property);
-        } else {
-            synchronized (_propertyIndex) {
-                if (_propertyIndex.containsKey(property)) {
-                    index = _propertyIndex.get(property);
-                } else {
-                    // Property does not exist in the cache, so find the index.
-                    for (int i = 0; i < _propertyCount; i++) {
-                        int offset = i * SIZE_OF_INT;
-                        if (getStringValue(_properties.getInt(offset)).equals(property)) {
-                            // The property has been found so store it, and return
-                            // the index of the property.
-                            index = i;
-                            _propertyIndex.put(property, index);
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-        return index;
+    public String GetPropertyValue(String userAgent, String propertyName) throws Exception {
+        return getPropertyValue(getDeviceIndex(userAgent), propertyName);
     }
 
+    /**
+     * Returns the value of the property for the user agent provided.
+     * @param headers Collection of HTTP headers and values.
+     * @param propertyName Name of the property required.
+     * @return The value of the property for the given user agent.
+     */
+    public String getPropertyValue(NameValueCollection headers, String propertyName) {
+        return getPropertyValue(getDeviceIndexes(headers), propertyName);
+    }
+    
     /**
      * Disposes of the pool assigned to the provider.
      */
     @Override
     public void dispose() {
-        _pool.dispose();
-    }
-
-    /**
-     * Initialises the full list of property names available from the provider.
-     */
-    private void initPropertyNames() {
-        for (int i = 0; i < _propertyCount; i++) {
-            int offset = i * SIZE_OF_INT;
-            String value = getStringValue(_properties.getInt(offset));
-            if (_propertyIndex.containsKey(value) == false) {
-                _propertyIndex.put(value, i);
-            }
-
-            _propertyNames.add(~Collections.binarySearch(_propertyNames, value), value);
-        }
+        pool.dispose();
     }
 
     /**
@@ -303,7 +363,7 @@ public class TrieProvider implements IDisposable {
      *
      * @param offset
      */
-    private String getStringValue(int offset) {
+    protected String getStringValue(int offset) {
         int index = 0;
         StringBuilder builder = new StringBuilder();
         byte current = _Strings.get(offset);
@@ -322,11 +382,13 @@ public class TrieProvider implements IDisposable {
      * @return A null terminated byte array.
      */
     private static byte[] getUserAgentByteArray(String userAgent) {
-        byte[] result = new byte[userAgent.length() + 1];
-        for (int i = 0; i < userAgent.length(); i++) {
-            result[i] = userAgent.charAt(i) <= 0x7F ? (byte) userAgent.charAt(i) : (byte) ' ';
+        byte[] result = new byte[userAgent != null ? userAgent.length() + 1 : 0];
+        if (result.length > 0) {
+            for (int i = 0; i < userAgent.length(); i++) {
+                result[i] = userAgent.charAt(i) <= 0x7F ? (byte) userAgent.charAt(i) : (byte) ' ';
+            }
+            result[result.length - 1] = 0;
         }
-        result[result.length - 1] = 0;
         return result;
     }
 
@@ -422,6 +484,11 @@ public class TrieProvider implements IDisposable {
 
         // Get the lookup list.
         int lookupListOffset = reader.readInt();
+        
+        // If there are no more characters in the user agent return 
+        // the parent device index.
+        if (index == userAgent.length)
+            return parentDeviceIndex;
 
         // Get the index of the child.
         int childIndex = getChild(Math.abs(lookupListOffset), userAgent[index]);
