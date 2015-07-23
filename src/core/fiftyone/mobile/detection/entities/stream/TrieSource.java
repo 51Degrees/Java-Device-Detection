@@ -36,7 +36,7 @@ public class TrieSource implements IDisposable {
 
     private final FileInputStream fileInputStream;
 
-    public TrieSource(String filename) throws FileNotFoundException {
+    public TrieSource(String filename, boolean isTempFile) throws FileNotFoundException {
         fileInputStream = new FileInputStream(filename);
     }
 
