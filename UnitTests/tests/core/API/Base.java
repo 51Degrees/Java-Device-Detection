@@ -56,7 +56,7 @@ public abstract class Base {
     }
 
     @Test
-    public void testNullUserAgent() throws IOException {
+    public void NullUserAgent() throws IOException {
         match = null;
         match = provider.match((String)null);
         assertTrue(match != null);
