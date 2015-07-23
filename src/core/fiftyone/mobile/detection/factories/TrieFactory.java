@@ -84,15 +84,17 @@ public class TrieFactory {
      * @return a new provider from the byte array supplied.
      */
     public static TrieProvider create(byte[] array) {
-        return create(new TriePool(new TrieSource(array)));
+        throw new Error("Not yet implemented");
+        //return create(new TriePool(new TrieSource(array)));
     }
     
     /**
      * Creates a new provider from the binary file supplied.
      * @param file Binary file to use to create the provider.
      * @return A new provider initialised with data from the file provided.
+     * @throws java.io.IOException
      */
-    public static TrieProvider create(String file) {
+    public static TrieProvider create(String file) throws IOException {
         return create(file, false);
     }
     
@@ -101,17 +103,15 @@ public class TrieFactory {
         if (f.exists() && f.isFile()) {
             return create(new TriePool(new TrieSource(file, isTempFile)));
         }
+        return null;
     }
 
-    private static byte[] ReadLookupList(TrieReader reader) throws IOException {
-        return reader.readBytes((int)reader.readUInt());
-        /*
+    private static short[] ReadLookupList(TrieReader reader) throws IOException {
         short[] lookupList = new short[reader.readInt()];
         for (int i = 0; i < lookupList.length; i++) {
             lookupList[i] = reader.readUByte();
         }
         return lookupList;
-                */
     }
 
     private static byte[] ReadStrings(TrieReader reader) throws IOException {
