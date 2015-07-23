@@ -180,7 +180,7 @@ public class Controller {
      * @param match Information about the detection
      * @throws IOException
      */
-    private void matchDefault(Match match) throws IOException {
+    public void matchDefault(Match match) throws IOException {
         match.method = MatchMethods.NONE;
         match.profiles = new Profile[match.getDataSet().components.size()];
         for (int i = 0; i < match.profiles.length; i++) {
