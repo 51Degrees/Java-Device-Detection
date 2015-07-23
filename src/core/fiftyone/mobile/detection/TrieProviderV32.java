@@ -4,6 +4,7 @@ import fiftyone.mobile.detection.entities.stream.TriePool;
 import fiftyone.properties.DetectionConstants;
 import java.io.FileNotFoundException;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -55,11 +56,11 @@ public class TrieProviderV32 extends TrieProvider {
         super(copyright, strings, properties, devices, lookupList, nodesLength, nodesOffset, pool);
         
         int limit = _properties.array().length / PROPERTY_LENGTH;
-        ByteBuffer bb = ByteBuffer.wrap(_properties.array());
+
         for (int i = 0; i < limit; i++) {
-            String value = getStringValue(bb.getInt());
-            int headerCount = bb.getInt();
-            int headerFirstIndex = bb.getInt();
+            String value = getStringValue(_properties.getInt());
+            int headerCount = _properties.getInt();
+            int headerFirstIndex = _properties.getInt();
             _propertyIndex.put(value, i);
             _propertyNames.add(value);
             propertyHttpHeaders.add(getHeaders(httpHeaders, headerCount, headerFirstIndex));
@@ -79,8 +80,10 @@ public class TrieProviderV32 extends TrieProvider {
             int from = (headerFirstIndex + i) * DetectionConstants.SIZE_OF_INT;
             int to = from + DetectionConstants.SIZE_OF_INT;
             byte[] value = Arrays.copyOfRange(httpHeaders, from, to);
-            ByteBuffer bb = ByteBuffer.wrap(value);
-            headers.add(getStringValue(bb.getInt()));
+            ByteBuffer buffer = ByteBuffer.wrap(value);
+            buffer.order(ByteOrder.LITTLE_ENDIAN);  // if you want little-endian
+            int offset = buffer.getShort();
+            headers.add(getStringValue(offset));
         }
         return headers.toArray(new String[headers.size()]);
     }
