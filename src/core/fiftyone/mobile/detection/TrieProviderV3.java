@@ -4,6 +4,7 @@ import fiftyone.mobile.detection.entities.stream.TriePool;
 import fiftyone.properties.DetectionConstants;
 import java.io.FileNotFoundException;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
@@ -51,9 +52,9 @@ public class TrieProviderV3 extends TrieProvider {
         
         String[] headers = DetectionConstants.DEVICE_USER_AGENT_HEADERS;
         int count = _properties.array().length / DetectionConstants.SIZE_OF_INT;
-        ByteBuffer bb = ByteBuffer.wrap(_properties.array());
+        
         for (int i = 0; i < count; i++) {
-            String value = getStringValue(bb.getInt());
+            String value = getStringValue(_properties.getInt());
             _propertyIndex.put(value, i);
             _propertyNames.add(value);
             propertyHttpHeaders.add(headers);
