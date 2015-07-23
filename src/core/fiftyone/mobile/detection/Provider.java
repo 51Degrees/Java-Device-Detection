@@ -1,13 +1,18 @@
 package fiftyone.mobile.detection;
 
 import fiftyone.mobile.detection.Match.MatchState;
+import fiftyone.mobile.detection.entities.Component;
+import fiftyone.mobile.detection.entities.Profile;
 import fiftyone.mobile.detection.factories.MemoryFactory;
 import fiftyone.mobile.detection.readers.BinaryReader;
 import fiftyone.properties.DetectionConstants;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicLong;
 
 /* *********************************************************************
@@ -40,6 +45,8 @@ public class Provider {
      */
     private Cache<String, MatchState> userAgentCache = null;
 
+    private boolean recordDetectionTime = false;
+    
     /**
      * The total number of detections performed by the data set.
      * @return total number of detections performed by this data set
@@ -148,11 +155,15 @@ public class Provider {
         }
     }
     
+    /**
+     * Returns the number of times the user agents cache was switched.
+     * @return the number of times the user agents cache was switched.
+     */
     public long getCacheSwitches() {
         if (userAgentCache != null) {
             return userAgentCache.getCacheSwitches();
         } else {
-            return -1;
+            return 0;
         }
     }
     
@@ -201,44 +212,114 @@ public class Provider {
      * @throws IOException indicates an I/O exception occurred
      */
     public Match match(final Map<String, String> headers, Match match) throws IOException {
-        // Get the match for the main user agent.
-        match(headers.get(DetectionConstants.USER_AGENT_HEADER.toLowerCase()), match);
         
-        // Get the user agent for the device if a secondary header is present.
-        String deviceUserAgent = getDeviceUserAgent(headers);
-        if (deviceUserAgent != null)
-        {
-            Match deviceMatch = match(deviceUserAgent);
-            if (deviceMatch != null)
-            {
-                // Update the statistics about the matching process.
-                match.signaturesCompared += deviceMatch.signaturesCompared;
-                match.signaturesRead += deviceMatch.signaturesRead;
-                match.stringsRead += deviceMatch.stringsRead;
-                match.rootNodesEvaluated += deviceMatch.rootNodesEvaluated;
-                match.nodesEvaluated += deviceMatch.nodesEvaluated;
 
-                // Replace the Hardware and Software profiles with the ones from
-                // the device match.
-                for (int i = 0; i < match.getProfiles().length && i < deviceMatch.getProfiles().length; i++)
-                {
-                    if (match.getProfiles()[i].getComponent().getComponentId() <= 2 &&
-                        match.getProfiles()[i].getComponent().getComponentId() == 
-                            deviceMatch.getProfiles()[i].getComponent().getComponentId())
-                    {
-                        // Swap over the profiles if they're the same component.
-                        match.getProfiles()[i] = deviceMatch.getProfiles()[i];
-                    }
+        if (headers == null || headers.isEmpty()) {
+            // Empty headers all default match result.
+            controller.matchDefault(match);
+        } else {
+            // Check if the headers passed to this function are also found 
+            // in the headers list of the dataset.
+            ArrayList<String> importantHeaders = new ArrayList<String>();
+            for (String datasetHeader : dataSet.getHttpHeaders()) {
+                // Check that the header from the dataset also exists in the
+                // provided list of headers.
+                if (!headers.containsKey(datasetHeader)) {
+                    // Now check if thi is a duplicate header.
+                    if (!importantHeaders.contains(datasetHeader))
+                        importantHeaders.add(datasetHeader);
                 }
-
-                // Remove the signature as a single one is not being returned.
+            }
+            
+            if (importantHeaders.size() == 1) {
+                // If only 1 header is important then return a simple single match.
+                match(headers.get(importantHeaders.get(0)), match);
+            } else {
+                // Create matches for each of the headers.
+                Map<String, Match> matches = matchForHeaders(match, headers, importantHeaders);
+                
+                // A list of new profiles to use with the match.
+                Profile[] newProfiles = new Profile[dataSet.components.size()];
+                int componentIndex = 0;
+                
+                for(Component component : dataSet.components) {
+                    // See if any of the headers can be used for this
+                    // components profile. As soon as one matches then
+                    // stop and don't look at any more. They are ordered
+                    // in preferred sequence such that the first item is 
+                    // the most preferred.
+                    
+                    for (String localHeader : component.getHttpheaders()) {
+                        Match headerMatch = matches.get(localHeader);
+                        if (headerMatch != null) {
+                            // Update the statistics about the matching process.
+                            match.signaturesCompared += headerMatch.signaturesCompared;
+                            match.signaturesRead += headerMatch.signaturesRead;
+                            match.stringsRead += headerMatch.stringsRead;
+                            match.rootNodesEvaluated += headerMatch.rootNodesEvaluated;
+                            match.nodesEvaluated += headerMatch.nodesEvaluated;
+                            match.elapsed += headerMatch.elapsed;
+                            
+                            // Set the profile for this component.
+                            for (Profile profile : headerMatch.profiles) {
+                                if (profile.getComponent() == component) {
+                                    newProfiles[componentIndex] = profile;
+                                    break;
+                                }
+                            }
+                            break;
+                        }
+                    }
+                    // If no profile could be found for the component
+                    // then use the default profile.
+                    if (newProfiles[componentIndex] == null) {
+                        newProfiles[componentIndex] = component.getDefaultProfile();
+                    }
+                    
+                    // Move to the next array element.
+                    componentIndex++;
+                }
+                
+                // Reset any fields that relate to the profiles assigned
+                // to the match result.
                 match.setSignature(null);
+                match.results = null;
+                
+                // Replace the match profiles with the new ones.
+                match.profiles = newProfiles;
             }
         }
-        
         return match;
     }
 
+    /**
+     * Matches each of the required headers.
+     * @param match
+     * @param headers
+     * @param importantHeaders HTTP headers that exist in the dataset as well 
+     * as in the list of headers that were passed to the function.
+     * @return A map of Header => Match entries.
+     * @throws IOException 
+     */
+    private Map<String, Match> matchForHeaders(
+            Match match, Map<String, String> headers, ArrayList<String> importantHeaders)
+            throws IOException {
+        Map<String, Match> matches = new HashMap<String, Match>();
+        Match currentMatch = match;
+        for (int i = 0; i < importantHeaders.size(); i++) {
+            matches.put(importantHeaders.get(i), currentMatch != null ? currentMatch : createMatch());
+            currentMatch = null;
+        }
+        //TODO: add parallel executio.
+        for (Entry m : matches.entrySet()) {
+            // At this point we have a collection of the String => Match objects
+            // where Match objects are empty. Perform the Match for each String 
+            // hence making all matches correspond to the User Agents.
+            m.setValue(match((String)m.getKey(), (Match)m.getValue()));
+        }
+        return matches;
+    }
+    
     /**
      * For a given user agent returns a match containing information about the
      * capabilities of the device and it's components.
