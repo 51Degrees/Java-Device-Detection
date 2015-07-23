@@ -241,44 +241,4 @@ public class Command {
 
         System.exit(0);
     }
-    
-    private static void consistencyCheck(TrieProvider t30, TrieProvider t32, 
-                                Provider p31, Provider p32, String[] uaList) {
-        
-        PropertyAvailabolityContainer pac = new PropertyAvailabolityContainer();
-        if (t30 != null) {
-            for (String s : t30.PropertyNames()) {
-                pac.add(s, Providers.Trie30);
-            }
-        }
-        if (t32 != null) {
-            for (String s : t32.PropertyNames()) {
-                pac.add(s, Providers.Trie32);
-            }
-        }
-        if (p31 != null) {
-            for (Property prop : p31.dataSet.getProperties()) {
-                try {
-                    pac.add(prop.getName(), Providers.Pattern31);
-                } catch (IOException ex) {
-                    Logger.getLogger(Command.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-        }
-        if (p32 != null) {
-            for (Property prop : p32.dataSet.getProperties()) {
-                try {
-                    pac.add(prop.getName(), Providers.Pattern32);
-                } catch (IOException ex) {
-                    Logger.getLogger(Command.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-        }
-        pac.printResults();
-        
-        for (String ua : uaList) {
-            System.out.println("Testing user agent: "+ua);
-            
-        }
-    }
 }
