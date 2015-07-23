@@ -55,6 +55,8 @@ import fiftyone.properties.DetectionConstants;
  */
 public class Match {
 
+    long elapsed;
+    
     /**
      * Used to persist the match results to the cache. Used with the SetState
      * method of the match class to retrieve the state.
@@ -789,7 +791,7 @@ public class Match {
         }
         return this.results;
     }
-    private Map<String, String[]> results;
+    protected Map<String, String[]> results;
 
     /**
      * Replaces any characters in the target user agent which are outside the
