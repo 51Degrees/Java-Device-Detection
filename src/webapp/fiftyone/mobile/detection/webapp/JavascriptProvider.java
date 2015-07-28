@@ -163,13 +163,14 @@ class JavascriptProvider {
                 case INT:
                     try {
                         features.add(String.format(
-                                "%s:%i",
+                                "%s:%d",
                                 propName,
-                                Double.parseDouble(values[0])));
+                                Integer.parseInt(values[0])));
                     } catch (NumberFormatException ex) {
                         // Ignore the property as there isn't a value that
                         // converts to a boolean.
-                    }                 
+                    }
+                    break;
                 case DOUBLE:
                     try {
                         features.add(String.format(
