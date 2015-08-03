@@ -76,29 +76,30 @@ public final class StreamFactory {
      * Creates a new DataSet from the file provided. The last modified date of 
      * the data set is the last write time of the data file provided.
      * @param filePath Uncompressed file containing the data for the data set.
+     * @param isTempFile True if the file should be deleted when the source is 
+     * disposed
      * @return A DataSet configured to read entities from the file path when 
      * required.
      * @throws IOException 
      */
-    public static Dataset create(String filePath) throws IOException {
-        File f = new File(filePath);
-        if (!f.isFile() || !f.exists())
-            throw new Error("Could not open the data file. Please verify the "
-                    + "data file exists at the provided location.");
-        Date lm = new Date(f.lastModified());
-        return create(filePath, lm);
+    public static Dataset create(String filePath, boolean isTempFile) throws IOException {
+        return create(filePath, 
+                new Date(new File(filePath).lastModified()), 
+                isTempFile);
     }
     
     /**
      * Constructor creates a new dataset from the supplied data file.
      * @param filepath name of the file (with path to file) to load data from.
      * @param lastModified Date and time the source data was last modified.
+     * @param isTempFile True if the file should be deleted when the source is 
+     * disposed
      * @return Stream Dataset object.
      * @throws IOException 
      */
-    public static Dataset create(String filepath, Date lastModified) 
-                                                        throws IOException {
-        Dataset dataSet = new Dataset(filepath, lastModified, Modes.FILE);
+    public static Dataset create(String filepath, Date lastModified, 
+            boolean isTempFile) throws IOException {
+        Dataset dataSet = new Dataset(filepath, lastModified, Modes.FILE, isTempFile);
         load(dataSet);
         return dataSet;
     }
@@ -210,8 +211,9 @@ public final class StreamFactory {
             profileOffsets.read(reader);
             
         } finally {
-            if (reader != null)
+            if (reader != null) {
                 dataSet.pool.release(reader);
+            }
         }
     }
 }
