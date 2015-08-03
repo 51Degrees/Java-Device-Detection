@@ -93,11 +93,10 @@ public abstract class StreamBaseList<T extends BaseEntity> {
         try {
             reader = dataSet.pool.getReader();
             item = createEntity(key, reader);
-        } catch (Exception e) {
-            
         } finally {
-            if (reader != null)
+            if (reader != null) {
                 dataSet.pool.release(reader);
+            }
         }
         return item;
     }
