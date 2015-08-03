@@ -460,10 +460,10 @@ public abstract class Profile extends BaseEntity implements Comparable<Profile> 
                             }
                             stringValue = sb.toString();
                         } else {
-                            stringValue = "Blank";
+                            stringValue = String.valueOf(profileId);
                         }
                     } catch (IOException e) {
-                        stringValue = "Blank";
+                        stringValue = String.valueOf(profileId);
                     }
                 }
             }
