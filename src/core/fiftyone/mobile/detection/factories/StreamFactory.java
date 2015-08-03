@@ -21,7 +21,6 @@ import fiftyone.mobile.detection.factories.stream.NodeStreamFactoryV32;
 import fiftyone.mobile.detection.factories.stream.ProfileStreamFactory;
 import fiftyone.mobile.detection.readers.BinaryReader;
 import fiftyone.properties.DetectionConstants;
-import java.io.Console;
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
