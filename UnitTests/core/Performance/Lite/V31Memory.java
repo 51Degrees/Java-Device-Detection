@@ -1,18 +1,30 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package Performance.Lite;
 
 import Performance.MemoryBase;
 import java.io.IOException;
 import org.junit.Test;
 
-/**
+/* *********************************************************************
+ * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
+ * Copyright © 2014 51Degrees Mobile Experts Limited, 5 Charlotte Close,
+ * Caversham, Reading, Berkshire, United Kingdom RG4 7BY
+ * 
+ * This Source Code Form is the subject of the following patent 
+ * applications, owned by 51Degrees Mobile Experts Limited of 5 Charlotte
+ * Close, Caversham, Reading, Berkshire, United Kingdom RG4 7BY: 
+ * European Patent Application No. 13192291.6; and
+ * United States Patent Application Nos. 14/085,223 and 14/085,301.
  *
- * @author james
- */
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0.
+ * 
+ * If a copy of the MPL was not distributed with this file, You can obtain
+ * one at http://mozilla.org/MPL/2.0/.
+ * 
+ * This Source Code Form is “Incompatible With Secondary Licenses”, as
+ * defined by the Mozilla Public License, v. 2.0.
+ * ********************************************************************* */
+
 public class V31Memory extends MemoryBase {
     public V31Memory() {
         super("../../data/51Degrees-LiteV3.1.dat");
