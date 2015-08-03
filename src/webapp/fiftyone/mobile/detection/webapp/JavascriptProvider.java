@@ -152,7 +152,7 @@ class JavascriptProvider {
                     try {
                         features.add(String.format(
                                 "%s:%s",
-                                property.getName().replace("/", ""),
+                                property.getJavaScriptName(),
                                 Boolean.parseBoolean(values[0]) ? "true" : "false"));
                     } catch (NumberFormatException ex) {
                         // Ignore the property as there isn't a value that
@@ -163,7 +163,7 @@ class JavascriptProvider {
                     try {
                         features.add(String.format(
                                 "%s:%i",
-                                property.getName(),
+                                property.getJavaScriptName(),
                                 Double.parseDouble(values[0])));
                     } catch (NumberFormatException ex) {
                         // Ignore the property as there isn't a value that
@@ -173,7 +173,7 @@ class JavascriptProvider {
                     try {
                         features.add(String.format(
                                 "%s:%s",
-                                property.getName(),
+                                property.getJavaScriptName(),
                                 Double.parseDouble(values[0])));
                     } catch (NumberFormatException ex) {
                         // Ignore the property as there isn't a value that
@@ -183,7 +183,7 @@ class JavascriptProvider {
                 default:
                     features.add(String.format(
                             "%s:\"%s\"",
-                            property.getName(),
+                            property.getJavaScriptName(),
                             stringJoin(fiftyone.properties.DetectionConstants.VALUE_SEPARATOR, values)));
                     break;
             }
