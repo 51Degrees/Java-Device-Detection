@@ -71,8 +71,9 @@ public abstract class Node extends fiftyone.mobile.detection.entities.Node {
                     } catch(Exception ex) {
                         throw new Error("Cannot obtain numeric Children: "+ex);
                     } finally {
-                        if (reader != null)
+                        if (reader != null) {
                             pool.release(reader);
+                        }
                     }
                 }
             }
