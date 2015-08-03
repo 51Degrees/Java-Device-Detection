@@ -1,6 +1,7 @@
 package fiftyone.mobile.detection.entities.stream;
 
 import fiftyone.mobile.detection.IDisposable;
+import fiftyone.mobile.detection.IDisposableIterator;
 import fiftyone.mobile.detection.entities.BaseEntity;
 import fiftyone.mobile.detection.factories.BaseEntityFactory;
 import fiftyone.mobile.detection.readers.BinaryReader;
@@ -36,7 +37,7 @@ import java.util.logging.Logger;
  * provides a way to read the integers one by one.
  * @param <T>
  */
-public class StreamFixedListRangeIterator<T> implements Iterator<T>, IDisposable {
+public class StreamFixedListRangeIterator<T> implements IDisposableIterator<T> {
     /**
      * Reader set to the position at the start of the list.
      */
@@ -84,6 +85,10 @@ public class StreamFixedListRangeIterator<T> implements Iterator<T>, IDisposable
         this.count = count;
     }
     
+    /**
+     * Returns the reader to the pool.
+     * @param disposing 
+     */
     protected void disposing(boolean disposing) {
         if (reader != null) {
             dataSet.pool.release(reader);
