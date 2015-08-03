@@ -1,6 +1,7 @@
 package fiftyone.mobile.detection.entities.memory;
 
 import fiftyone.mobile.detection.Dataset;
+import fiftyone.mobile.detection.IDisposableIterator;
 import fiftyone.mobile.detection.IFixedList;
 import fiftyone.mobile.detection.entities.BaseEntity;
 import fiftyone.mobile.detection.factories.BaseEntityFactory;
@@ -48,7 +49,7 @@ import java.util.logging.Logger;
  *
  */
 public class MemoryFixedList<T extends BaseEntity> extends MemoryBaseList<T> 
-                                                   implements IFixedList<T>{
+                                                   implements IFixedList<T> {
 
     /**
      * Constructs a new instance of MemoryFixedList
@@ -97,7 +98,7 @@ public class MemoryFixedList<T extends BaseEntity> extends MemoryBaseList<T>
      * @return the MemoryFixedListIterator for specific range.
      */
     @Override
-    public Iterator<T> getRange(int index, int count) {
+    public IDisposableIterator<T> getRange(int index, int count) {
         return new MemoryFixedListIterator<T>(this, index, count);
     }
 }
