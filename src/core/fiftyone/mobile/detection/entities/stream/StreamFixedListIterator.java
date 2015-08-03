@@ -1,7 +1,6 @@
 package fiftyone.mobile.detection.entities.stream;
 
 import fiftyone.mobile.detection.entities.BaseEntity;
-import java.io.IOException;
 import java.util.Iterator;
 
 /* *********************************************************************
