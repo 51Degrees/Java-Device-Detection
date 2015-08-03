@@ -19,3 +19,4 @@
 *.lic
 *.pfk
 /Netbeans/Console/dist/
+/Netbeans/UnitTests/nbproject/private/
