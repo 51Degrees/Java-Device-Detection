@@ -35,6 +35,7 @@ public abstract class SourceFileBase extends SourceBase {
      * The file containing the source data.
      */
     private final File fileInfo;
+    
     /**
      * True if the file is temporary and should be deleted when the source 
      * is disposed of.
@@ -57,7 +58,7 @@ public abstract class SourceFileBase extends SourceBase {
      * Delete the file if it's a temporary file and it still exists.
      */
     public void deleteFile() {
-        if (fileInfo.getName().contains(".tmp")) {
+        if (this.isTempFile) {
             try {
                 Files.delete(fileInfo.toPath());
             } catch (IOException ex) {
