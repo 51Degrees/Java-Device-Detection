@@ -1,6 +1,7 @@
 package fiftyone.mobile.detection.entities.stream;
 
 import fiftyone.mobile.detection.Dataset;
+import fiftyone.mobile.detection.IDisposableIterator;
 import fiftyone.mobile.detection.entities.IntegerEntity;
 import fiftyone.mobile.detection.entities.NodeIndex;
 import fiftyone.mobile.detection.factories.NodeFactoryShared;
@@ -112,16 +113,22 @@ public class NodeV32 extends Node {
                     // If the count is greater than one then the value is the 
                     // index of the first ranked signature index in the merged 
                     // list.
-                    Iterator<IntegerEntity> range = 
-                            dataSet.getNodeRankedSignatureIndexes()
-                                    .getRange(index, rankedSignatureCount);
-                    
-                    // Fill the array with values.
-                    int currentIndex = 0;
-                    rsi = new int[rankedSignatureCount];
-                    while (range.hasNext()) {
-                        rsi[currentIndex] = range.next().getValue();
-                        currentIndex++;
+                    IDisposableIterator<IntegerEntity> range = null;
+                    try {
+                        range = dataSet.getNodeRankedSignatureIndexes()
+                                .getRange(index, rankedSignatureCount);
+                        // Fill the array with values.
+                        int currentIndex = 0;
+                        rsi = new int[rankedSignatureCount];
+                        while (range.hasNext()) {
+                            rsi[currentIndex] = range.next().getValue();
+                            currentIndex++;
+                        }
+                    }
+                    finally {
+                        if (range != null) {
+                            range.dispose();
+                        }
                     }
                 }
             } catch (IOException ex) {
@@ -129,8 +136,9 @@ public class NodeV32 extends Node {
                         NodeV32.class.getName()).log(Level.SEVERE, null, ex
                         );
             } finally {
-                if (reader != null)
+                if (reader != null) {
                     pool.release(reader);
+                }
             }
         }
         return rsi;
