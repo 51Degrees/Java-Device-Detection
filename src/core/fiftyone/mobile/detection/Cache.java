@@ -174,15 +174,10 @@ public class Cache<K, V> {
     }
     
     /**
-     * Returns the percentage of times cache request did not return a result.
-     * @return Percentage or -1 if an exception occurred.
+     * @return the percentage of times cache request did not return a result.
      */
     public double getPercentageMisses() {
-        try {
-            return (getCacheMisses() / getCacheRequests()) * 100;
-        } catch (ArithmeticException aex) {
-            return -1;
-        }
+        return (double)getCacheMisses() / (double)getCacheRequests();
     }
     
     /**
@@ -193,19 +188,17 @@ public class Cache<K, V> {
     }
     
     /**
-     * Returns the current number of total requests to cache.
      * @return the current number of total requests to cache.
      */
-    public double getCacheRequests() {
-        return requests.doubleValue();
+    public long getCacheRequests() {
+        return requests.longValue();
     }
     
     /**
-     * Returns the total number of misses for the current cache.
      * @return the total number of misses for the current cache.
      */
     public long getCacheMisses() {
-        return misses.get();
+        return misses.longValue();
     }
     
     /**
