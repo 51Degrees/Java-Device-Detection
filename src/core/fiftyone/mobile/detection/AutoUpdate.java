@@ -88,7 +88,7 @@ public class AutoUpdate {
             final File oldDataFile = new File(dataFilePath);
             long lastModified = -1;
             if (oldDataFile.exists()) {
-                final Dataset oldDataset = StreamFactory.create(dataFilePath);
+                final Dataset oldDataset = StreamFactory.create(dataFilePath, false);
                 if (!oldDataset.getName().contains("Lite")) {
                     lastModified = oldDataFile.lastModified();
                 }
@@ -105,14 +105,13 @@ public class AutoUpdate {
             File compressedFile = new File(compressedTempFile);
             compressedFile.delete();
             // Create a dataset and load the data in.
-            final Dataset newDataSet = StreamFactory.create(uncompressedTempFile);
+            final Dataset newDataSet = StreamFactory.create(uncompressedTempFile, true);
             //Test the new data and check if old one needs to be replaced.
             boolean copyFile = true;
             final File dataFile = new File(dataFilePath);
             // Confirm the new data is newer than current.
             if (dataFile.exists()) {
-
-                final Dataset currentDataSet = StreamFactory.create(dataFilePath);
+                final Dataset currentDataSet = StreamFactory.create(dataFilePath, false);
                 copyFile = newDataSet.published.getTime() > currentDataSet.published.getTime() || 
                         !newDataSet.getName().equals(currentDataSet.getName());
 
