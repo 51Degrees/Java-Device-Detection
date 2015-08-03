@@ -82,7 +82,7 @@ public class FixedCacheList<T extends BaseEntity> extends StreamFixedList<T>
      */
     @Override
     public double getPercentageMisses() {
-        return cache != null ? cache.getCacheMisses() : 0;
+        return cache != null ? cache.getPercentageMisses() : 0;
     }
     
     /**
