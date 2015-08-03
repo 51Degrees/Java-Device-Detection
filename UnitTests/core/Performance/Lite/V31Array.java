@@ -80,7 +80,7 @@ public class V31Array extends ArrayBase {
     @Test
     public void LiteV31Array_Performance_UniqueUserAgentsMultiAll() throws IOException
     {
-        super.uniqueUserAgentsMulti(super.dataSet.properties, 1);
+        super.uniqueUserAgentsMulti(super.dataSet.properties, 2);
     }
 
     @Test
