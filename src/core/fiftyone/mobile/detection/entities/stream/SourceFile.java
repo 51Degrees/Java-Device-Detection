@@ -1,10 +1,15 @@
 package fiftyone.mobile.detection.entities.stream;
 
+import fiftyone.mobile.detection.readers.BinaryReader;
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.channels.FileChannel;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -33,18 +38,48 @@ import java.util.logging.Logger;
  * used by the data set.
  */
 public class SourceFile extends SourceFileBase {
+    
     /**
-     * Used for reading from the data file after input stream closed.
+     * Encapsulates all the instances that need to be tracked for a mapped
+     * file byte buffer.
      */
-    private ByteBuffer byteBuffer;
+    private class FileHandle {
+        final FileInputStream fileInputStream;
+        final FileChannel channel;
+        final ByteBuffer byteBuffer;
+        
+        /**
+         * Constructs a new instance of FileHandle connected to the file
+         * provided.
+         * @param file to create the handle from
+         * @throws FileNotFoundException
+         * @throws IOException 
+         */
+        FileHandle(File file) throws FileNotFoundException, IOException {
+            fileInputStream = new FileInputStream(file);
+            channel = fileInputStream.getChannel();
+            byteBuffer = channel.map(
+                    FileChannel.MapMode.READ_ONLY,
+                    0,
+                    channel.size());
+            byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
+        }
+
+        /**
+         * Closes the underlying resources.
+         * @throws IOException 
+         */
+        private void dispose() throws IOException {
+            channel.close();
+            fileInputStream.close();
+        }
+    }
+    
     /**
-     * Input bytes from a file in a file system.
+     * List of file handles creates by the class. Used to ensure they're all
+     * disposed of correctly.
      */
-    private FileInputStream fileInputStream;
-    /**
-     * A channel for reading, writing, mapping, and manipulating a file. 
-     */
-    private FileChannel channel;
+    private final List<FileHandle> handles = new ArrayList<FileHandle>();
     
     /**
      * Creates the source from the file provided.
@@ -62,25 +97,13 @@ public class SourceFile extends SourceFileBase {
      */
     @Override
     public ByteBuffer createStream() {
-        byteBuffer = null;
-        fileInputStream = null;
+        ByteBuffer byteBuffer = null;
         try {
-            //Open input stream from file.
-            fileInputStream = new FileInputStream(getFile());
-            
-            channel = fileInputStream.getChannel();
-            byteBuffer = channel.map(
-                    FileChannel.MapMode.READ_ONLY,
-                    0,
-                    channel.size());
-            byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
-            
-            //Close the input stream.
-            if (fileInputStream != null)
-                fileInputStream.close();
+            FileHandle handle = new FileHandle(super.getFile());
+            handles.add(handle);
+            byteBuffer = handle.byteBuffer;
         } catch (IOException ex) {
-            Logger.getLogger(SourceFile.class.getName())
-                                       .log(Level.SEVERE, null, ex);
+            Logger.getLogger(SourceFile.class.getName()).log(Level.SEVERE, null, ex);
         }
         return byteBuffer;
     }
@@ -91,18 +114,17 @@ public class SourceFile extends SourceFileBase {
      */
     @Override
     public void dispose() {
+        // Dispose of all the binary readers created from the byte buffers.
         super.dispose();
-        super.deleteFile();
-        try {
-            if (byteBuffer != null)
-                byteBuffer.clear();
-            if (fileInputStream != null)
-                fileInputStream.close();
-            if (channel.isOpen())
-                channel.close();
-        } catch (IOException ex) {
-            Logger.getLogger(SourceFile.class.getName())
-                                             .log(Level.SEVERE, null, ex);
+        // Dispose of all the file hanldes.
+        for(FileHandle handle : handles) {
+            try {
+                handle.dispose();
+            } catch (IOException ex) {
+                Logger.getLogger(SourceFile.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
+        // Delete the file if it's temporary.
+        super.deleteFile();
     }
 }
