@@ -1,5 +1,6 @@
 package fiftyone.mobile.detection.entities.memory;
 
+import fiftyone.mobile.detection.IDisposableIterator;
 import fiftyone.mobile.detection.entities.BaseEntity;
 import java.util.Iterator;
 
@@ -28,7 +29,7 @@ import java.util.Iterator;
  * @param <T> The type of BaseEntity the list will contain
  */
 public class MemoryFixedListIterator<T extends BaseEntity> 
-                                                implements Iterator<T> {
+                                                implements IDisposableIterator<T> {
     /**
      * List to iterate over.
      */
@@ -96,5 +97,10 @@ public class MemoryFixedListIterator<T extends BaseEntity>
     public void remove() {
         throw new UnsupportedOperationException(
                 "Items can not be removed from DataSet lists.");
+    }
+    
+    @Override
+    public void dispose() {
+        // Do nothing as the memory iterator has no resources to free.
     }
 }
