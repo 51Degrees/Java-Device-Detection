@@ -1,6 +1,7 @@
 package fiftyone.mobile.detection.entities;
 
 import fiftyone.mobile.detection.Dataset;
+import fiftyone.mobile.detection.IDisposableIterator;
 import fiftyone.mobile.detection.readers.BinaryReader;
 import java.io.IOException;
 import java.util.Iterator;
@@ -93,14 +94,20 @@ public class SignatureV32 extends Signature {
             synchronized(this) {
                 if (this.nodeOffsets == null) {
                     int[] nodeOffsets = new int[nodeCount];
+                    IDisposableIterator<IntegerEntity> iterator = null;
                     try {
-                        Iterator<IntegerEntity> iterator = dataSet.signatureNodeOffsets.getRange(   
-                                    firstNodeOffsetIndex, nodeCount);
+                        iterator = dataSet.signatureNodeOffsets.getRange(   
+                                   firstNodeOffsetIndex, nodeCount);
                         for (int i = 0; i < nodeCount; i++) {
                             nodeOffsets[i] = iterator.next().value;
                         }
                     } catch (IOException ex) {
                         Logger.getLogger(SignatureV32.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    finally {
+                        if (iterator != null) {
+                            iterator.dispose();
+                        }
                     }
                     this.nodeOffsets = nodeOffsets;
                 }
