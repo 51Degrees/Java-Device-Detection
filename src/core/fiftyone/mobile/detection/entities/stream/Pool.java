@@ -1,5 +1,6 @@
 package fiftyone.mobile.detection.entities.stream;
 
+import static com.oracle.jrockit.jfr.ContentType.StackTrace;
 import fiftyone.mobile.detection.IDisposable;
 import fiftyone.mobile.detection.readers.BinaryReader;
 import java.io.IOException;
@@ -50,7 +51,7 @@ public class Pool implements IDisposable {
      * The number of readers that have been created. May not be the same as 
      * the readers in the queue as some may be in use.
      */
-    private AtomicInteger readerCount;
+    private final AtomicInteger readerCount = new AtomicInteger(0);
 
     /**
      * Constructs a new pool of readers for the SourceBase provided.
@@ -58,7 +59,6 @@ public class Pool implements IDisposable {
      */
     Pool(SourceBase source) {
         this.source = source;
-        this.readerCount = new AtomicInteger(0);
     }
 
     /**
@@ -69,9 +69,14 @@ public class Pool implements IDisposable {
      */
     public BinaryReader getReader() throws IOException {
         synchronized(readers) {
-            if (!readers.isEmpty())
+            if (readers.isEmpty() == false) {
                 return readers.poll();
+            }
         }
+        
+        // There are no readers available so create one
+        // and ensure that the reader count is incremented
+        // after doing so.
         readerCount.incrementAndGet();
         return source.createReader();
     }
@@ -81,7 +86,7 @@ public class Pool implements IDisposable {
      * @param reader Reader open and ready to read from the temp file
      */
     public void release(BinaryReader reader) {
-        synchronized(this) {
+        synchronized(readers) {
             readers.add(reader);
         }
     }
@@ -100,15 +105,19 @@ public class Pool implements IDisposable {
      * the readers in the queue as some may be in use.
      * @return The number of readers that have been created.
      */
-    public int getReaderCount() {
-        return readerCount.intValue();
+    public int getReadersCreated() {
+        synchronized(readers) {
+            return readerCount.intValue();
+        }
     }
     
     /**
      * Returns The number of readers in the queue.
      * @return The number of readers in the queue.
      */
-    public int readersQueued() {
-        return readers.size();
+    public int getReadersQueued() {
+        synchronized(readers) {
+            return readers.size();
+        }
     }
 }
