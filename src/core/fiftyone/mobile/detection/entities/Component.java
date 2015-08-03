@@ -183,16 +183,13 @@ public abstract class Component extends BaseEntity
      * @return An array of profiles associated with the component.
      */
     private Profile[] doGetProfiles() throws IOException {
-        List<Profile> profiles = new ArrayList<Profile>();
+        List<Profile> temp = new ArrayList<Profile>();
         for (Profile profile : getDataSet().getProfiles()) {
-            for (Value value : profile.getValues()) {
-                if (value.getComponent().getComponentId() == componentId) {
-                    profiles.add(profile);
-                    continue;
-                }
+            if (profile.getComponent().getComponentId() == componentId) {
+                temp.add(profile);
             }
         }
-        return profiles.toArray(new Profile[profiles.size()]);
+        return temp.toArray(new Profile[temp.size()]);
     }
     
     /**
