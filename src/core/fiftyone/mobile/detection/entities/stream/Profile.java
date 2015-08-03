@@ -38,8 +38,9 @@ public class Profile extends fiftyone.mobile.detection.entities.Profile {
                     } catch (Exception ex) {
                         throw new Error("Cannot to obtain _valueIndexes: "+ex);
                     } finally {
-                        if (reader != null)
+                        if (reader != null) {
                             pool.release(reader);
+                        }
                     }
                 }
             }
