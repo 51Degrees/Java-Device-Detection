@@ -37,5 +37,5 @@ public interface IFixedList<T extends BaseEntity> extends IReadonlyList<T> {
      * @param count Number of iterations to perform.
      * @return An enumerable to iterate over the range specified.
      */
-    public abstract Iterator<T> getRange(int index, int count) throws IOException;
+    public abstract IDisposableIterator<T> getRange(int index, int count) throws IOException;
 }
