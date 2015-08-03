@@ -36,14 +36,33 @@ public class Dataset extends fiftyone.mobile.detection.Dataset {
     public final Pool pool;
     
     /**
+     * @return The number of readers that have been created in the pool
+     * that connects the data set to the data source.
+     */
+    public int getReadersCreated()
+    {
+        return pool.getReadersCreated();
+    }
+
+    /**
+     * @return The number of readers in the queue ready to be used.
+     */
+    public int getReadersQueued()
+    {
+        return pool.getReadersQueued();
+    }
+    
+    /**
      * Creates a dataset object with a pool of readers used to retrieve data 
      * from the data file. Only useful in stram mode.
      * @param lastModified Date and time the source data was last modified.
      * @param fileName Valid path to the uncompressed data set file.
      * @param mode Mode The mode of operation the data set will be using.
+     * @param isTempFile True if the file should be deleted when the source is 
+     * disposed
      * @throws IOException 
      */
-    public Dataset(String fileName, Date lastModified, Modes mode) throws IOException {
+    public Dataset(String fileName, Date lastModified, Modes mode, boolean isTempFile) throws IOException {
         super(lastModified, mode);
         this.pool = new Pool(new SourceFile(fileName, false));
     }
