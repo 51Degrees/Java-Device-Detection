@@ -24,7 +24,6 @@ import fiftyone.properties.DetectionConstants;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
 
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
