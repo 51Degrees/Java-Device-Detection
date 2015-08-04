@@ -391,9 +391,9 @@ public class Provider {
     
     /**
      * Used to check other header fields in case a device user agent is being used
-     * and returns the devices useragent string.
-     * @param headers Collection of Http headers associated with the request.
-     * @return the useragent string of the device.
+     * and returns the devices user agent string.
+     * @param headers Collection of HTTP headers associated with the request.
+     * @return the user agent string of the device.
      */
     private static String getDeviceUserAgent(Map<String, String> headers)
     {
