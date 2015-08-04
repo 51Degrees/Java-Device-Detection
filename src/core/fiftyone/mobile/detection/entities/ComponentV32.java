@@ -2,9 +2,12 @@ package fiftyone.mobile.detection.entities;
 
 import fiftyone.mobile.detection.Dataset;
 import fiftyone.mobile.detection.readers.BinaryReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
@@ -71,8 +74,12 @@ public class ComponentV32 extends Component implements Comparable<Component> {
             synchronized(this) {
                 if (httpHeaders == null) {
                     List<String> tempList = new ArrayList<String>();
-                    for (AsciiString st : dataSet.strings) {
-                        tempList.add(st.toString());
+                    for (int element : httpHeaderOffsets) {
+                        try {
+                            tempList.add(dataSet.strings.get(element).toString());
+                        } catch (IOException ex) {
+                            Logger.getLogger(ComponentV32.class.getName()).log(Level.SEVERE, null, ex);
+                        }
                     }
                     httpHeaders = tempList.toArray(new String[tempList.size()]);
                     tempList.clear();
