@@ -24,6 +24,7 @@ import fiftyone.properties.DetectionConstants;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
 
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
@@ -278,6 +279,7 @@ public class Dataset implements IDisposable {
      * @throws java.io.IOException signals an I/O exception occurred
      */
     public Dataset(Date lastModified, Modes mode) throws IOException {
+        this.httpHeaders = null;
         this.maximumRank = 0;
         this.disposed = false;
         this.lastModified = Calendar.getInstance();
@@ -597,13 +599,14 @@ public class Dataset implements IDisposable {
      */
     public String[] getHttpHeaders() {
         if (httpHeaders == null) {
-            synchronized(httpHeaders) {
+            synchronized(this) {
                 if (httpHeaders == null) {
                     List<String> tempList = new ArrayList<String>();
                     for (Component c : components) {
                        for (String s : c.getHttpheaders()) {
-                           if (!tempList.contains(s))
+                           if (!tempList.contains(s)) {
                                tempList.add(s);
+                           }
                        }
                     }
                     httpHeaders = new String[tempList.size()];
