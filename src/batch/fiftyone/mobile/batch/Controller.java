@@ -78,7 +78,7 @@ public class Controller {
             // useragents in our test file and this will improve performance.
             Provider provider = new Provider(
                     // MemoryFactory.create(sourceFile),
-                    StreamFactory.create(sourceFile), 
+                    StreamFactory.create(sourceFile, false), 
                     fiftyone.properties.DetectionConstants.CACHE_SERVICE_INTERVAL);
             
             System.out.println(String.format(
