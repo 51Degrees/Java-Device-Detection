@@ -213,10 +213,9 @@ public class Provider {
      */
     public Match match(final Map<String, String> headers, Match match) throws IOException {
         
-
         if (headers == null || headers.isEmpty()) {
             // Empty headers all default match result.
-            controller.matchDefault(match);
+            Controller.matchDefault(match);
         } else {
             // Check if the headers passed to this function are also found 
             // in the headers list of the dataset.
@@ -224,10 +223,11 @@ public class Provider {
             for (String datasetHeader : dataSet.getHttpHeaders()) {
                 // Check that the header from the dataset also exists in the
                 // provided list of headers.
-                if (!headers.containsKey(datasetHeader)) {
-                    // Now check if thi is a duplicate header.
-                    if (!importantHeaders.contains(datasetHeader))
+                if (headers.containsKey(datasetHeader)) {
+                    // Now check if this is a duplicate header.
+                    if (!importantHeaders.contains(datasetHeader)) {
                         importantHeaders.add(datasetHeader);
+                    }
                 }
             }
             
@@ -310,12 +310,12 @@ public class Provider {
             matches.put(importantHeaders.get(i), currentMatch != null ? currentMatch : createMatch());
             currentMatch = null;
         }
-        //TODO: add parallel executio.
+        
         for (Entry m : matches.entrySet()) {
             // At this point we have a collection of the String => Match objects
             // where Match objects are empty. Perform the Match for each String 
             // hence making all matches correspond to the User Agents.
-            m.setValue(match((String)m.getKey(), (Match)m.getValue()));
+            Match doMatch = match(headers.get((String)m.getKey()), (Match)m.getValue());
         }
         return matches;
     }
