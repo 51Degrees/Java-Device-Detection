@@ -59,9 +59,6 @@ public class Command {
         String patternFileName = args.length > 0 ? args[0] : "../../data/51Degrees-LiteV3.1.dat";
         String trieFileName = args.length > 1 ? args[1]: "../../data/51Degrees-LiteV3.0.trie";
         String trieFileNmae32 = args.length > 2 ? args[2]: "../../data/51Degrees-LiteV3.2.trie";
-        //String patternFileName = args.length > 0 ? args[0] : "C:\\Users\\mike\\Documents\\51Data\\51DP31.dat";
-        //String trieFileName = args.length > 1 ? args[1]: "C:\\Users\\mike\\Documents\\51Data\\51DP30.trie";
-        //String trieFileNmae32 = args.length > 2 ? args[2]: "C:\\Users\\mike\\Documents\\51Data\\51DP32.trie";
         
         TrieProvider t = null;
         TrieProvider t32 = null;
@@ -71,7 +68,7 @@ public class Command {
         if (new File(patternFileName).exists()) 
         {
             // The file exists so use it to initialise the provider.
-            p = new Provider(StreamFactory.create(patternFileName));
+            p = new Provider(StreamFactory.create(patternFileName, false));
         } else {
             // Uses the free "Lite" data embedded in the Core package 
             // as the dataset. Additional data sets can be purchased
