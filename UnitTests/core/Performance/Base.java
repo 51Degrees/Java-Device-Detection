@@ -4,6 +4,10 @@ import common.MatchProcessor;
 import common.Results;
 import common.RetrieveProperties;
 import common.Utils;
+import static common.Utils.assertPool;
+import static common.Utils.reportMethods;
+import static common.Utils.reportProvider;
+import static common.Utils.reportTime;
 import fiftyone.mobile.detection.Dataset;
 import fiftyone.mobile.detection.MatchMethods;
 import fiftyone.mobile.detection.Provider;
@@ -31,7 +35,7 @@ import org.junit.rules.TestName;
  * If a copy of the MPL was not distributed with this file, You can obtain
  * one at http://mozilla.org/MPL/2.0/.
  * 
- * This Source Code Form is “Incompatible With Secondary Licenses”, as
+ * This Source Code Form is "Incompatible With Secondary Licenses", as
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
 
@@ -95,7 +99,7 @@ public abstract class Base {
     }
     
     public void setUp() {
-        System.out.printf("Setup test with file '%s'", dataFile);
+        System.out.printf("Setup test with file '%s'\r\n", dataFile);
     }
     
     public void initializeTime() {
@@ -107,25 +111,35 @@ public abstract class Base {
     }
 
     protected Results userAgentsSingle(Iterable<String> userAgents,
-            MatchProcessor processor) throws IOException {
+        MatchProcessor processor) throws IOException {
         System.out.println(); 
         System.out.printf("Test: %s\r\n", currentTestName.getMethodName());
         System.out.printf("Processor: %s\r\n", processor.getClass().getSimpleName());
-        return Utils.detectLoopSingleThreaded(
-            new Provider(this.dataSet),
+        Provider provider = new Provider(this.dataSet);
+        Results results = Utils.detectLoopSingleThreaded(
+            provider,
             userAgents,
             processor);
+        reportMethods(results.methods);
+        reportTime(results);
+        return results;
     }
 
     protected Results userAgentsMulti(Iterable<String> userAgents,
             MatchProcessor processor) throws IOException {
         System.out.println(); 
         System.out.printf("Test: %s\r\n", currentTestName.getMethodName());
-        System.out.printf("Processor: %s\r\n", processor.getClass().getName());
-        return Utils.detectLoopMultiThreaded(
-            new Provider(this.dataSet),
+        System.out.printf("Processor: %s\r\n", processor.getClass().getSimpleName());
+        Provider provider = new Provider(this.dataSet);
+        Results results =  Utils.detectLoopMultiThreaded(
+            provider,
             userAgents,
             processor);
+        assertPool(provider);
+        reportTime(results);
+        reportMethods(results.methods);
+        reportProvider(provider);
+        return results;      
     }
 
     protected Results userAgentsMulti(Iterable<String> userAgents, 
