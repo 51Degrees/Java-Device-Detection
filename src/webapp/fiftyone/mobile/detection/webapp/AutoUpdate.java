@@ -87,11 +87,11 @@ public class AutoUpdate extends TimerTask {
         // If no file exists an update is definitely required.
         if (masterFile.exists()) {
             try {
-                Dataset dataset = StreamFactory.create(masterFilePath);
+                Dataset dataset = StreamFactory.create(masterFilePath, false);
                 // Check if the current data set needs an update. Lite data always
                 // needs an update, non lite data only needs an update if the
                 // nextUpdate member has expired.
-                if(dataset.getName() != "Lite" && new Date().before(dataset.nextUpdate)) {
+                if(dataset.getName().equals("Lite") && new Date().before(dataset.nextUpdate)) {
                     shouldUpdate = false;
                 }
             } catch (IOException ex) {
