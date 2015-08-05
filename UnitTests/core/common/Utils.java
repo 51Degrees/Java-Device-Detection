@@ -34,7 +34,7 @@ import static org.junit.Assert.*;
  * If a copy of the MPL was not distributed with this file, You can obtain
  * one at http://mozilla.org/MPL/2.0/.
  * 
- * This Source Code Form is “Incompatible With Secondary Licenses”, as
+ * This Source Code Form is "Incompatible With Secondary Licenses", as
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
 
@@ -94,8 +94,6 @@ public class Utils {
             results.count.incrementAndGet();
             results.methods.get(match.method).incrementAndGet();
         }
-        reportMethods(results.methods);
-        reportTime(results);
         return results;
     }
 
@@ -128,10 +126,11 @@ public class Utils {
             if (e != null) {
                 e.shutdown();
                 try {
-                    // Wait for all the threads to complete. Allow 10 milliseconds
-                    // per test which is generally the longest anything should 
-                    // take even on a very slow system.
-                    e.awaitTermination(count, TimeUnit.MILLISECONDS);
+                    // Wait for all the threads to complete. Allow 20
+                    // milliseconds per test which is generally the longest 
+                    // anything should take even on a very slow system or where
+                    // memory checks are being performed.
+                    e.awaitTermination(count * 20, TimeUnit.MILLISECONDS);
                 } catch (InterruptedException ex) {
                     Logger.getLogger(Utils.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -142,10 +141,6 @@ public class Utils {
                 count,
                 results.count.intValue()), 
                 count == results.count.intValue());
-        assertPool(provider);
-        reportTime(results);
-        reportMethods(results.methods);
-        reportProvider(provider);
         return results;
     }
     
