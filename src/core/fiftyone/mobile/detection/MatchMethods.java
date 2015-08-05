@@ -38,6 +38,19 @@ package fiftyone.mobile.detection;
  *
  */
 public enum MatchMethods {
-
-    NONE, EXACT, NUMERIC, NEAREST, CLOSEST;
+    NONE(0),
+    EXACT(1),
+    NUMERIC(2),
+    NEAREST(3),
+    CLOSEST(4);
+    
+    private final int method;
+    
+    private MatchMethods(int method) {
+        this.method = method;
+    }
+    
+    public int getMatchMethods() {
+        return method;
+    }
 }
