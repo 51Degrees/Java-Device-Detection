@@ -248,13 +248,25 @@ public class Provider {
                     for (String localHeader : component.getHttpheaders()) {
                         Match headerMatch = matches.get(localHeader);
                         if (headerMatch != null) {
-                            // Update the statistics about the matching process.
-                            match.signaturesCompared += headerMatch.signaturesCompared;
-                            match.signaturesRead += headerMatch.signaturesRead;
-                            match.stringsRead += headerMatch.stringsRead;
-                            match.rootNodesEvaluated += headerMatch.rootNodesEvaluated;
-                            match.nodesEvaluated += headerMatch.nodesEvaluated;
-                            match.elapsed += headerMatch.elapsed;
+                            // Update the statistics about the matching process 
+                            // if this header isn't the match instance passed 
+                            // to the method.
+                            if (match != headerMatch) {
+                                match.signaturesCompared += headerMatch.signaturesCompared;
+                                match.signaturesRead += headerMatch.signaturesRead;
+                                match.stringsRead += headerMatch.stringsRead;
+                                match.rootNodesEvaluated += headerMatch.rootNodesEvaluated;
+                                match.nodesEvaluated += headerMatch.nodesEvaluated;
+                                match.elapsed += headerMatch.elapsed;
+                                match.lowestScore += headerMatch.getDifference();
+                            }
+                            
+                            // If the header match used is worst than the 
+                            // current one then update the method used for the 
+                            // match returned.
+                            if (headerMatch.method.getMatchMethods() > match.method.getMatchMethods()) {
+                                match.method = headerMatch.method;
+                            }
                             
                             // Set the profile for this component.
                             for (Profile profile : headerMatch.profiles) {
@@ -277,9 +289,11 @@ public class Provider {
                 }
                 
                 // Reset any fields that relate to the profiles assigned
-                // to the match result.
+                // to the match result or that can't contain a value when
+                // HTTP headers are used.
                 match.setSignature(null);
                 match.results = null;
+                match.setTargetuserAgent(null);
                 
                 // Replace the match profiles with the new ones.
                 match.profiles = newProfiles;
@@ -289,29 +303,36 @@ public class Provider {
     }
 
     /**
-     * Matches each of the required headers.
-     * @param match
-     * @param headers
-     * @param importantHeaders HTTP headers that exist in the dataset as well 
-     * as in the list of headers that were passed to the function.
-     * @return A map of Header => Match entries.
+     * For each of the important HTTP headers provides a mapping to a 
+     * match result.
+     * @param match The single match instance passed into the match method.
+     * @param headers The HTTP headers available for matching.
+     * @param importantHeaders HTTP header names important to the match process.
+     * @return A map of HTTP headers and match instances containing results 
+     * for them.
      * @throws IOException 
      */
     private Map<String, Match> matchForHeaders(
             Match match, Map<String, String> headers, ArrayList<String> importantHeaders)
             throws IOException {
+        // Relates HTTP header names to match resutls.
         Map<String, Match> matches = new HashMap<String, Match>();
+        // Make the first match used the match passed into the method. 
+        // Subsequent matches will use a new instance.
         Match currentMatch = match;
+        // Iterates through the important header names.
         for (int i = 0; i < importantHeaders.size(); i++) {
             matches.put(importantHeaders.get(i), currentMatch != null ? currentMatch : createMatch());
             currentMatch = null;
         }
         
+        // Using each of the match instances pass the value to the match method 
+        // and set the results.
         for (Entry m : matches.entrySet()) {
             // At this point we have a collection of the String => Match objects
             // where Match objects are empty. Perform the Match for each String 
             // hence making all matches correspond to the User Agents.
-            Match doMatch = match(headers.get((String)m.getKey()), (Match)m.getValue());
+            match(headers.get((String)m.getKey()), (Match)m.getValue());
         }
         return matches;
     }

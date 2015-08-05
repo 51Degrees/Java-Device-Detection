@@ -288,6 +288,9 @@ public class Match {
     public String getTargetUserAgent() {
         return targetUserAgent;
     }
+    public void setTargetuserAgent(String targetUserAgent) {
+        this.targetUserAgent = targetUserAgent;
+    }
     private String targetUserAgent;
 
     /**
@@ -477,7 +480,7 @@ public class Match {
      * The current lowest score for the target user agent. Initialised to the
      * largest possible result.
      */
-    private Integer lowestScore;
+    public Integer lowestScore;
 
     /**
      * Reset the next character position index based on the length of the target
