@@ -79,16 +79,6 @@ public class TrieFactory {
     }
     
     /**
-     * Creates a new provider from the byte array supplied.
-     * @param array byte array to use to create the provider from.
-     * @return a new provider from the byte array supplied.
-     */
-    public static TrieProvider create(byte[] array) {
-        throw new Error("Not yet implemented");
-        //return create(new TriePool(new TrieSource(array)));
-    }
-    
-    /**
      * Creates a new provider from the binary file supplied.
      * @param file Binary file to use to create the provider.
      * @return A new provider initialised with data from the file provided.
