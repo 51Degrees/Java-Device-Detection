@@ -12,7 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import fiftyone.mobile.detection.Dataset;
-import fiftyone.mobile.detection.Disposable;
+import fiftyone.mobile.detection.IDisposable;
 import fiftyone.mobile.detection.Match;
 import fiftyone.mobile.detection.Provider;
 import fiftyone.mobile.detection.factories.MemoryFactory;
@@ -46,7 +46,7 @@ import javax.servlet.ServletContext;
  * This Source Code Form is "Incompatible With Secondary Licenses", as
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
-public class WebProvider extends Provider implements Disposable {
+public class WebProvider extends Provider implements IDisposable {
 
     /**
      * Used to store the results for previous matches to reduce the number of
@@ -102,8 +102,6 @@ public class WebProvider extends Provider implements Disposable {
 
     /**
      * Disposes of the data set created by the WebProvider.
-     *
-     * @throws IOException
      */
     @Override
     public void dispose() {
@@ -241,7 +239,7 @@ public class WebProvider extends Provider implements Disposable {
     }
     
     private static Date getDataFileDate(String fileName) throws IOException {
-        Dataset dataset = StreamFactory.create(fileName);
+        Dataset dataset = StreamFactory.create(fileName, false);
         return dataset.published;
     }
     
@@ -371,7 +369,7 @@ public class WebProvider extends Provider implements Disposable {
                         logger.info(String.format(
                                 "Creating stream provider from binary data file '%s'.",
                                 tempFile));
-                        provider = new WebProvider(StreamFactory.create(tempFile));
+                        provider = new WebProvider(StreamFactory.create(tempFile, true));
                         
                         provider.sourceDataFile = tempFile;
                     }
