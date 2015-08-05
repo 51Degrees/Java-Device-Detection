@@ -20,23 +20,23 @@ import org.junit.runners.Suite;
  * If a copy of the MPL was not distributed with this file, You can obtain
  * one at http://mozilla.org/MPL/2.0/.
  * 
- * This Source Code Form is “Incompatible With Secondary Licenses”, as
+ * This Source Code Form is "Incompatible With Secondary Licenses", as
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-    MetaData.Lite.FileV31.class,
-    MetaData.Lite.FileV32.class, 
-    MetaData.Lite.MemoryV31.class, 
-    MetaData.Lite.MemoryV32.class, 
-    MetaData.Premium.FileV31.class,
-    MetaData.Premium.FileV32.class, 
-    MetaData.Premium.MemoryV31.class, 
-    MetaData.Premium.MemoryV32.class,     
-    MetaData.Enterprise.FileV31.class,
-    MetaData.Enterprise.FileV32.class, 
-    MetaData.Enterprise.MemoryV31.class, 
-    MetaData.Enterprise.MemoryV32.class})
+    MetaData.Lite.V31File.class,
+    MetaData.Lite.V32File.class, 
+    MetaData.Lite.V31Memory.class, 
+    MetaData.Lite.V32Memory.class, 
+    MetaData.Premium.V31File.class,
+    MetaData.Premium.V32File.class, 
+    MetaData.Premium.V31Memory.class, 
+    MetaData.Premium.V32Memory.class,     
+    MetaData.Enterprise.V31File.class,
+    MetaData.Enterprise.V32File.class, 
+    MetaData.Enterprise.V31Memory.class, 
+    MetaData.Enterprise.V32Memory.class})
 public class TestSuite {
 }
