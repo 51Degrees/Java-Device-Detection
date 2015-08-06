@@ -10,13 +10,12 @@
  * ********************************************************************* */
 package fiftyone.mobile.detection;
 
-import fiftyone.properties.DetectionConstants;
 import java.util.regex.Matcher;
 
+import fiftyone.properties.DetectionConstants;
+
 /**
- *
  * Class to hold and validate a 51Degrees.mobi Licence key.
- *
  */
 public class LicenceKey {
 
