@@ -4,7 +4,7 @@ import common.Asserts;
 import common.Results;
 import common.UserAgentGenerator;
 import common.Utils;
-import fiftyone.mobile.detection.MatchMethods;
+import fiftyone.properties.MatchMethods;
 import fiftyone.mobile.detection.entities.Property;
 import fiftyone.mobile.detection.factories.StreamFactory;
 import java.io.IOException;
