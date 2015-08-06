@@ -1,5 +1,6 @@
 package fiftyone.mobile.detection;
 
+import fiftyone.properties.MatchMethods;
 import java.io.IOException;
 
 import fiftyone.mobile.detection.entities.Node;
