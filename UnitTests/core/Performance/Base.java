@@ -9,7 +9,7 @@ import static common.Utils.reportMethods;
 import static common.Utils.reportProvider;
 import static common.Utils.reportTime;
 import fiftyone.mobile.detection.Dataset;
-import fiftyone.mobile.detection.MatchMethods;
+import fiftyone.properties.MatchMethods;
 import fiftyone.mobile.detection.Provider;
 import fiftyone.mobile.detection.entities.Property;
 import java.io.IOException;
