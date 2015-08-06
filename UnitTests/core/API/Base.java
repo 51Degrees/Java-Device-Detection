@@ -1,7 +1,7 @@
 package API;
 
 import fiftyone.mobile.detection.Match;
-import static fiftyone.mobile.detection.MatchMethods.EXACT;
+import static fiftyone.properties.MatchMethods.EXACT;
 import fiftyone.mobile.detection.Provider;
 import java.io.IOException;
 import org.junit.Test;
