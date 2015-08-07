@@ -1,6 +1,7 @@
 package Performance.Lite;
 
 import Performance.MemoryBase;
+import Properties.Constants;
 import java.io.IOException;
 import org.junit.Test;
 
@@ -27,7 +28,7 @@ import org.junit.Test;
 
 public class V31Memory extends MemoryBase {
     public V31Memory() {
-        super("../../data/51Degrees-LiteV3.1.dat");
+        super(Constants.LITE_PATTERN_V31);
     }
     
     @Override
@@ -50,7 +51,7 @@ public class V31Memory extends MemoryBase {
     @Test
     public void LiteV31Memory_Performance_BadUserAgentsSingle() throws IOException
     {
-        super.badUserAgentsSingle(null, 1);
+        super.badUserAgentsSingle(null, 2);
     }
 
     @Test
