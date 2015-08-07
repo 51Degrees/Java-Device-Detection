@@ -1,12 +1,19 @@
 package API;
 
+import common.Utils;
+import fiftyone.mobile.detection.Dataset;
 import fiftyone.mobile.detection.Match;
-import static fiftyone.properties.MatchMethods.EXACT;
 import fiftyone.mobile.detection.Provider;
+import fiftyone.mobile.detection.entities.Property;
+import fiftyone.mobile.detection.factories.StreamFactory;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
-import Properties.Constants;
 
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
@@ -31,46 +38,154 @@ import Properties.Constants;
 
 public abstract class Base {
     
-    protected static Provider provider;
-    protected static Match match;
+    private Dataset dataset;
+    private Provider provider;
+    private final String dataFile;
     
     public Base(String dataFile) {
+        this.dataFile = dataFile;
+    }
+    
+    @Before
+    public void createDataset() {
+        Utils.checkFileExists(dataFile);
+        try {
+            this.dataset = StreamFactory.create(this.dataFile, false);
+            this.provider = new Provider(dataset);
+        } catch (IOException ex) {
+            Logger.getLogger(Base.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    @After
+    public void dispose() {
+        dispose(true);
+        System.gc();
+    }
+    
+    private void dispose(boolean disposing) {
+        if (this.dataset != null) {
+            dataset.dispose();
+        }
     }
     
     @Test
-    public void providerInitTest() {
-        assertTrue(provider != null);
+    public void API_AllHeaders() {
+        Map<String, String> headers = new HashMap<String, String>();
+        for (String header : dataset.getHttpHeaders()) {
+            headers.put(header, common.UserAgentGenerator.getRandomUserAgent(0));
+        }
+        try {
+            fetchAllProperties(provider.match(headers));
+        } catch (IOException ex) {
+            Logger.getLogger(Base.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
     @Test
-    public void datasetnameTest() throws IOException {
-        assertTrue(provider.dataSet.getName().equals("Lite"));
+    public void API_AllHeadersNull() {
+        Map<String, String> headers = new HashMap<String, String>();
+        for (String header : dataset.getHttpHeaders()) {
+            headers.put(header, null);
+        }
+        try {
+            fetchAllProperties(provider.match(headers));
+        } catch (IOException ex) {
+            Logger.getLogger(Base.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
     @Test
-    public void numberOfPropertiesTest() {
-        assertTrue(provider.dataSet.getProperties().size() > 50
-        && provider.dataSet.getProperties().size() < 80);
+    public void API_DuplicateHeaders() {
+        Map<String, String> headers = new HashMap<String, String>();
+        for (int i = 0; i < 5; i++) {
+            for (String header : dataset.getHttpHeaders()) {
+                headers.put(header, common.UserAgentGenerator.getRandomUserAgent(0));
+            }
+        }
+        try {
+            fetchAllProperties(provider.match(headers));
+        } catch (IOException ex) {
+            Logger.getLogger(Base.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
     @Test
-    public void testKnownUserAgent() throws IOException {
-        String userAgent = "Mozilla/5.0 (BlackBerry; U; BlackBerry 9900; en) "
-                + "AppleWebKit/534.11+ (KHTML, like Gecko) Version/7.1.0.346 "
-                + "Mobile Safari/534.11+";
-        match = provider.match(userAgent);
-        assertTrue(match.method == EXACT);
+    public void API_DuplicateHeadersNull() {
+        Map<String, String> headers = new HashMap<String, String>();
+        for (int i = 0; i < 5; i++) {
+            for (String header : dataset.getHttpHeaders()) {
+                headers.put(header, null);
+            }
+        }
+        try {
+            fetchAllProperties(provider.match(headers));
+        } catch (IOException ex) {
+            Logger.getLogger(Base.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
     @Test
-    public void testKnownUserAgentProperties() {
-        
+    public void API_EmptyHeaders() {
+        Map<String, String> headers = new HashMap<String, String>();
+        try {
+            fetchAllProperties(provider.match(headers));
+        } catch (IOException ex) {
+            Logger.getLogger(Base.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
-
+    
     @Test
-    public void NullUserAgent() throws IOException {
-        match = null;
-        match = provider.match((String)null);
-        assertTrue(match != null);
+    public void API_EmptyUserAgent() {
+        String empty = "";
+        try {
+            fetchAllProperties(provider.match(empty));
+        } catch (IOException ex) {
+            Logger.getLogger(Base.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    @Test
+    public void API_LongUserAgent() {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < 10; i++) {
+            sb.append(common.UserAgentGenerator.getRandomUserAgent(10));
+        }
+        String userAgent = sb.toString();
+        try {
+            fetchAllProperties(provider.match(userAgent));
+        } catch (IOException ex) {
+            Logger.getLogger(Base.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    @Test
+    public void API_NullHeaders() {
+        Map<String, String> headers = null;
+        try {
+            fetchAllProperties(provider.match(headers));
+        } catch (IOException ex) {
+            Logger.getLogger(Base.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    @Test
+    public void API_NullUserAgent() {
+        String userAgent = null;
+        try {
+            fetchAllProperties(provider.match(userAgent));
+        } catch (IOException ex) {
+            Logger.getLogger(Base.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    private void fetchAllProperties(Match match) throws IOException {
+        int checkSum = 0;
+        for (Property property : match.dataSet.getProperties()) {
+            System.out.println("Property: "+property.getName()
+                                +" with value: "+match.getValues(property.getName()));
+            checkSum += match.getValues(property.getName()).toString().hashCode();
+        }
+        System.out.println("Check sum: "+checkSum);
     }
 }
