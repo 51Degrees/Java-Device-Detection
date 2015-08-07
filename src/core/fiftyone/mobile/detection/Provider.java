@@ -1,5 +1,6 @@
 package fiftyone.mobile.detection;
 
+import fiftyone.properties.MatchMethods;
 import fiftyone.mobile.detection.Match.MatchState;
 import fiftyone.mobile.detection.entities.Component;
 import fiftyone.mobile.detection.entities.Profile;

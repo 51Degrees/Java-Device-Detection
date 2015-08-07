@@ -254,22 +254,23 @@ public abstract class TrieProvider implements IDisposable {
      * @param headers Collection of HTTP headers and values.
      * @return Collection of headers and device indexes for each one.
      */
-    public Map<String, Integer> getDeviceIndexes(NameValueCollection headers) {
+    public Map<String, Integer> getDeviceIndexes(final Map<String, String> headers) {
         Map<String, Integer> indexes = new TreeMap<String, Integer>();
         if (headers != null) {
             TrieReader reader = null;
             try {
                 reader = pool.getReader();
-                for (String header : headers.keys) {
-                    if (Collections.binarySearch(httpHeaders, header) > 0) {
-                        indexes.put(header, getDeviceIndex(headers.get(header).getValue().toString()));
+                for (String header : headers.keySet()) {
+                    if (getHttpHeaders().contains(header)) {
+                        indexes.put(header, getDeviceIndex(headers.get(header)));
                     }
                 }
             } catch (Exception ex) {
                 Logger.getLogger(TrieProvider.class.getName()).log(Level.SEVERE, null, ex);
             } finally {
-                if (reader != null)
+                if (reader != null) {
                     pool.release(reader);
+                }
             }
         }
         return indexes;
@@ -346,8 +347,19 @@ public abstract class TrieProvider implements IDisposable {
      * @param propertyName Name of the property required.
      * @return The value of the property for the given user agent.
      */
-    public String getPropertyValue(NameValueCollection headers, String propertyName) {
+    public String getPropertyValueWithMultiHeaders(Map<String, String> headers, String propertyName) {
         return getPropertyValue(getDeviceIndexes(headers), propertyName);
+    }
+    
+    /**
+     * Returns the value of the property for the user agent provided.
+     * @param userAgent User agent of the request.
+     * @param propertyname Name of the property required.
+     * @return The value of the property for the given user agent.
+     * @throws Exception 
+     */
+    public String getPropertyValue(String userAgent, String propertyname) throws Exception {
+        return getPropertyValue(getDeviceIndex(userAgent), propertyname);
     }
     
     /**

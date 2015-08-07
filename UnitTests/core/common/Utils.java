@@ -2,7 +2,7 @@ package common;
 
 import fiftyone.mobile.detection.Dataset;
 import fiftyone.mobile.detection.Match;
-import fiftyone.mobile.detection.MatchMethods;
+import fiftyone.properties.MatchMethods;
 import fiftyone.mobile.detection.Provider;
 import java.io.File;
 import java.io.IOException;

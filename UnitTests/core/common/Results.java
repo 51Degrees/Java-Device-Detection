@@ -1,6 +1,6 @@
 package common;
 
-import fiftyone.mobile.detection.MatchMethods;
+import fiftyone.properties.MatchMethods;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicInteger;

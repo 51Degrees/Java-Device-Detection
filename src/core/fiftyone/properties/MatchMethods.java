@@ -1,4 +1,4 @@
-package fiftyone.mobile.detection;
+package fiftyone.properties;
 
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
@@ -21,7 +21,8 @@ package fiftyone.mobile.detection;
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
 /**
- * Enumerator of possible methods used to obtain the match.
+ * Enumerator of possible methods used to obtain the match. Modified to also 
+ * return a numeric value associated with the ENUM entry.
  *
  * NONE No match could be determined between the target user agent and
  * the list of signatures. Defaults were used.
