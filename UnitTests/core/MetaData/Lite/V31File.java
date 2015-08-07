@@ -1,6 +1,7 @@
 package MetaData.Lite;
 
 import MetaData.FileBase;
+import Properties.Constants;
 import java.io.IOException;
 import org.junit.Test;
 
@@ -27,7 +28,7 @@ import org.junit.Test;
 
 public class V31File extends FileBase {
     public V31File() {
-        super("../../data/51Degrees-LiteV3.1.dat");
+        super(Constants.LITE_PATTERN_V31);
     }
     
     @Test

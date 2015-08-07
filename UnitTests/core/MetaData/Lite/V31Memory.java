@@ -1,6 +1,7 @@
 package MetaData.Lite;
 
 import MetaData.MemoryBase;
+import Properties.Constants;
 import java.io.IOException;
 import org.junit.Test;
 /* *********************************************************************
@@ -26,7 +27,7 @@ import org.junit.Test;
 
 public class V31Memory extends MemoryBase {
     public V31Memory() {
-        super("../../data/51Degrees-LiteV3.1.dat");
+        super(Constants.LITE_PATTERN_V31);
     }
             
     @Test

@@ -33,14 +33,11 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 public class Measurements extends MatchProcessor {
     
-    private final long startMemory;
-
     public AtomicLong totalMemory = new AtomicLong();
 
     public AtomicInteger memorySamples = new AtomicInteger();
 
     public Measurements() {
-        startMemory = allocatedMemory();
     }
 
     private int allocatedMemory() {
@@ -51,7 +48,7 @@ public class Measurements extends MatchProcessor {
     
     public int getAverageMemoryUsed() {
         double averageMemoryUsed = ((totalMemory.longValue() / 
-                memorySamples.intValue()) - startMemory) / 
+                memorySamples.intValue())) / 
                 (double)(1024 * 1024); 
         return (int)averageMemoryUsed;
     }

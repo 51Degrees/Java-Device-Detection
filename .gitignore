@@ -14,8 +14,10 @@
 /Netbeans/WebSite/build/
 /Netbeans/WebSite/dist/
 /Netbeans/Console/build/
-*Enterprise*
-*Premium*
+*Enterprise*.dat
+*Premium*.dat
+*Enterprise*.trie
+*Premium*.trie
 *.lic
 *.pfk
 *.class

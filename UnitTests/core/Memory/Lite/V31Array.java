@@ -1,6 +1,7 @@
 package Memory.Lite;
 
 import Memory.ArrayBase;
+import Properties.Constants;
 import common.UserAgentGenerator;
 import java.io.IOException;
 import org.junit.Test;
@@ -29,7 +30,7 @@ import org.junit.Test;
 public class V31Array extends ArrayBase {
 
     public V31Array() {
-        super("../../data/51Degrees-LiteV3.1.dat");
+        super(Constants.LITE_PATTERN_V31);
     }
 
     @Test

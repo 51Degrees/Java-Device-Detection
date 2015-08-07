@@ -7,6 +7,7 @@ import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Random;
+import java.util.regex.Pattern;
 import static org.junit.Assert.fail;
 
 /* *********************************************************************
@@ -74,6 +75,7 @@ public class UserAgentGenerator {
         
     /**
      * Returns a random user agent which may also have been randomised.
+     * @param randomness
      * @return a random user agent which may also have been randomised.
      */
     public static String getRandomUserAgent(int randomness) {
@@ -121,6 +123,52 @@ public class UserAgentGenerator {
                     public String next() {
                         count++;
                         return UserAgentGenerator.getRandomUserAgent(randomness);
+                    }
+                    @Override
+                    public void remove() {
+                        // Do nothing.
+                    }
+                };
+            }
+        };
+    }
+
+    /**
+     * Returns user agents that match the pattern provided.
+     * @param pattern regular expression used to filter the user agents 
+     * returned.
+     * @return a string iterable returning user agents that match the pattern. 
+     */
+    public static Iterable<String> getUserAgentsIterable(final String pattern)
+    {
+        final Pattern regex = Pattern.compile(pattern);
+        return new Iterable<String>() {
+            @Override
+            public Iterator<String> iterator() {
+                return new Iterator<String>() {
+                    int nextStartIndex = 0;
+                    String nextUserAgent = fetchNextUserAgent();
+                    String fetchNextUserAgent() {
+                        for(int index = nextStartIndex; 
+                                index < UserAgentGenerator.getUserAgents().size(); 
+                                index++){
+                            String userAgent = UserAgentGenerator.getUserAgents().get(index);
+                            if (regex.matcher(userAgent).matches()) {
+                                nextStartIndex = index + 1;
+                                return userAgent;
+                            }
+                        }
+                        return null;
+                    }
+                    @Override
+                    public boolean hasNext() {
+                        return nextUserAgent != null;
+                    }
+                    @Override
+                    public String next() {
+                        String userAgent = nextUserAgent;
+                        nextUserAgent = fetchNextUserAgent();
+                        return userAgent;
                     }
                     @Override
                     public void remove() {

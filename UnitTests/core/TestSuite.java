@@ -26,6 +26,7 @@ import org.junit.runners.Suite;
 @Suite.SuiteClasses({
     MetaData.TestSuite.class,
     Performance.TestSuite.class,
-    Memory.TestSuite.class})
+    Memory.TestSuite.class,
+    HttpHeaders.TestSuite.class})
 public class TestSuite {
 }
