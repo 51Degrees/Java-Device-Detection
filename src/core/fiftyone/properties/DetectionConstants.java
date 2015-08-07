@@ -64,9 +64,11 @@ public class DetectionConstants {
      */
     public static final String VALUE_SEPARATOR = "|";
     /**
+     * Deprecated since V3.2 no longer relies on a Timer for cache service.
      * Length of time in seconds to wait between cache services when operating
      * in stream mode.
      */
+    @Deprecated
     public static final int CACHE_SERVICE_INTERVAL = 60;
     /**
      * Separator used to combine profile Ids to form device Ids.
@@ -88,17 +90,22 @@ public class DetectionConstants {
      */
     public static final String DEVICEID = "Id";
     /**
+     * Deprecated since V3.2 no longer uses the embedded data file.
      * Resource name of the embedded data file.
      */
+    @Deprecated
     public static final String EMBEDDED_DATA_RESOURCE_NAME = "51Degrees-Lite.dat";
     /**
      * URL for the service that provides automatic updates of device data.
      */
     public static final String AUTO_UPDATE_URL = "https://51degrees.com/Products/Downloads/Premium.aspx";
     /**
+     * Deprecated since V3.2 uses a temporary data file instead of memory to 
+     * download the update.
      * The amount of free memory, in bytes, that the JVM must have available
      * before performing a data update.
      */
+    @Deprecated
     public static final long AUTO_UPDATE_REQUIRED_FREE_MEMORY = 100 * 1024 * 1024;
     /**
      * Regular expression used to validate License Keys.

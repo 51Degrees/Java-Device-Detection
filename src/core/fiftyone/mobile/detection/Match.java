@@ -1,5 +1,6 @@
 package fiftyone.mobile.detection;
 
+import fiftyone.properties.MatchMethods;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
