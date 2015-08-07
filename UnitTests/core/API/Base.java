@@ -6,6 +6,7 @@ import fiftyone.mobile.detection.Provider;
 import java.io.IOException;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import Properties.Constants;
 
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
@@ -33,7 +34,7 @@ public abstract class Base {
     protected static Provider provider;
     protected static Match match;
     
-    public Base() throws IOException {
+    public Base(String dataFile) {
     }
     
     @Test
