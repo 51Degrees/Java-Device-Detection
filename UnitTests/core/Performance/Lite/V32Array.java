@@ -1,6 +1,7 @@
 package Performance.Lite;
 
 import Performance.ArrayBase;
+import Properties.Constants;
 import java.io.IOException;
 import org.junit.Test;
 
@@ -27,7 +28,7 @@ import org.junit.Test;
 
 public class V32Array extends ArrayBase {
     public V32Array() {
-        super("../../data/51Degrees-LiteV3.2.dat");
+        super(Constants.LITE_PATTERN_V32);
     }
     
     @Override
@@ -50,7 +51,7 @@ public class V32Array extends ArrayBase {
     @Test
     public void LiteV32Array_Performance_BadUserAgentsSingle() throws IOException
     {
-        super.badUserAgentsSingle(null, 1);
+        super.badUserAgentsSingle(null, 2);
     }
 
     @Test
@@ -86,7 +87,7 @@ public class V32Array extends ArrayBase {
     @Test
     public void LiteV32Array_Performance_BadUserAgentsSingleAll() throws IOException
     {
-        super.badUserAgentsSingle(super.dataSet.properties, 1);
+        super.badUserAgentsSingle(super.dataSet.properties, 2);
     }
 
     @Test
