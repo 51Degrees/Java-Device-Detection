@@ -28,8 +28,8 @@ import org.junit.runners.Suite;
 @Suite.SuiteClasses({
     API.Lite.V31API.class,
     API.Lite.V32API.class, 
-    //API.Lite.V30APITrie.class, 
-    //API.Lite.V32APITrie.class, 
+    API.Lite.V30APITrie.class, 
+    API.Lite.V32APITrie.class, 
     API.Enterprise.V31API.class,
     API.Enterprise.V32API.class, 
     API.Premium.V31API.class, 
