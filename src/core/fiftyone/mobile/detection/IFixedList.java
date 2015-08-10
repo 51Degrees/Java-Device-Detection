@@ -1,8 +1,8 @@
 package fiftyone.mobile.detection;
 
-import fiftyone.mobile.detection.entities.BaseEntity;
 import java.io.IOException;
-import java.util.Iterator;
+
+import fiftyone.mobile.detection.entities.BaseEntity;
 
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
@@ -27,6 +27,7 @@ import java.util.Iterator;
 /**
  * Provides the ability to efficiently retrieve the items from the list using 
  * a ranged enumerable.
+ * 
  * @param <T> Type of entity the list contains.
  */
 public interface IFixedList<T extends BaseEntity> extends IReadonlyList<T> {
@@ -36,6 +37,7 @@ public interface IFixedList<T extends BaseEntity> extends IReadonlyList<T> {
      * @param index Start index in the fixed list.
      * @param count Number of iterations to perform.
      * @return An enumerable to iterate over the range specified.
+     * @throws java.io.IOException
      */
     public abstract IDisposableIterator<T> getRange(int index, int count) throws IOException;
 }

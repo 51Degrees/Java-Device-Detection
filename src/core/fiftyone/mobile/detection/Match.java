@@ -1,6 +1,5 @@
 package fiftyone.mobile.detection;
 
-import fiftyone.properties.MatchMethods;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -18,6 +17,7 @@ import fiftyone.mobile.detection.entities.Signature;
 import fiftyone.mobile.detection.entities.Value;
 import fiftyone.mobile.detection.entities.Values;
 import fiftyone.properties.DetectionConstants;
+import fiftyone.properties.MatchMethods;
 
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
@@ -41,14 +41,20 @@ import fiftyone.properties.DetectionConstants;
  * ********************************************************************* */
 /**
  * Contains all the information associated with the device detection and matched
- * result. <p> The match property can be used to request results from the match
- * using the accessor provided with a Property or the string name of the
- * property. <p> The Signature the target device match against can be returned
- * along with the associated profiles. <p> Statistics associated with the match
- * can also be returned. For example; the Elapsed property returns the time
- * taken to perform the match. The Confidence property provides a value to
- * indicate the differences between the match result and the target user agent.
- * <p> For more information see http://51degrees.mobi/Support/Documentation/Java
+ * result.
+ * 
+ * The match property can be used to request results from the match using 
+ * the accessor provided with a Property or the string name of the property. 
+ * 
+ * The Signature the target device match against can be returned along with 
+ * the associated profiles. 
+ * 
+ * Statistics associated with the match can also be returned. For example: the 
+ * Elapsed property returns the time taken to perform the match. The Confidence 
+ * property provides a value to indicate the differences between the match 
+ * result and the target user agent.
+ *
+ * For more information see http://51degrees.mobi/Support/Documentation/Java
  */
 /**
  * Generate when a device detection is requested to include the signature
@@ -56,6 +62,9 @@ import fiftyone.properties.DetectionConstants;
  */
 public class Match {
 
+    /**
+     * The elapsed time for the match.
+     */
     long elapsed;
     
     /**
@@ -80,8 +89,7 @@ public class Match {
 
         /**
          * Creates the state based on the match provided.
-         *
-         * @param match
+         * @param match Match object to update with results.
          */
         MatchState(Match match) throws IOException {
             method = match.getMethod();
@@ -373,7 +381,9 @@ public class Match {
     }
 
     public int getDifference() {
-        return getLowestScore() == null ? 0 : getLowestScore();
+        int score = getLowestScore();
+        System.out.println("score: "+score);
+        return score >= 0 ? score : 0;
     }
 
     /**
@@ -686,10 +696,10 @@ public class Match {
     }
 
     public Integer getLowestScore() {
-        if (lowestScore != null)
-            return lowestScore;
-        else
-            return 0;
+        if (lowestScore == null) {
+            lowestScore = 0;
+        }
+        return lowestScore;
     }
 
     public void setLowestScore(Integer lowestScore) {

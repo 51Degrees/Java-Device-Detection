@@ -29,23 +29,28 @@ abstract class BaseScore {
 
     /**
      * Gets the score for the specific node of the signature.
-     *
-     * @param match
-     * @param node
+     * @param match Information about the detection.
+     * @param node 
      * @return
      */
     protected abstract int getScore(Match match, Node node) throws IOException;
 
     /**
      * Sets any initial score before each node is evaluated.
-     *
-     * @param match
-     * @param signature
+     * @param match Information about the detection.
+     * @param signature Signature string.
      * @param lastNodeCharacter
      * @return
      */
-    protected abstract int getInitialScore(Match match, Signature signature, int lastNodeCharacter) throws IOException;
+    protected abstract int getInitialScore(Match match, Signature signature, 
+                                    int lastNodeCharacter) throws IOException;
 
+    /**
+     * Checks all the signatures using the scoring method provided.
+     * @param match Information about the detection.
+     * @param closestSignatures Signature strings to evaluate.
+     * @throws IOException 
+     */
     void evaluateSignatures(Match match,
             Match.RankedSignatureIterator closestSignatures) throws IOException {
         int count = 0, signatureIndex, rankedSignatureIndex;
@@ -65,6 +70,15 @@ abstract class BaseScore {
         }
     }
 
+    /**
+     * Compares all the characters up to the max length between the signature 
+     * and the target user agent updating the match information if this 
+     * signature is better than any evaluated previously.
+     * @param match Information about the detection.
+     * @param signature Signature string.
+     * @param lastNodeCharacter The signature to be evaluated.
+     * @throws IOException 
+     */
     private void evaluateSignature(Match match, Signature signature, int lastNodeCharacter) throws IOException {
         match.signaturesCompared++;
 
@@ -79,6 +93,18 @@ abstract class BaseScore {
         }
     }
 
+    /**
+     * Steps through the nodes of the signature comparing those that aren't 
+     * contained in the matched nodes to determine a score between the signature
+     * and the target user agent. If that score becomes greater or equal to the
+     * lowest score determined so far then stop.
+     * @param match Information about the detection.
+     * @param signature Signature string.
+     * @param lastNodeCharacter The position of the last character in the 
+     * matched nodes.
+     * @return
+     * @throws IOException 
+     */
     private int getScore(Match match, Signature signature, int lastNodeCharacter) throws IOException {
         // Calculate the initial score based on the difference in length of 
         // the right most node and the target user agent.
