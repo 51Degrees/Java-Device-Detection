@@ -1,8 +1,6 @@
-package API;
+package API.Lite;
 
-import fiftyone.mobile.detection.Provider;
-import fiftyone.mobile.detection.factories.StreamFactory;
-import java.io.IOException;
+import Properties.Constants;
 
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
@@ -24,11 +22,13 @@ import java.io.IOException;
  * This Source Code Form is "Incompatible With Secondary Licenses", as
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
-
-public class PatternV31 extends Base {
+/**
+ * 
+ */
+public class V31API extends API.Base {
     
-    public PatternV31() throws IOException {
-        provider = provider = new Provider(StreamFactory.create("D:\\Workspace\\Java-Device-Detection\\data\\51Degrees-LiteV3.1.dat", false));
+    public V31API() {
+        super(Constants.LITE_PATTERN_V31);
     }
     
 }

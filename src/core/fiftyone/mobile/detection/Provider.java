@@ -259,7 +259,7 @@ public class Provider {
                                 match.rootNodesEvaluated += headerMatch.rootNodesEvaluated;
                                 match.nodesEvaluated += headerMatch.nodesEvaluated;
                                 match.elapsed += headerMatch.elapsed;
-                                match.lowestScore += headerMatch.getDifference();
+                                match.setLowestScore(match.getLowestScore() + headerMatch.getDifference());
                             }
                             
                             // If the header match used is worst than the 

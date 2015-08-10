@@ -3,6 +3,9 @@ package fiftyone.mobile.detection;
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import fiftyone.mobile.detection.entities.AsciiString;
 import fiftyone.mobile.detection.entities.Component;
@@ -21,9 +24,6 @@ import fiftyone.mobile.detection.entities.memory.MemoryFixedList;
 import fiftyone.mobile.detection.entities.memory.PropertiesList;
 import fiftyone.mobile.detection.entities.stream.ICacheList;
 import fiftyone.properties.DetectionConstants;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
@@ -46,15 +46,19 @@ import java.util.concurrent.TimeUnit;
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
 /**
- * Data set used for device detection created by the reader classes. <p> The
- * Memory.Reader and Stream.Reader factories should be used to create detector
- * data sets. They can not be constructed directly from external code. <p> All
- * information about the detector data set is exposed in this class including
- * meta data and data used for device detection in the form of lists. <p>
- * Detector data sets created using the @see Stream#Reader factory
- * using a file must be disposed of to ensure any readers associated with the
- * file are closed elegantly. <p> For more information see
- * http://51degrees.com/Support/Documentation/Java
+ * Data set used for device detection created by the reader classes. 
+ * 
+ * The Memory.Reader and Stream.Reader factories should be used to create 
+ * detector data sets. They can not be constructed directly from external code.
+ * 
+ * All information about the detector data set is exposed in this class 
+ * including meta data and data used for device detection in the form of lists.
+ * 
+ * Detector data sets created using the @see Stream#Reader factory using a 
+ * file must be disposed of to ensure any readers associated with the file 
+ * are closed elegantly. 
+ * 
+ * For more information see https://51degrees.com/Support/Documentation/Java
  */
 public class Dataset implements IDisposable {
     /**
@@ -297,31 +301,7 @@ public class Dataset implements IDisposable {
         long diffInSeconds = TimeUnit.MILLISECONDS.toSeconds(difference);
         return diffInSeconds;
     }
-    
-    
-    
-    
 
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-
-    
-    
-   
-    
     /**
      * The percentage of requests for signatures which were not already
      * contained in the cache. <p> A value is only returned when operating in
@@ -399,7 +379,6 @@ public class Dataset implements IDisposable {
 
     /**
      * The hardware component.
-     *
      * @return hardware component for the hardware platform
      * @throws IOException signals an I/O exception occurred
      */
@@ -572,6 +551,10 @@ public class Dataset implements IDisposable {
         return profiles;
     }
 
+    /**
+     * The minimum length of a user agent string.
+     * @return The minimum length of a user agent string.
+     */
     public short getMinUserAgentLength() {
         return minUserAgentLength;
     }
@@ -808,8 +791,8 @@ public class Dataset implements IDisposable {
     
     /**
      * The percentage of requests for ranked signatures which were not already
-     * contained in the cache.
-     * A value is only returned when operating in Stream mode.
+     * contained in the cache.A value is only returned when operating in 
+     * Stream mode.
      * @return The percentage of requests for ranked signatures which were 
      * not already contained in the cache.
      */
