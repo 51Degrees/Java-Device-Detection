@@ -68,6 +68,82 @@ public class TrieBase {
         fetchAllProperties(provider.getDeviceIndexes(headers));
     }
     
+    @Test
+    public void API_Trie_AllHeadersNull() {
+        Map<String, String> headers = new HashMap<String, String>();
+        for (String header : provider.getHttpHeaders()) {
+            headers.put(header, null);
+        }
+        fetchAllProperties(provider.getDeviceIndexes(headers));
+    }
+    
+    @Test
+    public void API_Trie_DuplicateHeaders() {
+        Map<String, String> headers = new HashMap<String, String>();
+        for (int i = 0; i < 5; i++) {
+            for (String header : provider.getHttpHeaders()) {
+                headers.put(header, common.UserAgentGenerator.getRandomUserAgent(0));
+            }
+        }
+        fetchAllProperties(provider.getDeviceIndexes(headers));
+    }
+    
+    @Test
+    public void API_Trie_DuplicateHeadersNull() {
+        Map<String, String> headers = new HashMap<String, String>();
+        for (int i = 0; i < 5; i++) {
+            for (String header : provider.getHttpHeaders()) {
+                headers.put(header, null);
+            }
+        }
+        fetchAllProperties(provider.getDeviceIndexes(headers));
+    }
+    
+    @Test
+    public void API_Trie_EmptyHeaders() {
+        Map<String, String> headers = new HashMap<String, String>();
+        fetchAllProperties(provider.getDeviceIndexes(headers));
+    }
+    
+    @Test
+    public void API_Trie_EmptyUserAgent() {
+        String emptyUA = "";
+        try {
+            fetchAllProperties(provider.getDeviceIndex(emptyUA));
+        } catch (Exception ex) {
+            Logger.getLogger(TrieBase.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    @Test
+    public void API_Trie_LongUserAgent() {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < 10; i++) {
+            sb.append(common.UserAgentGenerator.getRandomUserAgent(10));
+        }
+        try {
+            fetchAllProperties(provider.getDeviceIndex(sb.toString()));
+        } catch (Exception ex) {
+            Logger.getLogger(TrieBase.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    @Test
+    public void API_Trie_NullHeaders() {
+        Map<String, String> headers = null;
+        fetchAllProperties(provider.getDeviceIndexes(headers));
+    }
+    
+    @Test
+    public void API_Trie_NullUserAgent() {
+        String userAgent = null;
+        try {
+            fetchAllProperties(provider.getDeviceIndex(userAgent));
+        } catch (Exception ex) {
+            Logger.getLogger(TrieBase.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
     /* Clean up */
     
     @After
