@@ -28,7 +28,7 @@ import Properties.Constants;
 public class V32APITrie extends API.TrieBase {
     
     public V32APITrie() {
-        super(Constants.ENTERPRISE_TRIE_V32);
+        super(Constants.LITE_TRIE_V32);
     }
     
 }
