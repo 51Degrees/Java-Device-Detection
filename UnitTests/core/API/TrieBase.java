@@ -1,5 +1,18 @@
 package API;
 
+import common.Utils;
+import fiftyone.mobile.detection.TrieProvider;
+import fiftyone.mobile.detection.entities.Property;
+import fiftyone.mobile.detection.factories.TrieFactory;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
  * Copyright © 2014 51Degrees Mobile Experts Limited, 5 Charlotte Close,
@@ -25,7 +38,75 @@ package API;
  */
 public class TrieBase {
     
-    public TrieBase(String fileName) {
+    private TrieProvider provider;
+    protected String dataFile;
+    
+    public TrieBase(String dataFile) {
+        this.dataFile = dataFile;
     }
     
+    /* Set up */
+    
+    @Before
+    public void createDataSet() {
+        Utils.checkFileExists(dataFile);
+        try {
+            this.provider = TrieFactory.create(dataFile, false);
+        } catch (IOException ex) {
+            Logger.getLogger(TrieBase.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    /* Tests */
+    
+    @Test
+    public void API_Trie_AllHeaders() {
+        Map<String, String> headers = new HashMap<String, String>();
+        for (String header : provider.getHttpHeaders()) {
+            headers.put(header, common.UserAgentGenerator.getRandomUserAgent(0));
+        }
+        fetchAllProperties(provider.getDeviceIndexes(headers));
+    }
+    
+    /* Clean up */
+    
+    @After
+    public void dispose() {
+        dispose(true);
+        System.gc();
+    }
+    
+    private void dispose(boolean disposing) {
+        if (this.provider != null) {
+            provider.dispose();
+        }
+    }
+    
+    /* Support methods */
+    
+    private void fetchAllProperties(Map<String, Integer> deviceIndexes) {
+        int checkSum = 0;
+        for (String propertyName : provider.PropertyNames()) {
+            String value = provider.getPropertyValue(deviceIndexes, propertyName);
+            System.out.print(propertyName+": ");
+            if (value != null) {
+                System.out.println(value);
+                checkSum += value.hashCode();
+            }
+        }
+        System.out.println("Check sum: "+checkSum);
+    }
+    
+    private void fetchAllProperties(int deviceIndex) {
+        int checkSum = 0;
+        for (String propertyName : provider.PropertyNames()) {
+            String value = provider.getPropertyValue(deviceIndex, propertyName);
+            System.out.print(propertyName+": ");
+            if (value != null) {
+                System.out.println(value);
+                checkSum += value.hashCode();
+            }
+        }
+        System.out.println("Check sum: "+checkSum);
+    }
 }
