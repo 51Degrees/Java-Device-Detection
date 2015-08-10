@@ -381,7 +381,9 @@ public class Match {
     }
 
     public int getDifference() {
-        return getLowestScore() == null ? 0 : getLowestScore();
+        int score = getLowestScore();
+        System.out.println("score: "+score);
+        return score >= 0 ? score : 0;
     }
 
     /**
@@ -694,10 +696,10 @@ public class Match {
     }
 
     public Integer getLowestScore() {
-        if (lowestScore != null)
-            return lowestScore;
-        else
-            return 0;
+        if (lowestScore == null) {
+            lowestScore = 0;
+        }
+        return lowestScore;
     }
 
     public void setLowestScore(Integer lowestScore) {
