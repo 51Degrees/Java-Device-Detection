@@ -88,6 +88,7 @@ public abstract class Base {
         for (String header : dataset.getHttpHeaders()) {
             headers.put(header, null);
         }
+        System.out.println("*** Headers: "+headers.size()+" ***");
         try {
             fetchAllProperties(provider.match(headers));
         } catch (IOException ex) {
@@ -182,8 +183,9 @@ public abstract class Base {
     private void fetchAllProperties(Match match) throws IOException {
         int checkSum = 0;
         for (Property property : match.dataSet.getProperties()) {
-            System.out.println("Property: "+property.getName()
-                                +" with value: "+match.getValues(property.getName()));
+            String propName = property.getName();
+            System.out.println("Property: "+propName
+                                +" with value: "+match.getValues(propName));
             checkSum += match.getValues(property.getName()).toString().hashCode();
         }
         System.out.println("Check sum: "+checkSum);
