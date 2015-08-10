@@ -9,7 +9,7 @@
                 <root id="src.dir"/>
             </source-roots>
             <test-roots>
-                <root id="test.core.dir"/>
+                <root id="test.core.dir" name="UnitTests"/>
             </test-roots>
         </data>
         <spellchecker-wordlist xmlns="http://www.netbeans.org/ns/spellchecker-wordlist/1">
