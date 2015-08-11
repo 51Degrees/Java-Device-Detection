@@ -98,7 +98,7 @@ public abstract class Base {
         System.out.printf("Setup test with file '%s'\r\n", dataFile);
     }
 
-    protected Results Process(String userAgentPattern, String devicePattern, Validation state) throws IOException
+    protected Results process(String userAgentPattern, String devicePattern, Validation state) throws IOException
     {
         dataSet.resetCache();
         Provider provider = new Provider(dataSet);
