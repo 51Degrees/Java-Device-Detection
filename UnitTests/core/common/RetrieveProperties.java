@@ -2,6 +2,7 @@ package common;
 
 import fiftyone.mobile.detection.Match;
 import fiftyone.mobile.detection.entities.Property;
+import fiftyone.mobile.detection.entities.Values;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -42,7 +43,10 @@ public class RetrieveProperties extends MatchProcessor {
     public void Process(Match match, Results result) throws IOException {
         long checkSum = 0;
         for(Property property : this.properties) {
-            checkSum += match.getValues(property).toString().hashCode();
+            Values values = match.getValues(property);
+            if (values != null) {
+                checkSum += match.getValues(property).toString().hashCode();
+            }
         }
         result.checkSum.getAndAdd(checkSum);
     }
