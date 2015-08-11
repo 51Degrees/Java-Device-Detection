@@ -14,6 +14,8 @@ import java.util.regex.Pattern;
 import org.junit.After;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import org.junit.Rule;
+import org.junit.rules.TestName;
 
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
@@ -37,9 +39,20 @@ import static org.junit.Assert.fail;
  * ********************************************************************* */
 public class TrieBase {
     
+    @Rule 
+    public TestName currentTestName = new TestName();
+    
     protected String dataFile;
     
-    private TrieProvider provider;
+    protected TrieProvider provider;
+    
+    public void setUp() {
+        System.out.printf("Setup test with file '%s'\r\n", dataFile);
+    }
+    
+    public TrieBase(String dataFile) {
+        this.dataFile = dataFile;
+    }
     
     protected Results process(String userAgentPattern, String devicePattern, TrieValidation state) 
                                                                             throws IOException
@@ -89,15 +102,33 @@ public class TrieBase {
         }
     }
     
-    @After
-    public void dispose() {
-        dispose(true);
-        System.gc();
+    /**
+     * Ensures the data set is disposed of correctly.
+     * @throws Throwable 
+     */
+    @Override
+    protected void finalize() throws Throwable {
+        disposing(false);
+        super.finalize();
     }
     
-    protected void dispose(boolean disposing) {
+    /**
+     * Ensures resources used by the data set are closed and memory released.
+     * @param disposing 
+     */
+    protected void disposing(boolean disposing) {
         if (provider != null) {
             provider.dispose();
+            provider = null;
         }
+    }
+    
+    /**
+     * Ensures the data set is disposed of correctly at the end of the test.
+     * @throws Exception 
+     */
+    @After
+    public void tearDown() throws Exception {
+        disposing(true);
     }
 }
