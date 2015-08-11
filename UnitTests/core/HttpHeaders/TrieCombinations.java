@@ -1,5 +1,7 @@
 package HttpHeaders;
 
+import java.io.IOException;
+
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
  * Copyright © 2014 51Degrees Mobile Experts Limited, 5 Charlotte Close,
@@ -22,4 +24,40 @@ package HttpHeaders;
  * ********************************************************************* */
 public class TrieCombinations extends TrieBase {
     
+    public TrieCombinations(String dataFile) {
+        super(dataFile);
+    }
+    
+    protected void OperaMini_Samsung() throws IOException
+    {
+        TrieValidation validation = new TrieValidation(super.provider);
+        validation.put("BrowserName", "Opera(.*)");
+        validation.put("HardwareVendor", "Samsung");
+        super.process(
+            "(.*)Opera Mini(.*)",
+            "(.*)SAMSUNG GT-I(.*)", 
+            validation);
+    }
+    
+    protected void OperaMini_iPhone() throws IOException
+    {
+        TrieValidation validation = new TrieValidation(super.provider);
+        validation.put("BrowserName", "Opera(.*)");
+        validation.put("HardwareVendor", "Apple");
+        super.process(
+            "(.*)Opera Mini(.*)",
+            "^Mozilla/5\\.0 \\(iPhone; CPU iPhone OS (.*)",
+            validation);
+    }
+    
+    protected void OperaMini_HTC() throws IOException
+    {
+        TrieValidation validation = new TrieValidation(super.provider);
+        validation.put("BrowserName", "Opera(.*)");
+        validation.put("HardwareVendor", "HTC");
+        super.process(
+            "(.*)Opera Mini(.*)",
+            "(.*) HTC (.*)",
+            validation);
+    } 
 }
