@@ -20,44 +20,44 @@ import static org.junit.Assert.*;
  * If a copy of the MPL was not distributed with this file, You can obtain
  * one at http://mozilla.org/MPL/2.0/.
  * 
- * This Source Code Form is "Incompatible With Secondary Licenses", as
+ * This Source Code Form is "Incompatible With Secondary Licenses @ %.0f%%", dataSet.get() * 100), as
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
 
 public class Asserts {
     public static void AssertCacheMissesGoodAll(Dataset dataSet)
     {
-        assertTrue("Signature Cache Misses", dataSet.getPercentageSignatureCacheMisses() < 0.4);
-        assertTrue("Strings Cache Misses", dataSet.getPercentageStringsCacheMisses() < 0.6);
-        assertTrue("Ranked Signatures Cache Misses", dataSet.getPercentageRankedSignatureCacheMisses() < 0.5);
-        assertTrue("Node Cache Misses", dataSet.getPercentageNodeCacheMisses() < 0.3);
-        assertTrue("Value Cache Misses", dataSet.getPercentageValuesCacheMisses() < 0.3);
-        assertTrue("Profile Cache Misses", dataSet.getPercentageProfilesCacheMisses() < 0.3);
+        assertTrue(String.format("Signature Cache Misses @ %.0f%%", dataSet.getPercentageSignatureCacheMisses() * 100), dataSet.getPercentageSignatureCacheMisses() < 0.4);
+        assertTrue(String.format("Strings Cache Misses @ %.0f%%", dataSet.getPercentageStringsCacheMisses() * 100), dataSet.getPercentageStringsCacheMisses() < 0.6);
+        assertTrue(String.format("Ranked Signatures Cache Misses @ %.0f%%", dataSet.getPercentageRankedSignatureCacheMisses() * 100), dataSet.getPercentageRankedSignatureCacheMisses() < 0.5);
+        assertTrue(String.format("Node Cache Misses @ %.0f%%", dataSet.getPercentageNodeCacheMisses() * 100), dataSet.getPercentageNodeCacheMisses() < 0.3);
+        assertTrue(String.format("Value Cache Misses @ %.0f%%", dataSet.getPercentageValuesCacheMisses() * 100), dataSet.getPercentageValuesCacheMisses() < 0.3);
+        assertTrue(String.format("Profile Cache Misses @ %.0f%%", dataSet.getPercentageProfilesCacheMisses() * 100), dataSet.getPercentageProfilesCacheMisses() < 0.3);
     }
         
     public static void AssertCacheMissesGood(Dataset dataSet)
     {
-        assertTrue("Signature Cache Misses", dataSet.getPercentageSignatureCacheMisses() < 0.4);
-        assertTrue("Strings Cache Misses", dataSet.getPercentageStringsCacheMisses() < 0.5);
-        assertTrue("Ranked Signatures Cache Misses", dataSet.getPercentageRankedSignatureCacheMisses() < 0.5);
-        assertTrue("Node Cache Misses", dataSet.getPercentageNodeCacheMisses() < 0.3);
+        assertTrue(String.format("Signature Cache Misses @ %.0f%%", dataSet.getPercentageSignatureCacheMisses() * 100), dataSet.getPercentageSignatureCacheMisses() < 0.4);
+        assertTrue(String.format("Strings Cache Misses @ %.0f%%", dataSet.getPercentageStringsCacheMisses() * 100), dataSet.getPercentageStringsCacheMisses() < 0.5);
+        assertTrue(String.format("Ranked Signatures Cache Misses @ %.0f%%", dataSet.getPercentageRankedSignatureCacheMisses() * 100), dataSet.getPercentageRankedSignatureCacheMisses() < 0.5);
+        assertTrue(String.format("Node Cache Misses @ %.0f%%", dataSet.getPercentageNodeCacheMisses() * 100), dataSet.getPercentageNodeCacheMisses() < 0.3);
     }
 
     public static void AssertCacheMissesBadAll(Dataset dataSet)
     {
-        assertTrue("Signature Cache Misses", dataSet.getPercentageSignatureCacheMisses() < 0.4);
-        assertTrue("Strings Cache Misses", dataSet.getPercentageStringsCacheMisses() < 0.5);
-        assertTrue("Ranked Signatures Cache Misses", dataSet.getPercentageRankedSignatureCacheMisses() < 0.5);
-        assertTrue("Node Cache Misses", dataSet.getPercentageNodeCacheMisses() < 0.5);
-        assertTrue("Value Cache Misses", dataSet.getPercentageValuesCacheMisses() < 0.3);
-        assertTrue("Profile Cache Misses", dataSet.getPercentageProfilesCacheMisses() < 0.3);
+        assertTrue(String.format("Signature Cache Misses @ %.0f%%", dataSet.getPercentageSignatureCacheMisses() * 100), dataSet.getPercentageSignatureCacheMisses() < 0.4);
+        assertTrue(String.format("Strings Cache Misses @ %.0f%%", dataSet.getPercentageStringsCacheMisses() * 100), dataSet.getPercentageStringsCacheMisses() < 0.5);
+        assertTrue(String.format("Ranked Signatures Cache Misses @ %.0f%%", dataSet.getPercentageRankedSignatureCacheMisses() * 100), dataSet.getPercentageRankedSignatureCacheMisses() < 0.5);
+        assertTrue(String.format("Node Cache Misses @ %.0f%%", dataSet.getPercentageNodeCacheMisses() * 100), dataSet.getPercentageNodeCacheMisses() < 0.5);
+        assertTrue(String.format("Value Cache Misses @ %.0f%%", dataSet.getPercentageValuesCacheMisses() * 100), dataSet.getPercentageValuesCacheMisses() < 0.3);
+        assertTrue(String.format("Profile Cache Misses @ %.0f%%", dataSet.getPercentageProfilesCacheMisses() * 100), dataSet.getPercentageProfilesCacheMisses() < 0.3);
     }
 
     public static void AssertCacheMissesBad(Dataset dataSet)
     {
-        assertTrue("Signature Cache Misses", dataSet.getPercentageSignatureCacheMisses() < 0.4);
-        assertTrue("Strings Cache Misses", dataSet.getPercentageStringsCacheMisses() < 0.8);
-        assertTrue("Ranked Signatures Cache Misses", dataSet.getPercentageRankedSignatureCacheMisses() < 0.5);
-        assertTrue("Node Cache Misses", dataSet.getPercentageNodeCacheMisses() < 0.5);
+        assertTrue(String.format("Signature Cache Misses @ %.0f%%", dataSet.getPercentageSignatureCacheMisses() * 100), dataSet.getPercentageSignatureCacheMisses() < 0.4);
+        assertTrue(String.format("Strings Cache Misses @ %.0f%%", dataSet.getPercentageStringsCacheMisses() * 100), dataSet.getPercentageStringsCacheMisses() < 0.8);
+        assertTrue(String.format("Ranked Signatures Cache Misses @ %.0f%%", dataSet.getPercentageRankedSignatureCacheMisses() * 100), dataSet.getPercentageRankedSignatureCacheMisses() < 0.5);
+        assertTrue(String.format("Node Cache Misses @ %.0f%%", dataSet.getPercentageNodeCacheMisses() * 100), dataSet.getPercentageNodeCacheMisses() < 0.5);
     }
 }
