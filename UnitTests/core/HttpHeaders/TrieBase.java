@@ -1,6 +1,19 @@
 package HttpHeaders;
 
+import common.Results;
+import common.UserAgentGenerator;
 import fiftyone.mobile.detection.TrieProvider;
+import fiftyone.properties.MatchMethods;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Random;
+import java.util.regex.Pattern;
+import org.junit.After;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
@@ -28,4 +41,63 @@ public class TrieBase {
     
     private TrieProvider provider;
     
+    protected Results process(String userAgentPattern, String devicePattern, ValidationTrie state) 
+                                                                            throws IOException
+    {
+        Results results = new Results();
+        Random random = new Random();
+        String httpHeaders[] = new String[provider.getHttpHeaders().size() - 1];
+        
+        // Copy the HTTP headers from the data set to the local list ignoring
+        // any which are the User-Agent header.
+        int index = 0, dataSetIndex = 0;
+        while (index < httpHeaders.length) {
+            if (provider.getHttpHeaders().get(dataSetIndex).equals("User-Agent") == false) {
+                httpHeaders[index] = provider.getHttpHeaders().get(dataSetIndex);
+                index++;
+            }
+            dataSetIndex++;
+        }
+        
+        // Loop through setting 2 user agent headers.
+        Iterator<String> userAgentIterator = UserAgentGenerator.getUserAgentsIterable(userAgentPattern).iterator();
+        Iterator<String> deviceIterator = UserAgentGenerator.getUserAgentsIterable(devicePattern).iterator();
+        
+        while(userAgentIterator.hasNext()&& deviceIterator.hasNext())
+        {
+            Map<String, String> headers = new HashMap<String, String>();
+            headers.put(httpHeaders[random.nextInt(httpHeaders.length)], deviceIterator.next());
+            headers.put("User-Agent", userAgentIterator.next());
+            Map<String, Integer> indexes = provider.getDeviceIndexes(headers);
+            assertTrue("No indexes were found", indexes.size() > 0);
+            validate(indexes, state);
+        }
+        
+        return results;
+    }
+    
+    private static void validate(Map<String, Integer> indexes, ValidationTrie validation) {
+        for (Entry<String, Pattern> test : validation.entrySet()) {
+            String value = validation.provider.getPropertyValue(indexes, test.getKey());
+            if (test.getValue().matcher(value).matches() == false) {
+                fail(String.format(
+                    "HttpHeader test failed for Property '%s' and test '%s' with result '%s'",
+                    test.getKey(),
+                    test.getValue(),
+                    value));
+            }
+        }
+    }
+    
+    @After
+    public void dispose() {
+        dispose(true);
+        System.gc();
+    }
+    
+    protected void dispose(boolean disposing) {
+        if (provider != null) {
+            provider.dispose();
+        }
+    }
 }
