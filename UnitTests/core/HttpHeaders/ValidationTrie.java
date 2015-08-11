@@ -28,7 +28,7 @@ import java.util.regex.Pattern;
  * ********************************************************************* */
 public class ValidationTrie extends HashMap<String, Pattern> {
     
-    private final TrieProvider provider;
+    protected final TrieProvider provider;
     
     public ValidationTrie(TrieProvider provider) {
         this.provider = provider;
