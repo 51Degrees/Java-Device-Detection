@@ -1,5 +1,13 @@
 package HttpHeaders.Enterprise;
 
+import HttpHeaders.TrieCombinations;
+import Properties.Constants;
+import common.Utils;
+import fiftyone.mobile.detection.factories.TrieFactory;
+import java.io.IOException;
+import org.junit.Before;
+import org.junit.Test;
+
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
  * Copyright © 2014 51Degrees Mobile Experts Limited, 5 Charlotte Close,
@@ -20,6 +28,34 @@ package HttpHeaders.Enterprise;
  * This Source Code Form is "Incompatible With Secondary Licenses", as
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
-public class V32TrieFile {
+public class V32TrieFile extends TrieCombinations {
     
+    public V32TrieFile() {
+        super(Constants.LITE_TRIE_V32);
+    }
+    
+    @Before
+    public void createDataSet() throws IOException
+    {
+        Utils.checkFileExists(super.dataFile);
+        super.provider = TrieFactory.create(super.dataFile);
+    }
+    
+    @Test
+    public void EnterpriseV32Array_OperaMiniSamsung() throws IOException
+    {
+        super.OperaMini_Samsung();
+    }
+
+    @Test
+    public void EnterpriseV32Array_OperaMini_HTC() throws IOException
+    {
+        super.OperaMini_HTC();
+    }
+
+    @Test
+    public void EnterpriseV32Array_OperaMini_iPhone() throws IOException
+    {
+        super.OperaMini_iPhone();
+    } 
 }
