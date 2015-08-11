@@ -28,8 +28,10 @@ import org.junit.runners.Suite;
 @Suite.SuiteClasses({
     HttpHeaders.Premium.V31Array.class,
     HttpHeaders.Premium.V32Array.class,
+    HttpHeaders.Premium.V32TrieFile.class,
     HttpHeaders.Enterprise.V31Array.class,
-    HttpHeaders.Enterprise.V32Array.class
+    HttpHeaders.Enterprise.V32Array.class,
+    HttpHeaders.Enterprise.V32TrieFile.class
 })
 public class TestSuite {
 }
