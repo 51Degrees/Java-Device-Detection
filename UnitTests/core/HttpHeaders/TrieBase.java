@@ -41,7 +41,7 @@ public class TrieBase {
     
     private TrieProvider provider;
     
-    protected Results process(String userAgentPattern, String devicePattern, ValidationTrie state) 
+    protected Results process(String userAgentPattern, String devicePattern, TrieValidation state) 
                                                                             throws IOException
     {
         Results results = new Results();
@@ -76,7 +76,7 @@ public class TrieBase {
         return results;
     }
     
-    private static void validate(Map<String, Integer> indexes, ValidationTrie validation) {
+    private static void validate(Map<String, Integer> indexes, TrieValidation validation) {
         for (Entry<String, Pattern> test : validation.entrySet()) {
             String value = validation.provider.getPropertyValue(indexes, test.getKey());
             if (test.getValue().matcher(value).matches() == false) {
