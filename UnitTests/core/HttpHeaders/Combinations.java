@@ -34,7 +34,7 @@ public class Combinations extends Base{
         Validation validation = new Validation(super.dataSet);
         validation.put("BrowserName", "Opera(.*)");
         validation.put("HardwareVendor", "Samsung");
-        super.Process(
+        super.process(
             "(.*)Opera Mini(.*)",
             "(.*)SAMSUNG GT-I(.*)", 
             validation);
@@ -45,7 +45,7 @@ public class Combinations extends Base{
         Validation validation = new Validation(super.dataSet);
         validation.put("BrowserName", "Opera(.*)");
         validation.put("HardwareVendor", "Apple");
-        super.Process(
+        super.process(
             "(.*)Opera Mini(.*)",
             "^Mozilla/5\\.0 \\(iPhone; CPU iPhone OS (.*)",
             validation);
@@ -56,7 +56,7 @@ public class Combinations extends Base{
         Validation validation = new Validation(super.dataSet);
         validation.put("BrowserName", "Opera(.*)");
         validation.put("HardwareVendor", "HTC");
-        super.Process(
+        super.process(
             "(.*)Opera Mini(.*)",
             "(.*) HTC (.*)",
             validation);
