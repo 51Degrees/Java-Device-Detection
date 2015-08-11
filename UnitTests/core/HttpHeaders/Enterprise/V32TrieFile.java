@@ -31,7 +31,7 @@ import org.junit.Test;
 public class V32TrieFile extends TrieCombinations {
     
     public V32TrieFile() {
-        super(Constants.LITE_TRIE_V32);
+        super(Constants.ENTERPRISE_TRIE_V32);
     }
     
     @Before
