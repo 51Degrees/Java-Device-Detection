@@ -382,7 +382,6 @@ public class Match {
 
     public int getDifference() {
         int score = getLowestScore();
-        System.out.println("score: "+score);
         return score >= 0 ? score : 0;
     }
 
