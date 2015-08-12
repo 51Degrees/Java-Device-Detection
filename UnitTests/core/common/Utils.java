@@ -4,6 +4,7 @@ import fiftyone.mobile.detection.Dataset;
 import fiftyone.mobile.detection.Match;
 import fiftyone.properties.MatchMethods;
 import fiftyone.mobile.detection.Provider;
+import fiftyone.mobile.detection.TrieProvider;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -97,6 +98,53 @@ public class Utils {
         return results;
     }
 
+    public static Results detectLoopMultiThreaded(TrieProvider provider, 
+            Iterable<String> userAgents, final TrieProcessor processor) {
+        final Results results = new Results();
+        ExecutorService e = Executors.newFixedThreadPool(
+                Runtime.getRuntime().availableProcessors());
+        int count = 0;
+        try {
+            for (final String userAgent : userAgents) {
+                count++;
+                e.submit(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        try {
+                            processor.Process(results);
+                            results.count.incrementAndGet();
+                        } catch (IOException ex) {
+                            Logger.getLogger(Utils.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    }
+
+                });
+            }
+        } catch(Exception ex) {
+            
+        } finally {
+            if (e != null) {
+                e.shutdown();
+                try {
+                    // Wait for all the threads to complete. Allow 20
+                    // milliseconds per test which is generally the longest 
+                    // anything should take even on a very slow system or where
+                    // memory checks are being performed.
+                    e.awaitTermination(count * 20, TimeUnit.MILLISECONDS);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(Utils.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+        assertTrue(String.format(
+                "Loop performed '%d' iterations but results show '%d'.", 
+                count,
+                results.count.intValue()), 
+                count == results.count.intValue());
+        return results;
+    }
+    
     public static Results detectLoopMultiThreaded(final Provider provider, 
         Iterable<String> userAgents, final MatchProcessor processor) throws IOException {
         final Results results = new Results();
