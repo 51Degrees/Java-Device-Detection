@@ -85,12 +85,12 @@ public abstract class Base {
     }
     
     public void setUp() {
+        System.out.println(); 
         System.out.printf("Setup test with file '%s'\r\n", dataFile);
     }
     
     protected void userAgentsSingle(Iterable<String> userAgents,
             double maxAllowedMemory) throws IOException {
-        System.out.println(); 
         System.out.printf("Test: %s\r\n", currentTestName.getMethodName());
         memory.reset();
         Utils.detectLoopSingleThreaded(
@@ -110,7 +110,6 @@ public abstract class Base {
 
     protected void userAgentsMulti(Iterable<String> userAgents,
             double maxAllowedMemory) throws IOException {
-        System.out.println(); 
         System.out.printf("Test: %s\r\n", currentTestName.getMethodName());        
         memory.reset();
         Utils.detectLoopMultiThreaded(
