@@ -99,7 +99,7 @@ public class Utils {
     }
 
     public static Results detectLoopMultiThreaded(TrieProvider provider, 
-            Iterable<String> userAgents, final TrieProcessor processor) {
+            Iterable<String> userAgents) {
         final Results results = new Results();
         ExecutorService e = Executors.newFixedThreadPool(
                 Runtime.getRuntime().availableProcessors());
@@ -111,12 +111,7 @@ public class Utils {
 
                     @Override
                     public void run() {
-                        try {
-                            processor.Process(results);
-                            results.count.incrementAndGet();
-                        } catch (IOException ex) {
-                            Logger.getLogger(Utils.class.getName()).log(Level.SEVERE, null, ex);
-                        }
+                        results.count.incrementAndGet();
                     }
 
                 });
