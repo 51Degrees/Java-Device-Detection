@@ -63,10 +63,6 @@ public class WebProvider extends Provider implements IDisposable {
      */
     private static WebProvider activeProvider;
     /**
-     * Provider initialised with the embedded device data.
-     */
-    private static WebProvider embeddedProvider;
-    /**
      * Used to log information about activity.
      */
     private final static Logger logger = LoggerFactory.getLogger(WebProvider.class);
@@ -137,26 +133,6 @@ public class WebProvider extends Provider implements IDisposable {
         if (WebProvider.activeProvider == this) {
             WebProvider.activeProvider = null;
         }
-    }
-
-    /**
-     * @return a reference to the embedded provider.
-     */
-    public static WebProvider getEmbeddedProvider() {
-        if (embeddedProvider == null) {
-            synchronized (lock) {
-                if (embeddedProvider == null) {
-                    try {
-                        embeddedProvider = new WebProvider();
-                    } catch (IOException ex) {
-                        logger.error(
-                                "Exception creating web provider from embedded data",
-                                ex);
-                    }
-                }
-            }
-        }
-        return embeddedProvider;
     }
 
     /**
@@ -380,7 +356,7 @@ public class WebProvider extends Provider implements IDisposable {
                         logger.info(String.format(
                                 "Creating stream provider from binary data file '%s'.",
                                 tempFile));
-                        provider = new WebProvider(StreamFactory.create(tempFile, true));
+                        provider = new WebProvider(StreamFactory.create(tempFile, false));
                         
                         provider.sourceDataFile = tempFile;
                     }
@@ -404,9 +380,12 @@ public class WebProvider extends Provider implements IDisposable {
 
         // Does the provider exist and has data been loaded?
         if (provider == null || provider.dataSet == null) {
-            // No so initialise it with the embeddded binary data so at least 
-            // we can do something.
-            provider = getEmbeddedProvider();
+            // No, throw error as 
+            logger.error(String.format(
+            "Failed to create a Web Provider. The path to 51Degrees device "
+                    + "data file is not set in the Constants."));
+            throw new Error("Could not create a Web Provider. Path to "
+                    + "51Degrees data file was not set in the Constants.");
         }
 
         return provider;
