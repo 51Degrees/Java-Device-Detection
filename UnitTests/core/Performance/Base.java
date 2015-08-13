@@ -75,6 +75,7 @@ public abstract class Base {
     @After
     public void tearDown() throws Exception {
         disposing(true);
+        System.out.printf("Disposed of data set from file '%s'\r\n", this.dataFile);
     }
     
     /**
@@ -100,6 +101,7 @@ public abstract class Base {
     
     public void setUp() {
         System.out.println();
+        System.out.printf("Test: %s\r\n", currentTestName.getMethodName());
         System.out.printf("Setup test with file '%s'\r\n", dataFile);
     }
     
@@ -113,7 +115,6 @@ public abstract class Base {
 
     protected Results userAgentsSingle(Iterable<String> userAgents,
         MatchProcessor processor) throws IOException {
-        System.out.printf("Test: %s\r\n", currentTestName.getMethodName());
         System.out.printf("Processor: %s\r\n", processor.getClass().getSimpleName());
         Provider provider = new Provider(this.dataSet);
         Results results = Utils.detectLoopSingleThreaded(
@@ -127,7 +128,6 @@ public abstract class Base {
 
     protected Results userAgentsMulti(Iterable<String> userAgents,
             MatchProcessor processor) throws IOException {
-        System.out.printf("Test: %s\r\n", currentTestName.getMethodName());
         System.out.printf("Processor: %s\r\n", processor.getClass().getSimpleName());
         Provider provider = new Provider(this.dataSet);
         Results results =  Utils.detectLoopMultiThreaded(
