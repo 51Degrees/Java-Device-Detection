@@ -215,7 +215,7 @@ public class WebProvider extends Provider implements IDisposable {
 
     /**
      * @param binaryFilePath to the source data file
-     * @param tempDirectory
+     * @param tempDirectory directory that will contain the temporary data file.
      * @return a temporary file name for the data file.
      */
     private static String getTempFileName(File tempDirectory, File binaryFilePath) {
@@ -419,7 +419,6 @@ public class WebProvider extends Provider implements IDisposable {
      *
      * @param request details of the HTTP request
      * @return a match object with properties associated with the device
-     * @throws ServletException
      * @throws IOException
      */
     public static Map<String, String[]> getResult(final HttpServletRequest request)
