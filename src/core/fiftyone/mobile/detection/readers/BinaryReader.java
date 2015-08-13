@@ -95,19 +95,23 @@ public class BinaryReader implements IDisposable {
         return bytes;
     }
     
+    /**
+     * Set the bytebuffer to null to prevent any further access to the under
+     * lying data. This should be done before the channel is closed as the 
+     * bytebuffer could be tied to the channel. Any subsequent access to the 
+     * methods will fail with a null object exception.
+     */
     @Override
-    public void dispose()
-    {
-        if(channel != null)
-        {
-            try
-            {
+    public void dispose() {
+        byteBuffer = null;
+        if (channel != null) {
+            try {
                 channel.close();
             }
             catch (IOException ex)
             {
+                // Do nothing.
             }
         }
-        byteBuffer = null;
     }
 }
