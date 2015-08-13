@@ -127,7 +127,6 @@ public abstract class Base {
 
     protected Results userAgentsMulti(Iterable<String> userAgents,
             MatchProcessor processor) throws IOException {
-        System.out.println(); 
         System.out.printf("Test: %s\r\n", currentTestName.getMethodName());
         System.out.printf("Processor: %s\r\n", processor.getClass().getSimpleName());
         Provider provider = new Provider(this.dataSet);
