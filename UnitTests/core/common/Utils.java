@@ -45,14 +45,12 @@ public class Utils {
      * Asserts that the file exists. Used at the beginning of each test.
      * @param dataFile 
      */
-    public static void checkFileExists(String dataFile)
-    {
-        if (new File(dataFile).exists() == false) {
-            fail(String.format(
+    public static void checkFileExists(String dataFile) {
+        assertTrue(String.format(
                 "Data file '%s' could not be found. " +
                 "See https://51degrees.com/compare-data-options to complete this test.",
-                dataFile));
-        }
+                dataFile),
+            new File(dataFile).exists());
     }
     
     /**
