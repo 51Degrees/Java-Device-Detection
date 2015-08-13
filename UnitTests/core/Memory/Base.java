@@ -61,6 +61,7 @@ public abstract class Base {
     @After
     public void tearDown() throws Exception {
         disposing(true);
+        System.out.printf("Disposed of data set from file '%s'\r\n", dataFile);
     }
     
     /**
@@ -85,6 +86,7 @@ public abstract class Base {
     }
     
     public void setUp() {
+        System.gc();
         System.out.println(); 
         System.out.printf("Setup test with file '%s'\r\n", dataFile);
     }
@@ -98,14 +100,14 @@ public abstract class Base {
             userAgents,
             memory);
         System.out.printf(
-            "Memory Used: '%dMB'\r\n", 
-            memory.getAverageMemoryUsed());
-        if (memory.getAverageMemoryUsed() > maxAllowedMemory) {
-            fail(String.format(
+            "Average Used: '%dMB'\r\nMax Allowed: '%dMB'\r\n", 
+            memory.getAverageMemoryUsed(),
+            (int)maxAllowedMemory);
+        assertTrue(String.format(
                 "Memory use was '%dMB' but max allowed '%dMB'",
                 memory.getAverageMemoryUsed(),
-                (int)maxAllowedMemory));
-        }
+                (int)maxAllowedMemory), 
+            memory.getAverageMemoryUsed() < maxAllowedMemory);
     }
 
     protected void userAgentsMulti(Iterable<String> userAgents,
@@ -117,13 +119,13 @@ public abstract class Base {
             userAgents,
             memory);
         System.out.printf(
-            "Memory Used: '%dMB'\r\n", 
-            memory.getAverageMemoryUsed());        
-        if (memory.getAverageMemoryUsed() > maxAllowedMemory) {
-            fail(String.format(
+            "Average Used: '%dMB'\r\nMax Allowed: '%dMB'\r\n", 
+            memory.getAverageMemoryUsed(),
+            (int)maxAllowedMemory);
+        assertTrue(String.format(
                 "Memory use was '%dMB' but max allowed '%dMB'",
                 memory.getAverageMemoryUsed(),
-                (int)maxAllowedMemory));
-        }        
+                (int)maxAllowedMemory),
+            memory.getAverageMemoryUsed() < maxAllowedMemory);
     }
 }

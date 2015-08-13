@@ -92,13 +92,12 @@ public class TrieBase {
     private static void validate(Map<String, Integer> indexes, TrieValidation validation) {
         for (Entry<String, Pattern> test : validation.entrySet()) {
             String value = validation.provider.getPropertyValue(indexes, test.getKey());
-            if (test.getValue().matcher(value).matches() == false) {
-                fail(String.format(
+            assertTrue(String.format(
                     "HttpHeader test failed for Property '%s' and test '%s' with result '%s'",
                     test.getKey(),
                     test.getValue(),
-                    value));
-            }
+                    value),
+                test.getValue().matcher(value).matches());
         }
     }
     

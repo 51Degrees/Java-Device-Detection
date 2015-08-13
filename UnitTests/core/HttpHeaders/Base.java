@@ -143,14 +143,12 @@ public abstract class Base {
         for(Entry<Property, Pattern> test : validation.entrySet())
         {
             String value = match.getValues(test.getKey()).toString();
-            if (test.getValue().matcher(value).matches() == false)
-            {
-                fail(String.format(
+            assertTrue(String.format(
                     "HttpHeader test failed for Property '%s' and test '%s' with result '%s'",
                     test.getKey(),
                     test.getValue(),
-                    value));
-            }
+                    value),
+                test.getValue().matcher(value).matches());
         }
     }
 }
