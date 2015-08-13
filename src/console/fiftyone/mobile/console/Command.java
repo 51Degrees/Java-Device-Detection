@@ -12,6 +12,8 @@ import fiftyone.mobile.detection.factories.TrieFactory;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -135,7 +137,7 @@ public class Command {
             System.out.printf("Relevant Sub Strings\t%s\r\n", patternMatch.toString());
             System.out.printf("Closest Sub Strings\t%s\r\n", patternMatch.getUserAgent());
             System.out.printf("Difference\t\t%d\r\n", patternMatch.getDifference());
-            System.out.printf("Method\t\t\t%s\r\n", patternMatch.method.toString());
+            System.out.printf("Method\t\t\t%s\r\n", patternMatch.getMethod());
             if (patternMatch.getSignature() != null) {
                 System.out.printf("Signature Rank:\t\t%d\r\n", patternMatch.getSignature().getRank());
             }

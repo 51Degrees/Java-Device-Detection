@@ -63,10 +63,6 @@ public class WebProvider extends Provider implements IDisposable {
      */
     private static WebProvider activeProvider;
     /**
-     * Provider initialised with the embedded device data.
-     */
-    private static WebProvider embeddedProvider;
-    /**
      * Used to log information about activity.
      */
     private final static Logger logger = LoggerFactory.getLogger(WebProvider.class);
@@ -82,22 +78,33 @@ public class WebProvider extends Provider implements IDisposable {
     private String sourceDataFile = null;
     
     /**
+     * Constructor is now deprecated as there is no more embedded data.
      * Constructs a new instance of the web provider using the embedded data.
-     *
      * @throws IOException
      */
+    @Deprecated
     public WebProvider() throws IOException {
-        super(Constants.CACHE_SERVICE_INTERVAL);
+        //super(Constants.CACHE_SERVICE_INTERVAL);
+        throw new Error("No embedded data as of version 3.2.");
     }
 
     /**
      * Constructs a new instance of the web provider connected to the dataset
      * provided.
-     *
      * @param dataSet used by the provider.
      */
     public WebProvider(Dataset dataSet) {
-        super(dataSet, Constants.CACHE_SERVICE_INTERVAL);
+        super(dataSet);
+    }
+    
+    /**
+     * Constructs a new instance of the web provider connected to the dataset
+     * provided with a cache of specific size.
+     * @param dataSet used by the provider.
+     * @param cacheSize number of cache entries.
+     */
+    public WebProvider(Dataset dataSet, int cacheSize) {
+        super(dataSet, cacheSize);
     }
 
     /**
@@ -126,26 +133,6 @@ public class WebProvider extends Provider implements IDisposable {
         if (WebProvider.activeProvider == this) {
             WebProvider.activeProvider = null;
         }
-    }
-
-    /**
-     * @return a reference to the embedded provider.
-     */
-    public static WebProvider getEmbeddedProvider() {
-        if (embeddedProvider == null) {
-            synchronized (lock) {
-                if (embeddedProvider == null) {
-                    try {
-                        embeddedProvider = new WebProvider();
-                    } catch (IOException ex) {
-                        logger.error(
-                                "Exception creating web provider from embedded data",
-                                ex);
-                    }
-                }
-            }
-        }
-        return embeddedProvider;
     }
 
     /**
@@ -228,7 +215,7 @@ public class WebProvider extends Provider implements IDisposable {
 
     /**
      * @param binaryFilePath to the source data file
-     * @param tempDirectory
+     * @param tempDirectory directory that will contain the temporary data file.
      * @return a temporary file name for the data file.
      */
     private static String getTempFileName(File tempDirectory, File binaryFilePath) {
@@ -252,59 +239,59 @@ public class WebProvider extends Provider implements IDisposable {
      * @param binaryFile the binary source file to get a temporary copy of.
      * @returns a file path to a temporary working file.
      */
-        private static String getTempWorkingFile(File tempDirectory, File binaryFile)
-                throws FileNotFoundException, IOException {
-            String tempFilePath = null;
-            if (binaryFile.exists())
-            {
-                String binaryFilePath = binaryFile.getAbsolutePath();
-                String binaryName = binaryFile.getName();
-                // Get the publish date of the master data file.
-                Date masterDate = getDataFileDate(binaryFilePath);
+    private static String getTempWorkingFile(File tempDirectory, File binaryFile)
+            throws FileNotFoundException, IOException {
+        String tempFilePath = null;
+        if (binaryFile.exists())
+        {
+            String binaryFilePath = binaryFile.getAbsolutePath();
+            String binaryName = binaryFile.getName();
+            // Get the publish date of the master data file.
+            Date masterDate = getDataFileDate(binaryFilePath);
 
-                // Check if there are any other tmp files.
-                File[] files = tempDirectory.listFiles();
-                for (File file : files) {
-                    String filePath = file.getAbsolutePath();
-                    String fileName = file.getName();
-                    
-                    if(!filePath.equals(binaryFilePath) &&
-                    filePath.startsWith(binaryName) &&
-                        filePath.endsWith(".tmp"))
+            // Check if there are any other tmp files.
+            File[] files = tempDirectory.listFiles();
+            for (File file : files) {
+                String filePath = file.getAbsolutePath();
+                String fileName = file.getName();
+
+                if(!filePath.equals(binaryFilePath) &&
+                filePath.startsWith(binaryName) &&
+                    filePath.endsWith(".tmp"))
+                {
+                    // Check if temp file matches date of the master file.
+                    try
                     {
-                        // Check if temp file matches date of the master file.
-                        try
+                        Date tempDate = getDataFileDate(filePath);
+                        if (tempDate.equals(masterDate))
                         {
-                            Date tempDate = getDataFileDate(filePath);
-                            if (tempDate.equals(masterDate))
-                            {
-                                logger.info("Using existing temp data file with published data %s - \"%s\"",
-                                        tempDate.toString(),
-                                        filePath);
-                                return fileName;
-                            }
-                        }
-                        catch (Exception ex) // Exception may occur if file is not a 51Degrees file, no action is needed.
-                        {
-                            logger.info("Error while reading temporary data file \"%s\": %s",
-                                    filePath,
-                                    ex.getMessage());
+                            logger.info("Using existing temp data file with published data %s - \"%s\"",
+                                    tempDate.toString(),
+                                    filePath);
+                            return fileName;
                         }
                     }
+                    catch (Exception ex) // Exception may occur if file is not a 51Degrees file, no action is needed.
+                    {
+                        logger.info("Error while reading temporary data file \"%s\": %s",
+                                filePath,
+                                ex.getMessage());
+                    }
                 }
-                
-                // No suitable temp file was found, create one in the
-                //App_Data folder to enable the source file to be updated
-                // without stopping the web site.
-                tempFilePath = getTempFileName(tempDirectory, binaryFile);
-
-                // Copy the file to enable other processes to update it.
-                copyFile(binaryFile, tempFilePath);
-                logger.info("Created temp data file - \"%s\"", tempFilePath);
-                
             }
-            return tempFilePath;
+
+            // No suitable temp file was found, create one in the
+            //App_Data folder to enable the source file to be updated
+            // without stopping the web site.
+            tempFilePath = getTempFileName(tempDirectory, binaryFile);
+
+            // Copy the file to enable other processes to update it.
+            copyFile(binaryFile, tempFilePath);
+            logger.info("Created temp data file - \"%s\"", tempFilePath);
+
         }
+        return tempFilePath;
+    }
 
     /**
      * Forces the provider to update current ActiveProvider with new data.
@@ -369,7 +356,7 @@ public class WebProvider extends Provider implements IDisposable {
                         logger.info(String.format(
                                 "Creating stream provider from binary data file '%s'.",
                                 tempFile));
-                        provider = new WebProvider(StreamFactory.create(tempFile, true));
+                        provider = new WebProvider(StreamFactory.create(tempFile, false));
                         
                         provider.sourceDataFile = tempFile;
                     }
@@ -393,9 +380,12 @@ public class WebProvider extends Provider implements IDisposable {
 
         // Does the provider exist and has data been loaded?
         if (provider == null || provider.dataSet == null) {
-            // No so initialise it with the embeddded binary data so at least 
-            // we can do something.
-            provider = getEmbeddedProvider();
+            // No, throw error as 
+            logger.error(String.format(
+            "Failed to create a Web Provider. The path to 51Degrees device "
+                    + "data file is not set in the Constants."));
+            throw new Error("Could not create a Web Provider. Path to "
+                    + "51Degrees data file was not set in the Constants.");
         }
 
         return provider;
@@ -429,7 +419,6 @@ public class WebProvider extends Provider implements IDisposable {
      *
      * @param request details of the HTTP request
      * @return a match object with properties associated with the device
-     * @throws ServletException
      * @throws IOException
      */
     public static Map<String, String[]> getResult(final HttpServletRequest request)

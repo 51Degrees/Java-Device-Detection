@@ -253,7 +253,7 @@ class ImageOptimizer {
         {
             // Get the files and paths involved in the caching.
 
-            File cachedFile = Cache.lookup(
+            File cachedFile = ImageCache.lookup(
                     cacheDirectory, sourceFile, size.width, size.height);
             
             logger.debug(String.format(
@@ -280,7 +280,7 @@ class ImageOptimizer {
                             sourceFile.getAbsolutePath())) 
                         ? "jpg" : "png", os);
                 ByteArrayInputStream imageAsStream = new ByteArrayInputStream(os.toByteArray());
-                Cache.add(sourceFile, cachedFile, size.width, size.height, imageAsStream);
+                ImageCache.add(sourceFile, cachedFile, size.width, size.height, imageAsStream);
                 imageAsStream.close();
             }
             
