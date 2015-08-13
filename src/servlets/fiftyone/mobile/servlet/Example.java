@@ -165,7 +165,7 @@ public class Example extends BaseServlet {
                     component.getName()));
 	        for(Property property : properties) {
 	        	if (property.valueType != PropertyValueType.JAVASCRIPT) {
-		        	if (lastCategory != property.getCategory()) {
+		        	if (lastCategory.equals(property.getCategory())) {
 		        		lastCategory = property.getCategory();
 		        		out.println(String.format(
 		                        "<tr><td>%s</td></tr>",
