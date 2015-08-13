@@ -82,22 +82,33 @@ public class WebProvider extends Provider implements IDisposable {
     private String sourceDataFile = null;
     
     /**
+     * Constructor is now deprecated as there is no more embedded data.
      * Constructs a new instance of the web provider using the embedded data.
-     *
      * @throws IOException
      */
+    @Deprecated
     public WebProvider() throws IOException {
-        super(Constants.CACHE_SERVICE_INTERVAL);
+        //super(Constants.CACHE_SERVICE_INTERVAL);
+        throw new Error("No embedded data as of version 3.2.");
     }
 
     /**
      * Constructs a new instance of the web provider connected to the dataset
      * provided.
-     *
      * @param dataSet used by the provider.
      */
     public WebProvider(Dataset dataSet) {
-        super(dataSet, Constants.CACHE_SERVICE_INTERVAL);
+        super(dataSet);
+    }
+    
+    /**
+     * Constructs a new instance of the web provider connected to the dataset
+     * provided with a cache of specific size.
+     * @param dataSet used by the provider.
+     * @param cacheSize number of cache entries.
+     */
+    public WebProvider(Dataset dataSet, int cacheSize) {
+        super(dataSet, cacheSize);
     }
 
     /**
