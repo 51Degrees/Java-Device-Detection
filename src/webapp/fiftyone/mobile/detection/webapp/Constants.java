@@ -97,11 +97,6 @@ public class Constants {
      * update.
      */
     public static final int FILE_CHECK_DELAYED_START = 5 * 60;
-    
-    /**
-     * Number of seconds between the cache being serviced.
-     */
-    public static final int CACHE_SERVICE_INTERVAL = 60;
 
     /**
      * Header fields that should not be shared with 51Degrees.
