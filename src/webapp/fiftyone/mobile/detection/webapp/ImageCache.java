@@ -28,7 +28,7 @@ import org.apache.commons.codec.binary.Base64;
  * This Source Code Form is "Incompatible With Secondary Licenses", as
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
-class Cache {
+class ImageCache {
 
     /**
      * The number of "chunks" the image cacheFile location should be broken 
