@@ -33,27 +33,20 @@ public class SourceMemory extends SourceBase {
      */
     private final byte[] buffer;
     /**
-     * Used for reading from the byte array.
-     */
-    private ByteBuffer byteBuffer;
-
-    /**
      * Creates the source from the byte array provided.
      * @param buffer Byte array source of the data.
      */
     public SourceMemory(byte[] buffer) {
         this.buffer = buffer;
     }
-    
     /**
      * Creates a new ByteBuffer from the bytes array.
      * @return new ByteBuffer from the bytes array.
      */
     @Override
     public ByteBuffer createStream() {
-        byteBuffer = ByteBuffer.wrap(buffer);
+        ByteBuffer byteBuffer = ByteBuffer.wrap(buffer);
         byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
         return byteBuffer;
     }
-    
 }
