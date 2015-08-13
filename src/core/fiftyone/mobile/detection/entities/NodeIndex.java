@@ -34,12 +34,12 @@ public class NodeIndex extends BaseEntity implements Comparable<NodeIndex> {
     /**
      * The node index for the sequence of characters.
      */
-    final int relatedNodeOffset;
+    private final int relatedNodeOffset;
     /**
      * True if the value is an index to a sub string. False if the value is 1 to
      * 4 consecutive characters.
      */
-    final boolean isString;
+    public final boolean isString;
     /**
      * The value of the node index. Interpretation depends on IsSubString. If
      * IsSubString is true the 4 bytes represent an offset in the strings data
@@ -52,10 +52,14 @@ public class NodeIndex extends BaseEntity implements Comparable<NodeIndex> {
      * Returns the characters related to this node index.
      */
     byte[] getCharacters() throws IOException {
-        if (characters != null) {
-            return characters;
+        if (characters == null) {
+            synchronized(this) {
+                if (characters == null) {
+                    characters = getCharacters(getDataSet(), isString, value);
+                }
+            }
         }
-        return getCharacters(getDataSet(), isString, value);
+        return characters;
     }
     private byte[] characters;
 
@@ -65,9 +69,7 @@ public class NodeIndex extends BaseEntity implements Comparable<NodeIndex> {
     Node getNode() throws IOException {
         if (node != null) {
             return node;
-        }
-
-        if (getDataSet().nodes instanceof MemoryBaseList) {
+        } else if (getDataSet().nodes instanceof MemoryBaseList) {
             if (node == null) {
                 synchronized (this) {
                     if (node == null) {
@@ -76,9 +78,9 @@ public class NodeIndex extends BaseEntity implements Comparable<NodeIndex> {
                 }
             }
             return node;
+        } else {
+            return getDataSet().getNodes().get(relatedNodeOffset);
         }
-
-        return getDataSet().getNodes().get(relatedNodeOffset);
     }
     private Node node;
 
@@ -108,8 +110,12 @@ public class NodeIndex extends BaseEntity implements Comparable<NodeIndex> {
      * completed.
      */
     void init() throws IOException {
-        characters = getCharacters(getDataSet(), isString, value);
-        node = getDataSet().getNodes().get(relatedNodeOffset);
+        if (characters == null) {
+            characters = getCharacters(getDataSet(), isString, value);
+        }
+        if (node == null) {
+            node = getDataSet().getNodes().get(relatedNodeOffset);
+        }
     }
 
     /**
@@ -126,36 +132,8 @@ public class NodeIndex extends BaseEntity implements Comparable<NodeIndex> {
             return dataSet.strings.get(
                     Integer.reverseBytes(ByteBuffer.wrap(value).getInt())).value;
         } else {
-            return nonZeros(value);
+            return value;
         }
-    }
-
-    /**
-     * Returns the non zero values in the array.
-     *
-     * @param value An array of values.
-     * @return The non zero values as an array.
-     */
-    private static byte[] nonZeros(byte[] value) {
-        int count = 0;
-        for (int i = 0; i < value.length; i++) {
-            if (value[i] != 0) {
-                count++;
-            }
-        }
-
-        byte[] nonZeroValues = new byte[count];
-        for (int i = 0, p = 0; i < value.length; i++) {
-            if (value[i] != 0) {
-                nonZeroValues[p] = value[i];
-                p++;
-                if (p > count) {
-                    break;
-                }
-            }
-        }
-
-        return nonZeroValues;
     }
 
     /**
@@ -167,15 +145,13 @@ public class NodeIndex extends BaseEntity implements Comparable<NodeIndex> {
      * @return The relative position of the node in relation to the other array
      */
     int compareTo(byte[] other, int startIndex) throws IOException {
-        byte[] characters = getCharacters();
-
-        for (int i = characters.length - 1, o = startIndex + characters.length - 1; i >= 0; i--, o--) {
-            int difference = characters[i] - other[o];
+        byte[] c = getCharacters();
+        for (int i = c.length - 1, o = startIndex + c.length - 1; i >= 0; i--, o--) {
+            int difference = c[i] - other[o];
             if (difference != 0) {
                 return difference;
             }
         }
-
         return 0;
     }
 
