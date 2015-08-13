@@ -33,12 +33,20 @@ import static org.junit.Assert.fail;
 
 public class UserAgentGenerator {
 
-    private static ArrayList<String> privateUserAgents;
-    
+    /**
+     * Used to lock during the creation of the source User-Agents array.
+     */    
     private static final Object lock = new Object();
     
+    /**
+     * Provides access to random numbers when randomising User-Agents.
+     */
     private static final Random random = new Random();
     
+    /**
+     * Gets the User-Agent from the data source for the tests.
+     * @return array of User-Agents.
+     */
     private static ArrayList<String> getUserAgents() {
         if (privateUserAgents == null) {
             synchronized(lock) {
@@ -72,6 +80,7 @@ public class UserAgentGenerator {
         }
         return privateUserAgents;
     }
+    private static ArrayList<String> privateUserAgents;
         
     /**
      * Returns a random user agent which may also have been randomised.
@@ -95,21 +104,50 @@ public class UserAgentGenerator {
         return value;
     }
     
+    /**
+     * Gets the User-Agents in a random order and may include duplicates.
+     * @return iterator returning random valid User-Agents.
+     */
     public static Iterable<String> getRandomUserAgents() {
         return getUserAgentsIterable(0);
     }
 
+    /**
+     * Gets the User-Agents in the order they appear in the source data file.
+     * @return iterator configured to return User-Agents in order.
+     */
     public static Iterable<String> getUniqueUserAgents()
     {
         return getUserAgents();
     }
 
+    /**
+     * Invalid User-Agents for testing bad input data which is close to but
+     * not quite a real User-Agent.
+     * @return iterator configured to return random bad User-Agents.
+     */
     public static Iterable<String> getBadUserAgents() {
         return getUserAgentsIterable(10);
     }
+
+    /**
+     * Returns an iterator for the available number of random User-Agent each
+     * with an amount of randomness applied to them.
+     * @param randomness number of random characters to alter.
+     * @return iterator to return random User-Agents.
+     */
+    public static Iterable<String> getUserAgentsIterable(final int randomness) {
+        return getUserAgentsIterable(getUserAgents().size(), randomness);
+    }
     
-    public static Iterable<String> getUserAgentsIterable(final int randomness)
-    {
+    /**
+     * Returns an iterator for the required number of random User-Agent each
+     * with an amount of randomness applied to them.
+     * @param requiredCount number of User-Agents required.
+     * @param randomness number of random characters to alter.
+     * @return iterator to return random User-Agents.
+     */
+    public static Iterable<String> getUserAgentsIterable(final int requiredCount, final int randomness) {
         return new Iterable<String>() {
             @Override
             public Iterator<String> iterator() {
@@ -117,7 +155,7 @@ public class UserAgentGenerator {
                     int count = 0;
                     @Override
                     public boolean hasNext() {
-                        return count < UserAgentGenerator.getUserAgents().size();
+                        return count < requiredCount;
                     }
                     @Override
                     public String next() {
