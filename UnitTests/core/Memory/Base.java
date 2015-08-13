@@ -61,7 +61,7 @@ public abstract class Base {
     @After
     public void tearDown() throws Exception {
         disposing(true);
-        System.out.printf("Disposed of data set from file '%s'\r\n", dataFile);
+        System.out.printf("Disposed of data set from file '%s'\r\n", this.dataFile);
     }
     
     /**
@@ -88,12 +88,12 @@ public abstract class Base {
     public void setUp() {
         System.gc();
         System.out.println(); 
+        System.out.printf("Test: %s\r\n", currentTestName.getMethodName());
         System.out.printf("Setup test with file '%s'\r\n", dataFile);
     }
     
     protected void userAgentsSingle(Iterable<String> userAgents,
             double maxAllowedMemory) throws IOException {
-        System.out.printf("Test: %s\r\n", currentTestName.getMethodName());
         memory.reset();
         Utils.detectLoopSingleThreaded(
             new Provider(this.dataSet),
@@ -112,7 +112,6 @@ public abstract class Base {
 
     protected void userAgentsMulti(Iterable<String> userAgents,
             double maxAllowedMemory) throws IOException {
-        System.out.printf("Test: %s\r\n", currentTestName.getMethodName());        
         memory.reset();
         Utils.detectLoopMultiThreaded(
             new Provider(this.dataSet),
