@@ -115,7 +115,7 @@ public class Cache<K, V> {
         background.clear();
         switches.incrementAndGet();
         
-        //Make sure future service will be able to access this block of code.
+        // Make sure future service will be able to access this block of code.
         switching = false;
     }
     
