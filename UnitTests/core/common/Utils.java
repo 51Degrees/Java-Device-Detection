@@ -95,6 +95,19 @@ public class Utils {
         }
         return results;
     }
+    
+    public static Results detectLoopSingleThreaded(TrieProvider provider, Iterable<String> userAgents) {
+        Results results = new Results();
+        for (String userAgent : userAgents) {
+            try {
+                int value = provider.getDeviceIndex(userAgent);
+                results.count.incrementAndGet();
+            } catch (Exception ex) {
+                Logger.getLogger(Utils.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return results;
+    }
 
     public static Results detectLoopMultiThreaded(TrieProvider provider, 
             Iterable<String> userAgents) {
