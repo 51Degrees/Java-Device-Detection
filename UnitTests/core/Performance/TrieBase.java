@@ -1,9 +1,9 @@
 package Performance;
 
-import common.DoNothing;
 import common.Results;
 import fiftyone.mobile.detection.TrieProvider;
 import static org.junit.Assert.assertTrue;
+import org.junit.Test;
 
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
@@ -41,7 +41,51 @@ public abstract class TrieBase {
             this.setUpTime < this.getMaxSetupTime());
     }
     
+    protected int getGuidanceTime() {
+        return 1;
+    }
+    
     protected abstract int getMaxSetupTime();
+    
+    @Test
+    protected void randomUserAgentMulti() {
+        userAgentMulti(common.UserAgentGenerator.getRandomUserAgents());
+    }
+    
+    @Test
+    protected void randomUserAgentsMultiAll() {
+        userAgentmultiAll(common.UserAgentGenerator.getRandomUserAgents());
+    }
+    
+    @Test
+    protected void randomUserAgentsSingle() {
+        userAgentsSingle(common.UserAgentGenerator.getRandomUserAgents());
+    }
+    
+    @Test
+    protected void randomUserAgentsSingleAll() {
+        userAgentsSingleAll(common.UserAgentGenerator.getRandomUserAgents());
+    }
+    
+    @Test
+    protected void uniqueUserAgentsMulti() {
+        userAgentMulti(common.UserAgentGenerator.getUniqueUserAgents());
+    }
+    
+    @Test
+    protected void uniqueUserAgentsMultiAll() {
+        userAgentmultiAll(common.UserAgentGenerator.getUniqueUserAgents());
+    }
+    
+    @Test
+    protected void uniqueUserAgentsSingle() {
+        userAgentsSingle(common.UserAgentGenerator.getUniqueUserAgents());
+    }
+    
+    @Test
+    protected void uniqueUserAgentsSingleAll() {
+        userAgentsSingleAll(common.UserAgentGenerator.getUniqueUserAgents());
+    }
     
     public TrieBase(String dataFile) {
         this.dataFile = dataFile;
@@ -67,5 +111,19 @@ public abstract class TrieBase {
         return results;
     }
     
+    protected common.Results userAgentsSingle(Iterable<String> userAgents) {
+        return common.Utils.detectLoopSingleThreaded(provider, userAgents);
+    }
     
+    protected common.Results userAgentsSingleAll(Iterable<String> userAgents) {
+        Results results = common.Utils.detectLoopSingleThreaded(provider, userAgents);
+        System.out.println(String.format("Values check sum: '%s'", results.checkSum));
+        try {
+            assertTrue(results.getAverageTime() < getGuidanceTime());
+        } catch (AssertionError e) {
+            System.out.println("Average time of "+results.getAverageTime()+" exceeded the "
+                    + "guidance time of "+getGuidanceTime());
+        }
+        return results;
+    }
 }
