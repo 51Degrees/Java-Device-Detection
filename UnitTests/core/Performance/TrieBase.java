@@ -50,7 +50,9 @@ public abstract class TrieBase {
         return 1;
     }
     
-    protected abstract int getMaxSetupTime();
+    protected int getMaxSetupTime() {
+        return 500;
+    }
     
     /* Test support methods */
     
