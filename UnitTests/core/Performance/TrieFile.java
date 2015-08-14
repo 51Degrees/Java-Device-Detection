@@ -34,65 +34,65 @@ public abstract class TrieFile extends TrieBase {
         super(dataSet);
     }
     
-        /* Actual tests */
+    /* Actual tests */
     
     @Test
-    protected void randomUserAgentMulti() {
+    public void randomUserAgentMulti() {
         userAgentMulti(common.UserAgentGenerator.getRandomUserAgents());
     }
     
     @Test
-    protected void randomUserAgentsMultiAll() {
+    public void randomUserAgentsMultiAll() {
         userAgentmultiAll(common.UserAgentGenerator.getRandomUserAgents());
     }
     
     @Test
-    protected void randomUserAgentsSingle() {
+    public void randomUserAgentsSingle() {
         userAgentsSingle(common.UserAgentGenerator.getRandomUserAgents());
     }
     
     @Test
-    protected void randomUserAgentsSingleAll() {
+    public void randomUserAgentsSingleAll() {
         userAgentsSingleAll(common.UserAgentGenerator.getRandomUserAgents());
     }
     
     @Test
-    protected void uniqueUserAgentsMulti() {
+    public void uniqueUserAgentsMulti() {
         userAgentMulti(common.UserAgentGenerator.getUniqueUserAgents());
     }
     
     @Test
-    protected void uniqueUserAgentsMultiAll() {
+    public void uniqueUserAgentsMultiAll() {
         userAgentmultiAll(common.UserAgentGenerator.getUniqueUserAgents());
     }
     
     @Test
-    protected void uniqueUserAgentsSingle() {
+    public void uniqueUserAgentsSingle() {
         userAgentsSingle(common.UserAgentGenerator.getUniqueUserAgents());
     }
     
     @Test
-    protected void uniqueUserAgentsSingleAll() {
+    public void uniqueUserAgentsSingleAll() {
         userAgentsSingleAll(common.UserAgentGenerator.getUniqueUserAgents());
     }
     
     @Test
-    protected void badUserAgentsMulti() {
+    public void badUserAgentsMulti() {
         userAgentMulti(common.UserAgentGenerator.getBadUserAgents());
     }
     
     @Test
-    protected void badUserAgentsMultiAll() {
+    public void badUserAgentsMultiAll() {
         userAgentmultiAll(common.UserAgentGenerator.getBadUserAgents());
     }
     
     @Test
-    protected void badUserAgentsSingle() {
+    public void badUserAgentsSingle() {
         userAgentsSingle(common.UserAgentGenerator.getBadUserAgents());
     }
     
     @Test
-    protected void badUserAgentsSingleAll() {
+    public void badUserAgentsSingleAll() {
         userAgentsSingleAll(common.UserAgentGenerator.getBadUserAgents());
     }
     
