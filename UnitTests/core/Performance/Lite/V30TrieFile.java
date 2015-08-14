@@ -24,7 +24,7 @@ import Performance.TrieFile;
  * ********************************************************************* */
 public class V30TrieFile extends TrieFile {
 
-    public V30TrieFile(String dataSet) {
+    public V30TrieFile() {
         super(Properties.Constants.LITE_TRIE_V30);
     }   
 }
