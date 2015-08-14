@@ -2,6 +2,7 @@ package Performance;
 
 import common.Results;
 import fiftyone.mobile.detection.TrieProvider;
+import org.junit.After;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
@@ -33,6 +34,10 @@ public abstract class TrieBase {
     protected int maxInitialiseTime = 500;
     protected int guidanceTime = 1;
     
+    public TrieBase(String dataFile) {
+        this.dataFile = dataFile;
+    }
+    
     protected void initialiseTime() {
         assertTrue(String.format(
             "Initialisation time '%dms' greater than maximum allowed '%dms'",
@@ -47,54 +52,7 @@ public abstract class TrieBase {
     
     protected abstract int getMaxSetupTime();
     
-    @Test
-    protected void randomUserAgentMulti() {
-        userAgentMulti(common.UserAgentGenerator.getRandomUserAgents());
-    }
-    
-    @Test
-    protected void randomUserAgentsMultiAll() {
-        userAgentmultiAll(common.UserAgentGenerator.getRandomUserAgents());
-    }
-    
-    @Test
-    protected void randomUserAgentsSingle() {
-        userAgentsSingle(common.UserAgentGenerator.getRandomUserAgents());
-    }
-    
-    @Test
-    protected void randomUserAgentsSingleAll() {
-        userAgentsSingleAll(common.UserAgentGenerator.getRandomUserAgents());
-    }
-    
-    @Test
-    protected void uniqueUserAgentsMulti() {
-        userAgentMulti(common.UserAgentGenerator.getUniqueUserAgents());
-    }
-    
-    @Test
-    protected void uniqueUserAgentsMultiAll() {
-        userAgentmultiAll(common.UserAgentGenerator.getUniqueUserAgents());
-    }
-    
-    @Test
-    protected void uniqueUserAgentsSingle() {
-        userAgentsSingle(common.UserAgentGenerator.getUniqueUserAgents());
-    }
-    
-    @Test
-    protected void uniqueUserAgentsSingleAll() {
-        userAgentsSingleAll(common.UserAgentGenerator.getUniqueUserAgents());
-    }
-    
-    public TrieBase(String dataFile) {
-        this.dataFile = dataFile;
-    }
-    
-    public void setUp() {
-        System.out.println();
-        System.out.printf("Setup test with file '%s'\r\n", dataFile);
-    }
+    /* Test support methods */
     
     protected common.Results userAgentMulti(Iterable<String> userAgents) {
         return common.Utils.detectLoopMultiThreaded(provider, userAgents);
@@ -125,5 +83,26 @@ public abstract class TrieBase {
                     + "guidance time of "+getGuidanceTime());
         }
         return results;
+    }
+    
+    /* Dispose */
+    
+    @After
+    public void tearDown() throws Exception {
+        disposing(true);
+        System.out.printf("Disposed of data set from file '%s'\r\n", this.dataFile);
+    }
+    
+    protected void disposing(boolean disposing) {
+        if (provider != null) {
+            provider.dispose();
+            provider = null;
+        }
+    }
+    
+    @Override
+    protected void finalize() throws Throwable {
+        disposing(false);
+        super.finalize();
     }
 }
