@@ -5,7 +5,6 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
@@ -136,7 +135,7 @@ public class WebProvider extends Provider implements IDisposable {
     }
 
     /**
-     * @param sc servlet context for the request.
+     * @param sc Servlet context for the request.
      * @return a reference to the active provider.
      */
     public static WebProvider getActiveProvider(ServletContext sc) {
@@ -392,12 +391,42 @@ public class WebProvider extends Provider implements IDisposable {
     }
 
     /**
+     * Function retrieves the relevant HTTP headers from the HttpServletRequest 
+     * object and returns the result of device detection in the form of a Match 
+     * object.
+     * 
+     * @param request HttpServletRequest containing HTTP headers.
+     * @return FiftyOne Match object with detection results.
+     * @throws IOException 
+     */
+    public Match match(HttpServletRequest request) throws IOException {
+        HashMap headers = new HashMap<String, String>();
+        for (String header : super.dataSet.getHttpHeaders()) {
+            if (request.getHeader(header) != null) {
+                Enumeration<String> headerValues = request.getHeaders(header);
+                if (headerValues.hasMoreElements()) {
+                    String hv = headerValues.nextElement();
+                    headers.put(header, hv);
+                }
+            }
+        }
+        return super.match(headers);
+    }
+    
+    /**
+     * The function has been re-written. The original function was causing 
+     * the detection result to always return the default profile. Reason being 
+     * that HttpServletRequest provides HTTP headers as lower-case strings 
+     * where as the combination of lower and upper case letters was expected 
+     * by the match method.
+     * 
      * Converts the request headers into a map and then passed the map to the
      * base implementation of the matcher.
      *
      * @param request
      * @return
      */
+    /*
     public Match match(HttpServletRequest request) throws IOException {
         HashMap headers = new HashMap<String, String>();
         Enumeration<String> headerNames = request.getHeaderNames();
@@ -411,6 +440,7 @@ public class WebProvider extends Provider implements IDisposable {
         }
         return super.match(headers);
     }
+    */
 
     /**
      * Obtains the match result from the request container, then the session and
