@@ -387,7 +387,10 @@ public class AutoUpdate {
      */
     private static boolean download(final String[] licenseKeys, long lastModified, 
             String pathToTempFile) throws AutoUpdateException {
+        //Declare resources so that they can be released in finally block.
         HttpURLConnection client = null;
+        FileOutputStream outputStream = null;
+        InputStream inputStream = null;
         try {
             // Open the connection to download the latest data file.
             client = (HttpsURLConnection) fullUrl(licenseKeys).openConnection();
@@ -403,8 +406,8 @@ public class AutoUpdate {
             // If data is available then see if it's a new data file.
             if (client.getResponseCode() == HttpsURLConnection.HTTP_OK) {
                 //Allocate resources for the download.
-                InputStream inputStream = client.getInputStream();
-                FileOutputStream outputStream = new FileOutputStream(pathToTempFile);
+                inputStream = client.getInputStream();
+                outputStream = new FileOutputStream(pathToTempFile);
                 byte[] buffer = new byte[4096];
                 int bytesRead = -1;
                 
@@ -446,7 +449,24 @@ public class AutoUpdate {
         } catch (IOException ex) {
             throw new AutoUpdateException("Device data download failed: " + ex.getMessage());
         } finally {
-            client.disconnect();
+            //Release resources.
+            if (client != null) {
+                client.disconnect();
+            }
+            if (outputStream != null) {
+                try {
+                    outputStream.close();
+                } catch (IOException ex) {
+                    Logger.getLogger(AutoUpdate.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            if (inputStream != null) {
+                try {
+                    inputStream.close();
+                } catch (IOException ex) {
+                    Logger.getLogger(AutoUpdate.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
         }
     }
 
