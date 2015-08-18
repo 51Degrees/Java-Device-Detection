@@ -198,11 +198,6 @@ public class Dataset implements IDisposable {
      */
     public IFixedList<IntegerEntity> nodeRankedSignatureIndexes;
     /**
-     * The percentage of requests for signatures which were not already 
-     * contained in the cache.
-     */
-    public double percentageSignatureCacheMisses;
-    /**
      * A list of all the possible profiles the data set contains.
      */
     public IReadonlyList<Profile> profiles;
