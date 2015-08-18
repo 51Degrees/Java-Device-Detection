@@ -32,7 +32,7 @@ import java.util.logging.Logger;
  * Implementation of Component where HTTP Headers are provided by the data file
  * and are no longer hardcoded like V3.1.
  */
-public class ComponentV32 extends Component implements Comparable<Component> {
+public class ComponentV32 extends Component {
 
     /**
      * List of HTTP headers that should be checked in order to perform a 

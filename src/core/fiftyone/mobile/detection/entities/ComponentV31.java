@@ -30,7 +30,7 @@ import java.util.logging.Logger;
 /**
  * Returns constants for HTTP Headers.
  */
-public class ComponentV31 extends Component implements Comparable<Component> {
+public class ComponentV31 extends Component {
     /**
      * List of HTTP headers that should be checked in order to perform a 
      * detection where more headers than User-Agent are available.
