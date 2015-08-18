@@ -162,7 +162,7 @@ public class TrieBase {
     
     private void fetchAllProperties(Map<String, Integer> deviceIndexes) {
         int checkSum = 0;
-        for (String propertyName : provider.PropertyNames()) {
+        for (String propertyName : provider.propertyNames()) {
             String value = provider.getPropertyValue(deviceIndexes, propertyName);
             System.out.print(propertyName+": ");
             if (value != null) {
@@ -175,7 +175,7 @@ public class TrieBase {
     
     private void fetchAllProperties(int deviceIndex) {
         int checkSum = 0;
-        for (String propertyName : provider.PropertyNames()) {
+        for (String propertyName : provider.propertyNames()) {
             String value = provider.getPropertyValue(deviceIndex, propertyName);
             System.out.print(propertyName+": ");
             if (value != null) {
