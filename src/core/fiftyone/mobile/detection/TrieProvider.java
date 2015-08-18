@@ -132,7 +132,7 @@ public abstract class TrieProvider implements IDisposable {
      * List of all property names for the provider.
      * @return list of all property names for the provider
      */
-    public List<String> PropertyNames() {
+    public List<String> propertyNames() {
         return _propertyNames;
     }
 
