@@ -1,21 +1,19 @@
 package fiftyone.mobile.detection;
 
-import fiftyone.mobile.detection.entities.stream.Pool;
-import fiftyone.mobile.detection.entities.stream.TriePool;
-import fiftyone.mobile.detection.entities.stream.TrieSource;
-import fiftyone.mobile.detection.readers.TrieReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import fiftyone.mobile.detection.entities.stream.TriePool;
+import fiftyone.mobile.detection.readers.TrieReader;
 
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
