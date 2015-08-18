@@ -103,7 +103,11 @@ public class AutoUpdate {
             decompressData(compressedTempFile, uncompressedTempFile);
             //Delete compressed file.
             File compressedFile = new File(compressedTempFile);
-            compressedFile.delete();
+            if (compressedFile.delete() == false) {
+                Logger.getLogger(AutoUpdate.class.getName()).log(Level.WARNING,
+                            "Compressed file downloaded from 51Degrees.com "
+                                    + "could not be deleted.");
+            }
             // Create a dataset and load the data in.
             final Dataset newDataSet = StreamFactory.create(uncompressedTempFile, true);
             //Test the new data and check if old one needs to be replaced.
