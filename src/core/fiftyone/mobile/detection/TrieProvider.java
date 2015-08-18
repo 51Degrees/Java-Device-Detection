@@ -332,17 +332,6 @@ public abstract class TrieProvider implements IDisposable {
 
     /**
      * Returns the value of the property for the user agent provided.
-     * @param userAgent User agent of the request.
-     * @param propertyName Name of the property required.
-     * @return The value of the property for the given user agent.
-     * @throws java.lang.Exception
-     */
-    public String GetPropertyValue(String userAgent, String propertyName) throws Exception {
-        return getPropertyValue(getDeviceIndex(userAgent), propertyName);
-    }
-
-    /**
-     * Returns the value of the property for the user agent provided.
      * @param headers Collection of HTTP headers and values.
      * @param propertyName Name of the property required.
      * @return The value of the property for the given user agent.
