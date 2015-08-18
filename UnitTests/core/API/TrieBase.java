@@ -2,7 +2,6 @@ package API;
 
 import common.Utils;
 import fiftyone.mobile.detection.TrieProvider;
-import fiftyone.mobile.detection.entities.Property;
 import fiftyone.mobile.detection.factories.TrieFactory;
 import java.io.IOException;
 import java.util.HashMap;
