@@ -89,11 +89,6 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
      */
     protected short numericChildrenCount;
     /**
-     * An array of the ranked signature indexes for the node.
-     * rankedSignatureIndexes;
-     */
-    public int[] signatureIndexes;
-    /**
      * A list of all the child node indexes.
      */
     private final NodeIndex[] children;
