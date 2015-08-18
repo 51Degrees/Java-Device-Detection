@@ -28,9 +28,9 @@ import fiftyone.properties.DetectionConstants;
  * ********************************************************************* */
 /**
  * Encapsulates a list of one or more values. Provides methods to return
- * boolean, double and string representations of the values list. <p> The class
- * contains helper methods to make consuming the data set easier. <p> For more
- * information see http://51degrees.mobi/Support/Documentation/Java
+ * boolean, double and string representations of the values list. 
+ * 
+ * The class contains helper methods to make consuming the data set easier.
  */
 @SuppressWarnings("serial")
 public class Values extends ArrayList<Value> {
