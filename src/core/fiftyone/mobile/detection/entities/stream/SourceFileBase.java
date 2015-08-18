@@ -50,7 +50,12 @@ public abstract class SourceFileBase extends SourceBase {
      */
     public SourceFileBase(String fileName, boolean isTempFile) {
         this.fileInfo = new File(fileName);
-        this.fileInfo.setReadOnly();
+        if (this.fileInfo.setReadOnly() == false) {
+            Logger.getLogger(SourceFileBase.class.getName())
+                            .log(Level.INFO, null, "Could not set file read "
+                                    + "mode to read-only for the file: "
+                                    +fileName);
+        }
         this.isTempFile = isTempFile;
     }
     
