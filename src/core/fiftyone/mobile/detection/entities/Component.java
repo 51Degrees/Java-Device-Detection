@@ -223,7 +223,7 @@ public abstract class Component extends BaseEntity
         try {
             return this.getName();
         } catch (IOException e) {
-            return null;
+            return "Null";
         }
     }
     
