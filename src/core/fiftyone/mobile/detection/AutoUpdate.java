@@ -186,13 +186,15 @@ public class AutoUpdate {
      * @return The MD5 hash of the given data.
      */
     private static String getMd5Hash(String pathToFile) {
+        FileInputStream fis = null;
+        MessageDigest md5 = null;
         try {
             //Allocate resources.
-            FileInputStream fis = new FileInputStream(pathToFile);
-            MessageDigest md5 = MessageDigest.getInstance("MD5");
+            fis = new FileInputStream(pathToFile);
+            md5 = MessageDigest.getInstance("MD5");
             byte[] buffer = new byte[2048];
             int bytesRead = -1;
-            
+
             //Get the md5 and format as a string.
             while((bytesRead = fis.read(buffer)) != -1) {
                 md5.update(buffer, 0, bytesRead);
@@ -220,6 +222,19 @@ public class AutoUpdate {
         } catch (IOException ex) {
             Logger.getLogger(AutoUpdate.class.getName()).log(Level.SEVERE, null, ex);
             return null;
+        } finally {
+            //Release FileInputStream
+            if (fis != null) {
+                try {
+                    fis.close();
+                } catch (IOException ex) {
+                    Logger.getLogger(AutoUpdate.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            //Release MD5
+            if (md5 != null) {
+                md5 = null;
+            }
         }
     }
 
