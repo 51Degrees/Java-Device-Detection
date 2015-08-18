@@ -14,6 +14,7 @@ import java.util.logging.Logger;
 
 import fiftyone.mobile.detection.entities.stream.TriePool;
 import fiftyone.mobile.detection.readers.TrieReader;
+import java.util.Map.Entry;
 
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
@@ -258,7 +259,8 @@ public abstract class TrieProvider implements IDisposable {
             TrieReader reader = null;
             try {
                 reader = pool.getReader();
-                for (String header : headers.keySet()) {
+                for (Entry entry : headers.entrySet()) {
+                    String header = entry.getKey().toString();
                     if (getHttpHeaders().contains(header)) {
                         indexes.put(header, getDeviceIndex(headers.get(header)));
                     }
