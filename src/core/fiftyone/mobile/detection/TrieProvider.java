@@ -19,7 +19,7 @@ import java.util.logging.Logger;
 
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
- * Copyright 2014 51Degrees Mobile Experts Limited, 5 Charlotte Close,
+ * copyright 2014 51Degrees Mobile Experts Limited, 5 Charlotte Close,
  * Caversham, Reading, Berkshire, United Kingdom RG4 7BY
  * 
  * This Source Code Form is the subject of the following patent 
@@ -82,7 +82,7 @@ public abstract class TrieProvider implements IDisposable {
     /**
      * The copy right notice associated with the data file.
      */
-    public String Copyright;
+    public String copyright;
     /**
      * Byte array of the Strings available.
      */
@@ -152,7 +152,7 @@ public abstract class TrieProvider implements IDisposable {
      */
     public TrieProvider(String copyright, byte[] strings, byte[] properties, byte[] devices,
             short[] lookupList, long nodesLength, long nodesOffset, TriePool pool) throws FileNotFoundException {
-        Copyright = copyright;
+        this.copyright = copyright;
         _Strings = ByteBuffer.wrap(strings);
         _properties = ByteBuffer.wrap(properties);
         _devices = ByteBuffer.wrap(devices);
