@@ -50,21 +50,21 @@ public class TrieFactory {
                 case 3:
                     return new TrieProviderV3(
                         new String(reader.readBytes((int) reader.readUInt())), 
-                        ReadStrings(reader), 
-                        ReadProperties(reader), 
-                        ReadDevices(reader), 
-                        ReadLookupList(reader), 
+                        readStrings(reader), 
+                        readProperties(reader), 
+                        readDevices(reader), 
+                        readLookupList(reader), 
                         reader.readLong(), 
                         reader.getPos(), 
                         pool);
                 case 32:
                     return new TrieProviderV32(
                         new String(reader.readBytes((int) reader.readUInt())), 
-                        ReadStrings(reader), 
-                        ReadHeaders(reader), 
-                        ReadProperties(reader), 
-                        ReadDevices(reader), 
-                        ReadLookupList(reader), 
+                        readStrings(reader), 
+                        readHeaders(reader), 
+                        readProperties(reader), 
+                        readDevices(reader), 
+                        readLookupList(reader), 
                         reader.readLong(), 
                         reader.getPos(), 
                         pool);
@@ -96,7 +96,7 @@ public class TrieFactory {
         return null;
     }
 
-    private static short[] ReadLookupList(TrieReader reader) throws IOException {
+    private static short[] readLookupList(TrieReader reader) throws IOException {
         short[] lookupList = new short[reader.readInt()];
         for (int i = 0; i < lookupList.length; i++) {
             lookupList[i] = reader.readUByte();
@@ -104,19 +104,19 @@ public class TrieFactory {
         return lookupList;
     }
 
-    private static byte[] ReadStrings(TrieReader reader) throws IOException {
+    private static byte[] readStrings(TrieReader reader) throws IOException {
         return reader.readBytes(reader.readInt());
     }
 
-    private static byte[] ReadProperties(TrieReader reader) throws IOException {
+    private static byte[] readProperties(TrieReader reader) throws IOException {
         return reader.readBytes(reader.readInt());
     }
 
-    private static byte[] ReadDevices(TrieReader reader) throws IOException {
+    private static byte[] readDevices(TrieReader reader) throws IOException {
         return reader.readBytes(reader.readInt());
     }
 
-    private static byte[] ReadHeaders(TrieReader reader) throws IOException {
+    private static byte[] readHeaders(TrieReader reader) throws IOException {
         return reader.readBytes((int)reader.readUInt());
     }
 }
