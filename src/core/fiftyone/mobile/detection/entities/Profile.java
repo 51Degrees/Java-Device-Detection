@@ -326,15 +326,6 @@ public abstract class Profile extends BaseEntity implements Comparable<Profile> 
     /**
      * 
      * @param valueIndex
-     * @return 
-     */
-    private int getValuesIndex(int valueIndex) {
-        return getValuesIndex(valueIndex, 0);
-    }
-    
-    /**
-     * 
-     * @param valueIndex
      * @param lower
      * @return 
      */
