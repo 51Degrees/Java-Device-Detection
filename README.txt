@@ -1,4 +1,14 @@
-﻿
+
+Changelog:
+Version 3.2.1.9
+- Automatic update function no longer uses the memory to store data downloaded from 51degrees.com update server. Instead a temporary file is used. This should significantly reduce the memory impact of the auto update process.
+- The API now supports 51Degrees data fiels of version 3.2 as well as 3.1 data files. The data fiels of version 3.2 are on average 20% smaller than the 3.1 data files due to the changes to the internal data structure.
+- The core API (both Pattern and Trie) has been updated to perform device detection with multiple HTTP headers.
+- The API has been updated to implement caching for all major components that require lookup/detection. This change reflects the fact that in the real-world applications/websites subsequent requests are probable and that some user agents that are encountered more often than others. This change should improve detection times even further.
+-
+
+
+#Followign will be removed upon release.
 Description:
 
     The 51Degrees Java API is designed to be easy and quick to deploy and use even for 
