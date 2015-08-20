@@ -1,6 +1,5 @@
 package fiftyone.mobile.detection.entities.stream;
 
-import static com.oracle.jrockit.jfr.ContentType.StackTrace;
 import fiftyone.mobile.detection.IDisposable;
 import fiftyone.mobile.detection.readers.BinaryReader;
 import java.io.IOException;
