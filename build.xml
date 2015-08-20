@@ -15,9 +15,8 @@
   <property name="coreJavaDoc" location="javadoc/core"/>
   <property name="webAppJavaDoc" location="javadoc/webapp"/>
   <property name="servletsJavaDoc" location="javadoc/servlets"/>
-  <property name="datsrc" location="resources/data"/>
   <property name="cdatdest" location="build/core"/>
-  <property name="version" value="3.1.7.2"/>
+  <property name="version" value="3.2.1.9"/>
 
   <target name="init">
     <!-- Create the time stamp -->
@@ -36,17 +35,7 @@
     </javac>
   </target>
 
-  <target name="addcoreDatFile" depends="corecompile"
-		description="Add the embedded data file to the build direcotry">
-    <!--Create the directory the binary file sits in -->
-    <mkdir dir="${cdatdest}"/>
-
-    <!--Move the binary file in there  -->
-    <copy file="${datsrc}/51Degrees-Lite.dat" todir="${cdatdest}" verbose ="true"/>
-    <copy file="${datsrc}/51Degrees-Lite.trie" todir="${cdatdest}" verbose ="true"/>
-  </target>
-
-  <target name="coredist" depends="addcoreDatFile"
+  <target name="coredist" depends="corecompile"
         description="generate the distribution" >
     <!-- Create the distribution directory -->
     <mkdir dir="${dist}"/>
