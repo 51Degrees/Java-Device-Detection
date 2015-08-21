@@ -240,6 +240,15 @@ public class Match {
             if (l0 > l1) {
                 return 1;
             }
+            if (l0 == l1) {
+                /* If both have the same rank, sort by position. */
+                if (o1.position > o2.position) {
+                    return 1;
+                }
+                if (o1.position < o2.position) {
+                    return -1;
+                }
+            }
             return 0;
         }
     };
