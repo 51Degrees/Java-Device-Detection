@@ -1,8 +1,6 @@
 package fiftyone.mobile.detection.entities.stream;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -64,13 +62,14 @@ public abstract class SourceFileBase extends SourceBase {
      */
     public void deleteFile() {
         if (this.isTempFile) {
-            try {
-                Files.delete(fileInfo.toPath());
-            } catch (IOException ex) {
-                // Not critical, file may be in use by another process.
+            boolean deleted = this.fileInfo.delete();
+            if (!deleted) {
+                StringBuilder sb = new StringBuilder();
+                sb.append("Could not delete the data file that was marked as "
+                        + "temporary when the dataset was created.");
                 Logger.getLogger(SourceFileBase.class.getName())
-                                               .log(Level.INFO, null, ex);
-            } 
+                            .log(Level.INFO, null, sb.toString());
+            }
         }
     }
     
