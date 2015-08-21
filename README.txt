@@ -25,7 +25,76 @@ Benefits of pay-for data subscription include:
     See <https://51degrees.com/compare-data-options> to compare the various 
 	device data options.
 
---------------------------- 2. REPOSITORY CONTENTS ----------------------------
+------------------------------- 2 QUICK START ---------------------------------
+
+2.1. Obtaining a copy of the API:
+- Sourceforge: <http://sourceforge.net/projects/fiftyone-java/>
+- Maven: <http://mvnrepository.com/search?q=51degrees>
+- Source: <https://github.com/51Degrees/Java-Device-Detection>
+
+2.2. Obtaining a 51Degrees data file:
+- Codeplex: <http://51degrees.codeplex.com/releases/view/616372>
+- Github: <https://github.com/51Degrees/51Degrees.mobi-Lite-Binary>
+- Premium and Enterprise data files: <https://51degrees.com/compare-data-options>
+
+2.3. Using the Core API:
+
+51Degrees provides two detection algorithms: Pattern and Trie. In short: Pattern 
+is more memory efficient with smaller data files while Trie is faster but 
+requires more memory and the data files are considerably larger. For more info 
+on the algorithms please see: 
+<https://51degrees.com/support/documentation/how-device-detection-works>
+
+2.3.1. Pattern.
+
+	Pattern relies on the Provider object that interacts with device data through 
+	the dataset. The Dataset in turn can be created using either StreamFactory:
+	
+	Provider p = new Provider(StreamFactory.create("path/to/data/file.dat", false));
+	
+	or using MemoryFactory:
+	
+	Provider p = new Provider(MemoryFactory.create("path/to/data/file.dat"));
+
+	StreamFactory creates a dataset that interacts directly with the data file, 
+	so all detection results are retrieved from the data file on each request.
+	MemoryFactory fully loads the data file in to memory so that the data file 
+	is not used for detection at all.
+	
+	Detection takes place in the match method of the Provider object:
+	
+	Match match = p.match("User agent string goes here.");
+	
+	You can then access detection results via the match object as follows:
+	
+	match.getValues("IsMobile");
+	
+	By default all results are returned as Strings.
+	
+2.3.2. Trie.
+	
+	Trie relies on the TrieProvider to interact with the Trie data file to 
+	retrieve detection results. Trie provider can be created as follows:
+	
+	TrieProvider trp = TrieFactory.create("path\\to\\file.trie");
+	
+	Note that the Pattern data file (.dat) will not work with the Trie (.trie) 
+	Provider and vice versa.
+	
+	To obtain the device information you need to first find the index of the 
+	device as follows:
+	
+	int index = trp.getDeviceIndex("User agent");
+	
+	and then retrieve the property values for the found index:
+	
+	String isMobile = provider.getPropertyValue(index, "IsMobile");
+
+2.4. Using the Servlet API.
+
+	Will be added soon.
+	
+--------------------------- 3 REPOSITORY CONTENTS -----------------------------
 
 	
 Contents:
@@ -57,7 +126,7 @@ Contents:
 This project uses SLF4J, using the MIT licence.
 http://www.slf4j.org/license.html
 
------------------------------ 3 BREAKING CHANGES ------------------------------
+----------------------------- 4 BREAKING CHANGES ------------------------------
 
 As of version 3.2 the following changes have been implemented that will break 
 any of the existing implementations:
@@ -77,7 +146,7 @@ Please note that the StreamFactory now takes in at least 2 parameters:
    matter when the dispose method is invoked. If the flag is set to true, the 
    API will attempt to delete the data file upon dispose.
  
--------------------------------- 4 CHANGELOG ----------------------------------
+--------------------------------  CHANGELOG -----------------------------------
 
 Version 3.2.1.9-beta
 - Automatic update function no longer uses the memory to store data downloaded 
