@@ -11,10 +11,6 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
@@ -125,11 +121,34 @@ public class AutoUpdate {
             System.gc();
             //If the downloaded file is either newer, or has a different name.
             if (copyFile) {
-                //Copy.
+                //Copy new file re-writing the contents of the current.
+                File source = new File(uncompressedTempFile);
+                File destination = new File(dataFilePath);
+                
+                boolean moved = source.renameTo(destination);
+                if (!moved) {
+                    StringBuilder sb = new StringBuilder();
+                    sb.append("Could not replace master data file with new one. ");
+                    sb.append("Please verify the master data file is not used ");
+                    sb.append("elsewhere in your program.");
+                    Logger.getLogger(AutoUpdate.class.getName()).log(Level.WARNING,
+                            sb.toString());
+                    return false;
+                }
+                
+                /* 
+                 *  Section below is commented out as it is not compatible with 
+                 *  JDK 1.6. If you are rebuilding the JAR for use with 1.7 or 
+                 *  above, then feel free to use the commented section instead 
+                 *  of the above copy procedure.
+                 */
+                
+                /*
                 Path source = Paths.get(uncompressedTempFile);
                 Path destination = Paths.get(dataFilePath);
                 try {
                     Files.copy(source, destination, REPLACE_EXISTING);
+                    Files.
                 } catch (IOException ex) {
                     StringBuilder sb = new StringBuilder();
                     sb.append("Could not replace master data file with new one. ");
@@ -137,7 +156,9 @@ public class AutoUpdate {
                     sb.append("elsewhere in your program.");
                     Logger.getLogger(AutoUpdate.class.getName()).log(Level.WARNING,
                             sb.toString());
+                    return false;
                 }
+                */
                 source = null;
                 destination = null;
                 //Try to delete temp file.
