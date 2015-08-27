@@ -133,7 +133,7 @@ class JavascriptProvider {
         }
                 
         javascript.append(String.format("var FODF={%s};", 
-            stringJoin(",\r\n", features)));
+            stringJoin(",", features)));
         
         sendJavaScript(
             request, 
@@ -147,13 +147,12 @@ class JavascriptProvider {
             Map<String, String[]> results, List<String> features, Property property) throws IOException {
         String[] values = results.get(property.getName());
         if (values != null && values.length > 0) {
-            String propName = property.getName().replace("/", "").replace("-", "");
             switch (property.valueType) {
                 case BOOL:
                     try {
                         features.add(String.format(
                                 "%s:%s",
-                                propName,
+                                property.getJavaScriptName(),
                                 Boolean.parseBoolean(values[0]) ? "true" : "false"));
                     } catch (NumberFormatException ex) {
                         // Ignore the property as there isn't a value that
@@ -164,7 +163,7 @@ class JavascriptProvider {
                     try {
                         features.add(String.format(
                                 "%s:%d",
-                                propName,
+                                property.getJavaScriptName(),
                                 Integer.parseInt(values[0])));
                     } catch (NumberFormatException ex) {
                         // Ignore the property as there isn't a value that
@@ -175,7 +174,7 @@ class JavascriptProvider {
                     try {
                         features.add(String.format(
                                 "%s:%s",
-                                propName,
+                                property.getJavaScriptName(),
                                 Double.parseDouble(values[0])));
                     } catch (NumberFormatException ex) {
                         // Ignore the property as there isn't a value that
@@ -185,7 +184,7 @@ class JavascriptProvider {
                 default:
                     features.add(String.format(
                             "%s:\"%s\"",
-                            propName,
+                            property.getJavaScriptName(),
                             stringJoin(fiftyone.properties.DetectionConstants.VALUE_SEPARATOR, values)));
                     break;
             }

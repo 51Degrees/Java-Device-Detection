@@ -3,6 +3,7 @@ package fiftyone.mobile.detection.factories;
 import fiftyone.mobile.detection.Dataset;
 import fiftyone.mobile.detection.entities.Node;
 import fiftyone.mobile.detection.readers.BinaryReader;
+import fiftyone.properties.DetectionConstants;
 import java.io.IOException;
 
 /* *********************************************************************
@@ -29,6 +30,11 @@ public class RootNodeFactory extends BaseEntityFactory<Node> {
 
     @Override
     public Node create(Dataset dataSet, int index, BinaryReader reader) throws IOException {
-        return dataSet.getNodes().get(reader.readInt32());
+        return dataSet.nodes.get(reader.readInt32());
+    }
+    
+    @Override
+    public int getLength() {
+        return DetectionConstants.SIZE_OF_INT;
     }
 }

@@ -40,94 +40,27 @@ import java.io.IOException;
  * represent a sub string within the user agent.
  */
 /**
- * A node in the trie data structures held at each character position.
+ * A node in the tree of characters for each character position.
+ * 
+ * Every character position in the string contains a tree of nodes
+ * which are evaluated until either a complete node is found, or 
+ * no nodes are found that match at the character position.
+ * 
+ * The list of Signature entities is in ascending order of 
+ * the complete nodes which form the sub strings of the signature.
+ * Complete nodes are found at detection time for the target user agent
+ * and then used to search for a corresponding signature. If one does
+ * not exist then Signatures associated with the nodes that were found 
+ * are evaluated to find one that is closest to the target user agent.
+ * 
+ * Root nodes are the first node at a character position. It's children
+ * are based on sequences of characters that if present lead to the 
+ * next node. A complete node will represent a sub string within
+ * the user agent.
+ * 
+ * For more information see https://51degrees.com/Support/Documentation/Java
  */
-public class Node extends BaseEntity implements Comparable<Node> {
-
-    class NodeNumericIndexIterator {
-
-        private final NodeNumericIndex[] array;
-        private final int target;
-        private final Range range;
-        private int lowIndex;
-        private int highIndex;
-        private boolean lowInRange;
-        private boolean highInRange;
-
-        /**
-         *
-         * @param range the range of values the iterator can return
-         * @param array array of items that could be returned
-         * @param target the target value
-         * @param startIndex start index in the array
-         */
-        NodeNumericIndexIterator(
-                Range range, NodeNumericIndex[] array,
-                int target, int startIndex) {
-            this.range = range;
-            this.array = array;
-            this.target = target;
-
-            lowIndex = startIndex;
-            highIndex = startIndex + 1;
-
-            // Determine if the low and high indexes are in range.
-            lowInRange = lowIndex >= 0 && lowIndex < array.length
-                    && range.inRange(array[lowIndex].getValue());
-            highInRange = highIndex < array.length && highIndex >= 0
-                    && range.inRange(array[highIndex].getValue());
-        }
-
-        boolean hasNext() {
-            return lowInRange || highInRange;
-        }
-
-        NodeNumericIndex next() {
-            int index = -1;
-
-            if (lowInRange && highInRange) {
-                // Get the differences between the two values.
-                int lowDifference = Math.abs(array[lowIndex].getValue() - target);
-                int highDifference = Math.abs(array[highIndex].getValue() - target);
-
-                // Favour the lowest value where the differences are equal.
-                if (lowDifference <= highDifference) {
-                    index = lowIndex;
-
-                    // Move to the next low index.
-                    lowIndex--;
-                    lowInRange = lowIndex >= 0
-                            && range.inRange(array[lowIndex].getValue());
-                } else {
-                    index = highIndex;
-
-                    // Move to the next high index.
-                    highIndex++;
-                    highInRange = highIndex < array.length
-                            && range.inRange(array[highIndex].getValue());
-                }
-            } else if (lowInRange) {
-                index = lowIndex;
-
-                // Move to the next low index.
-                lowIndex--;
-                lowInRange = lowIndex >= 0
-                        && range.inRange(array[lowIndex].getValue());
-            } else {
-                index = highIndex;
-
-                // Move to the next high index.
-                highIndex++;
-                highInRange = highIndex < array.length
-                        && range.inRange(array[highIndex].getValue());
-            }
-
-            if (index >= 0) {
-                return array[index];
-            }
-            return null;
-        }
-    }
+public abstract class Node extends BaseEntity implements Comparable<Node> {
     /**
      * The length of a node index.
      */
@@ -146,11 +79,15 @@ public class Node extends BaseEntity implements Comparable<Node> {
         new Range((short) 100, (short) 999),
         new Range((short) 1000, Short.MAX_VALUE)
     };
-
     /**
-     * A list of all the signature indexes that relate to this node.
+     * The characters that make up the node if it's a complete node or null 
+     * if it's incomplete.
      */
-    private final int[] signatureIndexes;
+    private byte[] characters;
+    /**
+     * Number of numeric children associated with the node.
+     */
+    protected short numericChildrenCount;
     /**
      * A list of all the child node indexes.
      */
@@ -158,11 +95,11 @@ public class Node extends BaseEntity implements Comparable<Node> {
     /**
      * An array of all the numeric children.
      */
-    private final NodeNumericIndex[] numericChildren;
+    protected NodeNumericIndex[] numericChildren;
     /**
      * The parent index for this node.
      */
-    final int parentIndex;
+    final int parentOffset;
     /**
      * The offset in the strings data structure to the string that contains all
      * the characters of the node. Or -1 if the node is not complete and no
@@ -179,7 +116,41 @@ public class Node extends BaseEntity implements Comparable<Node> {
      * or target user agent.
      */
     public final short position;
+    /**
+     * Number of ranked signature indexes associated with the node.
+     */
+    protected final int rankedSignatureCount;
+    /**
+     * Parent node for this node.
+     */
+    private Node parent = null;
+    /**
+     * Root node for this node.
+     */
+    private Node root;
 
+    /**
+     * Constructs a new instance of Node
+     *
+     * @param dataSet The data set the node is contained within
+     * @param offset The offset in the data structure to the node
+     * @param reader BinaryReader object to be used
+     */
+    public Node(Dataset dataSet, int offset, BinaryReader reader) {
+        super(dataSet, offset);
+        int readerPosition = reader.getPos(); 
+        this.position = reader.readInt16();
+        this.nextCharacterPosition = reader.readInt16();
+        this.parentOffset = reader.readInt32();
+        this.characterStringOffset = reader.readInt32();
+        //childrenCount only used in the constructor.
+        short childrenCount = reader.readInt16();
+        this.numericChildrenCount = reader.readInt16();
+        this.rankedSignatureCount = readerRankedSignatureCount(reader);
+        this.children = readNodeIndexes(dataSet, reader, 
+            (int)(offset + reader.getPos() - readerPosition), childrenCount);
+    }
+    
     /**
      * Returns the root node for this node.
      * @return root node for this node
@@ -195,22 +166,21 @@ public class Node extends BaseEntity implements Comparable<Node> {
         }
         return root;
     }
-    private Node root;
 
     /**
      * Returns the parent node for this node.
+     * @reurn the parent node for this node.
      */
     Node getParent() throws IOException {
-        if (parentIndex >= 0 && parent == null) {
+        if (parentOffset >= 0 && parent == null) {
             synchronized (this) {
                 if (parent == null) {
-                    parent = getDataSet().getNodes().get(parentIndex);
+                    parent = getDataSet().getNodes().get(parentOffset);
                 }
             }
         }
         return parent;
     }
-    private Node parent = null;
 
     /**
      * Returns true if this node represents a completed sub string and the next
@@ -230,6 +200,30 @@ public class Node extends BaseEntity implements Comparable<Node> {
     }
 
     /**
+     * Reads the ranked signature count as an integer. V31 uses a 4 byte 
+     * integer for the count. V32 uses a 2 byte ushort for the count. In both 
+     * data formats no more than ushort.MaxValue signatures can be associated 
+     * with a node.
+     * @param reader Reader connected to the source data structure and 
+     * positioned to start reading.
+     * @return The count of ranked signatures associated with the node.
+     */
+    public abstract int readerRankedSignatureCount(BinaryReader reader);
+    
+    /**
+     * Used by the constructor to read the variable length list of child node 
+     * indexes associated with the node.
+     * @param dataSet The data set the node is contained within.
+     * @param reader Reader connected to the source data structure and 
+     * positioned to start reading.
+     * @param offset The offset in the data structure to the node.
+     * @param count The number of node indexes that need to be read.
+     * @return An array of child node indexes for the node.
+     */
+    protected abstract NodeIndex[] readNodeIndexes(
+            Dataset dataSet, BinaryReader reader, int offset, int count);
+    
+    /**
      * Gets an array containing all the characters of the node.
      * @return array containing all the characters of the node
      * @throws java.io.IOException indicates an I/O exception occurred
@@ -238,88 +232,62 @@ public class Node extends BaseEntity implements Comparable<Node> {
         if (characters == null && characterStringOffset >= 0) {
             synchronized (this) {
                 if (characters == null) {
-                    characters = super.getDataSet().strings.get(characterStringOffset).value;
+                    characters = super.getDataSet().strings.
+                            get(characterStringOffset).value;
                 }
             }
         }
         return characters;
     }
-    private byte[] characters = null;
 
-    public int[] getRankedSignatureIndexes() {
-        return signatureIndexes;
+    /**
+     * Used by the constructor to read the variable length list of child
+     * indexes that contain numeric values.
+     * @param dataSet The data set the node is contained within.
+     * @param reader Reader connected to the source data structure and 
+     * positioned to start reading.
+     * @param count The number of node indexes that need to be read.
+     * @return variable length list of child indexes that contain numeric 
+     * values.
+     */
+    public NodeNumericIndex[] readNodeNumericIndexes(Dataset dataSet, 
+                                            BinaryReader reader, short count) {
+        NodeNumericIndex[] array = new NodeNumericIndex[count];
+        for (int i = 0; i < array.length; i++) {
+            array[i] = new NodeNumericIndex(dataSet, 
+                                    reader.readInt16(), reader.readInt32());
+        }
+        return array;
     }
 
+    /**
+     * Returns an array of the ranked signature indexes for the node.
+     * @return An array of the ranked signature indexes for the node.
+     */
+    public abstract int[] getRankedSignatureIndexes();
+
+    
+    /**
+     * Returns number of elements in the children array.
+     * @return number of elements in the children array.
+     */
     public int getChildrenLength() {
         return children.length;
     }
 
+    /**
+     * Returns number of element in the numericChildren array.
+     * @return number of element in the numericChildren array.
+     */
     public int getNumericChildrenLength() {
         return numericChildren.length;
     }
-
+    
     /**
-     * Constructs a new instance of Node
-     *
-     * @param dataSet The data set the node is contained within
-     * @param offset The offset in the data structure to the node
-     * @param reader BinaryReader object to be used
+     * Returns an array of all the numeric children.
+     * @return an array of all the numeric children.
      */
-    public Node(Dataset dataSet, int offset, BinaryReader reader) {
-        super(dataSet, offset);
-        this.position = reader.readInt16();
-        this.nextCharacterPosition = reader.readInt16();
-        this.parentIndex = reader.readInt32();
-        this.characterStringOffset = reader.readInt32();
-        short childrenCount = reader.readInt16();
-        short numericChildrenCount = reader.readInt16();
-        int signatureCount = reader.readInt32();
-        this.children = readNodeIndexes(dataSet, reader, offset + MIN_LENGTH, childrenCount);
-        this.numericChildren = readNodeNumericIndexes(dataSet, reader, numericChildrenCount);
-        this.signatureIndexes = BaseEntity.readIntegerArray(reader, signatureCount);
-    }
-
-    /**
-     * Used by the constructor to read the variable length list of child node
-     * numeric indexes associated with the node.
-     *
-     * @param dataSet The data set the node is contained within
-     * @param reader Reader connected to the source data structure and
-     * positioned to start reading
-     * @param count The number of elements to read into the array
-     * @return An array of child numeric node indexes for the node
-     */
-    private static NodeNumericIndex[] readNodeNumericIndexes(Dataset dataSet,
-            BinaryReader reader, short count) {
-        NodeNumericIndex[] array = new NodeNumericIndex[count];
-        for (int i = 0; i < array.length; i++) {
-            array[i] = new NodeNumericIndex(dataSet, reader.readInt16(), reader.readInt32());
-        }
-        return array;
-    }
-
-    /**
-     * Used by the constructor to read the variable length list of child node
-     * indexes associated with the node.
-     *
-     * @param dataSet The data set the node is contained within
-     * @param reader Reader connected to the source data structure and
-     * positioned to start reading
-     * @param offset The offset in the data structure to the node
-     * @param count The number of elements to read into the array
-     * @return An array of child node indexes for the node
-     */
-    private static NodeIndex[] readNodeIndexes(Dataset dataSet,
-            BinaryReader reader, int offset, short count) {
-        NodeIndex[] array = new NodeIndex[count];
-        offset += 2;
-        for (int i = 0; i < array.length; i++) {
-            array[i] = new NodeIndex(dataSet, offset, reader.readBoolean(),
-                    reader.readBytes(4), reader.readInt32());
-            offset += NODE_INDEX_LENGTH;
-        }
-        return array;
-    }
+    public abstract NodeNumericIndex[] getNumericChildren();
 
     /**
      * Called after the entire data set has been loaded to ensure any further
@@ -328,8 +296,8 @@ public class Node extends BaseEntity implements Comparable<Node> {
      * @throws java.io.IOException indicates an I/O exception occurred
      */
     public void init() throws IOException {
-        if (parentIndex >= 0) {
-            parent = getDataSet().getNodes().get(parentIndex);
+        if (parentOffset >= 0) {
+            parent = getDataSet().getNodes().get(parentOffset);
         }
         root = getParent() == null ? this : getParent().getRoot();
         for (NodeIndex child : children) {
@@ -337,7 +305,15 @@ public class Node extends BaseEntity implements Comparable<Node> {
         }
         getCharacters();
     }
-
+    
+    /**
+     * Gets a complete node, or if one isn't available exactly the closest 
+     * numeric one to the target user agent at the current position.
+     * @param match Match results including the target user agent.
+     * @return a complete node, or if one isn't available exactly the closest 
+     * numeric one.
+     * @throws IOException 
+     */
     public Node getCompleteNumericNode(Match match) throws IOException {
         Node node = null;
 
@@ -353,17 +329,21 @@ public class Node extends BaseEntity implements Comparable<Node> {
             // difference.
             Integer target = getCurrentPositionAsNumeric(match);
             if (target != null) {
-                NodeNumericIndexIterator iterator = getNumericNodeIterator(target);
+                NodeNumericIndexIterator iterator = 
+                                                getNumericNodeIterator(target);
                 if (iterator != null) {
                     while (iterator.hasNext()) {
                         NodeNumericIndex current = iterator.next();
                         node = current.getNode().getCompleteNumericNode(match);
                         if (node != null) {
-                            int difference = Math.abs(target - current.getValue());
+                            int difference = 
+                                        Math.abs(target - current.getValue());
                             if (match.getLowestScore() == null) {
                                 match.setLowestScore(difference);
                             } else {
-                                match.setLowestScore(match.getLowestScore() + difference);
+                                match.setLowestScore(
+                                        match.getLowestScore() + difference
+                                        );
                             }
                             break;
                         }
@@ -395,7 +375,8 @@ public class Node extends BaseEntity implements Comparable<Node> {
                 startIndex = ~startIndex - 1;
             }
 
-            return new NodeNumericIndexIterator(range, numericChildren, target, startIndex);
+            return new NodeNumericIndexIterator(range, numericChildren, 
+                                                target, startIndex);
         }
 
         return null;
@@ -424,6 +405,7 @@ public class Node extends BaseEntity implements Comparable<Node> {
      * as an integer
      */
     private Integer getCurrentPositionAsNumeric(Match match) {
+        // Find the left most numeric character from the current position.
         int i = position;
         while (i >= 0
                 && match.getTargetUserAgentArray()[i] >= (byte) '0'
@@ -436,25 +418,22 @@ public class Node extends BaseEntity implements Comparable<Node> {
                     i + 1,
                     position - i);
         }
-        return null;
+        return -1;
     }
 
     /**
-     * Returns an integer representation of the characters between start and
-     * end. Assumes that all the characters are numeric characters.
-     *
-     * @param array Array of characters with numeric characters present between
-     * start and end
-     * @param start The first character to use to convert to a number
-     * @param length The number of characters to use in the conversion
-     * @return
+     * TODO: get description.
+     * @param array
+     * @param startIndex
+     * @param length
+     * @return 
      */
-    private Integer getNumber(byte[] array, int start, int length) {
-        int value = 0;
-        for (int i = start + length - 1, p = 0; i >= start; i--, p++) {
-            value += (int) (Math.pow(10, p)) * ((byte) array[i] - (byte) '0');
+    private boolean isNumeric(byte[] array, int startIndex, int length) {
+        for (int i = startIndex; i < (startIndex + length); i++) {
+            if (getIsNumeric(array[i]) == false)
+                return false;
         }
-        return value;
+        return true;
     }
 
     /**
@@ -559,19 +538,12 @@ public class Node extends BaseEntity implements Comparable<Node> {
      */
     public void addCharacters(byte[] values) throws IOException {
         if (getParent() != null) {
-            byte[] characters = null;
-            for (NodeIndex child : getParent().children) {
-                if (child.relatedNodeOffset == getIndex()) {
-                    characters = child.getCharacters();
-                    break;
-                }
+            byte[] nodeCharacters = this.characters == null ?
+                    this.dataSet.strings.get(this.characterStringOffset).value :
+                    this.getCharacters();
+            for (int i = 0; i < getLength(); i++) {
+                values[position + i + 1] = nodeCharacters[i];
             }
-
-            for (int i = 0; i < characters.length; i++) {
-                values[position + i + 1] = characters[i];
-            }
-
-            getParent().addCharacters(values);
         }
     }
 
@@ -605,7 +577,93 @@ public class Node extends BaseEntity implements Comparable<Node> {
      * @return -1 if this node is lower than the other, 1 if higher or 0 if
      * equal.
      */
+    @Override
     public int compareTo(Node other) {
         return getIndex() - other.getIndex();
+    }
+    
+    class NodeNumericIndexIterator {
+
+        private final NodeNumericIndex[] array;
+        private final int target;
+        private final Range range;
+        private int lowIndex;
+        private int highIndex;
+        private boolean lowInRange;
+        private boolean highInRange;
+
+        /**
+         *
+         * @param range the range of values the iterator can return
+         * @param array array of items that could be returned
+         * @param target the target value
+         * @param startIndex start index in the array
+         */
+        NodeNumericIndexIterator(
+                Range range, NodeNumericIndex[] array,
+                int target, int startIndex) {
+            this.range = range;
+            this.array = array;
+            this.target = target;
+
+            lowIndex = startIndex;
+            highIndex = startIndex + 1;
+
+            // Determine if the low and high indexes are in range.
+            lowInRange = lowIndex >= 0 && lowIndex < array.length
+                    && range.inRange(array[lowIndex].getValue());
+            highInRange = highIndex < array.length && highIndex >= 0
+                    && range.inRange(array[highIndex].getValue());
+        }
+
+        boolean hasNext() {
+            return lowInRange || highInRange;
+        }
+
+        NodeNumericIndex next() {
+            int index = -1;
+
+            if (lowInRange && highInRange) {
+                // Get the differences between the two values.
+                int lowDifference = Math.abs(array[lowIndex].getValue() - target);
+                int highDifference = Math.abs(array[highIndex].getValue() - target);
+
+                // Favour the lowest value where the differences are equal.
+                if (lowDifference <= highDifference) {
+                    index = lowIndex;
+
+                    // Move to the next low index.
+                    lowIndex--;
+                    lowInRange = lowIndex >= 0
+                            && range.inRange(array[lowIndex].getValue());
+                } else {
+                    index = highIndex;
+
+                    // Move to the next high index.
+                    highIndex++;
+                    highInRange = highIndex < array.length
+                            && range.inRange(array[highIndex].getValue());
+                }
+            } else if (lowInRange) {
+                index = lowIndex;
+
+                // Move to the next low index.
+                lowIndex--;
+                lowInRange = lowIndex >= 0
+                        && range.inRange(array[lowIndex].getValue());
+            } else {
+                index = highIndex;
+
+                // Move to the next high index.
+                highIndex++;
+                highInRange = highIndex < array.length
+                        && range.inRange(array[highIndex].getValue());
+            }
+
+            if (index >= 0) {
+                return array[index];
+            }
+            return null;
+        }
     }
 }

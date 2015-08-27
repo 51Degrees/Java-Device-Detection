@@ -17,6 +17,7 @@ import fiftyone.mobile.detection.entities.Signature;
 import fiftyone.mobile.detection.entities.Value;
 import fiftyone.mobile.detection.entities.Values;
 import fiftyone.properties.DetectionConstants;
+import fiftyone.properties.MatchMethods;
 
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
@@ -40,14 +41,20 @@ import fiftyone.properties.DetectionConstants;
  * ********************************************************************* */
 /**
  * Contains all the information associated with the device detection and matched
- * result. <p> The match property can be used to request results from the match
- * using the accessor provided with a Property or the string name of the
- * property. <p> The Signature the target device match against can be returned
- * along with the associated profiles. <p> Statistics associated with the match
- * can also be returned. For example; the Elapsed property returns the time
- * taken to perform the match. The Confidence property provides a value to
- * indicate the differences between the match result and the target user agent.
- * <p> For more information see http://51degrees.mobi/Support/Documentation/Java
+ * result.
+ * 
+ * The match property can be used to request results from the match using 
+ * the accessor provided with a Property or the string name of the property. 
+ * 
+ * The Signature the target device match against can be returned along with 
+ * the associated profiles. 
+ * 
+ * Statistics associated with the match can also be returned. For example: the 
+ * Elapsed property returns the time taken to perform the match. The Confidence 
+ * property provides a value to indicate the differences between the match 
+ * result and the target user agent.
+ *
+ * For more information see http://51degrees.mobi/Support/Documentation/Java
  */
 /**
  * Generate when a device detection is requested to include the signature
@@ -55,6 +62,11 @@ import fiftyone.properties.DetectionConstants;
  */
 public class Match {
 
+    /**
+     * The elapsed time for the match.
+     */
+    long elapsed;
+    
     /**
      * Used to persist the match results to the cache. Used with the SetState
      * method of the match class to retrieve the state.
@@ -77,8 +89,7 @@ public class Match {
 
         /**
          * Creates the state based on the match provided.
-         *
-         * @param match
+         * @param match Match object to update with results.
          */
         MatchState(Match match) throws IOException {
             method = match.getMethod();
@@ -90,7 +101,7 @@ public class Match {
             signaturesRead = match.getSignaturesRead();
             stringsRead = match.getStringsRead();
             closestSignaturesCount = match.getClosestSignaturesCount();
-            lowestScore = match.lowestScore;
+            lowestScore = match.getLowestScore();
             targetUserAgent = match.getTargetUserAgent();
             targetUserAgentArray = match.getTargetUserAgentArray();
             nodes = new ArrayList<Node>(match.nodes);
@@ -229,6 +240,15 @@ public class Match {
             if (l0 > l1) {
                 return 1;
             }
+            if (l0 == l1) {
+                /* If both have the same rank, sort by position. */
+                if (o1.position > o2.position) {
+                    return 1;
+                }
+                if (o1.position < o2.position) {
+                    return -1;
+                }
+            }
             return 0;
         }
     };
@@ -264,7 +284,7 @@ public class Match {
     /**
      * The data set used for the detection.
      */
-    private final Dataset dataSet;
+    public final Dataset dataSet;
     /**
      * The next character position to be checked.
      */
@@ -285,6 +305,9 @@ public class Match {
      */
     public String getTargetUserAgent() {
         return targetUserAgent;
+    }
+    public void setTargetuserAgent(String targetUserAgent) {
+        this.targetUserAgent = targetUserAgent;
     }
     private String targetUserAgent;
 
@@ -367,7 +390,8 @@ public class Match {
     }
 
     public int getDifference() {
-        return getLowestScore() == null ? 0 : getLowestScore();
+        int score = getLowestScore();
+        return score >= 0 ? score : 0;
     }
 
     /**
@@ -475,7 +499,7 @@ public class Match {
      * The current lowest score for the target user agent. Initialised to the
      * largest possible result.
      */
-    private Integer lowestScore;
+    public Integer lowestScore;
 
     /**
      * Reset the next character position index based on the length of the target
@@ -680,6 +704,9 @@ public class Match {
     }
 
     public Integer getLowestScore() {
+        if (lowestScore == null) {
+            lowestScore = 0;
+        }
         return lowestScore;
     }
 
@@ -786,7 +813,7 @@ public class Match {
         }
         return this.results;
     }
-    private Map<String, String[]> results;
+    protected Map<String, String[]> results;
 
     /**
      * Replaces any characters in the target user agent which are outside the

@@ -76,6 +76,7 @@ public class Map extends BaseEntity implements Comparable<Map> {
      * @param other The node index to compare
      * @return Indication of relative value based on ComponentId field
      */
+    @Override
     public int compareTo(Map other) {
         if (getDataSet() == other.getDataSet()) {
             return getIndex() - other.getIndex();

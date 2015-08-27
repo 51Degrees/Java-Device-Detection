@@ -5,9 +5,12 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.lang.Integer;
 
 import fiftyone.mobile.detection.Dataset;
 import fiftyone.mobile.detection.readers.BinaryReader;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
@@ -45,6 +48,12 @@ import fiftyone.mobile.detection.readers.BinaryReader;
  */
 public class Value extends BaseEntity implements Comparable<Value> {
 
+    /**
+     * The value as an integer. Integer instead of int because of the nullable 
+     * requirement.
+     */
+    private Integer asInt;
+    
     /**
      * The length in bytes of the value record in the data file.
      */
@@ -330,8 +339,31 @@ public class Value extends BaseEntity implements Comparable<Value> {
     public boolean getIsDefault() throws IOException {
         Value defaultValue = property.getDefaultValue();
         if (defaultValue != null) {
-            return this.getName() == defaultValue.getName();
+            return this.getName().equals(defaultValue.getName());
         }
         return false;
+    }
+    
+    /**
+     * Returns the value as an integer.
+     * @return If the value can not convert to an integer and the value is not 
+     * equal to the null value then the null value for the property will be 
+     * used. If no conversion is possible 0 is returned.
+     */
+    public int toInt() {
+        if (asInt == null) {
+            synchronized (asInt) {
+                if (asInt == null) {
+                    Double d;
+                    try {
+                        d = toDouble();
+                        asInt = d.intValue();
+                    } catch (IOException ex) {
+                        Logger.getLogger(Value.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+            }
+        }
+        return asInt;
     }
 }

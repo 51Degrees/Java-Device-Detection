@@ -6,10 +6,18 @@
             <name>Core</name>
             <explicit-platform explicit-source-supported="true"/>
             <source-roots>
-                <root id="src.data.dir"/>
                 <root id="src.dir"/>
             </source-roots>
-            <test-roots/>
+            <test-roots>
+                <root id="test.core.dir" name="UnitTests"/>
+            </test-roots>
         </data>
+        <spellchecker-wordlist xmlns="http://www.netbeans.org/ns/spellchecker-wordlist/1">
+            <word>accessor</word>
+            <word>Enum</word>
+            <word>Google</word>
+            <word>hardcoded</word>
+            <word>Preloads</word>
+        </spellchecker-wordlist>
     </configuration>
 </project>

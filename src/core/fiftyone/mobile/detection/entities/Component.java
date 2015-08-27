@@ -29,76 +29,76 @@ import java.util.List;
 /**
  * Every device can be split into the major components of hardware, operating
  * system and browser. The properties and values associated with these
- * components are accessed via this class. <p> As there are a small number of
- * components they are always held in memory. <p> For more information see
- * http://51degrees.mobi/Support/Documentation/Java
+ * components are accessed via this class. 
+ * 
+ * As there are a small number of components they are always held in memory.
+ * 
+ * For more information see:
+ * http://51degrees.com/Support/Documentation/Java
  */
 /**
  * Every device can be split into the major components of hardware, operating
  * system and browser. These the properties and values associated with these
  * components are represented via this class.
  */
-public class Component extends BaseEntity implements Comparable<Component> {
-
+public abstract class Component extends BaseEntity 
+                                implements Comparable<Component> {
+    /**
+     * The default profile that should be returned for the component.
+     */
+    private Profile defaultProfile;
+    /**
+     * Offset for the default profile that should be returned for the component.
+     */
+    private final int defaultProfileOffset;
+    /**
+     * The unique name of the component.
+     */
+    private String name;
+    /**
+     * Offset for the unique name of the component.
+     */
+    private final int nameOffset;
+    /**
+     * An array of profiles associated with the component.
+     */
+    private Profile[] profiles;
     /**
      * The unique Id of the component. Does not change between different data
      * sets.
      */
     private final int componentId;
-
     /**
-     * The unique name of the component.
-     * @return unique name of the component
-     * @throws java.io.IOException indicates an I/O exception occurred 
+     * Array of properties associated with the component.
      */
-    public String getName() throws IOException {
-        if (name == null) {
-            synchronized (this) {
-                if (name == null) {
-                    name = getDataSet().strings.get(nameOffset).toString();
-                }
-            }
-        }
-        return name;
-    }
-    private String name;
-    private final int nameOffset;
-
-    /**
-     * Array of properties the component relates to.
-     *
-     * @return array of properties the component relates to.
-     * @throws IOException indicates an I/O exception occurred
-     */
-    public Property[] getProperties() throws IOException {
-        if (properties == null) {
-            synchronized (this) {
-                if (properties == null) {
-                    properties = GetProperties();
-                }
-            }
-        }
-        return properties;
-    }
     private Property[] properties;
 
     /**
-     * An array of the profiles.
-     * @return an array of the profiles.
-     * @throws java.io.IOException indicates an I/O exception occurred
+     * Constructs a new instance of Component
+     *
+     * @param dataSet The data set whose components list the component is
+     * contained within
+     * @param index Index of the component within the list
+     * @param reader the BinaryReader object to be used
      */
-    public Profile[] getProfiles() throws IOException {
-        if (profiles == null) {
-            synchronized (this) {
-                if (profiles == null) {
-                    profiles = GetProfiles();
-                }
-            }
-        }
-        return profiles;
+    public Component(Dataset dataSet, int index, BinaryReader reader) {
+        super(dataSet, index);
+        componentId = reader.readByte();
+        nameOffset = reader.readInt32();
+        defaultProfileOffset = reader.readInt32();
     }
-    private Profile[] profiles;
-
+    
+    /**
+     * Compares this component to another using the numeric ComponentId field.
+     *
+     * @param other The component to be compared against
+     * @return Indication of relative value based on ComponentId field
+     */
+    @Override
+    public int compareTo(Component other) {
+        return getComponentId() - other.getComponentId();
+    }
+    
     /**
      * The default profile that should be returned for the component.
      * @return default profile that should be returned for the component
@@ -115,39 +115,88 @@ public class Component extends BaseEntity implements Comparable<Component> {
         }
         return defaultProfile;
     }
-    private Profile defaultProfile;
-    private final int defaultProfileOffset;
-
+    
     /**
-     * Constructs a new instance of Component
-     *
-     * @param dataSet The data set whose components list the component is
-     * contained within
-     * @param index Index of the component within the list
-     * @param reader the BinaryReader object to be used
+     * An array of the profiles.
+     * @return an array of the profiles.
+     * @throws java.io.IOException indicates an I/O exception occurred
      */
-    public Component(Dataset dataSet, int index, BinaryReader reader) {
-        super(dataSet, index);
-        componentId = reader.readByte();
-        nameOffset = reader.readInt32();
-        defaultProfileOffset = reader.readInt32();
+    public Profile[] getProfiles() throws IOException {
+        if (profiles == null) {
+            synchronized (this) {
+                if (profiles == null) {
+                    profiles = doGetProfiles();
+                }
+            }
+        }
+        return profiles;
     }
-
+    
+    /**
+     * Array of properties the component relates to.
+     *
+     * @return array of properties the component relates to.
+     * @throws IOException indicates an I/O exception occurred
+     */
+    public Property[] getProperties() throws IOException {
+        if (properties == null) {
+            synchronized (this) {
+                if (properties == null) {
+                    properties = doGetProperties();
+                }
+            }
+        }
+        return properties;
+    }
+    
     /**
      * Initialises the references to profiles.
      * @throws java.io.IOException indicates an I/O exception occurred
      */
     public void init() throws IOException {
-        defaultProfile = getDataSet().getProfiles().get(defaultProfileOffset);
-        profiles = GetProfiles();
+        if (name == null)
+            name = getName();
+        if (defaultProfile == null)
+            defaultProfile = getDataSet().getProfiles().get(defaultProfileOffset);
+        if (profiles == null)
+            profiles = doGetProfiles();
+    }
+    
+    /**
+     * The unique name of the component.
+     * @return unique name of the component
+     * @throws java.io.IOException indicates an I/O exception occurred 
+     */
+    public String getName() throws IOException {
+        if (name == null) {
+            synchronized (this) {
+                if (name == null) {
+                    name = getDataSet().strings.get(nameOffset).toString();
+                }
+            }
+        }
+        return name;
     }
 
     /**
-     * Returns an array of the properties associated with the component.
-     *
-     * @return
+     * Returns an array of all the profiles that relate to this component.
+     * @return An array of profiles associated with the component.
      */
-    private Property[] GetProperties() throws IOException {
+    private Profile[] doGetProfiles() throws IOException {
+        List<Profile> temp = new ArrayList<Profile>();
+        for (Profile profile : getDataSet().getProfiles()) {
+            if (profile.getComponent().getComponentId() == componentId) {
+                temp.add(profile);
+            }
+        }
+        return temp.toArray(new Profile[temp.size()]);
+    }
+    
+    /**
+     * Returns an array of the properties associated with the component.
+     * @return An array of the properties associated with the component.
+     */
+    private Property[] doGetProperties() throws IOException {
         List<Property> properties = new ArrayList<Property>();
         for (Property property : getDataSet().getProperties()) {
             if (property.getComponent().getComponentId() == componentId) {
@@ -158,43 +207,31 @@ public class Component extends BaseEntity implements Comparable<Component> {
     }
 
     /**
-     * Returns an array of all the profiles that relate to this component.
-     *
-     * @return
+     * The unique Id of the component.
+     * @return The unique Id of the component.
      */
-    private Profile[] GetProfiles() throws IOException {
-        List<Profile> profiles = new ArrayList<Profile>();
-        for (Profile profile : getDataSet().getProfiles()) {
-            for (Value value : profile.getValues()) {
-                if (value.getComponent().getComponentId() == componentId) {
-                    profiles.add(profile);
-                    continue;
-                }
-            }
-        }
-        return profiles.toArray(new Profile[profiles.size()]);
-    }
-
-    /**
-     * Compares this component to another using the numeric ComponentId field.
-     *
-     * @param other The component to be compared against
-     * @return Indication of relative value based on ComponentId field
-     */
-    public int compareTo(Component other) {
-        return getComponentId() - other.getComponentId();
-    }
-
     public int getComponentId() {
         return componentId;
     }
 
+    /**
+     * Returns the components name.
+     * @return Returns the components name.
+     */
     @Override
     public String toString() {
         try {
             return this.getName();
         } catch (IOException e) {
-            return null;
+            return "Null";
         }
     }
+    
+    /**
+     * List of HTTP headers that should be checked in order to perform a 
+     * detection where more headers than User-Agent are available. This data 
+     * is used by methods that can HTTP Header collections.
+     * @return 
+     */
+    public abstract String[] getHttpheaders();
 }

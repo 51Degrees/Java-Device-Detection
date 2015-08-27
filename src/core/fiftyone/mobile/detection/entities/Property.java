@@ -81,7 +81,59 @@ public class Property extends BaseEntity implements Comparable<Property> {
      * The index of the first value related to the property.
      */
     final int firstValueIndex;
+    /**
+     * @return an array of maps associated with the property.
+     */
+    public String[] getMaps() throws IOException
+    {
+        if (maps == null)
+        {
+            synchronized (this)
+            {
+                if (maps == null)
+                {
+                    String[] temp = new String[mapCount];
+                    for(int i = 0; i < mapCount; i++) {
+                        temp[i] = dataSet.maps.get(i + firstMapIndex).getName();
+                    }
+                    maps = temp;
+                }
+            }
+        }
+        return maps;
+    }
+    private String[] maps;
+    private final int mapCount;
+    private final int firstMapIndex;
 
+    /**
+     * The name of the property to use when adding to Javascript as a property 
+     * name. Unacceptable characters such as / are removed.
+     * @return the name of the property when used in javascript.
+     * @throws IOException 
+     */
+    public String getJavaScriptName() throws IOException
+    {
+        if (javascriptName == null)
+        {
+            synchronized(this)
+            {
+                if (javascriptName == null)
+                {
+                    StringBuilder temp = new StringBuilder();
+                    for(char character : getName().toCharArray()) {
+                        if (Character.isLetterOrDigit(character)) {
+                            temp.append(character);
+                        }
+                    }
+                    javascriptName = temp.toString();
+                }
+            }
+        }
+        return javascriptName;
+    }
+    private String javascriptName;
+    
     /**
      * The name of the property.
      * @return name of the property
@@ -99,6 +151,7 @@ public class Property extends BaseEntity implements Comparable<Property> {
     }
     private String name;
     private final int nameOffset;
+    
     /**
      * The strongly type data type the property returns.
      */
@@ -110,7 +163,8 @@ public class Property extends BaseEntity implements Comparable<Property> {
      * @throws java.io.IOException indicates an I/O exception occurred
      */
     public Value getDefaultValue() throws IOException {
-        if (defaultValue == null) {
+        if (defaultValue == null &&
+            defaultValueIndex >= 0) {
             synchronized (this) {
                 if (defaultValue == null) {
                     defaultValue = getDataSet().getValues().get(defaultValueIndex);
@@ -223,9 +277,7 @@ public class Property extends BaseEntity implements Comparable<Property> {
     }
     private URL url;
     private final int urlOffset;
-    private int lastValueIndex;
-    public final int MapCount;
-    public final int FirstMapIndex;
+    private final int lastValueIndex;
 
     /**
      * Constructs a new instance of Property
@@ -252,8 +304,8 @@ public class Property extends BaseEntity implements Comparable<Property> {
         this.urlOffset = reader.readInt32();
         this.firstValueIndex = reader.readInt32();
         this.lastValueIndex = reader.readInt32();
-        this.MapCount = reader.readInt32();
-        this.FirstMapIndex = reader.readInt32();
+        this.mapCount = reader.readInt32();
+        this.firstMapIndex = reader.readInt32();
     }
 
     /**

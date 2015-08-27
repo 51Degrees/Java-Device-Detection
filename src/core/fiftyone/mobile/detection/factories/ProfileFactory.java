@@ -24,16 +24,40 @@ import fiftyone.mobile.detection.readers.BinaryReader;
  * This Source Code Form is "Incompatible With Secondary Licenses", as
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
-public class ProfileFactory extends BaseEntityFactory<Profile> {
+public abstract class ProfileFactory extends BaseEntityFactory<Profile> {
 
+    /**
+     * Size of byte + int + int + int.
+     */
+    private static final int MIN_LENGTH = 1 + 4 + 4 + 4;
+    
+    /**
+     * Creates a new instance of Profile.
+     * @param dataSet The data set whose profile list the profile is contained 
+     * within.
+     * @param index The offset to the start of the profile within the profile 
+     * data structure.
+     * @param reader Binary reader positioned at the start of the Profile.
+     * @return A new instance of an Profile.
+     */
     @Override
     public Profile create(Dataset dataSet, int index,
             BinaryReader reader) {
-        return new Profile(dataSet, index, reader);
+        return construct(dataSet, index, reader);
     }
 
+    /**
+     * Returns the length of the Profile entity.
+     * @param entity Entity of type.
+     * @return Length in bytes of the Profile.
+     */
     @Override
     public int getLength(Profile entity) {
-        return entity.getLength();
+        return MIN_LENGTH + 
+            (entity.getValueIndexes().length * 4) + 
+            (entity.getSignatureIndexes().length * 4);
     }
+    
+    protected abstract Profile construct(Dataset dataSet, int index,
+            BinaryReader reader);
 }

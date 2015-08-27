@@ -233,10 +233,12 @@ public class Example extends BaseServlet {
 
         // Display the name and published date of the dataset being used.
         String dataInfo = String.format(
-            "<h4 class=\"heading\">'%s' data published on '%tc' containing '%d' properties in use</h4>",
+            "<h4 class=\"heading\">'%s' data of version '%s' published on '%tc' containing '%d' properties</h4>",
             super.getProvider(request).dataSet.getName(),
+            super.getProvider(request).dataSet.version,
             super.getProvider(request).dataSet.published,
-            super.getProvider(request).dataSet.getProperties().size());
+            super.getProvider(request).dataSet.getProperties().size()
+            );
         
         // Display all the properties available.
         out.println("<table class=\"list\">");
