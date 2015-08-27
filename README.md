@@ -74,6 +74,30 @@ Data files which are updated weekly and daily, automatically, and with more prop
 
 ## Recent Changes
 
+### Version 3.2.1.9 Changes:
+Automatic update function no longer uses the memory to store data downloaded 
+from 51degrees.com update server. Instead a temporary file is used. 
+This should significantly reduce the memory impact of the auto update process.
+
+The API now supports 51Degrees data files of version 3.2 as well as 3.1 data 
+files. The data files of version 3.2 are on average 20% smaller than the 3.1 
+data files due to the changes to the internal data structure.
+
+The core API (both Pattern and Trie) has been updated to perform device 
+detection with multiple HTTP headers.
+
+The API has been updated to implement caching for all major components that 
+require lookup/detection. This change reflects the fact that in the real-world 
+applications/websites subsequent requests are probable and that some user 
+agents that are encountered more often than others. This change should improve 
+detection times even further.
+
+Breaking change: The embedded data file no longer exists. This makes the JAR 
+very light but you will need to obtain the data file separately.
+
+Breaking change: Provider object can no longer be instantiated without 
+specifying the dataset to be used. See the breaking changes section.
+
 ### Version 3.1.8.4 Changes:
 
 Added several methods to pre-load data on the Dataset object:
