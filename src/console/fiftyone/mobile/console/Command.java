@@ -4,18 +4,10 @@ import fiftyone.mobile.detection.AutoUpdateException;
 import fiftyone.mobile.detection.Match;
 import fiftyone.mobile.detection.Provider;
 import fiftyone.mobile.detection.TrieProvider;
-import fiftyone.mobile.detection.TrieProviderV3;
-import fiftyone.mobile.detection.TrieProviderV32;
-import fiftyone.mobile.detection.entities.Property;
 import fiftyone.mobile.detection.factories.StreamFactory;
 import fiftyone.mobile.detection.factories.TrieFactory;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
@@ -109,10 +101,10 @@ public class Command {
         System.out.printf("Device Combinations\t%d\r\n", p.dataSet.deviceCombinations);
         
         System.out.println("\t\t\t*** Trie V30 Data Set Information ***");
-        System.out.println("Properties in v30 file: "+t.PropertyNames().size());
+        System.out.println("Properties in v30 file: "+t.propertyNames().size());
         
         System.out.println("\t\t\t*** Trie V32 Data Set Information ***");
-        System.out.println("Properties in v32 file: "+t32.PropertyNames().size());
+        System.out.println("Properties in v32 file: "+t32.propertyNames().size());
 
         /* PRINT TEST RESULTS FOR EACH USER AGENT */
         
@@ -195,15 +187,15 @@ public class Command {
                 
                 System.out.println("\r\n\t\t\t*** Example Lite Properties ***");
                 
-                if (t.PropertyNames().contains("IsMobile")) {
+                if (t.propertyNames().contains("IsMobile")) {
                     System.out.printf("IsMobile\t\t%s\r\n", 
                             t.getPropertyValue(trieDeviceIndex, "IsMobile"));
                 }
-                if (t.PropertyNames().contains("ScreenPixelsWidth")) {
+                if (t.propertyNames().contains("ScreenPixelsWidth")) {
                     System.out.printf("ScreenPixelsWidth\t%s\r\n", 
                             t.getPropertyValue(trieDeviceIndex, "ScreenPixelsWidth"));
                 }
-                if (t.PropertyNames().contains("ScreenPixelsHeight")) {
+                if (t.propertyNames().contains("ScreenPixelsHeight")) {
                     System.out.printf("ScreenPixelsHeight\t%s\r\n", 
                             t.getPropertyValue(trieDeviceIndex, "ScreenPixelsHeight"));
                 }                
@@ -223,15 +215,15 @@ public class Command {
                 
                 System.out.println("\r\n\t\t\t*** Example Lite Properties ***");
                 
-                if (t.PropertyNames().contains("IsMobile")) {
+                if (t.propertyNames().contains("IsMobile")) {
                     System.out.printf("IsMobile\t\t%s\r\n", 
                             t32.getPropertyValue(trieDeviceIndex, "IsMobile"));
                 }
-                if (t.PropertyNames().contains("ScreenPixelsWidth")) {
+                if (t.propertyNames().contains("ScreenPixelsWidth")) {
                     System.out.printf("ScreenPixelsWidth\t%s\r\n", 
                             t32.getPropertyValue(trieDeviceIndex, "ScreenPixelsWidth"));
                 }
-                if (t.PropertyNames().contains("ScreenPixelsHeight")) {
+                if (t.propertyNames().contains("ScreenPixelsHeight")) {
                     System.out.printf("ScreenPixelsHeight\t%s\r\n", 
                             t32.getPropertyValue(trieDeviceIndex, "ScreenPixelsHeight"));
                 }                
