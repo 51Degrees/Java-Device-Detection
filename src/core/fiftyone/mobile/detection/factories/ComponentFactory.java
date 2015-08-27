@@ -1,8 +1,7 @@
 package fiftyone.mobile.detection.factories;
 
-import fiftyone.mobile.detection.Dataset;
 import fiftyone.mobile.detection.entities.Component;
-import fiftyone.mobile.detection.readers.BinaryReader;
+import fiftyone.properties.DetectionConstants;
 
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
@@ -24,11 +23,15 @@ import fiftyone.mobile.detection.readers.BinaryReader;
  * This Source Code Form is "Incompatible With Secondary Licenses", as
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
-public class ComponentFactory extends BaseEntityFactory<Component> {
+public abstract class ComponentFactory extends BaseEntityFactory<Component> {
 
+    /**
+     * Returns the length of the Component entity.
+     * @return Length in bytes of a Component entity.
+     */
     @Override
-    public Component create(Dataset dataSet, int index,
-            BinaryReader reader) {
-        return new Component(dataSet, index, reader);
+    public int getLength() {
+        return (DetectionConstants.SIZE_OF_INT * 2 
+                + DetectionConstants.SIZE_OF_BYTE);
     }
 }

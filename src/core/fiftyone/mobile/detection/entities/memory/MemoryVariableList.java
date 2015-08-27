@@ -1,10 +1,13 @@
 package fiftyone.mobile.detection.entities.memory;
 
 import fiftyone.mobile.detection.Dataset;
+import fiftyone.mobile.detection.IReadonlyList;
 import fiftyone.mobile.detection.entities.BaseEntity;
 import fiftyone.mobile.detection.factories.BaseEntityFactory;
 import fiftyone.mobile.detection.readers.BinaryReader;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
@@ -27,22 +30,29 @@ import java.io.IOException;
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
 /**
- * A readonly list of variable length entity types held in memory. <p> Entities
- * in the underlying data structure are either fixed length where the data that
- * represents them always contains the same number of bytes, or variable length
- * where the number of bytes to represent the entity varies. <p> This class uses
- * the offset of the first byte of the entities data in the underlying data
- * structure in the accessor. As such the list isn't being used as a traditional
- * list because items are not retrieved by their index in the list, but by there
- * offset in the underlying data structure. <p> The constructor will read the
- * header information about the underlying data structure and the entities are
- * added to the list when the Read method is called. <p> The class supports
- * source stream that do not support seeking. <p> Should not be referenced
- * directly.
+ * A readonly list of variable length entity types held in memory. 
+ * 
+ * Entities in the underlying data structure are either fixed length where the 
+ * data that represents them always contains the same number of bytes, or 
+ * variable length where the number of bytes to represent the entity varies.
+ * 
+ * This class uses the offset of the first byte of the entities data in the 
+ * underlying data structure in the accessor. As such the list isn't being 
+ * used as a traditional list because items are not retrieved by their index 
+ * in the list, but by there offset in the underlying data structure.
+ * 
+ * The constructor will read the header information about the underlying data 
+ * structure and the entities are added to the list when the Read method 
+ * is called.
+ * 
+ * The class supports source stream that do not support seeking.
+ * 
+ * Should not be referenced directly.
  *
  * @param <T> The type of BaseEntity the list will contain
  */
-public class MemoryVariableList<T extends BaseEntity> extends BaseList<T> {
+public class MemoryVariableList<T extends BaseEntity> extends 
+        MemoryBaseList<T> {
 
     /**
      * Constructs a new instance of VariableList of type T
@@ -60,16 +70,20 @@ public class MemoryVariableList<T extends BaseEntity> extends BaseList<T> {
 
     /**
      * Reads the list into memory.
-     *
      * @param reader Reader connected to the source data structure and
      * positioned to start reading
-     * @throws IOException indicates an I/O exception occurred
      */
-    public void read(BinaryReader reader) throws IOException {
-        for (int index = 0, offset = 0; index < header.getCount(); index++) {
-            T entity = entityFactory.create(dataSet, offset, reader);
-            array.add(index, entity);
-            offset += entityFactory.getLength(entity);
+    @Override
+    public void read(BinaryReader reader) {
+        int offset = 0;
+        try {
+            for (int index = 0; index < header.getCount(); index++) {
+                T entity = (T)entityFactory.create(dataSet, offset, reader);
+                super.array.add(entity);
+                offset += entityFactory.getLength(entity);
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(MemoryVariableList.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -82,8 +96,12 @@ public class MemoryVariableList<T extends BaseEntity> extends BaseList<T> {
      * be returned from the list
      * @return Entity at the offset requested
      */
+    @Override
     public T get(int offset) {
-        return array.get(binarySearch(offset));
+        int index = binarySearch(offset);
+        if (index >= 0)
+            return array.get(index);
+        return null;
     }
 
     /**
@@ -112,4 +130,5 @@ public class MemoryVariableList<T extends BaseEntity> extends BaseList<T> {
 
         return -1;
     }
+
 }

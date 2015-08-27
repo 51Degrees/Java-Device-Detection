@@ -2,6 +2,7 @@ package fiftyone.mobile.detection;
 
 import java.io.IOException;
 
+import fiftyone.properties.MatchMethods;
 import fiftyone.mobile.detection.entities.Node;
 import fiftyone.mobile.detection.entities.Profile;
 
@@ -26,27 +27,38 @@ import fiftyone.mobile.detection.entities.Profile;
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
 /**
- * A single static class which controls the device detection process. <p> The
- * process uses 3 steps to determine the properties associated with the provided
- * user agent. <p> Step 1 - each of the character positions of the target user
- * agent are checked from right to left to determine if a complete node or sub
- * string is present at that position. For example; the sub string Chrome/11
- * might indicate the user agent relates to Chrome version 11 from Google. Once
+ * A single static class which controls the device detection process. 
+ * 
+ * The process uses 3 steps to determine the properties associated with the 
+ * provided user agent. 
+ * 
+ * Step 1 - each of the character positions of the target user agent are 
+ * checked from right to left to determine if a complete node or substring 
+ * is present at that position. For example; the sub string Chrome/11 might 
+ * indicate the user agent relates to Chrome version 11 from Google. Once
  * every character position is checked a list of matching nodes will be
- * available. <p> Step 2 - The list of signatures is then searched to determine
+ * available. 
+ * 
+ * Step 2 - The list of signatures is then searched to determine
  * if the matching nodes relate exactly to an existing signature. Any popular
  * device will be found at this point. The approach is exceptionally fast at
- * identifying popular devices. <p> Step 3 - If the target user agent is less
- * popular, or newer than the creation time of the data set, a small sub set of
- * possible signatures are identified from the matching nodes. These signatures
- * are evaluated against the target user agent to determine the different in
- * relevant characters between them. The signature which has the lowest
- * difference and is most popular is then returned. <p> Random user agents will
- * not identify any matching nodes. In these situations a default signature is
- * returned. <p> The characteristics of the detection data set will determine
- * the accuracy of the result match. Older data sets that are unaware of the
- * latest devices, or user agent formats in use will be less accurate. <p> For
- * more information see http://51degrees.mobi/Support/Documentation/Java
+ * identifying popular devices. 
+ * 
+ * Step 3 - If the target user agent is less popular, or newer than the 
+ * creation time of the data set, a small sub set of possible signatures are 
+ * identified from the matching nodes. These signatures are evaluated against 
+ * the target user agent to determine the different in relevant characters 
+ * between them. The signature which has the lowest difference and is most 
+ * popular is then returned. 
+ * 
+ * Random user agents will not identify any matching nodes. In these situations 
+ * a default signature is returned.
+ * 
+ * The characteristics of the detection data set will determine the accuracy of 
+ * the result match. Older data sets that are unaware of the latest devices, 
+ * or user agent formats in use will be less accurate.
+ * 
+ * For more information see http://51degrees.com/Support/Documentation/Java
  */
 public class Controller {
 
@@ -61,10 +73,13 @@ public class Controller {
 
     /**
      * Entry point to the detection process. Provided with a Match instance
-     * configured with the information about the request. <p> The dataSet may be
-     * used by other threads in parallel and is not assumed to be used by only
-     * one detection process at a time. <p> The memory implementation of the
-     * data set will always perform fastest but does consume more memory.
+     * configured with the information about the request. 
+     * 
+     * The dataSet may be used by other threads in parallel and is not assumed 
+     * to be used by only one detection process at a time. 
+     * 
+     * The memory implementation of the data set will always perform fastest 
+     * but does consume more memory.
      *
      * @param match The match object to be updated.
      * @throws IOException an I/O exception has occurred
@@ -140,6 +155,12 @@ public class Controller {
         }
     }
 
+    /**
+     * Evaluate the target user agent again, but this time look for a numeric 
+     * difference.
+     * @param match Match object to be updated with results.
+     * @throws IOException 
+     */
     private void evaluateNumeric(Match match) throws IOException {
         match.resetNextCharacterPositionIndex();
         int existingNodeIndex = match.getNodes().size() - 1;
@@ -176,11 +197,10 @@ public class Controller {
 
     /**
      * The detection failed and a default match needs to be returned.
-     *
      * @param match Information about the detection
      * @throws IOException
      */
-    private void matchDefault(Match match) throws IOException {
+    public static void matchDefault(Match match) throws IOException {
         match.method = MatchMethods.NONE;
         match.profiles = new Profile[match.getDataSet().components.size()];
         for (int i = 0; i < match.profiles.length; i++) {
@@ -191,7 +211,6 @@ public class Controller {
     /**
      * Evaluates the match at the current character position until there are no
      * more characters left to evaluate.
-     *
      * @param match Information about the detection
      * @throws IOException
      */
@@ -203,8 +222,7 @@ public class Controller {
             match.rootNodesEvaluated++;
 
             // See if a leaf node will match from this list.
-            Node node = match.getDataSet().rootNodes.get(match.nextCharacterPositionIndex).
-                    getCompleteNode(match);
+            Node node = match.getDataSet().rootNodes.get(match.nextCharacterPositionIndex).getCompleteNode(match);
 
             if (node != null) {
                 match.getNodes().add(0, node);

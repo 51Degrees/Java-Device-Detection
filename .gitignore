@@ -13,3 +13,13 @@
 /Netbeans/Servlets/dist/
 /Netbeans/WebSite/build/
 /Netbeans/WebSite/dist/
+/Netbeans/Console/build/
+*Enterprise*.dat
+*Premium*.dat
+*Enterprise*.trie
+*Premium*.trie
+*.lic
+*.pfk
+*.class
+/Netbeans/Console/dist/
+/Netbeans/UnitTests/nbproject/private/

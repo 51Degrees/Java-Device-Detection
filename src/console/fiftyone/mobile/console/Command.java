@@ -49,28 +49,49 @@ public class Command {
 
     public static void main(String[] args) throws IOException, AutoUpdateException, Exception {
 
-        // Set this parameter to the data set file name.
-        String patternFileName = args.length > 0 ? args[0] : "";
-        String trieFileName = args.length > 1 ? args[1]: "";
+        //Set this parameter to the data set file name.
+        String patternFileName = args.length > 0 ? args[0] : "../../data/51Degrees-LiteV3.1.dat";
+        String trieFileName = args.length > 1 ? args[1]: "../../data/51Degrees-LiteV3.0.trie";
+        String trieFileNmae32 = args.length > 2 ? args[2]: "../../data/51Degrees-LiteV3.2.trie";
         
         TrieProvider t = null;
+        TrieProvider t32 = null;
         Provider p;
         
         // Construct the provider based on the file names provided.
         if (new File(patternFileName).exists()) 
         {
             // The file exists so use it to initialise the provider.
-            p = new Provider(StreamFactory.create(patternFileName));
+            p = new Provider(StreamFactory.create(patternFileName, false));
         } else {
             // Uses the free "Lite" data embedded in the Core package 
             // as the dataset. Additional data sets can be purchased
             // from http://51degrees.com/products/store
-            p = new Provider();
+            throw new IOException(String.format(
+                    "File '%s' data file can't be found.", patternFileName));
         }
         
         if (new File(trieFileName).exists()) {
             t = TrieFactory.create(trieFileName);
+        } else {
+            // Uses the free "Lite" data embedded in the Core package 
+            // as the dataset. Additional data sets can be purchased
+            // from http://51degrees.com/products/store
+            throw new IOException(String.format(
+                    "File '%s' data file can't be found.", trieFileName));
         }
+        
+        if (new File(trieFileNmae32).exists()) {
+            t32 = TrieFactory.create(trieFileNmae32);
+        } else {
+            // Uses the free "Lite" data embedded in the Core package 
+            // as the dataset. Additional data sets can be purchased
+            // from http://51degrees.com/products/store
+            throw new IOException(String.format(
+                    "File '%s' data file can't be found.", trieFileNmae32));
+        }
+        
+        /* DATA INFORMATION */
         
         System.out.println("\t\t\t*** Data Set Information ***");
         System.out.printf("Name\t\t\t%s\r\n", p.dataSet.getName());
@@ -78,7 +99,15 @@ public class Command {
         System.out.printf("Next Update\t\t%tc\r\n", p.dataSet.nextUpdate);
         System.out.printf("Signatures\t\t%d\r\n", p.dataSet.signatures.size());
         System.out.printf("Device Combinations\t%d\r\n", p.dataSet.deviceCombinations);
+        
+        System.out.println("\t\t\t*** Trie V30 Data Set Information ***");
+        System.out.println("Properties in v30 file: "+t.propertyNames().size());
+        
+        System.out.println("\t\t\t*** Trie V32 Data Set Information ***");
+        System.out.println("Properties in v32 file: "+t32.propertyNames().size());
 
+        /* PRINT TEST RESULTS FOR EACH USER AGENT */
+        
         for (String userAgent : USERAGENTS) {
 
             // Match the user agent to properties.
@@ -100,7 +129,10 @@ public class Command {
             System.out.printf("Relevant Sub Strings\t%s\r\n", patternMatch.toString());
             System.out.printf("Closest Sub Strings\t%s\r\n", patternMatch.getUserAgent());
             System.out.printf("Difference\t\t%d\r\n", patternMatch.getDifference());
-            System.out.printf("Method\t\t\t%s\r\n", patternMatch.method.toString());
+            System.out.printf("Method\t\t\t%s\r\n", patternMatch.getMethod());
+            if (patternMatch.getSignature() != null) {
+                System.out.printf("Signature Rank:\t\t%d\r\n", patternMatch.getSignature().getRank());
+            }
             System.out.printf("Root Nodes Evaluated\t%d\r\n", patternMatch.getRootNodesEvaluated());
             System.out.printf("Nodes Evaluated\t\t%d\r\n", patternMatch.getNodesEvaluated());
             System.out.printf("Strings Read\t\t%d\r\n", patternMatch.getStringsRead());
@@ -144,7 +176,7 @@ public class Command {
             // Detect the device using the trie data if a provider is available.
             if (t != null) {
                 
-                System.out.println("\r\n\t\t\t*** Trie Detection Results ***");
+                System.out.println("\r\n\t\t\t*** Trie 30 Detection Results ***");
                 System.out.print("\r\n");
                 System.out.printf("Target User Agent\t%s\r\n", 
                         userAgent);
@@ -155,17 +187,45 @@ public class Command {
                 
                 System.out.println("\r\n\t\t\t*** Example Lite Properties ***");
                 
-                if (t.PropertyNames().contains("IsMobile")) {
+                if (t.propertyNames().contains("IsMobile")) {
                     System.out.printf("IsMobile\t\t%s\r\n", 
                             t.getPropertyValue(trieDeviceIndex, "IsMobile"));
                 }
-                if (t.PropertyNames().contains("ScreenPixelsWidth")) {
+                if (t.propertyNames().contains("ScreenPixelsWidth")) {
                     System.out.printf("ScreenPixelsWidth\t%s\r\n", 
                             t.getPropertyValue(trieDeviceIndex, "ScreenPixelsWidth"));
                 }
-                if (t.PropertyNames().contains("ScreenPixelsHeight")) {
+                if (t.propertyNames().contains("ScreenPixelsHeight")) {
                     System.out.printf("ScreenPixelsHeight\t%s\r\n", 
                             t.getPropertyValue(trieDeviceIndex, "ScreenPixelsHeight"));
+                }                
+            }
+            
+            // Detect the device using the trie data if a provider is available.
+            if (t32 != null) {
+                
+                System.out.println("\r\n\t\t\t*** Trie 32 Detection Results ***");
+                System.out.print("\r\n");
+                System.out.printf("Target User Agent\t%s\r\n", 
+                        userAgent);
+                System.out.printf("Found User Agent \t%s\r\n", 
+                        t32.getUserAgent(userAgent));
+                                
+                int trieDeviceIndex = t32.getDeviceIndex(userAgent);
+                
+                System.out.println("\r\n\t\t\t*** Example Lite Properties ***");
+                
+                if (t.propertyNames().contains("IsMobile")) {
+                    System.out.printf("IsMobile\t\t%s\r\n", 
+                            t32.getPropertyValue(trieDeviceIndex, "IsMobile"));
+                }
+                if (t.propertyNames().contains("ScreenPixelsWidth")) {
+                    System.out.printf("ScreenPixelsWidth\t%s\r\n", 
+                            t32.getPropertyValue(trieDeviceIndex, "ScreenPixelsWidth"));
+                }
+                if (t.propertyNames().contains("ScreenPixelsHeight")) {
+                    System.out.printf("ScreenPixelsHeight\t%s\r\n", 
+                            t32.getPropertyValue(trieDeviceIndex, "ScreenPixelsHeight"));
                 }                
             }
         }

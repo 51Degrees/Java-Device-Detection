@@ -3,21 +3,26 @@ package fiftyone.mobile.detection;
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import fiftyone.mobile.detection.entities.AsciiString;
 import fiftyone.mobile.detection.entities.Component;
 import fiftyone.mobile.detection.entities.Guid;
+import fiftyone.mobile.detection.entities.IntegerEntity;
 import fiftyone.mobile.detection.entities.Map;
+import fiftyone.mobile.detection.entities.Modes;
 import fiftyone.mobile.detection.entities.Node;
 import fiftyone.mobile.detection.entities.Profile;
 import fiftyone.mobile.detection.entities.ProfileOffset;
-import fiftyone.mobile.detection.entities.RankedSignatureIndex;
 import fiftyone.mobile.detection.entities.Property;
 import fiftyone.mobile.detection.entities.Signature;
 import fiftyone.mobile.detection.entities.Value;
 import fiftyone.mobile.detection.entities.Version;
+import fiftyone.mobile.detection.entities.memory.MemoryFixedList;
+import fiftyone.mobile.detection.entities.memory.PropertiesList;
 import fiftyone.mobile.detection.entities.stream.ICacheList;
-import fiftyone.mobile.detection.readers.BinaryReader;
 import fiftyone.properties.DetectionConstants;
 
 /* *********************************************************************
@@ -41,24 +46,257 @@ import fiftyone.properties.DetectionConstants;
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
 /**
- * Data set used for device detection created by the reader classes. <p> The
- * Memory.Reader and Stream.Reader factories should be used to create detector
- * data sets. They can not be constructed directly from external code. <p> All
- * information about the detector data set is exposed in this class including
- * meta data and data used for device detection in the form of lists. <p>
- * Detector data sets created using the @see Stream#Reader factory
- * using a file must be disposed of to ensure any readers associated with the
- * file are closed elegantly. <p> For more information see
- * http://51degrees.mobi/Support/Documentation/Java
+ * Data set used for device detection created by the reader classes. 
+ * 
+ * The Memory.Reader and Stream.Reader factories should be used to create 
+ * detector data sets. They can not be constructed directly from external code.
+ * 
+ * All information about the detector data set is exposed in this class 
+ * including meta data and data used for device detection in the form of lists.
+ * 
+ * Detector data sets created using the @see Stream#Reader factory using a 
+ * file must be disposed of to ensure any readers associated with the file 
+ * are closed elegantly. 
+ * 
+ * For more information see https://51degrees.com/Support/Documentation/Java
  */
-public class Dataset implements Disposable {
-
+public class Dataset implements IDisposable {
     /**
-     * The BinaryReader used in entity lists. This is not used directly in
-     * Dataset but a reference is needed to dispose it later.
+     * Age of the data in months when exported.
      */
-    private BinaryReader reader;
+    public int age;
+    /**
+     * The browser component.
+     */
+    private Component browsers;
+    /**
+     * A list of all the components the data set contains.
+     */
+    public MemoryFixedList<Component> components;
+    /**
+     * The copyright notice associated with the data set.
+     */
+    public String copyright;
+    /**
+     * The offset for the copyright notice associated with the data set.
+     */
+    public int copyrightOffset;
+    /**
+     * The crawler component.
+     */
+    private Component crawlers;
+    /**
+     * The number of bytes to allocate to a buffer returning CSV format data for
+     * a match.
+     */
+    public int csvBufferLength;
+    /**
+     * The number of unique device combinations available in the data set.
+     */
+    public int deviceCombinations;
+    /**
+     * A unique Tag for the exported data.
+     */
+    public Guid export;
+    /**
+     * Flag to indicate if the dataset is disposed.
+     */
+    private boolean disposed;
+    /**
+     * The name of the property map used to create the dataset.
+     */
+    public String format;
+    /**
+     * The offset for the name of the property map used to create the dataset.
+     */
+    public int formatOffset;
+    /**
+     * The hardware component.
+     */
+    private Component hardware;
+    /**
+     * The highest character the character trees can contain.
+     */
+    public byte highestCharacter;
+    /**
+     * List of unique HTTP Headers that the data set needs to consider to 
+     * perform the most accurate matches.
+     */
+    private String[] httpHeaders;
+    /**
+     * The number of bytes to allocate to a buffer returning JSON format data
+     * for a match.
+     */
+    public int jsonBufferLength;
+    /**
+     * When the data was last modified.
+     */
+    public Calendar lastModified;
+    /**
+     * The lowest character the character trees can contain.
+     */
+    public byte lowestCharacter;
+    /**
+     * A list of all the maps the data set contains.
+     */
+    public MemoryFixedList<Map> maps;
+    /**
+     * The maximum number of signatures that can be checked. Needed to avoid
+     * bogus user agents which deliberately require so many signatures to be
+     * checked that performance is degraded.
+     */
+    public int maxSignatures;
+    /**
+     * The maximum number of signatures that could possibly be returned during a
+     * closest match.
+     */
+    public int maxSignaturesClosest;
+    /**
+     * The maximum length of a user agent string.
+     */
+    public short maxUserAgentLength;
+    /**
+     * The maximum number of values that can be returned by a profile and a
+     * property supporting a list of values.
+     */
+    public short maxValues;
+    /**
+     * The largest rank value that can be returned.
+     */
+    public int maximumRank;
+    /**
+     * The minimum number of times a user agent should have been seen before it
+     * was included in the dataset.
+     */
+    public int minUserAgentCount;
+    /**
+     * The minimum length of a user agent string.
+     */
+    public short minUserAgentLength;
+    /**
+     * The mode of operation the data set is using.
+     */
+    public Modes mode;
+    /**
+     * The common name of the data set.
+     */
+    public String name;
+    /**
+     * The offset for the common name of the data set.
+     */
+    public int nameOffset;
+    /**
+     * The date the data set is next expected to be updated by 51Degrees.
+     */
+    public Date nextUpdate;
+    /**
+     * List of nodes the data set contains.
+     */
+    public IReadonlyList<Node> nodes;
+    /**
+     * List of integers that represent ranked signature indexes.
+     */
+    public IFixedList<IntegerEntity> nodeRankedSignatureIndexes;
+    /**
+     * A list of all the possible profiles the data set contains.
+     */
+    public IReadonlyList<Profile> profiles;
+    /**
+     * List of profile offsets the data set contains.
+     */
+    public IReadonlyList<ProfileOffset> profileOffsets;
+    /**
+     * A list of all properties the data set contains.
+     */
+    public PropertiesList properties;
+    /**
+     * The date the data set was published.
+     */
+    public Date published;
+    /**
+     * A list of signature indexes ordered in ascending order of rank. Used by 
+     * the node ranked signature indexes lists to identify the corresponding 
+     * signature.
+     */
+    public IFixedList<IntegerEntity> rankedSignatureIndexes;
+    /**
+     * Nodes for each of the possible character positions in the user agent.
+     */
+    public IReadonlyList<Node> rootNodes;
+    /**
+     * The number of nodes each signature can contain.
+     */
+    public int signatureNodesCount;
+     /**
+     * List of integers that represent signature node offsets.
+     */
+    public IFixedList<IntegerEntity> signatureNodeOffsets;
+    /**
+     * The number of profiles each signature can contain.
+     */
+    public int signatureProfilesCount;
+    /**
+     * A list of all the signatures the data set contains.
+     */
+    public IReadonlyList<Signature> signatures;
+    /**
+     * The software component.
+     */
+    private Component software;
+    /**
+     * A list of ASCII byte arrays for strings used by the dataset.
+     */
+    public IReadonlyList<AsciiString> strings;
+    /**
+     * A unique Tag for the data set.
+     */
+    public Guid tag;
+    /**
+     * A list of all property values the data set contains.
+     */
+    public IReadonlyList<Value> values;
+    /**
+     * The version of the data set.
+     */
+    public Version version;
+    /**
+     * The version of the data set as an enum.
+     */
+    public DetectionConstants.FORMAT_VERSIONS versionEnum;
+    /**
+     * The number of bytes to allocate to a buffer returning XML format data for
+     * a match.
+     */
+    public int xmlBufferLength;
     
+    /**
+     * Constructs a new data set ready to have lists of data assigned to it.
+     * @param lastModified The date and time the source of the data was 
+     * last modified.
+     * @param mode The mode of operation the data set will be using.
+     * @throws java.io.IOException signals an I/O exception occurred
+     */
+    public Dataset(Date lastModified, Modes mode) throws IOException {
+        this.httpHeaders = null;
+        this.maximumRank = 0;
+        this.disposed = false;
+        this.lastModified = Calendar.getInstance();
+        this.lastModified.setTime(lastModified);
+        this.mode = mode;
+    }
+    
+    /**
+     * Returns time that has elapsed since the data in the data set was current.
+     * @return time in seconds between now and when data file was published.
+     */
+    public long getAge() {
+        Date now = new Date();
+        Date was = new Date(age);
+        long difference = now.getTime() - was.getTime();
+        long diffInSeconds = TimeUnit.MILLISECONDS.toSeconds(difference);
+        return diffInSeconds;
+    }
+
     /**
      * The percentage of requests for signatures which were not already
      * contained in the cache. <p> A value is only returned when operating in
@@ -67,23 +305,18 @@ public class Dataset implements Disposable {
      * currently in cache, only for Stream Mode.
      */
     public double getPercentageSignatureCacheMisses() {
-        if (signatures instanceof ICacheList) {
-            return ((ICacheList) signatures).getPercentageMisses();
-        }
-        return 0;
+        return getPercentageMisses(signatures);
     }
 
     /**
-     * The percentage of requests for nodes which were not already contained in
-     * the cache. <p> A value is only returned when operating in Stream mode.
+     * The percentage of requests for nodes which were not already
+     * contained in the cache. A value is only returned when operating in 
+     * Stream mode.
      * @return double representing percentage of requests for nodes not already 
      * in cache. Stream Mode only.
      */
     public double getPercentageNodeCacheMisses() {
-        if (nodes instanceof ICacheList) {
-            return ((ICacheList) nodes).getPercentageMisses();
-        }
-        return 0;
+        return getPercentageMisses(nodes);
     }
 
     /**
@@ -93,10 +326,7 @@ public class Dataset implements Disposable {
      * not already in cache.
      */
     public double getPercentageStringsCacheMisses() {
-        if (strings instanceof ICacheList) {
-            return ((ICacheList) strings).getPercentageMisses();
-        }
-        return 0;
+        return getPercentageMisses(strings);
     }
 
     /**
@@ -106,10 +336,7 @@ public class Dataset implements Disposable {
      * not already in cache.
      */
     public double getPercentageProfilesCacheMisses() {
-        if (profiles instanceof ICacheList) {
-            return ((ICacheList) profiles).getPercentageMisses();
-        }
-        return 0;
+        return getPercentageMisses(profiles);
     }
 
     /**
@@ -119,12 +346,24 @@ public class Dataset implements Disposable {
      * not already in cache.
      */
     public double getPercentageValuesCacheMisses() {
-        if (values instanceof ICacheList) {
-            return ((ICacheList) values).getPercentageMisses();
-        }
-        return 0;
+        return getPercentageMisses(values);
     }
 
+    /**
+     * The largest rank value that can be returned.
+     * @return The largest rank value that can be returned.
+     */
+    public int getMaximumRank() {
+        if (maximumRank == 0 && rankedSignatureIndexes != null) {
+            synchronized(this) {
+                if (maximumRank == 0 && rankedSignatureIndexes != null) {
+                    maximumRank = rankedSignatureIndexes.size();
+                }
+            }
+        }
+        return maximumRank;
+    }
+    
     /**
      * Indicates if the data set has been disposed.
      * @return True if dataset has been disposed, False otherwise.
@@ -132,84 +371,9 @@ public class Dataset implements Disposable {
     public boolean getDisposed() {
         return disposed;
     }
-    private boolean disposed = false;
-    /**
-     * The date the data set was published.
-     */
-    public final Date published;
-    /**
-     * The date the data set is next expected to be updated by 51Degrees.
-     */
-    public final Date nextUpdate;
-    /**
-     * The minimum number of times a user agent should have been seen before it
-     * was included in the dataset.
-     */
-    public final int minUserAgentCount;
-    /**
-     * The version of the data set.
-     */
-    public final Version version;
-    /**
-     * The maximum length of a user agent string.
-     */
-    public final short maxUserAgentLength;
-    /**
-     * The minimum length of a user agent string.
-     */
-    private final short minUserAgentLength;
-    /**
-     * The lowest character the character trees can contain.
-     */
-    public final byte lowestCharacter;
-    /**
-     * The highest character the character trees can contain.
-     */
-    public final byte highestCharacter;
-    /**
-     * The number of unique device combinations available in the data set.
-     */
-    public final int deviceCombinations;
-    /**
-     * The maximum number of signatures that can be checked. Needed to avoid
-     * bogus user agents which deliberately require so many signatures to be
-     * checked that performance is degraded.
-     */
-    public final int maxSignatures;
-    /**
-     * The maximum number of values that can be returned by a profile and a
-     * property supporting a list of values.
-     */
-    public final short maxValues;
-    /**
-     * The number of bytes to allocate to a buffer returning CSV format data for
-     * a match.
-     */
-    public final int csvBufferLength;
-    /**
-     * The number of bytes to allocate to a buffer returning JSON format data
-     * for a match.
-     */
-    public final int jsonBufferLength;
-    /**
-     * The number of bytes to allocate to a buffer returning XML format data for
-     * a match.
-     */
-    public final int xmlBufferLength;
-    /**
-     * The maximum number of signatures that could possibly be returned during a
-     * closest match.
-     */
-    public final int maxSignaturesClosest;
-    public final Guid guid;
-    /**
-     * Age of the data in months when exported.
-     */
-    public final int age;
 
     /**
      * The hardware component.
-     *
      * @return hardware component for the hardware platform
      * @throws IOException signals an I/O exception occurred
      */
@@ -223,7 +387,7 @@ public class Dataset implements Disposable {
         }
         return hardware;
     }
-    private Component hardware;
+    
 
     /**
      * The software component.
@@ -240,7 +404,7 @@ public class Dataset implements Disposable {
         }
         return software;
     }
-    private Component software;
+    
 
     /**
      * The browser component.
@@ -257,7 +421,6 @@ public class Dataset implements Disposable {
         }
         return browsers;
     }
-    private Component browsers;
 
     /**
      * The crawler component.
@@ -274,7 +437,6 @@ public class Dataset implements Disposable {
         }
         return crawlers;
     }
-    private Component crawlers;
 
     /**
      * The copyright notice associated with the data set.
@@ -291,8 +453,6 @@ public class Dataset implements Disposable {
         }
         return copyright;
     }
-    protected String copyright;
-    protected final int copyrightOffset;
 
     /**
      * The common name of the data set.
@@ -309,8 +469,6 @@ public class Dataset implements Disposable {
         }
         return name;
     }
-    protected final int nameOffset;
-    private String name;
 
     /**
      * The name of the property map used to create the dataset.
@@ -327,156 +485,56 @@ public class Dataset implements Disposable {
         }
         return format;
     }
-    protected final int formatOffset;
-    protected String format;
+
 
     /**
      * A list of all the components the data set contains.
      * @return a read-only list of all components contained in data set
      */
-    public ReadonlyList<Component> getComponents() {
+    public IReadonlyList<Component> getComponents() {
         return components;
     }
-    public ReadonlyList<Component> components;
+    
 
     /**
      * A list of all property maps the data set contains.
      * @return a read-only list of all maps contained in the data set
      */
-    public ReadonlyList<Map> getMaps() {
+    public IReadonlyList<Map> getMaps() {
         return maps;
     }
-    public ReadonlyList<Map> maps;
 
     /**
      * A list of all properties the data set contains.
      * @return a read-only list of all properties contained in the data set
      */
-    public ReadonlyList<Property> getProperties() {
+    public IReadonlyList<Property> getProperties() {
         return properties;
     }
-    public ReadonlyList<Property> properties;
+    
 
     /**
      * A list of all property values the data set contains.
      * @return a read-only list of values contained in the data set
      */
-    public ReadonlyList<Value> getValues() {
+    public IReadonlyList<Value> getValues() {
         return values;
     }
-    public ReadonlyList<Value> values;
+    
 
     /**
      * List of signatures the data set contains.
      * @return a read-only list of all signatures contained in the data set
      */
-    public ReadonlyList<Signature> getSignatures() {
+    public IReadonlyList<Signature> getSignatures() {
         return signatures;
     }
-    /**
-     * A list of all the signatures the data set contains.
-     */
-    public ReadonlyList<Signature> signatures;
-    /**
-     * A list of signature indexes ordered in ascending order of rank. Used by
-     * the node ranked signature indexes lists to identify the corresponding
-     * signature.
-     */
-    public ReadonlyList<RankedSignatureIndex> rankedSignatureIndexes;
-    /**
-     * A list of all the possible profiles the data set contains.
-     */
-    public ReadonlyList<Profile> profiles;
-    /**
-     * List of nodes the data set contains.
-     */
-    public ReadonlyList<Node> nodes;
-    /**
-     * Nodes for each of the possible character positions in the user agent.
-     */
-    public ReadonlyList<Node> rootNodes;
-    /**
-     * List of profile offsets the data set contains.
-     */
-    public ReadonlyList<ProfileOffset> profileOffsets;
-    /**
-     * A list of ASCII byte arrays for strings used by the dataset.
-     */
-    public ReadonlyList<AsciiString> strings;
-    private int signatureProfilesCount;
-    private int signatureNodesCount;
-
-    /**
-     * Constructs a new data set ready to have lists of data assigned to it.
-     *
-     * @param reader Reader connected to the source data structure and
-     * positioned to start reading
-     * @throws java.io.IOException signals an I/O exception occurred
-     */
-    public Dataset(BinaryReader reader) throws IOException {
-        
-        this.reader = reader;
-                
-        // Read the detection data set headers.
-        version = new Version(reader.readInt32(), reader.readInt32(),
-                reader.readInt32(), reader.readInt32());
-
-        // Throw exception if the data file does not have the correct
-        // version in formation.
-        if (version.major != DetectionConstants.FormatVersion.major
-                || version.minor != DetectionConstants.FormatVersion.minor) {
-            throw new IOException(String.format(
-                    "Version mismatch. Data is version '%s' for '%s' reader",
-                    version,
-                    DetectionConstants.FormatVersion));
-        }
-
-        guid = new Guid(reader.readBytes(16));
-        copyrightOffset = reader.readInt32();
-        age = reader.readInt16();
-        minUserAgentCount = reader.readInt32();
-        nameOffset = reader.readInt32();
-        formatOffset = reader.readInt32();
-        published = readDate(reader);
-        nextUpdate = readDate(reader);
-        deviceCombinations = reader.readInt32();
-        maxUserAgentLength = reader.readInt16();
-        minUserAgentLength = reader.readInt16();
-        lowestCharacter = reader.readByte();
-        highestCharacter = reader.readByte();
-        maxSignatures = reader.readInt32();
-        signatureProfilesCount = reader.readInt32();
-        signatureNodesCount = reader.readInt32();
-        maxValues = reader.readInt16();
-        csvBufferLength = reader.readInt32();
-        jsonBufferLength = reader.readInt32();
-        xmlBufferLength = reader.readInt32();
-        maxSignaturesClosest = reader.readInt32();
-
-        nodes = null;
-    }
-
-    /**
-     * Reads a date in year, month and day order from the reader.
-     *
-     * @param reader Reader positioned at the start of the date
-     * @return A date time with the year, month and day set from the reader
-     */
-    private static Date readDate(BinaryReader reader) {
-        int year = reader.readInt16();
-        int month = reader.readByte() - 1;
-        int day = reader.readByte();
-        Calendar cal = Calendar.getInstance();
-        cal.clear();
-        cal.set(year, month, day);
-        return cal.getTime();
-    }
-
+    
     /**
      * List of nodes the data set contains.
      * @return a read-only list of nodes contained in the data set
      */
-    public ReadonlyList<Node> getNodes() {
+    public IReadonlyList<Node> getNodes() {
         return nodes;
     }
 
@@ -484,14 +542,58 @@ public class Dataset implements Disposable {
      * A list of all the possible profiles the data set contains.
      * @return a read-only list of all profiles contained in the data set
      */
-    public ReadonlyList<Profile> getProfiles() {
+    public IReadonlyList<Profile> getProfiles() {
         return profiles;
     }
 
+    /**
+     * The minimum length of a user agent string.
+     * @return The minimum length of a user agent string.
+     */
     public short getMinUserAgentLength() {
         return minUserAgentLength;
     }
 
+    /**
+     * Returns a list of integers that represent signature node offsets.
+     * @return list of integers that represent signature node offsets.
+     */
+    public IFixedList<IntegerEntity> getSignatureNodeOffsets() {
+        return signatureNodeOffsets;
+    }
+    
+    /**
+     * Returns a list of integers that represent ranked signature indexes.
+     * @return a list of integers that represent ranked signature indexes.
+     */
+    public IFixedList<IntegerEntity> getNodeRankedSignatureIndexes() {
+        return nodeRankedSignatureIndexes;
+    }
+    
+    /**
+     * Creates a list of HTTP headers if one does not already exist.
+     * @return list of HTTP headers as Strings.
+     */
+    public String[] getHttpHeaders() {
+        if (httpHeaders == null) {
+            synchronized(this) {
+                if (httpHeaders == null) {
+                    List<String> tempList = new ArrayList<String>();
+                    for (Component c : components) {
+                       for (String s : c.getHttpheaders()) {
+                           if (!tempList.contains(s)) {
+                               tempList.add(s);
+                           }
+                       }
+                    }
+                    httpHeaders = new String[tempList.size()];
+                    httpHeaders = tempList.toArray(httpHeaders);
+                }
+            }
+        }
+        return httpHeaders;
+    }
+    
     /**
      * Called after the entire data set has been loaded to ensure any further
      * initialisation steps that require other items in the data set can be
@@ -505,29 +607,23 @@ public class Dataset implements Disposable {
         name = strings.get(nameOffset).toString();
         format = strings.get(formatOffset).toString();
         copyright = strings.get(copyrightOffset).toString();
-
-        initSignatures();
-        initNodes();
-        initProfiles();
+        
         initComponents();
         initProperties();
         initValues();
-        initSignatureRanks();
+        initProfiles();
+        initNodes();
+        initSignatures();
 
         // We no longer need the strings data structure as all dependent
         // data has been taken from it.
-        strings.dispose();
         strings = null;
-
-        // The list of profiles is no longer needed as they've been assigned
-        // components and signatures.
-        profiles.dispose();
-        profiles = null;
     }
 
     /**
      * Preloads signatures to speed retrieval later at the expense of memory.
      * This method doesn't need to be used if init() has already been called.
+     * @throws java.io.IOException
      */
     public void initSignatures() throws IOException {
         // Initialise any objects that can be pre referenced to speed up
@@ -540,6 +636,7 @@ public class Dataset implements Disposable {
     /**
      * Preloads nodes to speed retrieval later at the expense of memory.
      * This method doesn't need to be used if init() has already been called.
+     * @throws java.io.IOException
      */
     public void initNodes() throws IOException {
         for (Node node : nodes) {
@@ -550,6 +647,7 @@ public class Dataset implements Disposable {
     /**
      * Preloads profiles to speed retrieval later at the expense of memory.
      * This method doesn't need to be used if init() has already been called.
+     * @throws java.io.IOException
      */
     public void initProfiles() throws IOException {
         for (Profile profile : profiles) {
@@ -560,6 +658,7 @@ public class Dataset implements Disposable {
     /**
      * Preloads components to speed retrieval later at the expense of memory.
      * This method doesn't need to be used if init() has already been called.
+     * @throws java.io.IOException
      */
     public void initComponents() throws IOException {
         for (Component component : getComponents()) {
@@ -570,6 +669,7 @@ public class Dataset implements Disposable {
     /**
      * Preloads properties to speed retrieval later at the expense of memory.
      * This method doesn't need to be used if init() has already been called.
+     * @throws java.io.IOException
      */
     public void initProperties() throws IOException {
         for (Property property : getProperties()) {
@@ -580,20 +680,11 @@ public class Dataset implements Disposable {
     /**
      * Preloads values to speed retrieval later at the expense of memory.
      * This method doesn't need to be used if init() has already been called.
+     * @throws java.io.IOException
      */
     public void initValues() throws IOException {
         for (Value value : values) {
             value.init();
-        }
-    }
-
-    /**
-     * Preloads signature ranks to speed retrieval later at the expense of memory.
-     * This method doesn't need to be used if init() has already been called.
-     */
-    public void initSignatureRanks() throws IOException {
-        for (RankedSignatureIndex rsi : rankedSignatureIndexes) {
-            rsi.init();
         }
     }
 
@@ -614,7 +705,25 @@ public class Dataset implements Disposable {
         return null;
     }
 
+    /**
+     * Method searches for a property with the given name and returns one if 
+     * found.
+     * @param propertyName name of the property to find.
+     * @return Property object or null if no property with requested name exists
+     * @throws java.io.IOException
+     */
     public Property get(String propertyName) throws IOException {
+        return getPropertyByName(propertyName);
+    }
+    
+    /**
+     * Method searches for a property with the given name and returns the 
+     * Property if found. Returns null otherwise.
+     * @param propertyName name of the property to find as a string.
+     * @return Property object or null if no property with requested name exists
+     * @throws IOException 
+     */
+    public Property getPropertyByName(String propertyName) throws IOException {
         for (Property property : properties) {
             if (propertyName.equals(property.getName())) {
                 return property;
@@ -623,10 +732,19 @@ public class Dataset implements Disposable {
         return null;
     }
 
+    /**
+     * Returns the number of profiles each signature can contain.
+     * @return The number of profiles each signature can contain.
+     */
     public int getProfilesCount() {
         return signatureProfilesCount;
     }
 
+    
+    /**
+     * Returns the number of nodes each signature can contain.
+     * @return The number of nodes each signature can contain.
+     */
     public int getNodesCount() {
         return signatureNodesCount;
     }
@@ -658,55 +776,117 @@ public class Dataset implements Disposable {
         return null;
     }
 
+    /**
+     * Disposes of the data set.
+     */
     @Override
     public void dispose() {
         disposed = true;
-        
-        if(reader != null)
-        {
-            reader.dispose();
-            reader = null;
+    }
+    
+    /**
+     * The percentage of requests for ranked signatures which were not already
+     * contained in the cache.A value is only returned when operating in 
+     * Stream mode.
+     * @return The percentage of requests for ranked signatures which were 
+     * not already contained in the cache.
+     */
+    public double getPercentageRankedSignatureCacheMisses() {
+        return getPercentageMisses(rankedSignatureIndexes);
+    }
+    
+    /**
+     * Number of times the signature cache was switched.
+     * A value is only returned when operating in Stream mode.
+     * @return Number of times the signature cache was switched.
+     */
+    public long getSignatureCacheSwitches() {
+        return getSwitches(signatures);
+    }
+    
+    /**
+     * Number of times the node cache was switched.
+     * A value is only returned when operating in Stream mode.
+     * @return Number of times the node cache was switched.
+     */
+    public long getNodeCacheSwitches() {
+        return getSwitches(nodes);
+    }
+    
+    /**
+     * Number of times the strings cache was switched.
+     * A value is only returned when operating in Stream mode.
+     * @return Number of times the strings cache was switched.
+     */
+    public long getStringsCacheSwitches() {
+        return getSwitches(strings);
+    }
+    
+    /**
+     * Number of times the profiles cache was switched.
+     * A value is only returned when operating in Stream mode.
+     * @return Number of times the profiles cache was switched.
+     */
+    public long getProfilesCacheSwitches() {
+        return getSwitches(profiles);
+    }
+    
+    /**
+     * Number of times the values cache was switched.
+     * A value is only returned when operating in Stream mode.
+     * @return Number of times the values cache was switched.
+     */
+    public long getValuesCacheSwitches() {
+        return getSwitches(values);
+    }
+    
+    /**
+     * Returns a list of signature indexes ordered in ascending order of rank.
+     * @return A list of signature indexes ordered in ascending order of rank.
+     */
+    public IFixedList<IntegerEntity> getRankedSignatureIndexes() {
+        return rankedSignatureIndexes;
+    } 
+    
+    /**
+     * Number of times the ranked signature cache was switched.
+     * A value is only returned when operating in Stream mode.
+     * @return Number of times the ranked signature cache was switched.
+     */
+    public long getRankedSignatureCacheSwitches() {
+        return getSwitches(rankedSignatureIndexes);
+    }
+    
+    /**
+     * Returns the percentage of requests that weren't serviced by the cache.
+     * @param list a Cache object to get percentage from.
+     * @return 0 if object is not Cache, percentage otherwise.
+     */
+    private static double getPercentageMisses(Object list) {
+        if (list instanceof ICacheList) {
+            ICacheList c = (ICacheList)list;
+            return c.getPercentageMisses();
         }
-        // We need to collect because the ByteBuffers in BinaryReader
-        // do not release the file channel until they're collected. This
-        // doesn't gurarantee their collection but it at least makes it
-        // more likely.
-        System.gc();
-        
-        if (strings != null) {
-            strings.dispose();
+        return -1;
+    }
+    
+    /**
+     * Returns the number of times the cache lists were switched.
+     * @param list a Cache object to get percentage from.
+     * @return 0 if object is not Cache, percentage otherwise.
+     */
+    private static long getSwitches(Object list) {
+        if (list instanceof ICacheList) {
+            ICacheList c = (ICacheList)list;
+            return c.getSwitches();
         }
-        if (components != null) {
-            components.dispose();
-        }
-        if (properties != null) {
-            properties.dispose();
-        }
-        if (values != null) {
-            values.dispose();
-        }
-        if (signatures != null) {
-            signatures.dispose();
-        }
-        if (profiles != null) {
-            profiles.dispose();
-        }
-        if (nodes != null) {
-            nodes.dispose();
-        }
-        if (rootNodes != null) {
-            rootNodes.dispose();
-        }
-        if (rankedSignatureIndexes != null) {
-            rankedSignatureIndexes.dispose();
-        }
-        if (maps != null) {
-            maps.dispose();
-        }
-        if(profileOffsets != null) {
-            profileOffsets.dispose();
-        }
-        
-        System.gc();
+        return -1;
+    }
+    
+    /**
+     * If there are cached lists being used the states are reset for them.
+     */
+    public void resetCache() {
+        //Do nothing in this implementation.
     }
 }

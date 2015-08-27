@@ -1,6 +1,6 @@
 package fiftyone.mobile.detection.readers;
 
-import fiftyone.mobile.detection.Disposable;
+import fiftyone.mobile.detection.IDisposable;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -30,7 +30,7 @@ import java.util.List;
  * This Source Code Form is ?Incompatible With Secondary Licenses?, as
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
-public class BinaryReader implements Disposable {
+public class BinaryReader implements IDisposable {
 
     /**
      * List of integers used to create arrays of integers where the length of
@@ -44,7 +44,7 @@ public class BinaryReader implements Disposable {
         byteBuffer = ByteBuffer.wrap(data);
         byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
     }
-
+    
     public BinaryReader(FileInputStream fileInputStream) throws IOException {
         channel = fileInputStream.getChannel();
         byteBuffer = channel.map(
@@ -62,6 +62,10 @@ public class BinaryReader implements Disposable {
     public void setPos(int pos) {
         byteBuffer.position(pos);
     }
+    
+    public int getPos() {
+        return byteBuffer.position();
+    }
 
     public byte readByte() {
         return byteBuffer.get();
@@ -69,6 +73,12 @@ public class BinaryReader implements Disposable {
 
     public short readInt16() {
         return byteBuffer.getShort();
+    }
+    
+    public int readUInt16() {
+        short s = byteBuffer.getShort();
+        int intVal = s >= 0 ? s : 0x10000 + s; 
+        return intVal;
     }
 
     public int readInt32() {
@@ -85,19 +95,23 @@ public class BinaryReader implements Disposable {
         return bytes;
     }
     
+    /**
+     * Set the bytebuffer to null to prevent any further access to the under
+     * lying data. This should be done before the channel is closed as the 
+     * bytebuffer could be tied to the channel. Any subsequent access to the 
+     * methods will fail with a null object exception.
+     */
     @Override
-    public void dispose()
-    {
-        if(channel != null)
-        {
-            try
-            {
+    public void dispose() {
+        byteBuffer = null;
+        if (channel != null) {
+            try {
                 channel.close();
             }
             catch (IOException ex)
             {
+                // Do nothing.
             }
         }
-        byteBuffer = null;
     }
 }

@@ -6,10 +6,11 @@ import java.util.Arrays;
 import java.util.List;
 
 import fiftyone.mobile.detection.Dataset;
-import fiftyone.mobile.detection.ReadonlyList;
 import fiftyone.mobile.detection.SortedList;
 import fiftyone.mobile.detection.readers.BinaryReader;
 import fiftyone.properties.DetectionConstants;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
@@ -44,7 +45,7 @@ import fiftyone.properties.DetectionConstants;
  * signature matching a target user agent. <p> Signatures relate to device
  * properties via profiles. Each signature relates to one profile for each
  * component type. <p> For more information about signature see
- * http://51degrees.mobi/Support/Documentation/Java <p> Unlike other entities
+ * http://51degrees.com/Support/Documentation/Java <p> Unlike other entities
  * the signature may have a varying number of nodes and profiles associated with
  * it depending on the data set. All signatures within a data set will have the
  * same number of profiles and nodes associated with them all. As these can
@@ -57,17 +58,54 @@ import fiftyone.properties.DetectionConstants;
  * The relevant characters from a user agent structured in a manner to enable
  * rapid comparison with a target user agent.
  */
-public class Signature extends BaseEntity implements Comparable<Signature> {
-
+public abstract class Signature extends BaseEntity implements Comparable<Signature> {
     /**
-     * List of the node indexes the signature relates to ordered by index of the
-     * node.
+     * Offsets to profiles associated with the signature.
      */
-    public final int[] nodeOffsets;
-
+    private int[] profileOffsets;
     /**
      * List of the profiles the signature relates to.
+     */
+    private Profile[] profiles;
+    /**
+     * An array of nodes associated with the signature.
+     */
+    private Node[] nodes;
+    /**
+     * The unique Device Id for the signature.
+     */
+    private String deviceId;
+    /**
+     * The length in bytes of the signature.
+     */
+    private int _length;
+    /**
+     * The signature as a string.
+     */
+    private String stringValue;
+    /**
+     * Values associated with the property names.
+     */
+    private SortedList<String, Values> nameToValues;
+
+    /**
+     * Constructs a new instance of Signature
      *
+     * @param dataSet The data set the node is contained within
+     * @param index The index in the data structure to the node
+     * @param reader Reader connected to the source data structure and
+     * positioned to start reading
+     */
+    public Signature(Dataset dataSet, int index, BinaryReader reader) {
+        super(dataSet, index);
+        profileOffsets = readOffsets(dataSet, reader, dataSet.signatureProfilesCount);
+        this.nodes = null;
+        this.profiles = null;
+        this.nameToValues = null;
+    }
+    
+    /**
+     * List of the profiles the signature relates to.
      * @return List of the profiles the signature relates to
      * @throws IOException indicates an I/O exception occurred
      */
@@ -81,12 +119,9 @@ public class Signature extends BaseEntity implements Comparable<Signature> {
         }
         return profiles;
     }
-    private int[] profileOffsets;
-    private Profile[] profiles = null;
-
+    
     /**
      * The unique Device Id for the signature.
-     *
      * @return unique Device Id for the signature
      * @throws IOException indicates an I/O exception occurred
      */
@@ -100,8 +135,55 @@ public class Signature extends BaseEntity implements Comparable<Signature> {
         }
         return deviceId;
     }
-    private String deviceId;
+    
+    /**
+     * Gets the values associated with the property name.
+     * @param propertyName Name of the property whose values are required.
+     * @return Value(s) associated with the property, or null if the property 
+     * does not exist.
+     * @throws java.io.IOException
+     */
+    public Values getValues(String propertyName) throws IOException {
+        // Does the storage structure already exist?
+        if (nameToValues == null) {
+            synchronized (this) {
+                if (nameToValues == null) {
+                    nameToValues = new SortedList<String, Values>();
+                }
+            }
+        }
 
+        // Do the values already exist for the property?
+        synchronized (nameToValues) {
+            Values result = nameToValues.get(propertyName);
+            if (result != null) {
+                return result;
+            }
+
+            // Does not exist already so get the property.
+            Property prop = dataSet.get(propertyName);
+            if (prop != null) {
+                // Create the list of values.
+                List<Value> vals = new ArrayList<Value>();
+                for (Value v : getValues()) {
+                    if (prop.getIndex() == v.getProperty().getIndex()) {
+                        vals.add(v);
+                    }
+                }
+                result = new Values(prop, vals);
+
+                if (result.size() == 0) {
+                    result = null;
+                }
+            }
+
+            // Store for future reference.
+            nameToValues.add(propertyName, result);
+
+            return result;
+        }
+    }
+    
     public Value[] getValues() throws IOException {
         if (values == null) {
             synchronized (this) {
@@ -113,27 +195,7 @@ public class Signature extends BaseEntity implements Comparable<Signature> {
         return values;
     }
     private Value[] values;
-
-    /**
-     * Gets the rank, where a lower number means the signature is more popular, of
-     * the signature compared to other signatures.
-     * As the property uses the ranked signature indexes list to obtain the rank
-     * it will be comparatively slow compared to other methods the firs time
-     * the property is accessed.
-     * @return the rank of the signature compared to others
-     * @throws IOException indicates an I/O exception occurred
-     */
-    public int getRank() throws IOException {
-        if (rank == -1) {
-            synchronized (this) {
-                if (rank == -1) {
-                    rank = getSignatureRank();
-                }
-            }
-        }
-        return rank;
-    }
-    int rank = -1;
+   
     
     /**
      * The length in bytes of the signature.
@@ -153,42 +215,35 @@ public class Signature extends BaseEntity implements Comparable<Signature> {
     }
 
     /**
-     * Gets the signature rank by iterating through the list of signature ranks.
-     * @return Rank compared to other signatures starting at 0.
+     * Returns an array of nodes associated with the signature.
+     * @return an array of nodes associated with the signature.
+     * @throws java.io.IOException
      */
-    private int getSignatureRank() throws IOException {
-        ReadonlyList<RankedSignatureIndex> rsi = 
-                getDataSet().rankedSignatureIndexes;
-        for(int rank = 0; rank < rsi.size(); rank++) {
-            if (rsi.get(rank).getSignatureIndex() == this.getIndex()) {
-                return rank;
-            }
+    protected Node[] doGetNodes() throws IOException {
+        Node[] nodesLocal = new Node[getNodeOffsets().length];
+        for (int i = 0; i < getNodeOffsets().length; i++) {
+            nodesLocal[i] = dataSet.nodes.get(getNodeOffsets()[i]);
         }
-        return Integer.MAX_VALUE;
+        return nodesLocal;
     }
     
     /**
-     * @return the number of characters in the signature.
-     * @throws IOException
+     * An array of nodes associated with the signature.
+     * @return  An array of nodes associated with the signature.
      */
-    private int getSignatureLength() throws IOException {
-        Node lastNode = getDataSet().nodes.get(nodeOffsets[nodeOffsets.length - 1]);
-        return lastNode.position + lastNode.getLength() + 1;
-    }
-    private int _length;
-
-    /**
-     * Constructs a new instance of Signature
-     *
-     * @param dataSet The data set the node is contained within
-     * @param index The index in the data structure to the node
-     * @param reader Reader connected to the source data structure and
-     * positioned to start reading
-     */
-    public Signature(Dataset dataSet, int index, BinaryReader reader) {
-        super(dataSet, index);
-        profileOffsets = ReadOffsets(dataSet, reader, dataSet.getProfilesCount());
-        nodeOffsets = ReadOffsets(dataSet, reader, dataSet.getNodesCount());
+    public Node[] getNodes() {
+        if (nodes == null) {
+            synchronized(this) {
+                if (nodes == null) {
+                    try {
+                        nodes = doGetNodes();
+                    } catch (IOException ex) {
+                        Logger.getLogger(Signature.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+            }
+        }
+        return nodes;
     }
 
     /**
@@ -201,7 +256,7 @@ public class Signature extends BaseEntity implements Comparable<Signature> {
      * @param length The number of offsets to read in
      * @return An array of the offsets as integers read from the reader
      */
-    private int[] ReadOffsets(Dataset dataSet, BinaryReader reader, int length) {
+    protected int[] readOffsets(Dataset dataSet, BinaryReader reader, int length) {
         reader.list.clear();
         for (int i = 0; i < length; i++) {
             int profileIndex = reader.readInt32();
@@ -224,13 +279,14 @@ public class Signature extends BaseEntity implements Comparable<Signature> {
      * @throws IOException indicates an I/O exception occurred
      */
     public void init() throws IOException {
-        profiles = getProfiles(profileOffsets);
-        values = initGetValues();
-        deviceId = initGetDeviceId();
-
-        // Set the profile offsets to null as they're no longer
-        // needed and can be freed for garbage collection.
-        profileOffsets = null;
+        if (nodes == null)
+            nodes = getNodes();
+        if (profiles == null)
+            profiles = getProfiles();
+        if (values == null)
+            values = getValues();
+        if (deviceId == null)
+            deviceId = getDeviceId();
     }
 
     private String initGetDeviceId() throws IOException {
@@ -244,7 +300,6 @@ public class Signature extends BaseEntity implements Comparable<Signature> {
         }
 
         return builder.toString();
-
     }
 
     /**
@@ -266,8 +321,7 @@ public class Signature extends BaseEntity implements Comparable<Signature> {
 
     /**
      * Returns an array of values associated with the signature.
-     *
-     * @return
+     * @return an array of values associated with the signature.
      * @throws IOException
      */
     private Value[] initGetValues() throws IOException {
@@ -284,16 +338,16 @@ public class Signature extends BaseEntity implements Comparable<Signature> {
      * Returns an array of profiles associated with the signature.
      *
      * @param profileIndexes
-     * @return
+     * @return an array of profiles associated with the signature.
      * @throws IOException
      */
     private Profile[] getProfiles(int[] profileIndexes) throws IOException {
-        List<Profile> profiles = new ArrayList<Profile>();
+        List<Profile> prof = new ArrayList<Profile>();
 
         for (int index : profileIndexes) {
-            profiles.add(getDataSet().getProfiles().get(index));
+            prof.add(getDataSet().getProfiles().get(index));
         }
-        return profiles.toArray(new Profile[profiles.size()]);
+        return prof.toArray(new Profile[prof.size()]);
     }
 
     /**
@@ -303,19 +357,19 @@ public class Signature extends BaseEntity implements Comparable<Signature> {
      * @return Indication of relative value based on the node offsets
      */
     public int compareTo(List<Node> nodes) {
-        int length = Math.min(this.nodeOffsets.length, nodes.size());
+        int length = Math.min(getNodeOffsets().length, nodes.size());
 
         for (int i = 0; i < length; i++) {
-            int difference = this.nodeOffsets[i] - nodes.get(i).getIndex();
+            int difference = getNodeOffsets()[i] - nodes.get(i).getIndex();
             if (difference != 0) {
                 return difference;
             }
         }
 
-        if (this.nodeOffsets.length < nodes.size()) {
+        if (getNodeOffsets().length < nodes.size()) {
             return -1;
         }
-        if (this.nodeOffsets.length > nodes.size()) {
+        if (getNodeOffsets().length > nodes.size()) {
             return 1;
         }
 
@@ -329,20 +383,21 @@ public class Signature extends BaseEntity implements Comparable<Signature> {
      * @param other The signature to be compared against
      * @return Indication of relative value based based on node offsets
      */
+    @Override
     public int compareTo(Signature other) {
-        int length = Math.min(nodeOffsets.length, other.nodeOffsets.length);
+        int length = Math.min(getNodeOffsets().length, other.getNodeOffsets().length);
 
         for (int i = 0; i < length; i++) {
-            int difference = nodeOffsets[i] - other.nodeOffsets[i];
+            int difference = getNodeOffsets()[i] - other.getNodeOffsets()[i];
             if (difference != 0) {
                 return difference;
             }
         }
 
-        if (nodeOffsets.length < other.nodeOffsets.length) {
+        if (getNodeOffsets().length < other.getNodeOffsets().length) {
             return -1;
         }
-        if (nodeOffsets.length > other.nodeOffsets.length) {
+        if (getNodeOffsets().length > other.getNodeOffsets().length) {
             return 1;
         }
 
@@ -352,7 +407,6 @@ public class Signature extends BaseEntity implements Comparable<Signature> {
     /**
      * String representation of the signature where irrelevant characters are
      * removed.
-     *
      * @return The signature as a string
      */
     @Override
@@ -362,8 +416,8 @@ public class Signature extends BaseEntity implements Comparable<Signature> {
                 if (stringValue == null) {
                     try {
                         byte[] buffer = new byte[getLength()];
-                        for (int i : nodeOffsets) {
-                            getDataSet().nodes.get(i).addCharacters(buffer);
+                        for (Node n : getNodes()) {
+                            n.addCharacters(buffer);
                         }
                         for (int i = 0; i < buffer.length; i++) {
                             if (buffer[i] == 0) {
@@ -372,12 +426,30 @@ public class Signature extends BaseEntity implements Comparable<Signature> {
                         }
                         stringValue = new String(buffer, "US-ASCII");
                     } catch (IOException e) {
-                        return super.toString();
+                        return e.getMessage();
                     }
                 }
             }
         }
         return stringValue;
     }
-    private String stringValue;
+    
+    /**
+     * Array of node offsets associated with the signature.
+     * @return Array of node offsets associated with the signature.
+     */
+    public abstract int[] getNodeOffsets();
+    
+    /**
+     * The number of characters in the signature.
+     * @return The number of characters in the signature.
+     */
+    protected abstract int getSignatureLength();
+    
+    /**
+     * Gets the rank, where a lower number means the signature is more popular, 
+     * of the signature compared to other signatures.
+     * @return Rank of the signature.
+     */
+    public abstract int getRank();
 }

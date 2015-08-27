@@ -3,6 +3,7 @@ package fiftyone.mobile.detection.factories;
 import fiftyone.mobile.detection.Dataset;
 import fiftyone.mobile.detection.entities.Node;
 import fiftyone.mobile.detection.readers.BinaryReader;
+import fiftyone.properties.DetectionConstants;
 
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
@@ -24,18 +25,69 @@ import fiftyone.mobile.detection.readers.BinaryReader;
  * This Source Code Form is "Incompatible With Secondary Licenses", as
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
-public class NodeFactory extends BaseEntityFactory<Node> {
+/**
+ * Factory class used to create the new instances of Node object.
+ */
+public abstract class NodeFactory extends BaseEntityFactory<Node> {
 
+    /**
+     * The length of a numeric node index.
+     * Equivalent of sizeof(short) + sizeof(int) in C#.
+     */
+    private static final int NODE_NUMERIC_INDEX_LENGTH = 
+            DetectionConstants.SIZE_OF_SHORT +
+            DetectionConstants.SIZE_OF_INT;
+    
+    /**
+     * The basic length of a node for all supported versions.
+     * Equivalent of sizeof(short) + sizeof(short) + sizeof(int) + sizeof(int) +
+     * sizeof(short) + sizeof(short) in C#
+     */
+    private static final int BASE_LENGTH = 
+            DetectionConstants.SIZE_OF_SHORT + 
+            DetectionConstants.SIZE_OF_SHORT +
+            DetectionConstants.SIZE_OF_INT +
+            DetectionConstants.SIZE_OF_INT +
+            DetectionConstants.SIZE_OF_SHORT +
+            DetectionConstants.SIZE_OF_SHORT;
+    
+    /**
+     * Creates a new instance of Node.
+     * @param dataSet The data set whose node list the node is contained within.
+     * @param index The offset to the start of the node within the string data 
+     * structure.
+     * @param reader Binary reader positioned at the start of the Node.
+     * @return A new instance of a Node.
+     */
     @Override
     public Node create(Dataset dataSet, int index, BinaryReader reader) {
-        return new Node(dataSet, index, reader);
+        return construct(dataSet, index, reader);
     }
-
-    @Override
-    public int getLength(Node entity) {
-        return Node.MIN_LENGTH
-                + (entity.getChildrenLength() * Node.NODE_INDEX_LENGTH)
-                + (entity.getNumericChildrenLength() * Node.NODE_NUMERIC_INDEX_LENGTH)
-                + +(entity.getRankedSignatureIndexes().length * 4);
+    
+    /**
+     * Returns the basic length of a node for all supported versions.
+     * @return the basic length of a node for all supported versions.
+     */
+    public int getBaseLength() {
+        return BASE_LENGTH;
     }
+    
+    /**
+     * Returns The length of a numeric node index.
+     * @return The length of a numeric node index.
+     */
+    public int getNodeNumericIndexLength() {
+        return NODE_NUMERIC_INDEX_LENGTH;
+    }
+    
+    /**
+     * Implements the creation of a new instance of Node. Needs to be 
+     * implemented in a subclass.
+     * @param dataSet The data set whose node list the node is contained within.
+     * @param index The offset to the start of the node within the string data 
+     * structure.
+     * @param reader Binary reader positioned at the start of the Node.
+     * @return A new instance of a Node.
+     */
+    protected abstract Node construct(Dataset dataSet, int index, BinaryReader reader);
 }

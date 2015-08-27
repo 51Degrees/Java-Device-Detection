@@ -1,6 +1,6 @@
 package fiftyone.mobile.detection.entities.stream;
 
-import fiftyone.mobile.detection.Dataset;
+import fiftyone.mobile.detection.IFixedList;
 import fiftyone.mobile.detection.entities.BaseEntity;
 import fiftyone.mobile.detection.factories.BaseEntityFactory;
 import fiftyone.mobile.detection.readers.BinaryReader;
@@ -28,43 +28,69 @@ import java.util.Iterator;
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
 /**
- * A readonly list of fixed length entity types held on persistent storage
- * rather than in memory. <p> Entities in the underlying data structure are
- * either fixed length where the data that represents them always contains the
- * same number of bytes, or variable length where the number of bytes to
- * represent the entity varies. <p> This class uses the index of the entity in
- * the accessor. The list is typically used by entities that need to be found
- * quickly using a divide and conquer algorithm. <p> The constructor will read
- * the header information about the underlying data structure. The data for each
- * entity is only loaded when requested via the accessor. A cache is used to
- * avoid creating duplicate objects when requested multiple times. <p> Data
- * sources which don't support seeking can not be used. Specifically compressed
- * data structures can not be used with these lists. <p> Should not be
- * referenced directly.
+ * Lists can be stored as a set of related objects entirely within memory, or 
+ * the relevant objects loaded as required from a file or other permanent store
+ * as required.
+ * 
+ * Delegate methods are used to create new instances of items to add to the list
+ * in order to avoid creating many inherited list classes for each type.
+ * 
+ * Should not be referenced directly.
  *
- * @param T The type of BaseEntity the list will contain
+ * @param <T> The type of BaseEntity the list will contain 
  */
-/**
- * Constructs a new instance of FixedList.
- *
- * dataSet The DetectorDataSet being created.
- * reader Reader connected to the source data structure and positioned to
- * start reading.
- * create Pointer to a delegate used to create new entities of type T.
- * source Reference to the underlying data structure.
- * recordLength The length of the records in bytes.
- * @param <T> extends base entity
- */
-public class StreamFixedList<T extends BaseEntity> extends BaseList<T> {
+public class StreamFixedList<T extends BaseEntity> extends StreamBaseList<T> 
+                                                    implements IFixedList<T> {
+    /**
+     * Constructs a new instance of StreamBaseList{T} ready to 
+     * read entities from the source.
+     * @param dataSet Dataset being created.
+     * @param reader Reader used to initialise the header only.
+     * @param entityFactory Used to create new instances of the entity.
+     */
+    public StreamFixedList(Dataset dataSet, BinaryReader reader, 
+                            BaseEntityFactory<T> entityFactory) {
+        super(dataSet, reader, entityFactory);
+    }
 
-    public StreamFixedList(Dataset dataSet, BinaryReader reader,
-            Source source, BaseEntityFactory<T> entityFactory) {
-        super(dataSet, reader, source, entityFactory);
+    /**
+     * An enumerator for the list between the range provided.
+     * @param index read from.
+     * @param count how many entries.
+     * @return An enumerator for the list.
+     * @throws java.io.IOException
+     */
+    @Override
+    public StreamFixedListRangeIterator<T> getRange(int index, int count) throws IOException {
+        return new StreamFixedListRangeIterator<T>(
+                entityFactory, 
+                dataSet,
+                header.getStartPosition() 
+                    + (entityFactory.getLength() * index),
+                index,
+                count);
+    }
+
+    /**
+     * Returns The number of items in the list.
+     * @return The number of items in the list.
+     */
+    @Override
+    public int size() {
+        return super.size();
+    }
+
+    /**
+     * Not implemented. Do not use.
+     */
+    @Override
+    public void dispose() {
+        throw new UnsupportedOperationException("Not supported yet."); 
+        //To change body of generated methods, choose Tools | Templates.
     }
 
     /**
      * Creates a new entity of type T.
-     *
      * @param index The index of the entity being created.
      * @param reader Reader connected to the source data structure and
      * positioned to start reading.
@@ -72,13 +98,15 @@ public class StreamFixedList<T extends BaseEntity> extends BaseList<T> {
      * @throws IOException indicates an I/O exception occurred
      */
     @Override
-    protected T createEntity(int index, BinaryReader reader) throws IOException {
-        reader.setPos(header.getStartPosition() + (entityFactory.getLength() * index));
+    protected T createEntity(int index, BinaryReader reader) 
+                                                throws IOException {
+        reader.setPos(header.getStartPosition() 
+                        + (entityFactory.getLength() * index));
         return entityFactory.create(dataSet, index, reader);
     }
 
     @Override
     public Iterator<T> iterator() {
-        return new StreamFixedListIterator<T>(this);
+        return new StreamFixedListIterator(this);
     }
 }
