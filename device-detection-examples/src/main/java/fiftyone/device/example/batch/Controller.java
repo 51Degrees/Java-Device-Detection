@@ -22,10 +22,8 @@ package fiftyone.device.example.batch;
 
 import fiftyone.mobile.detection.Dataset;
 import fiftyone.mobile.detection.Provider;
-import fiftyone.mobile.detection.entities.Modes;
 import fiftyone.mobile.detection.factories.MemoryFactory;
 import fiftyone.mobile.detection.factories.StreamFactory;
-import fiftyone.mobile.detection.readers.BinaryReader;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
@@ -33,7 +31,6 @@ import joptsimple.OptionSpec;
 import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 
 /**
  * Demonstration of 51Degrees detection, with benchmarking outputs.
@@ -83,7 +80,7 @@ public class Controller {
     private File resultFile; // a file to store the output in
 
     // local enum describing which mode to do things in
-    public enum Mode {memory, stream}
+    public enum Mode {memory, @SuppressWarnings("unused")stream}
 
     // ISO 8601 date formatter for the name of the default output file (this will appear in local time)
     private static final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.mmm");
