@@ -3,30 +3,27 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <groupId>com.51degrees</groupId>
         <artifactId>device-detection</artifactId>
+        <groupId>com.51degrees</groupId>
         <version>3.2.2-SNAPSHOT</version>
     </parent>
-
     <modelVersion>4.0.0</modelVersion>
 
-    <name>51 Degrees :: Device Detection :: Core</name>
-    <artifactId>device-detection-core</artifactId>
+    <artifactId>device-detection-examples</artifactId>
+    <name>51 Degrees :: Device Detection :: Examples</name>
 
     <dependencies>
+        <dependency>
+            <groupId>com.51degrees</groupId>
+            <artifactId>device-detection-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
         <dependency>
             <groupId>net.sf.jopt-simple</groupId>
             <artifactId>jopt-simple</artifactId>
             <version>${jopt-simple.version}</version>
         </dependency>
-
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>${junit.version}</version>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
-
 
 </project>
