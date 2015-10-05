@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.51degrees</groupId>
+    <artifactId>device-detection</artifactId>
+    <packaging>pom</packaging>
+    <version>3.2.2-SNAPSHOT</version>
+
+    <name>51 Degrees :: Device Detection</name>
+
+    <modules>
+        <module>device-detection-core</module>
+        <module>device-detection-webapp</module>
+    </modules>
+
+    <properties>
+        <junit.version>4.11</junit.version>
+        <javaee-api.version>6.0</javaee-api.version>
+        <slf4j-api.version>1.7.7</slf4j-api.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <jopt-simple.version>4.9</jopt-simple.version>
+        <commons-codec.version>1.9</commons-codec.version>
+    </properties>
+
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.3</version>
+                <configuration>
+                    <source>1.6</source>
+                    <target>1.6</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
