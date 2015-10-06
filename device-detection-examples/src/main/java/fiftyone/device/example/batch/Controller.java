@@ -83,7 +83,8 @@ public class Controller {
     public enum Mode {memory, @SuppressWarnings("unused")stream}
 
     // ISO 8601 date formatter for the name of the default output file (this will appear in local time)
-    private static final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.mmm");
+    // with - for : as appropriate
+    private static final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH-mm-ss.mmm");
 
     /**
      *
@@ -97,7 +98,7 @@ public class Controller {
         OptionSpec<File> detectionFilenameOption = parser.accepts("detection", "file path of detection file").withRequiredArg().ofType( File.class ).defaultsTo(new File("data/51Degrees-LiteV3.2.dat"));
         OptionSpec<File> resultFileOption = parser.accepts("results", "file path for results file").withRequiredArg().ofType( File.class ).defaultsTo(new File("results-" + formatter.format(new Date()) + ".txt"));
         OptionSpec<Mode> modeOption = parser.accepts("mode", "memory or stream mode processing").withRequiredArg().ofType(Mode.class).defaultsTo(Mode.memory);
-        OptionSpec<Integer> cacheOption = parser.accepts("cache", "size of detection cache in bytes").withRequiredArg().ofType( Integer.class ).defaultsTo(1000000);
+        OptionSpec<Integer> cacheOption = parser.accepts("cache", "size of detection cache in bytes").withRequiredArg().ofType( Integer.class ).defaultsTo(10000);
         OptionSpec<Integer> threadsOption = parser.accepts("threads", "number of threads to use when doing the detections").withRequiredArg().ofType( Integer.class ).defaultsTo(2);
         OptionSpec<Boolean> preInitOption = parser.accepts("preinit", "warm up the detection engine on load").withRequiredArg().ofType( Boolean.class ).defaultsTo(false);
         OptionSpec<Integer> limitOption = parser.accepts("limit", "max lines to read from source file").withRequiredArg().ofType(Integer.class).defaultsTo(Integer.MAX_VALUE);
