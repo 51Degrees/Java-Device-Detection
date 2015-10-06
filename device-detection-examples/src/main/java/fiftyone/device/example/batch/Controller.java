@@ -36,24 +36,33 @@ import java.util.Date;
  * Demonstration of 51Degrees detection, with benchmarking outputs.
  * <dl>
  * <dt>Prerequisites</dt>
- * <dd>testFile: A file containing User Agent strings to detect, one per line</dd>
- * <dd>detectionFile: A detection dataset file</dd>
+ * <dd>useragents : A file containing User Agent strings to detect, one per line</dd>
+ * <dd>detection : A detection dataset file</dd>
  * </dl>
- * <p/>
- * An example test file and "Lite" detection file can be found in the /data/ directory of this repo
- * <p/>
+ * <p>
+ * An example test file and "Lite" detection file can be found in the <code>data/</code> directory in the root of this repo.
+ * By default this example will try to find files <code>data/20000 User Agents.csv</code> and <code>data/51Degrees-LiteV3.2.dat</code> in
+ * its working directory.
+ * <p>
+ * By default this example carries out 6 iterations of detecting the user agents in the supplied file. The first
+ * iteration serves to warm up the JVM and will populate the 51 degrees data structures and cache if one is psecified.
+ * Subsequent iterations provide a better indication of actual detection performance in live operation.
+ * <p>
+ * A results file is generated on the last iteration. This records the detailed detection results of each
+ * User Agent detected and by default is placed in the working directory.
+ * <p>
  * For the Lite dataset a heap of 500 MBytes is recommended, for the Enterprise dataset 1GByte - i.e. run with -Xmx500m
  * or -Xmx1g as appropriate.
-  * <p/>
+ * <p>
  * In the following command line options can be abbreviated e.g. --cache=1000000 is the same as -c1000000
- * <p/>
+ * <p>
  * <pre>
-   Option                     Description
-   ------                     -----------
- --useragents <File>          file path of useragents file (default: data/20000 User Agents.csv)
- --detection <File>           file path of detection file (default: data/51Degrees-LiteV3.2.dat)
+   Option                  Description
+   ------                  -----------
+ --useragents &lt;File>       file path of useragents file (default: data/20000 User Agents.csv)
+ --detection &lt;File>        file path of detection file (default: data/51Degrees-LiteV3.2.dat)
  --results &lt;File>          file path for results file (default: results-&lt;iso date time of test>.txt)
- --cache &lt;Integer>         size of detection cache in bytes (default: 1000000)
+ --cache &lt;Integer>         size of detection cache in bytes (default: 50000)
  --iterations &lt;Integer>    number of times to do the detection (default: 6)                        
  --limit &lt;Integer>         max lines to read from source file (default: Integer.MAX_VALUE)
  --mode &lt;Controller$Mode>  memory or stream mode processing (default: memory)                   
@@ -84,7 +93,7 @@ public class Controller {
 
     // ISO 8601 date formatter for the name of the default output file (this will appear in local time)
     // with - for : as appropriate
-    private static final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH-mm-ss.mmm");
+    private static final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH-mm-ss");
 
     /**
      *
@@ -98,7 +107,7 @@ public class Controller {
         OptionSpec<File> detectionFilenameOption = parser.accepts("detection", "file path of detection file").withRequiredArg().ofType( File.class ).defaultsTo(new File("data/51Degrees-LiteV3.2.dat"));
         OptionSpec<File> resultFileOption = parser.accepts("results", "file path for results file").withRequiredArg().ofType( File.class ).defaultsTo(new File("results-" + formatter.format(new Date()) + ".txt"));
         OptionSpec<Mode> modeOption = parser.accepts("mode", "memory or stream mode processing").withRequiredArg().ofType(Mode.class).defaultsTo(Mode.memory);
-        OptionSpec<Integer> cacheOption = parser.accepts("cache", "size of detection cache in bytes").withRequiredArg().ofType( Integer.class ).defaultsTo(10000);
+        OptionSpec<Integer> cacheOption = parser.accepts("cache", "size of detection cache in bytes").withRequiredArg().ofType( Integer.class ).defaultsTo(50000);
         OptionSpec<Integer> threadsOption = parser.accepts("threads", "number of threads to use when doing the detections").withRequiredArg().ofType( Integer.class ).defaultsTo(2);
         OptionSpec<Boolean> preInitOption = parser.accepts("preinit", "warm up the detection engine on load").withRequiredArg().ofType( Boolean.class ).defaultsTo(false);
         OptionSpec<Integer> limitOption = parser.accepts("limit", "max lines to read from source file").withRequiredArg().ofType(Integer.class).defaultsTo(Integer.MAX_VALUE);
@@ -146,12 +155,12 @@ public class Controller {
             System.out.println("Running with options: " + options.asMap());
 
             controller.process();
+
         } catch (Exception e) {
-            System.err.println(e.getCause() + ": " + e.getMessage());
+            System.err.println(e.getClass() + ": " + e.getMessage());
             parser.printHelpOn(System.out);
             System.exit(1);
         }
-
     }
 
     private void process() throws Exception {
@@ -211,7 +220,6 @@ public class Controller {
         } finally {
             // TODO provider should have a close method
             provider.dataSet.dispose();
-
         }
 
         System.exit(0);
