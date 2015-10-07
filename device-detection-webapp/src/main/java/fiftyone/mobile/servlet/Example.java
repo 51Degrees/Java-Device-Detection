@@ -1,23 +1,3 @@
-package fiftyone.mobile.servlet;
-
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import fiftyone.mobile.detection.entities.Component;
-import fiftyone.mobile.detection.entities.Property;
-import fiftyone.mobile.detection.entities.Property.PropertyValueType;
-import fiftyone.mobile.detection.webapp.BaseServlet;
-import java.util.Map;
-
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
  * Copyright 2014 51Degrees Mobile Experts Limited, 5 Charlotte Close,
@@ -38,6 +18,25 @@ import java.util.Map;
  * This Source Code Form is "Incompatible With Secondary Licenses", as
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
+package fiftyone.mobile.servlet;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import fiftyone.mobile.detection.entities.Component;
+import fiftyone.mobile.detection.entities.Property;
+import fiftyone.mobile.detection.entities.Property.PropertyValueType;
+import fiftyone.mobile.detection.webapp.BaseServlet;
+import java.util.Map;
 
 /**
  *

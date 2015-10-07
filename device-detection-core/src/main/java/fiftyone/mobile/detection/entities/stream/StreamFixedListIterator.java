@@ -1,8 +1,3 @@
-package fiftyone.mobile.detection.entities.stream;
-
-import fiftyone.mobile.detection.entities.BaseEntity;
-import java.util.Iterator;
-
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
  * Copyright 2014 51Degrees Mobile Experts Limited, 5 Charlotte Close,
@@ -23,6 +18,10 @@ import java.util.Iterator;
  * This Source Code Form is "Incompatible With Secondary Licenses", as
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
+package fiftyone.mobile.detection.entities.stream;
+
+import fiftyone.mobile.detection.entities.BaseEntity;
+import java.util.Iterator;
 
 /**
  * A general class that iterates over entities in StreamVariableLists. The iteration

@@ -1,12 +1,3 @@
-package fiftyone.mobile.detection.entities.stream;
-
-import fiftyone.mobile.detection.IFixedList;
-import fiftyone.mobile.detection.entities.BaseEntity;
-import fiftyone.mobile.detection.factories.BaseEntityFactory;
-import fiftyone.mobile.detection.readers.BinaryReader;
-import java.io.IOException;
-import java.util.Iterator;
-
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
  * Copyright 2014 51Degrees Mobile Experts Limited, 5 Charlotte Close,
@@ -27,6 +18,15 @@ import java.util.Iterator;
  * This Source Code Form is "Incompatible With Secondary Licenses", as
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
+package fiftyone.mobile.detection.entities.stream;
+
+import fiftyone.mobile.detection.IFixedList;
+import fiftyone.mobile.detection.entities.BaseEntity;
+import fiftyone.mobile.detection.factories.BaseEntityFactory;
+import fiftyone.mobile.detection.readers.BinaryReader;
+import java.io.IOException;
+import java.util.Iterator;
+
 /**
  * Lists can be stored as a set of related objects entirely within memory, or 
  * the relevant objects loaded as required from a file or other permanent store

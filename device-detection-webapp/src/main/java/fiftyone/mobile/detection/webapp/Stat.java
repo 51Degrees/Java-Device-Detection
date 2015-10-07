@@ -1,7 +1,3 @@
-package fiftyone.mobile.detection.webapp;
-
-import java.io.Serializable;
-
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
  * Copyright 2014 51Degrees Mobile Experts Limited, 5 Charlotte Close,
@@ -22,6 +18,10 @@ import java.io.Serializable;
  * This Source Code Form is "Incompatible With Secondary Licenses", as
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
+package fiftyone.mobile.detection.webapp;
+
+import java.io.Serializable;
+
 @SuppressWarnings("serial")
 public class Stat implements Comparable<Stat>, Serializable {
     // Set when the server starts to send the headers.

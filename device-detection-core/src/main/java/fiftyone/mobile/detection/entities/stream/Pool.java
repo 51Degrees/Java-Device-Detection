@@ -1,12 +1,3 @@
-package fiftyone.mobile.detection.entities.stream;
-
-import fiftyone.mobile.detection.IDisposable;
-import fiftyone.mobile.detection.readers.BinaryReader;
-import java.io.IOException;
-import java.util.Queue;
-import java.util.concurrent.LinkedBlockingDeque;
-import java.util.concurrent.atomic.AtomicInteger;
-
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
  * Copyright 2014 51Degrees Mobile Experts Limited, 5 Charlotte Close,
@@ -27,6 +18,15 @@ import java.util.concurrent.atomic.AtomicInteger;
  * This Source Code Form is "Incompatible With Secondary Licenses", as
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
+package fiftyone.mobile.detection.entities.stream;
+
+import fiftyone.mobile.detection.IDisposable;
+import fiftyone.mobile.detection.readers.BinaryReader;
+import java.io.IOException;
+import java.util.Queue;
+import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.atomic.AtomicInteger;
+
 /**
  * As multiple threads need to read from the Source concurrently this class
  * provides a mechanism for readers to be recycled across threads and requests.
