@@ -1,9 +1,3 @@
-package fiftyone.mobile.detection.entities.stream;
-
-import fiftyone.mobile.detection.entities.Modes;
-import java.io.IOException;
-import java.util.Date;
-
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
  * Copyright 2014 51Degrees Mobile Experts Limited, 5 Charlotte Close,
@@ -24,6 +18,12 @@ import java.util.Date;
  * This Source Code Form is "Incompatible With Secondary Licenses", as
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
+package fiftyone.mobile.detection.entities.stream;
+
+import fiftyone.mobile.detection.entities.Modes;
+import java.io.IOException;
+import java.util.Date;
+
 /**
  * A data set returned from the stream factory which includes a pool of
  * data readers that are used to fetch data from the source when the data 

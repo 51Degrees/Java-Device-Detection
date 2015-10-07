@@ -1,5 +1,3 @@
-package fiftyone.mobile.detection.entities.stream;
-
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
  * Copyright 2014 51Degrees Mobile Experts Limited, 5 Charlotte Close,
@@ -20,6 +18,8 @@ package fiftyone.mobile.detection.entities.stream;
  * This Source Code Form is "Incompatible With Secondary Licenses", as
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
+package fiftyone.mobile.detection.entities.stream;
+
 /**
  * Lists that use a cache can return information about the cache
  * misses for performance analysis. They implement this interface

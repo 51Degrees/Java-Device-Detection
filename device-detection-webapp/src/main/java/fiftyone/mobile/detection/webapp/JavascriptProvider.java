@@ -1,23 +1,3 @@
-package fiftyone.mobile.detection.webapp;
-
-import fiftyone.mobile.detection.Dataset;
-import fiftyone.mobile.detection.entities.Property;
-import fiftyone.mobile.detection.entities.Property.PropertyValueType;
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import org.apache.commons.codec.binary.Base64;
-
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
  * Copyright 2014 51Degrees Mobile Experts Limited, 5 Charlotte Close,
@@ -38,6 +18,26 @@ import org.apache.commons.codec.binary.Base64;
  * This Source Code Form is "Incompatible With Secondary Licenses", as
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
+package fiftyone.mobile.detection.webapp;
+
+import fiftyone.mobile.detection.Dataset;
+import fiftyone.mobile.detection.entities.Property;
+import fiftyone.mobile.detection.entities.Property.PropertyValueType;
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import org.apache.commons.codec.binary.Base64;
+
 class JavascriptProvider {
 
     private static final int DEFAULT_BUFFER_SIZE = 10240;

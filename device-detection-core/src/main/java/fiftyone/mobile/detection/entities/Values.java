@@ -1,11 +1,3 @@
-package fiftyone.mobile.detection.entities;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-
-import fiftyone.properties.DetectionConstants;
-
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
  * Copyright 2014 51Degrees Mobile Experts Limited, 5 Charlotte Close,
@@ -26,6 +18,14 @@ import fiftyone.properties.DetectionConstants;
  * This Source Code Form is "Incompatible With Secondary Licenses", as
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
+package fiftyone.mobile.detection.entities;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+
+import fiftyone.properties.DetectionConstants;
+
 /**
  * Encapsulates a list of one or more values. Provides methods to return
  * boolean, double and string representations of the values list. 

@@ -1,11 +1,3 @@
-package fiftyone.mobile.detection.entities.stream;
-
-import fiftyone.mobile.detection.IDisposable;
-import fiftyone.mobile.detection.readers.TrieReader;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
  * Copyright 2014 51Degrees Mobile Experts Limited, 5 Charlotte Close,
@@ -26,6 +18,14 @@ import java.io.IOException;
  * This Source Code Form is "Incompatible With Secondary Licenses", as
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
+package fiftyone.mobile.detection.entities.stream;
+
+import fiftyone.mobile.detection.IDisposable;
+import fiftyone.mobile.detection.readers.TrieReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
 /**
  * Encapsulates either a byte array or a file containing the uncompressed data
  * structures used by the data set. <p> Must be disposed to ensure that the

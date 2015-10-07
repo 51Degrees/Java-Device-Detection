@@ -1,13 +1,3 @@
-package fiftyone.mobile.detection.entities;
-
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.io.IOException;
-import fiftyone.mobile.detection.Dataset;
-import fiftyone.mobile.detection.readers.BinaryReader;
-
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
  * Copyright 2014 51Degrees Mobile Experts Limited, 5 Charlotte Close,
@@ -28,6 +18,16 @@ import fiftyone.mobile.detection.readers.BinaryReader;
  * This Source Code Form is "Incompatible With Secondary Licenses", as
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
+package fiftyone.mobile.detection.entities;
+
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.io.IOException;
+import fiftyone.mobile.detection.Dataset;
+import fiftyone.mobile.detection.readers.BinaryReader;
+
 /**
  * Encapsulates all the information about a property including how it's values
  * should be used and what they mean. <p> Some properties are not mandatory and

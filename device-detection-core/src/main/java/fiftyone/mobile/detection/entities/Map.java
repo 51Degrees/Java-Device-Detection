@@ -1,9 +1,3 @@
-package fiftyone.mobile.detection.entities;
-
-import fiftyone.mobile.detection.Dataset;
-import fiftyone.mobile.detection.readers.BinaryReader;
-import java.io.IOException;
-
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
  * Copyright 2014 51Degrees Mobile Experts Limited, 5 Charlotte Close,
@@ -24,6 +18,12 @@ import java.io.IOException;
  * This Source Code Form is "Incompatible With Secondary Licenses", as
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
+package fiftyone.mobile.detection.entities;
+
+import fiftyone.mobile.detection.Dataset;
+import fiftyone.mobile.detection.readers.BinaryReader;
+import java.io.IOException;
+
 /**
  * A node index contains the characters and related child nodes of the current
  * node should any of the characters match at the position.

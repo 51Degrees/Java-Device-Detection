@@ -1,17 +1,3 @@
-package fiftyone.mobile.detection.entities;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import fiftyone.mobile.detection.Dataset;
-import fiftyone.mobile.detection.SortedList;
-import fiftyone.mobile.detection.readers.BinaryReader;
-import fiftyone.properties.DetectionConstants;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
  * Copyright 2014 51Degrees Mobile Experts Limited, 5 Charlotte Close,
@@ -32,6 +18,20 @@ import java.util.logging.Logger;
  * This Source Code Form is "Incompatible With Secondary Licenses", as
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
+package fiftyone.mobile.detection.entities;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import fiftyone.mobile.detection.Dataset;
+import fiftyone.mobile.detection.SortedList;
+import fiftyone.mobile.detection.readers.BinaryReader;
+import fiftyone.properties.DetectionConstants;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  * Signature of a user agent. <p> A signature contains those characters of a
  * user agent which are relevant for the purposes of device detection. For

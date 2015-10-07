@@ -1,9 +1,3 @@
-package fiftyone.mobile.detection;
-
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
-
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
  * Copyright © 2014 51Degrees Mobile Experts Limited, 5 Charlotte Close,
@@ -24,6 +18,12 @@ import java.util.concurrent.atomic.AtomicLong;
  * This Source Code Form is "Incompatible With Secondary Licenses", as
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
+package fiftyone.mobile.detection;
+
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
+
 /**
  * Many of the entities used by the detector data set are requested repeatedly. 
  * The cache improves memory usage and reduces strain on the garbage collector

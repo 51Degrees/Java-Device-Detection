@@ -1,8 +1,3 @@
-package fiftyone.mobile.detection.entities;
-
-import fiftyone.mobile.detection.Dataset;
-import java.io.IOException;
-
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
  * Copyright 2014 51Degrees Mobile Experts Limited, 5 Charlotte Close,
@@ -23,6 +18,11 @@ import java.io.IOException;
  * This Source Code Form is "Incompatible With Secondary Licenses", as
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
+package fiftyone.mobile.detection.entities;
+
+import fiftyone.mobile.detection.Dataset;
+import java.io.IOException;
+
 /**
  * Represents a child of a node with a numeric value rather than character
  * values. Used to support the Numeric matching method if an exact match can't

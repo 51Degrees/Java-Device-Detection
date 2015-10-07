@@ -1,13 +1,3 @@
-package fiftyone.mobile.detection.factories;
-
-import fiftyone.mobile.detection.TrieProvider;
-import fiftyone.mobile.detection.TrieProviderV3;
-import fiftyone.mobile.detection.TrieProviderV32;
-import fiftyone.mobile.detection.entities.stream.TriePool;
-import fiftyone.mobile.detection.entities.stream.TrieSource;
-import fiftyone.mobile.detection.readers.TrieReader;
-import java.io.*;
-
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
  * Copyright © 2014 51Degrees Mobile Experts Limited, 5 Charlotte Close,
@@ -28,6 +18,16 @@ import java.io.*;
  * This Source Code Form is "Incompatible With Secondary Licenses", as
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
+package fiftyone.mobile.detection.factories;
+
+import fiftyone.mobile.detection.TrieProvider;
+import fiftyone.mobile.detection.TrieProviderV3;
+import fiftyone.mobile.detection.TrieProviderV32;
+import fiftyone.mobile.detection.entities.stream.TriePool;
+import fiftyone.mobile.detection.entities.stream.TrieSource;
+import fiftyone.mobile.detection.readers.TrieReader;
+import java.io.*;
+
 /**
  * Reader used to create a provider from data structured in a decision tree
  * format.

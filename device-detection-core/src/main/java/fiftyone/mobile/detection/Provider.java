@@ -1,17 +1,3 @@
-package fiftyone.mobile.detection;
-
-import fiftyone.properties.MatchMethods;
-import fiftyone.mobile.detection.Match.MatchState;
-import fiftyone.mobile.detection.entities.Component;
-import fiftyone.mobile.detection.entities.Profile;
-import fiftyone.properties.DetectionConstants;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.concurrent.atomic.AtomicLong;
-
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
  * Copyright 2014 51Degrees Mobile Experts Limited, 5 Charlotte Close,
@@ -32,6 +18,20 @@ import java.util.concurrent.atomic.AtomicLong;
  * This Source Code Form is "Incompatible With Secondary Licenses", as
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
+package fiftyone.mobile.detection;
+
+import fiftyone.properties.MatchMethods;
+import fiftyone.mobile.detection.Match.MatchState;
+import fiftyone.mobile.detection.entities.Component;
+import fiftyone.mobile.detection.entities.Profile;
+import fiftyone.properties.DetectionConstants;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.concurrent.atomic.AtomicLong;
+
 /**
  * Provider used to perform a detection based on a user agent string.
  */
