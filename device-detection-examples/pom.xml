@@ -11,6 +11,12 @@
 
     <artifactId>device-detection-examples</artifactId>
     <name>51 Degrees :: Device Detection :: Examples</name>
+    <description>Examples of how to use 51 Degrees device detection core.</description>
+
+    <organization>
+        <name>51 Degrees</name>
+        <url>http://51degrees.com</url>
+    </organization>
 
     <dependencies>
         <dependency>
@@ -25,5 +31,25 @@
             <version>${jopt-simple.version}</version>
         </dependency>
     </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>batch</id>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                        <configuration>
+                            <mainClass>fiftyone.device.example.batch.Controller</mainClass>
+                        </configuration>
+                     </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
 
 </project>
