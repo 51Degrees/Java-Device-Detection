@@ -1,5 +1,3 @@
-package fiftyone.properties;
-
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
  * Copyright 2014 51Degrees Mobile Experts Limited, 5 Charlotte Close,
@@ -20,6 +18,8 @@ package fiftyone.properties;
  * This Source Code Form is "Incompatible With Secondary Licenses", as
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
+package fiftyone.properties;
+
 /**
  * Enumerator of possible methods used to obtain the match. Modified to also 
  * return a numeric value associated with the ENUM entry.

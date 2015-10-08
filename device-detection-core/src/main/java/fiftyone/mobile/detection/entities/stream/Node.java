@@ -1,8 +1,3 @@
-package fiftyone.mobile.detection.entities.stream;
-
-import fiftyone.mobile.detection.entities.NodeNumericIndex;
-import fiftyone.mobile.detection.readers.BinaryReader;
-
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
  * Copyright © 2014 51Degrees Mobile Experts Limited, 5 Charlotte Close,
@@ -23,6 +18,11 @@ import fiftyone.mobile.detection.readers.BinaryReader;
  * This Source Code Form is "Incompatible With Secondary Licenses", as
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
+package fiftyone.mobile.detection.entities.stream;
+
+import fiftyone.mobile.detection.entities.NodeNumericIndex;
+import fiftyone.mobile.detection.readers.BinaryReader;
+
 /**
  * Represents a Entities.Node which can be used with the 
  * Stream data set. NumericChidren and RankedSignatureIndexes are not loaded

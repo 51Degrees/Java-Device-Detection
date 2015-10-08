@@ -1,14 +1,3 @@
-package fiftyone.mobile.detection.entities.memory;
-
-import fiftyone.mobile.detection.Dataset;
-import fiftyone.mobile.detection.entities.IntegerEntity;
-import fiftyone.mobile.detection.entities.NodeIndex;
-import fiftyone.mobile.detection.factories.NodeFactoryShared;
-import fiftyone.mobile.detection.readers.BinaryReader;
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
  * Copyright © 2014 51Degrees Mobile Experts Limited, 5 Charlotte Close,
@@ -29,6 +18,17 @@ import java.util.logging.Logger;
  * This Source Code Form is "Incompatible With Secondary Licenses", as
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
+package fiftyone.mobile.detection.entities.memory;
+
+import fiftyone.mobile.detection.Dataset;
+import fiftyone.mobile.detection.entities.IntegerEntity;
+import fiftyone.mobile.detection.entities.NodeIndex;
+import fiftyone.mobile.detection.factories.NodeFactoryShared;
+import fiftyone.mobile.detection.readers.BinaryReader;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  * All data is loaded into memory when the entity is constructed.
  */

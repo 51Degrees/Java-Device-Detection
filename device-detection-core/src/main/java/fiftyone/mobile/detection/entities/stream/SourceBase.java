@@ -1,11 +1,3 @@
-package fiftyone.mobile.detection.entities.stream;
-
-import fiftyone.mobile.detection.IDisposable;
-import fiftyone.mobile.detection.readers.BinaryReader;
-import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.List;
-
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
  * Copyright 2014 51Degrees Mobile Experts Limited, 5 Charlotte Close,
@@ -26,6 +18,14 @@ import java.util.List;
  * This Source Code Form is "Incompatible With Secondary Licenses", as
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
+package fiftyone.mobile.detection.entities.stream;
+
+import fiftyone.mobile.detection.IDisposable;
+import fiftyone.mobile.detection.readers.BinaryReader;
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Providers the base for a data source containing the uncompressed data 
  * structures used by the data set.

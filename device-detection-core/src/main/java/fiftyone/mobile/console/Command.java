@@ -1,14 +1,3 @@
-package fiftyone.mobile.console;
-
-import fiftyone.mobile.detection.AutoUpdateException;
-import fiftyone.mobile.detection.Match;
-import fiftyone.mobile.detection.Provider;
-import fiftyone.mobile.detection.TrieProvider;
-import fiftyone.mobile.detection.factories.StreamFactory;
-import fiftyone.mobile.detection.factories.TrieFactory;
-import java.io.File;
-import java.io.IOException;
-
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
  * Copyright 2014 51Degrees Mobile Experts Limited, 5 Charlotte Close,
@@ -29,6 +18,17 @@ import java.io.IOException;
  * This Source Code Form is "Incompatible With Secondary Licenses", as
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
+package fiftyone.mobile.console;
+
+import fiftyone.mobile.detection.AutoUpdateException;
+import fiftyone.mobile.detection.Match;
+import fiftyone.mobile.detection.Provider;
+import fiftyone.mobile.detection.TrieProvider;
+import fiftyone.mobile.detection.factories.StreamFactory;
+import fiftyone.mobile.detection.factories.TrieFactory;
+import java.io.File;
+import java.io.IOException;
+
 public class Command {
 
     /**
