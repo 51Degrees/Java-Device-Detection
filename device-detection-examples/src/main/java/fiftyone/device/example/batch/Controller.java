@@ -41,11 +41,11 @@ import java.util.Date;
  * </dl>
  * <p>
  * An example test file and "Lite" detection file can be found in the <code>data/</code> directory in the root of this repo.
- * By default this example will try to find files <code>data/20000 User Agents.csv</code> and <code>data/51Degrees-LiteV3.2.dat</code> in
- * its working directory.
+ * By default this example will try to find files <code>../data/20000 User Agents.csv</code> and
+ * <code>../data/51Degrees-LiteV3.2.dat</code> relative to its working directory.
  * <p>
  * By default this example carries out 6 iterations of detecting the user agents in the supplied file. The first
- * iteration serves to warm up the JVM and will populate the 51 degrees data structures and cache if one is psecified.
+ * iteration serves to warm up the JVM and will populate the 51 degrees data structures and cache if one is specified.
  * Subsequent iterations provide a better indication of actual detection performance in live operation.
  * <p>
  * A results file is generated on the last iteration. This records the detailed detection results of each
@@ -54,13 +54,21 @@ import java.util.Date;
  * For the Lite dataset a heap of 500 MBytes is recommended, for the Enterprise dataset 1GByte - i.e. run with -Xmx500m
  * or -Xmx1g as appropriate.
  * <p>
+ * To compile, from the project root directory execute <code>mvn clean install</code> (or
+ * equivalent in your IDE).
+ * <p>
+ * To run this example from the command line, first compile the source (above) switch to the
+ * device-detection-examples directory, then <code>mvn exec:java@batch</code>. Maven 3.3 is required.
+ * This will run the example in the same process as maven and hence shares its heap etc. If you
+ * want to add command line options then e.g. <code>mvn exec:java@batch -Dexec.args="--cache=0 --iterations=10</code>
+ * <p>
  * In the following command line options can be abbreviated e.g. --cache=1000000 is the same as -c1000000
  * <p>
  * <pre>
    Option                  Description
    ------                  -----------
- --useragents &lt;File>       file path of useragents file (default: data/20000 User Agents.csv)
- --detection &lt;File>        file path of detection file (default: data/51Degrees-LiteV3.2.dat)
+ --useragents &lt;File>       file path of useragents file (default: ../data/20000 User Agents.csv)
+ --detection &lt;File>        file path of detection file (default: ../data/51Degrees-LiteV3.2.dat)
  --results &lt;File>          file path for results file (default: results-&lt;iso date time of test>.txt)
  --cache &lt;Integer>         size of detection cache in bytes (default: 50000)
  --iterations &lt;Integer>    number of times to do the detection (default: 6)                        
@@ -103,8 +111,8 @@ public class Controller {
     public static void main(String[] args) throws Exception {
 
         OptionParser parser = new OptionParser();
-        OptionSpec<File> testFilenameOption = parser.accepts("useragents", "file path of useragents file").withRequiredArg().ofType( File.class ).defaultsTo(new File("data/20000 User Agents.csv"));
-        OptionSpec<File> detectionFilenameOption = parser.accepts("detection", "file path of detection file").withRequiredArg().ofType( File.class ).defaultsTo(new File("data/51Degrees-LiteV3.2.dat"));
+        OptionSpec<File> testFilenameOption = parser.accepts("useragents", "file path of useragents file").withRequiredArg().ofType( File.class ).defaultsTo(new File("../data/20000 User Agents.csv"));
+        OptionSpec<File> detectionFilenameOption = parser.accepts("detection", "file path of detection file").withRequiredArg().ofType( File.class ).defaultsTo(new File("../data/51Degrees-LiteV3.2.dat"));
         OptionSpec<File> resultFileOption = parser.accepts("results", "file path for results file").withRequiredArg().ofType( File.class ).defaultsTo(new File("results-" + formatter.format(new Date()) + ".txt"));
         OptionSpec<Mode> modeOption = parser.accepts("mode", "memory or stream mode processing").withRequiredArg().ofType(Mode.class).defaultsTo(Mode.memory);
         OptionSpec<Integer> cacheOption = parser.accepts("cache", "size of detection cache in bytes").withRequiredArg().ofType( Integer.class ).defaultsTo(50000);
