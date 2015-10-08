@@ -1,10 +1,3 @@
-package fiftyone.properties;
-
-import fiftyone.mobile.detection.entities.Version;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
  * Copyright 2014 51Degrees Mobile Experts Limited, 5 Charlotte Close,
@@ -25,6 +18,13 @@ import java.util.Map.Entry;
  * This Source Code Form is "Incompatible With Secondary Licenses", as
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
+package fiftyone.properties;
+
+import fiftyone.mobile.detection.entities.Version;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+
 /**
  * Provides logic for storing the Enumeration values mapped to the Version 
  * objects.

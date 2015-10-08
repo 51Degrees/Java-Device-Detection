@@ -1,13 +1,3 @@
-package fiftyone.mobile.detection.entities.stream;
-
-import fiftyone.mobile.detection.entities.BaseEntity;
-import fiftyone.mobile.detection.factories.BaseEntityFactory;
-import fiftyone.mobile.detection.readers.BinaryReader;
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
  * Copyright 2014 51Degrees Mobile Experts Limited, 5 Charlotte Close,
@@ -28,6 +18,16 @@ import java.util.logging.Logger;
  * This Source Code Form is "Incompatible With Secondary Licenses", as
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
+package fiftyone.mobile.detection.entities.stream;
+
+import fiftyone.mobile.detection.entities.BaseEntity;
+import fiftyone.mobile.detection.factories.BaseEntityFactory;
+import fiftyone.mobile.detection.readers.BinaryReader;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+
 /**
  * A readonly list of fixed length entity types held on persistent storage 
  * rather than in memory.

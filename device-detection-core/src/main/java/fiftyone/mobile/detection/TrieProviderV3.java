@@ -1,11 +1,3 @@
-package fiftyone.mobile.detection;
-
-import fiftyone.mobile.detection.entities.stream.TriePool;
-import fiftyone.properties.DetectionConstants;
-import java.io.FileNotFoundException;
-import java.nio.ByteBuffer;
-import java.util.Arrays;
-
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
  * copyright 2014 51Degrees Mobile Experts Limited, 5 Charlotte Close,
@@ -26,6 +18,14 @@ import java.util.Arrays;
  * This Source Code Form is "Incompatible With Secondary Licenses", as
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
+package fiftyone.mobile.detection;
+
+import fiftyone.mobile.detection.entities.stream.TriePool;
+import fiftyone.properties.DetectionConstants;
+import java.io.FileNotFoundException;
+import java.nio.ByteBuffer;
+import java.util.Arrays;
+
 /**
  * Decision Trie data structure provider.
  */

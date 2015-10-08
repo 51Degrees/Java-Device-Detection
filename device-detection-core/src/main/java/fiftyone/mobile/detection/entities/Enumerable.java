@@ -1,8 +1,3 @@
-package fiftyone.mobile.detection.entities;
-
-import fiftyone.mobile.detection.readers.BinaryReader;
-import java.util.Iterator;
-
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
  * Copyright 2014 51Degrees Mobile Experts Limited, 5 Charlotte Close,
@@ -23,6 +18,11 @@ import java.util.Iterator;
  * This Source Code Form is "Incompatible With Secondary Licenses", as
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
+package fiftyone.mobile.detection.entities;
+
+import fiftyone.mobile.detection.readers.BinaryReader;
+import java.util.Iterator;
+
 /**
  * Class implements the logic of IEnumerable in C#. When you need to read a 
  * specific number of integer objects from the data file it's best to do so 

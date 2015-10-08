@@ -1,17 +1,3 @@
-package fiftyone.mobile.detection.entities;
-
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.lang.Integer;
-
-import fiftyone.mobile.detection.Dataset;
-import fiftyone.mobile.detection.readers.BinaryReader;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
  * Copyright 2014 51Degrees Mobile Experts Limited, 5 Charlotte Close,
@@ -32,6 +18,20 @@ import java.util.logging.Logger;
  * This Source Code Form is "Incompatible With Secondary Licenses", as
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
+package fiftyone.mobile.detection.entities;
+
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.lang.Integer;
+
+import fiftyone.mobile.detection.Dataset;
+import fiftyone.mobile.detection.readers.BinaryReader;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  * A value associated with a property and component within the dataset. <p>
  * Every property can return one of many values, or multiple values if it's a

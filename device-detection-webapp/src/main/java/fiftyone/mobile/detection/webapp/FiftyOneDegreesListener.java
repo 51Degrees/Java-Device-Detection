@@ -1,18 +1,3 @@
-package fiftyone.mobile.detection.webapp;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
-import java.util.Timer;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
  * Copyright 2014 51Degrees Mobile Experts Limited, 5 Charlotte Close,
@@ -33,6 +18,21 @@ import org.slf4j.LoggerFactory;
  * This Source Code Form is "Incompatible With Secondary Licenses", as
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
+package fiftyone.mobile.detection.webapp;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+import java.util.Timer;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class FiftyOneDegreesListener implements ServletContextListener {
 
     private final static Logger logger = LoggerFactory
