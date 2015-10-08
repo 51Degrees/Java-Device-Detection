@@ -60,7 +60,7 @@ import java.util.Date;
  * To run this example from the command line, first compile the source (above) switch to the
  * device-detection-examples directory, then <code>mvn exec:java@batch</code>. Maven 3.3 is required.
  * This will run the example in the same process as maven and hence shares its heap etc. If you
- * want to add command line options then e.g. <code>mvn exec:java@batch -Dexec.args="--cache=0 --iterations=10</code>
+ * want to add command line options then e.g. <code>mvn exec:java@batch -Dexec.args="--cache=0 --iterations=10"</code>
  * <p>
  * In the following command line options can be abbreviated e.g. --cache=1000000 is the same as -c1000000
  * <p>
