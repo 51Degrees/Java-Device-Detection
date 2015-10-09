@@ -32,12 +32,13 @@ import java.util.TreeMap;
 
 import fiftyone.mobile.detection.entities.stream.TriePool;
 import fiftyone.mobile.detection.readers.TrieReader;
+import java.io.Closeable;
 import java.util.Map.Entry;
 
 /**
  * Decision trie data structure provider.
  */
-public abstract class TrieProvider implements IDisposable {
+public abstract class TrieProvider implements Closeable {
 
     /**
      * The type of integers used to represent the offset to the children.
@@ -354,8 +355,8 @@ public abstract class TrieProvider implements IDisposable {
      * Disposes of the pool assigned to the provider.
      */
     @Override
-    public void dispose() {
-        pool.dispose();
+    public void close() {
+        pool.close();
     }
 
     /**

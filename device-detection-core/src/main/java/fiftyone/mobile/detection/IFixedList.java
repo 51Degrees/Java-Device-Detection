@@ -23,6 +23,7 @@ package fiftyone.mobile.detection;
 import java.io.IOException;
 
 import fiftyone.mobile.detection.entities.BaseEntity;
+import java.util.Iterator;
 
 /**
  * Provides the ability to efficiently retrieve the items from the list using 
@@ -39,5 +40,6 @@ public interface IFixedList<T extends BaseEntity> extends IReadonlyList<T> {
      * @return An enumerable to iterate over the range specified.
      * @throws java.io.IOException
      */
-    public abstract IDisposableIterator<T> getRange(int index, int count) throws IOException;
+    public abstract IClosableIterator<T> getRange(int index, int count) 
+                                                            throws IOException;
 }
