@@ -64,7 +64,10 @@ public class Values extends ArrayList<Value> {
             throw new UnsupportedOperationException(
                     "Can't convert list to a boolean.");
         }
-        return get(0).toBool();
+        if (super.isEmpty() == false) {
+            return  get(0).toBool();
+        }
+        return false;
     }
 
     /**
@@ -78,7 +81,10 @@ public class Values extends ArrayList<Value> {
             throw new UnsupportedOperationException(
                     "Can't convert list to double.");
         }
-        return get(0).toDouble();
+        if (super.isEmpty() != false) {
+            return get(0).toDouble();
+        }
+        return 0;
     }
 
     /**
