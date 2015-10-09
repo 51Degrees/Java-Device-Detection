@@ -307,7 +307,11 @@ public abstract class Signature extends BaseEntity implements Comparable<Signatu
      * @throws IOException indicates an I/O exception occurred
      */
     public SortedList<String, List<String>> getPropertyValuesAsStrings() throws IOException {
-        SortedList<String, List<String>> list = new SortedList<String, List<String>>();
+        // Initialise the HashMap with the known number of values and 1 as the 
+        // threshold to avoid the need to rehash it.
+        int numberOfValues = getValues().length;
+        SortedList<String, List<String>> list = 
+                new SortedList<String, List<String>>(numberOfValues, 1);
         for (Value value : getValues()) {
             if (!list.containsKey(value.getProperty().getName())) {
                 list.add(value.getProperty().getName(), new ArrayList<String>());

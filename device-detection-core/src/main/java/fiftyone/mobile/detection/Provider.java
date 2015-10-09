@@ -135,7 +135,10 @@ public class Provider {
         this.detectionCount = new AtomicLong();
         this.dataSet = dataSet;
         this.controller = controller;
-        this.methodCounts = new SortedList<MatchMethods, Long>();
+        // Initialise HashMap with default size and a rirective to re-hash only
+        // when capacity exceeds initial.
+        this.methodCounts = new SortedList<MatchMethods, Long>(
+                                this.methodCounts.values().size(), 1);
         this.methodCounts.add(MatchMethods.CLOSEST, 0l);
         this.methodCounts.add(MatchMethods.NEAREST, 0l);
         this.methodCounts.add(MatchMethods.NUMERIC, 0l);
