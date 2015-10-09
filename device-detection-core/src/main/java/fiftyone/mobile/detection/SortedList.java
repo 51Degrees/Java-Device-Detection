@@ -20,11 +20,23 @@
  * ********************************************************************* */
 package fiftyone.mobile.detection;
 
-import java.util.TreeMap;
+import java.util.HashMap;
 
 @SuppressWarnings("serial")
-public class SortedList<K, V> extends TreeMap<K, V> {
+public class SortedList<K, V> extends HashMap<K, V> {
 
+    public SortedList() {
+        super();
+    }
+    
+    public SortedList(int initialCapacity) {
+        super(initialCapacity);
+    }
+    
+    public SortedList(int initialCapacity, float loadFactor) {
+        super(initialCapacity, loadFactor);
+    }
+    
     public void add(K offset, V value) {
         put(offset, value);
     }
