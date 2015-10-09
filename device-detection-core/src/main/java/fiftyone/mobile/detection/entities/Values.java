@@ -62,7 +62,7 @@ public class Values extends ArrayList<Value> {
     public boolean toBool() throws IOException {
         if (property.isList) {
             throw new UnsupportedOperationException(
-                    "toBool can only be used on non List properties");
+                    "Can't convert list to a boolean.");
         }
         return get(0).toBool();
     }
@@ -76,7 +76,7 @@ public class Values extends ArrayList<Value> {
     public double toDouble() throws IOException {
         if (property.isList) {
             throw new UnsupportedOperationException(
-                    "toDouble can only be used on non List properties");
+                    "Can't convert list to double.");
         }
         return get(0).toDouble();
     }

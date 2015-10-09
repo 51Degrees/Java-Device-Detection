@@ -25,8 +25,6 @@ import fiftyone.mobile.detection.IDisposableIterator;
 import fiftyone.mobile.detection.readers.BinaryReader;
 import java.io.IOException;
 import java.util.Iterator;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Signature of a user agent in version 3.2 data format.
@@ -102,7 +100,8 @@ public class SignatureV32 extends Signature {
                             nodeOffsets[i] = iterator.next().value;
                         }
                     } catch (IOException ex) {
-                        Logger.getLogger(SignatureV32.class.getName()).log(Level.SEVERE, null, ex);
+                        System.err.println("SignatureV32: failed to get node "
+                                + "offsets.");
                     }
                     finally {
                         if (iterator != null) {
@@ -127,8 +126,7 @@ public class SignatureV32 extends Signature {
                             .get(nodeCount + firstNodeOffsetIndex - 1).value);
             return lastNode.position + lastNode.getLength() + 1;
         } catch (IOException ex) {
-            Logger.getLogger(SignatureV32.class.getName())
-                                         .log(Level.SEVERE, null, ex);
+            System.err.println("SignatureV32: failed to get the last node.");
         }
         return -1;
     }

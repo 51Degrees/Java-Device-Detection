@@ -40,21 +40,11 @@ public class CommonFactory {
     public static void loadHeader(Dataset dataSet, BinaryReader reader) {
         //Check for an exception which would indicate the file is the 
         //wrong type for the API.
-        try {
             dataSet.version = new Version(
                 reader.readInt32(),
                 reader.readInt32(),
                 reader.readInt32(),
                 reader.readInt32());
-        } catch (Exception ex) {
-            StringBuilder message = new StringBuilder();
-            message.append("Data file is invalid. Check that the data file ");
-            message.append("is decompressed and is the latest version format:");
-            message.append(
-                    DetectionConstants.supportedPatternFormatVersions.toString()
-            );
-            throw new Error(message.toString());
-        }
         
         if (!DetectionConstants.supportedPatternFormatVersions.
                 contains(dataSet.version)) {

@@ -29,8 +29,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import fiftyone.mobile.detection.entities.stream.TriePool;
 import fiftyone.mobile.detection.readers.TrieReader;
@@ -266,7 +264,8 @@ public abstract class TrieProvider implements IDisposable {
                     }
                 }
             } catch (Exception ex) {
-                Logger.getLogger(TrieProvider.class.getName()).log(Level.SEVERE, null, ex);
+                System.err.println("Failed to retrieve device indexes for "
+                        + "TrieProvider.");
             } finally {
                 if (reader != null) {
                     pool.release(reader);

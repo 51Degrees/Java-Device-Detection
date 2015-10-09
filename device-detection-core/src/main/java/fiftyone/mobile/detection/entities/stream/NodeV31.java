@@ -26,8 +26,6 @@ import fiftyone.mobile.detection.factories.NodeFactoryShared;
 import fiftyone.mobile.detection.readers.BinaryReader;
 import fiftyone.properties.DetectionConstants;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 
 /**
@@ -91,7 +89,8 @@ public class NodeV31 extends Node {
                                     getNumericChildrenLength()));
                         rankedSignatureIndexes = readIntegerArray(reader, rankedSignatureCount);
                     } catch (IOException ex) {
-                        Logger.getLogger(NodeV31.class.getName()).log(Level.SEVERE, null, ex);
+                        System.err.println("NodeV31: failed to get ranked "
+                                + "signature indexes.");
                     } finally {
                         if (reader != null) {
                             pool.release(reader);

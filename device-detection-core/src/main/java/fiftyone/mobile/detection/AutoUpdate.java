@@ -40,7 +40,6 @@ import java.util.List;
 import java.util.TimeZone;
 import java.util.UUID;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.zip.DataFormatException;
 import java.util.zip.GZIPInputStream;
@@ -99,9 +98,10 @@ public class AutoUpdate {
             //Delete compressed file.
             File compressedFile = new File(compressedTempFile);
             if (compressedFile.delete() == false) {
-                Logger.getLogger(AutoUpdate.class.getName()).log(Level.WARNING,
-                            "Compressed file downloaded from 51Degrees.com "
-                                    + "could not be deleted.");
+                System.err.println("Auto update warning: could not delete the "
+                        + "compressed temporary data file used for storing "
+                        + "data downloaded from 51Degrees. Should not prevent "
+                        + "the data file from updating.");
             }
             // Create a dataset and load the data in.
             final Dataset newDataSet = StreamFactory.create(uncompressedTempFile, true);
@@ -126,38 +126,12 @@ public class AutoUpdate {
                 
                 boolean moved = source.renameTo(destination);
                 if (!moved) {
-                    StringBuilder sb = new StringBuilder();
-                    sb.append("Could not replace master data file with new one. ");
-                    sb.append("Please verify the master data file is not used ");
-                    sb.append("elsewhere in your program.");
-                    Logger.getLogger(AutoUpdate.class.getName()).log(Level.WARNING,
-                            sb.toString());
+                    System.err.println("Auto update failed: Could not replace "
+                            + "master data file with new one. Please verify "
+                            + "the master data file is not used elsewhere in "
+                            + "your code.");
                     return false;
                 }
-                
-                /* 
-                 *  Section below is commented out as it is not compatible with 
-                 *  JDK 1.6. If you are rebuilding the JAR for use with 1.7 or 
-                 *  above, then feel free to use the commented section instead 
-                 *  of the above copy procedure.
-                 */
-                
-                /*
-                Path source = Paths.get(uncompressedTempFile);
-                Path destination = Paths.get(dataFilePath);
-                try {
-                    Files.copy(source, destination, REPLACE_EXISTING);
-                    Files.
-                } catch (IOException ex) {
-                    StringBuilder sb = new StringBuilder();
-                    sb.append("Could not replace master data file with new one. ");
-                    sb.append("Please verify the master data file is not used ");
-                    sb.append("elsewhere in your program.");
-                    Logger.getLogger(AutoUpdate.class.getName()).log(Level.WARNING,
-                            sb.toString());
-                    return false;
-                }
-                */
                 source = null;
                 destination = null;
                 //Try to delete temp file.
@@ -165,15 +139,15 @@ public class AutoUpdate {
                 int count = 5;
                 while (!tempMasterFile.delete()) {
                     if (count <= 0) {
-                        StringBuilder sb = new StringBuilder();
-                        sb.append("Failed to delete the uncompressed temporary ");
-                        sb.append("data file.");
-                        throw new AutoUpdateException(sb.toString());
+                        System.err.println("Can't delete the "
+                                + "uncompressed temporary file used for the "
+                                + "update. This is a housekeeping FYI and does "
+                                + "not affect the auto update.");
                     }
                     try {
                         Thread.sleep(2000);
                     } catch (InterruptedException ex) {
-                        Logger.getLogger(AutoUpdate.class.getName()).log(Level.SEVERE, null, ex);
+                        
                     } finally {
                         count--;
                     }
@@ -182,7 +156,6 @@ public class AutoUpdate {
             } else {
                 //No need to update. File names are the same. Dates of both 
                 //files do not indicate an update is required.
-                Logger.getLogger(AutoUpdate.class.getName()).log(Level.INFO,"Data file is already up to date.");
                 File f = new File(uncompressedTempFile);
                 if (f.exists())
                     f.delete();
@@ -193,7 +166,8 @@ public class AutoUpdate {
                     "Exception reading data stream from server '%s'.",
                     DetectionConstants.AUTO_UPDATE_URL) + ex.getMessage());
         } catch (DataFormatException ex) {
-            Logger.getLogger(AutoUpdate.class.getName()).log(Level.SEVERE, null, ex);
+            System.err.print("The downloaded date file appears to be of the "
+                    + "unsupported version.");
         }
         return false;
     }
@@ -234,13 +208,16 @@ public class AutoUpdate {
             // no spaces, must make sure this hash conforms to the scheme too.
             return hashBuilder.toString().toLowerCase().replaceAll(" ", "");
         } catch (FileNotFoundException ex) {
-            Logger.getLogger(AutoUpdate.class.getName()).log(Level.SEVERE, null, ex);
+            System.err.println("Auto update hash validation failed: file "
+                    + "not found.");
             return null;
         } catch (NoSuchAlgorithmException ex) {
-            Logger.getLogger(AutoUpdate.class.getName()).log(Level.SEVERE, null, ex);
+            System.err.println("Auto update hash validation failed: no "
+                    + "algorithm available.");
             return null;
         } catch (IOException ex) {
-            Logger.getLogger(AutoUpdate.class.getName()).log(Level.SEVERE, null, ex);
+            System.err.println("Auto update hash validation failed: could not "
+                    + "access the data file to perform validation.");
             return null;
         } finally {
             //Release FileInputStream
@@ -248,7 +225,8 @@ public class AutoUpdate {
                 try {
                     fis.close();
                 } catch (IOException ex) {
-                    Logger.getLogger(AutoUpdate.class.getName()).log(Level.SEVERE, null, ex);
+                    System.err.println("Failed to close the input stream after "
+                            + "validating Hash.");
                 }
             }
             //Release MD5
@@ -445,7 +423,10 @@ public class AutoUpdate {
                 if (validateMD5(client, pathToTempFile)) {
                     return true;
                 } else {
-                    throw new AutoUpdateException("Device data update does not match hash values.");
+                    throw new AutoUpdateException("Hash validation failed. "
+                            + "Hash of the downloaded data file does not equal "
+                            + "to the control hash provided as part of the "
+                            + "server response.");
                 }
             } else {
                 //Server response was not 200. Data download can not commence.
@@ -467,7 +448,8 @@ public class AutoUpdate {
                 throw new AutoUpdateException(message.toString());
             }
         } catch (IOException ex) {
-            throw new AutoUpdateException("Device data download failed: " + ex.getMessage());
+            throw new AutoUpdateException("Device data download failed: " 
+                    + ex.getMessage());
         } finally {
             //Release resources.
             if (client != null) {
@@ -477,14 +459,18 @@ public class AutoUpdate {
                 try {
                     outputStream.close();
                 } catch (IOException ex) {
-                    Logger.getLogger(AutoUpdate.class.getName()).log(Level.SEVERE, null, ex);
+                    System.err.println("Auto update download: Failed to close "
+                            + "output stream after the new device data file "
+                            + "download was complete.");
                 }
             }
             if (inputStream != null) {
                 try {
                     inputStream.close();
                 } catch (IOException ex) {
-                    Logger.getLogger(AutoUpdate.class.getName()).log(Level.SEVERE, null, ex);
+                    System.err.println("Auto update download: Failed to close "
+                            + "input stream after the new device data file "
+                            + "download was complete.");
                 }
             }
         }
@@ -544,7 +530,10 @@ public class AutoUpdate {
                 sb.append(".tmp");
                 compressedTempFile = sb.toString();
             } else {
-                throw new AutoUpdateException("File path can not be a directory.");
+                throw new AutoUpdateException("Auto update failed, could not "
+                        + "create a temporary compressed file as path to the "
+                        + "original file appears to be a directory and not a "
+                        + "file.");
             }
         }
         if (uncompressedTempFile.isEmpty()) {
@@ -555,7 +544,10 @@ public class AutoUpdate {
                 sb.append(".new");
                 uncompressedTempFile = sb.toString();
             } else {
-                throw new AutoUpdateException("File path can not be a directory.");
+                throw new AutoUpdateException("Auto update failed, could not "
+                        + "create a temporary uncompressed file as path to the "
+                        + "original file appears to be a directory and not a "
+                        + "file.");
             }
         }
     }

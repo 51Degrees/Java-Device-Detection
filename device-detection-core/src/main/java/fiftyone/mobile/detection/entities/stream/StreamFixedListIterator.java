@@ -78,6 +78,7 @@ public class StreamFixedListIterator<T extends BaseEntity> implements Iterator<T
      * remove is not supported.
      */
     public void remove() {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("Remove is not a valid action "
+                + "for the StreamFixedListIterator");
     }
 }

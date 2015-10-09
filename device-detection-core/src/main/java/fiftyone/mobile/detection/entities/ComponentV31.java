@@ -24,8 +24,6 @@ import fiftyone.mobile.detection.Dataset;
 import fiftyone.mobile.detection.readers.BinaryReader;
 import fiftyone.properties.DetectionConstants;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Returns constants for HTTP Headers.
@@ -83,8 +81,8 @@ public class ComponentV31 extends Component {
                                     };
                         }
                     } catch (IOException ex) {
-                        Logger.getLogger(ComponentV31.class.getName())
-                                                .log(Level.SEVERE, null, ex);
+                        System.err.println("ComponentV31 failed to get "
+                                + "component name.");
                     }
                 }
             }

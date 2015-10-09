@@ -25,8 +25,6 @@ import fiftyone.mobile.detection.readers.BinaryReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Implementation of Component where HTTP Headers are provided by the data file
@@ -77,7 +75,8 @@ public class ComponentV32 extends Component {
                         try {
                             tempList.add(dataSet.strings.get(element).toString());
                         } catch (IOException ex) {
-                            Logger.getLogger(ComponentV32.class.getName()).log(Level.SEVERE, null, ex);
+                            System.err.println("Component V32 failed to "
+                                    + "retrieve or add HTTP headers.");
                         }
                     }
                     httpHeaders = tempList.toArray(new String[tempList.size()]);

@@ -29,8 +29,6 @@ import fiftyone.mobile.detection.readers.BinaryReader;
 import fiftyone.properties.DetectionConstants;
 import java.io.IOException;
 import java.util.Iterator;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Represents a Node which can be used with the Stream data set. NumericChidren 
@@ -152,9 +150,8 @@ public class NodeV32 extends Node {
                     }
                 }
             } catch (IOException ex) {
-                Logger.getLogger(
-                        NodeV32.class.getName()).log(Level.SEVERE, null, ex
-                        );
+                System.err.println("NodeV32: failed to get ranked signature "
+                        + "indexes.");
             } finally {
                 if (reader != null) {
                     pool.release(reader);

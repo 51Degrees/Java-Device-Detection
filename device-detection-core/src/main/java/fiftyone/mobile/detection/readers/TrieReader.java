@@ -198,7 +198,9 @@ public class TrieReader {
         l |= (value[0] & 0xFF);
 
         if (l > (long) 2 * Integer.MAX_VALUE) {
-            throw new IOException("readInt: value is greater then unsigned integer.");
+            throw new IOException("Trie reader could not read the unsigned "
+                    + "integer: value is greater then unsigned integer max "
+                    + "value.");
         }
 
         return l;

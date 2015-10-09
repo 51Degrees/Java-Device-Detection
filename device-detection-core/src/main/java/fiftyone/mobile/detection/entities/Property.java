@@ -390,7 +390,7 @@ public class Property extends BaseEntity implements Comparable<Property> {
                 case 4:
                     return JAVASCRIPT;
             }
-            throw new RuntimeException("Illegal PropertyValueType: " + b);
+            throw new IllegalArgumentException("Unknown property type: " + b);
         }
     }
 }

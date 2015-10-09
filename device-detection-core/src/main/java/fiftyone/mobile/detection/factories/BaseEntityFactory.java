@@ -33,13 +33,17 @@ public abstract class BaseEntityFactory<T> {
      * @return the size of the entity provided.
      */
     public int getLength(T entity) {
-        throw new UnsupportedOperationException("Not implemented");
+        throw new UnsupportedOperationException("Can not retrieve the size of "
+                + "the provided entity from an abstract class BaseEntity. This "
+                + "method must be implemented in an extending class");
     }
 
     /**
      * @return returns the size of a fixed length entity type.
      */
     public int getLength() {
-        throw new UnsupportedOperationException("Not implemented");
+        throw new UnsupportedOperationException("Can not retrieve the size of "
+                + "the fixed length entity from an abstract class BaseEntity. "
+                + "This method must be implemented in an extending class");
     }
 }

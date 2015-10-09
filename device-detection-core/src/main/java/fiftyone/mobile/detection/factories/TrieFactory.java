@@ -69,9 +69,10 @@ public class TrieFactory {
                         reader.getPos(), 
                         pool);
                 default:
-                    throw new Error("The file you are trying to use is either "
-                            + "of the wrong format, compressed or is not "
-                            + "supported by this version of the API.");
+                    throw new IllegalArgumentException("The file you are "
+                            + "trying to use is either of the wrong format or "
+                            + "compressed or is not supported by this version "
+                            + "of the API.");
             }
         } finally {
             pool.release(reader);

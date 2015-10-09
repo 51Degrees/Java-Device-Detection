@@ -22,6 +22,7 @@ package fiftyone.mobile.detection.entities.stream;
 
 import fiftyone.mobile.detection.entities.BaseEntity;
 import fiftyone.mobile.detection.readers.BinaryReader;
+import java.io.IOException;
 
 /**
  * Profile entity with stream specific data access implementation.
@@ -50,8 +51,10 @@ public class Profile extends fiftyone.mobile.detection.entities.Profile {
                         reader = pool.getReader();
                         reader.setPos(position);
                         valueIndexes = BaseEntity.readIntegerArray(reader, valueIndexesCount);
-                    } catch (Exception ex) {
-                        throw new Error("Cannot to obtain _valueIndexes: "+ex);
+                    } catch (IOException ex) {
+                        System.err.println("Failed to get a reader from the "
+                                + "pool for reading ValueIndexes."
+                                +ex.getMessage());
                     } finally {
                         if (reader != null) {
                             pool.release(reader);
@@ -73,8 +76,10 @@ public class Profile extends fiftyone.mobile.detection.entities.Profile {
                         int offset = valueIndexesCount * (Integer.SIZE / Byte.SIZE);
                         reader.setPos(position + offset);
                         signatureIndexes = BaseEntity.readIntegerArray(reader, signatureIndexesCount);
-                    } catch (Exception ex) {
-                        throw new Error("Cannot to obtain _signatureIndexes: "+ex);
+                    } catch (IOException ex) {
+                        System.err.println("Failed to get a reader from the "
+                                + "pool for reading ValueIndexes."
+                                +ex.getMessage());
                     } finally {
                         if (reader != null)
                             pool.release(reader);

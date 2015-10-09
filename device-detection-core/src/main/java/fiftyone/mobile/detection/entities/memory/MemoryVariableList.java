@@ -26,8 +26,6 @@ import fiftyone.mobile.detection.entities.BaseEntity;
 import fiftyone.mobile.detection.factories.BaseEntityFactory;
 import fiftyone.mobile.detection.readers.BinaryReader;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * A readonly list of variable length entity types held in memory. 
@@ -83,7 +81,8 @@ public class MemoryVariableList<T extends BaseEntity> extends
                 offset += entityFactory.getLength(entity);
             }
         } catch (IOException ex) {
-            Logger.getLogger(MemoryVariableList.class.getName()).log(Level.SEVERE, null, ex);
+            System.err.println("MemoryVariableList: failed to read the list "
+                    + "into memory.");
         }
     }
 

@@ -26,8 +26,6 @@ import fiftyone.mobile.detection.entities.NodeIndex;
 import fiftyone.mobile.detection.factories.NodeFactoryShared;
 import fiftyone.mobile.detection.readers.BinaryReader;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * All data is loaded into memory when the entity is constructed.
@@ -55,6 +53,7 @@ public class NodeV32 extends Node{
     /**
      * Loads all the ranked signature indexes for the node.
      */
+    @Override
     public void init() {
         try {
             super.init();
@@ -62,7 +61,8 @@ public class NodeV32 extends Node{
                 rankedSignatureIndexes = getRankedSignatureIndexesAsArray();
             }
         } catch (IOException ex) {
-            Logger.getLogger(NodeV32.class.getName()).log(Level.SEVERE, null, ex);
+            System.err.println("NodeV32: failed to read a Node from the "
+                    + "data file.");
         }
     }
     
@@ -131,7 +131,8 @@ public class NodeV32 extends Node{
                     try {
                         rankedSignatureIndexes = getRankedSignatureIndexesAsArray();
                     } catch (IOException ex) {
-                        Logger.getLogger(NodeV32.class.getName()).log(Level.SEVERE, null, ex);
+                        System.err.println("NodeV32: failed to get ranked "
+                                + "signature indexes.");
                     }
                 }
             }

@@ -28,8 +28,6 @@ import fiftyone.mobile.detection.factories.BaseEntityFactory;
 import fiftyone.mobile.detection.readers.BinaryReader;
 import java.io.IOException;
 import java.util.Iterator;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * A readonly list of fixed length entity types held in memory. <p> Entities in
@@ -76,8 +74,8 @@ public class MemoryFixedList<T extends BaseEntity> extends MemoryBaseList<T>
                 array.add(entityFactory.create(dataSet, index, reader));
             }
         } catch (IOException ex) {
-            Logger.getLogger(MemoryFixedList.class.getName())
-                                            .log(Level.SEVERE, null, ex);
+            System.err.println("MemoryFixedList: failed to read the list into "
+                    + "memory.");
         }
     }
 

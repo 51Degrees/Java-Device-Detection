@@ -29,8 +29,6 @@ import java.lang.Integer;
 
 import fiftyone.mobile.detection.Dataset;
 import fiftyone.mobile.detection.readers.BinaryReader;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * A value associated with a property and component within the dataset. <p>
@@ -359,7 +357,8 @@ public class Value extends BaseEntity implements Comparable<Value> {
                         d = toDouble();
                         asInt = d.intValue();
                     } catch (IOException ex) {
-                        Logger.getLogger(Value.class.getName()).log(Level.SEVERE, null, ex);
+                        System.err.println("Value: failed to convert Double "
+                                + "to Integer.");
                     }
                 }
             }

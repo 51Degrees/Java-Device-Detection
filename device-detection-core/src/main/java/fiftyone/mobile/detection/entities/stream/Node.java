@@ -22,6 +22,7 @@ package fiftyone.mobile.detection.entities.stream;
 
 import fiftyone.mobile.detection.entities.NodeNumericIndex;
 import fiftyone.mobile.detection.readers.BinaryReader;
+import java.io.IOException;
 
 /**
  * Represents a Entities.Node which can be used with the 
@@ -68,8 +69,10 @@ public abstract class Node extends fiftyone.mobile.detection.entities.Node {
                         reader.setPos(numericChildrenPosition);
                         super.numericChildren = readNodeNumericIndexes(dataSet, 
                                                 reader, numericChildrenCount);
-                    } catch(Exception ex) {
-                        throw new Error("Cannot obtain numeric Children: "+ex);
+                    } catch(IOException ex) {
+                        System.err.println("Failed to get a reader from the "
+                                + "pool for reading NodeNumericIndexes."
+                                +ex.getMessage());
                     } finally {
                         if (reader != null) {
                             pool.release(reader);
