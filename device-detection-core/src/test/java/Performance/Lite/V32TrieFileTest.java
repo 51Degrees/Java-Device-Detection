@@ -1,8 +1,6 @@
-package API.Lite;
+package Performance.Lite;
 
-import Properties.Constants;
-
-import java.io.IOException;
+import Performance.TrieFile;
 
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
@@ -24,13 +22,10 @@ import java.io.IOException;
  * This Source Code Form is "Incompatible With Secondary Licenses", as
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
-/**
- *
- */
-public class V32APITest extends API.Base{
+public class V32TrieFileTest extends TrieFile {
 
-    public V32APITest() {
-        super(Constants.LITE_PATTERN_V32);
+    public V32TrieFileTest() {
+        super(Properties.Constants.LITE_TRIE_V30);
     }
     
 }

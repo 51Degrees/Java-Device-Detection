@@ -1,8 +1,9 @@
-package API.Lite;
+package MetaData.Enterprise;
 
+import MetaData.FileBase;
 import Properties.Constants;
-
 import java.io.IOException;
+import org.junit.Test;
 
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
@@ -24,13 +25,34 @@ import java.io.IOException;
  * This Source Code Form is "Incompatible With Secondary Licenses", as
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
-/**
- *
- */
-public class V32APITest extends API.Base{
 
-    public V32APITest() {
-        super(Constants.LITE_PATTERN_V32);
+public class V32FileTest extends FileBase {
+    public V32FileTest() {
+        super(Constants.ENTERPRISE_PATTERN_V32);
     }
     
+    @Test
+    public void EnterpriseV32File_RetrieveComponents() throws IOException { 
+        super.retrieveComponents(); 
+    }
+
+    @Test
+    public void EnterpriseV32File_RetrieveProperties() throws IOException { 
+        super.retrieveProperties(); 
+    }
+
+    @Test
+    public void EnterpriseV32File_RetrieveValues() throws IOException {
+        super.retrieveValues(); 
+    }
+
+    @Test
+    public void EnterpriseV32File_CheckPropertyCount() { 
+        super.checkPropertyCount(160); 
+    }
+
+    @Test
+    public void EnterpriseV32File_ValidatePropertiesHaveDescription() throws IOException { 
+        super.validatePropertiesHaveDescription(); 
+    }    
 }

@@ -1,5 +1,11 @@
 package Performance;
 
+import Performance.Enterprise.V31ArrayTest;
+import Performance.Enterprise.V31FileTest;
+import Performance.Enterprise.V31MemoryTest;
+import Performance.Enterprise.V32ArrayTest;
+import Performance.Enterprise.V32FileTest;
+import Performance.Enterprise.V32MemoryTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
@@ -26,23 +32,23 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-    Performance.Lite.V31File.class,
-    Performance.Lite.V32File.class,
-    Performance.Lite.V31Array.class,
-    Performance.Lite.V32Array.class,
-    Performance.Lite.V31Memory.class,
-    Performance.Lite.V32Memory.class,
-    Performance.Premium.V31File.class,
-    Performance.Premium.V32File.class,
-    Performance.Premium.V31Array.class,
-    Performance.Premium.V32Array.class,
-    Performance.Premium.V31Memory.class,
-    Performance.Premium.V32Memory.class,
-    Performance.Enterprise.V31File.class,
-    Performance.Enterprise.V32File.class,
-    Performance.Enterprise.V31Array.class,
-    Performance.Enterprise.V32Array.class,
-    Performance.Enterprise.V31Memory.class,
-    Performance.Enterprise.V32Memory.class})
+    Performance.Lite.V31FileTest.class,
+    Performance.Lite.V32FileTest.class,
+    Performance.Lite.V31ArrayTest.class,
+    Performance.Lite.V32ArrayTest.class,
+    Performance.Lite.V31MemoryTest.class,
+    Performance.Lite.V32MemoryTest.class,
+    Performance.Premium.V31FileTest.class,
+    Performance.Premium.V32FileTest.class,
+    Performance.Premium.V31ArrayTest.class,
+    Performance.Premium.V32ArrayTest.class,
+    Performance.Premium.V31MemoryTest.class,
+    Performance.Premium.V32MemoryTest.class,
+    V31FileTest.class,
+    V32FileTest.class,
+    V31ArrayTest.class,
+    V32ArrayTest.class,
+    V31MemoryTest.class,
+    V32MemoryTest.class})
 public class PerformanceSuite {
 }

@@ -18,7 +18,7 @@
     </modules>
 
     <properties>
-        <junit.version>4.11</junit.version>
+        <junit.version>4.12</junit.version>
         <javaee-api.version>6.0</javaee-api.version>
         <slf4j-api.version>1.7.7</slf4j-api.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -26,6 +26,7 @@
         <commons-codec.version>1.9</commons-codec.version>
         <maven-compiler-plugin.version>3.3</maven-compiler-plugin.version>
         <exec-maven-plugin.version>1.4.0</exec-maven-plugin.version>
+        <maven-surefire-plugin.version>2.18.1</maven-surefire-plugin.version>
     </properties>
 
     <build>

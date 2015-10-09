@@ -1,5 +1,9 @@
 package API;
 
+import API.Lite.V30APITrieTest;
+import API.Lite.V31APITest;
+import API.Lite.V32APITest;
+import API.Lite.V32APITrieTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
@@ -26,13 +30,16 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-    API.Lite.V31API.class,
-    API.Lite.V32API.class, 
-    API.Lite.V30APITrie.class, 
-    API.Lite.V32APITrie.class, 
-    API.Enterprise.V31API.class,
-    API.Enterprise.V32API.class, 
-    API.Premium.V31API.class, 
-    API.Premium.V32API.class})
+    V31APITest.class,
+    V32APITest.class,
+    V30APITrieTest.class,
+    V32APITrieTest.class,
+    API.Enterprise.V31APITest.class,
+    API.Enterprise.V32APITest.class,
+    API.Premium.V31APITest.class,
+    API.Premium.V32APITest.class})
+/**
+ * Legacy for running outside surefire context
+ */
 public class ApiSuite {
 }

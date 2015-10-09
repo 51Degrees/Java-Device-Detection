@@ -25,7 +25,7 @@ import org.junit.runner.notification.Failure;
 
 public class Runner {
    public static void main(String[] args) {
-        Result result = JUnitCore.runClasses(TestSuite.class);
+        Result result = JUnitCore.runClasses(SuiteOfSuites.class);
         if (result.getFailureCount() > 0) {
             for (Failure failure : result.getFailures()) {
                System.out.println(failure.toString());

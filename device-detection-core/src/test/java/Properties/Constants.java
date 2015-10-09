@@ -23,31 +23,31 @@ package Properties;
 
 public class Constants {
     
-    public static final String GOOD_USERAGENTS_FILE = "../../data/20000 User Agents.csv";
+    public static final String GOOD_USERAGENTS_FILE = "../data/20000 User Agents.csv";
 
-    public static final String LITE_PATTERN_V31 = "../../data/51Degrees-LiteV3.1.dat";
+    public static final String LITE_PATTERN_V31 = "../data/51Degrees-LiteV3.1.dat";
 
-    public static final String LITE_PATTERN_V32 = "../../data/51Degrees-LiteV3.2.dat";
+    public static final String LITE_PATTERN_V32 = "../data/51Degrees-LiteV3.2.dat";
 
-    public static final String LITE_TRIE_V30 = "../../data/51Degrees-LiteV3.0.trie";
+    public static final String LITE_TRIE_V30 = "../data/51Degrees-LiteV3.0.trie";
 
-    public static final String LITE_TRIE_V32 = "../../data/51Degrees-LiteV3.2.trie";
+    public static final String LITE_TRIE_V32 = "../data/51Degrees-LiteV3.2.trie";
 
-    public static final String ENTERPRISE_PATTERN_V31 = "../../data/51Degrees-EnterpriseV3.1.dat";
+    public static final String ENTERPRISE_PATTERN_V31 = "../data/51Degrees-EnterpriseV3.1.dat";
 
-    public static final String ENTERPRISE_PATTERN_V32 = "../../data/51Degrees-EnterpriseV3.2.dat";
+    public static final String ENTERPRISE_PATTERN_V32 = "../data/51Degrees-EnterpriseV3.2.dat";
 
-    public static final String ENTERPRISE_TRIE_V30 = "../../data/51Degrees-EnterpriseV3.0.trie";
+    public static final String ENTERPRISE_TRIE_V30 = "../data/51Degrees-EnterpriseV3.0.trie";
 
-    public static final String ENTERPRISE_TRIE_V32 = "../../data/51Degrees-EnterpriseV3.2.trie";
+    public static final String ENTERPRISE_TRIE_V32 = "../data/51Degrees-EnterpriseV3.2.trie";
 
-    public static final String PREMIUM_PATTERN_V31 = "../../data/51Degrees-PremiumV3.1.dat";
+    public static final String PREMIUM_PATTERN_V31 = "../data/51Degrees-PremiumV3.1.dat";
 
-    public static final String PREMIUM_PATTERN_V32 = "../../data/51Degrees-PremiumV3.2.dat";
+    public static final String PREMIUM_PATTERN_V32 = "../data/51Degrees-PremiumV3.2.dat";
 
-    public static final String PREMIUM_TRIE_V30 = "../../data/51Degrees-PremiumV3.0.trie";
+    public static final String PREMIUM_TRIE_V30 = "../data/51Degrees-PremiumV3.0.trie";
 
-    public static final String PREMIUM_TRIE_V32 = "../../data/51Degrees-PremiumV3.2.trie";
+    public static final String PREMIUM_TRIE_V32 = "../data/51Degrees-PremiumV3.2.trie";
 
     public static final int USERAGENT_COUNT = 20000;    
 }

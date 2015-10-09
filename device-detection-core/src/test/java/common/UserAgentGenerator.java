@@ -1,5 +1,7 @@
 package common;
 
+import Properties.Constants;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -55,7 +57,7 @@ public class UserAgentGenerator {
                     BufferedReader reader = null;
                     try {
                         reader = new BufferedReader(
-                            new FileReader("../../data/20000 User Agents.csv"));
+                            new FileReader(Constants.GOOD_USERAGENTS_FILE));
                         String line = reader.readLine();
                         while (line != null) {
                             userAgents.add(line);

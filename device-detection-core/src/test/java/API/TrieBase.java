@@ -42,10 +42,12 @@ public class TrieBase {
     
     public TrieBase(String dataFile) {
         this.dataFile = dataFile;
+        Utils.checkFileExists(dataFile);
+
     }
-    
+
     /* Set up */
-    
+
     @Before
     public void createDataSet() {
         Utils.checkFileExists(dataFile);
@@ -144,19 +146,19 @@ public class TrieBase {
     }
     
     /* Clean up */
-    
+
     @After
     public void dispose() {
         dispose(true);
         System.gc();
     }
-    
+
     private void dispose(boolean disposing) {
         if (this.provider != null) {
             provider.dispose();
         }
     }
-    
+
     /* Support methods */
     
     private void fetchAllProperties(Map<String, Integer> deviceIndexes) {

@@ -1,9 +1,9 @@
-package API.Lite;
+package MetaData.Lite;
 
+import MetaData.MemoryBase;
 import Properties.Constants;
-
 import java.io.IOException;
-
+import org.junit.Test;
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
  * Copyright © 2014 51Degrees Mobile Experts Limited, 5 Charlotte Close,
@@ -24,13 +24,34 @@ import java.io.IOException;
  * This Source Code Form is "Incompatible With Secondary Licenses", as
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
-/**
- *
- */
-public class V32APITest extends API.Base{
 
-    public V32APITest() {
-        super(Constants.LITE_PATTERN_V32);
+public class V31MemoryTest extends MemoryBase {
+    public V31MemoryTest() {
+        super(Constants.LITE_PATTERN_V31);
     }
-    
+            
+    @Test
+    public void LiteV31Memory_RetrieveComponents() throws IOException { 
+        super.retrieveComponents(); 
+    }
+
+    @Test
+    public void LiteV31Memory_RetrieveProperties() throws IOException { 
+        super.retrieveProperties(); 
+    }
+
+    @Test
+    public void LiteV31Memory_RetrieveValues() throws IOException {
+        super.retrieveValues(); 
+    }
+
+    @Test
+    public void LiteV31Memory_CheckPropertyCount() { 
+        super.checkPropertyCount(57); 
+    }
+
+    @Test
+    public void LiteV31Memory_ValidatePropertiesHaveDescription() throws IOException { 
+        super.validatePropertiesHaveDescription(); 
+    }
 }
