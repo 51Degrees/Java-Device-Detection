@@ -111,9 +111,9 @@ public class SourceFile extends SourceFileBase {
      * delete the file.
      */
     @Override
-    public void dispose() {
+    public void close() {
         // Dispose of all the binary readers created from the byte buffers.
-        super.dispose();
+        super.close();
         // Dispose of all the file hanldes.
         for(FileHandle handle : handles) {
             try {

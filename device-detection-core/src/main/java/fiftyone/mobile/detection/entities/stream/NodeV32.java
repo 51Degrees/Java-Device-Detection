@@ -21,7 +21,7 @@
 package fiftyone.mobile.detection.entities.stream;
 
 import fiftyone.mobile.detection.Dataset;
-import fiftyone.mobile.detection.IDisposableIterator;
+import fiftyone.mobile.detection.IClosableIterator;
 import fiftyone.mobile.detection.entities.IntegerEntity;
 import fiftyone.mobile.detection.entities.NodeIndex;
 import fiftyone.mobile.detection.factories.NodeFactoryShared;
@@ -131,7 +131,7 @@ public class NodeV32 extends Node {
                     // If the count is greater than one then the value is the 
                     // index of the first ranked signature index in the merged 
                     // list.
-                    IDisposableIterator<IntegerEntity> range = null;
+                    IClosableIterator<IntegerEntity> range = null;
                     try {
                         range = dataSet.getNodeRankedSignatureIndexes()
                                 .getRange(index, rankedSignatureCount);
@@ -142,11 +142,8 @@ public class NodeV32 extends Node {
                             rsi[currentIndex] = range.next().getValue();
                             currentIndex++;
                         }
-                    }
-                    finally {
-                        if (range != null) {
-                            range.dispose();
-                        }
+                    } finally {
+                        range.close();
                     }
                 }
             } catch (IOException ex) {

@@ -21,12 +21,12 @@
 package fiftyone.mobile.detection.entities.memory;
 
 import fiftyone.mobile.detection.Dataset;
-import fiftyone.mobile.detection.IDisposable;
 import fiftyone.mobile.detection.IReadonlyList;
 import fiftyone.mobile.detection.entities.BaseEntity;
 import fiftyone.mobile.detection.entities.headers.Header;
 import fiftyone.mobile.detection.factories.BaseEntityFactory;
 import fiftyone.mobile.detection.readers.BinaryReader;
+import java.io.Closeable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -49,7 +49,7 @@ import java.util.List;
  * @param <T> The type the list will contain.
  */
 public abstract class MemoryBaseList<T extends BaseEntity> implements
-                                            IReadonlyList<T>, IDisposable {
+                                            IReadonlyList<T>, Closeable {
 
     /**
      * Array of items contained in the list.
@@ -91,7 +91,7 @@ public abstract class MemoryBaseList<T extends BaseEntity> implements
      * Dispose of any items the list holds open.
      */
     @Override
-    public void dispose() {
+    public void close() {
         array.clear();
     }
 

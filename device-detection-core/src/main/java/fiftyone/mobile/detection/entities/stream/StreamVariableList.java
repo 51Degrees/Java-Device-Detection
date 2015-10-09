@@ -84,7 +84,7 @@ public class StreamVariableList<T extends BaseEntity> extends StreamCacheList<T>
     }
 
     @Override
-    public void dispose() {
+    public void close() {
         // Nothing to do.
     }
 

@@ -23,14 +23,14 @@ package fiftyone.mobile.detection;
 import java.io.IOException;
 
 import fiftyone.mobile.detection.entities.BaseEntity;
+import java.io.Closeable;
 
 /**
  * A list which only provides those features needed to read items from the list.
  * 
  * @param <T> The type of BaseEntity the list will contain.
  */
-public interface IReadonlyList<T extends BaseEntity> extends Iterable<T>,
-        IDisposable {
+public interface IReadonlyList<T extends BaseEntity> extends Iterable<T>, Closeable {
     /**
      * Accessor for the list.
      * @param i Index or offset of the entity required.
