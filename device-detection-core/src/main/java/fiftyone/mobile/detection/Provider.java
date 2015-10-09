@@ -137,8 +137,8 @@ public class Provider {
         this.controller = controller;
         // Initialise HashMap with default size and a rirective to re-hash only
         // when capacity exceeds initial.
-        this.methodCounts = new SortedList<MatchMethods, Long>(
-                                this.methodCounts.values().size(), 1);
+        int numberOfMethods = MatchMethods.values().length;
+        this.methodCounts = new SortedList<MatchMethods, Long>(numberOfMethods, 1);
         this.methodCounts.add(MatchMethods.CLOSEST, 0l);
         this.methodCounts.add(MatchMethods.NEAREST, 0l);
         this.methodCounts.add(MatchMethods.NUMERIC, 0l);
