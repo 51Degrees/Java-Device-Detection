@@ -23,8 +23,6 @@ package fiftyone.mobile.detection.entities;
 import fiftyone.mobile.detection.Dataset;
 import fiftyone.mobile.detection.readers.BinaryReader;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 
 /**
@@ -67,8 +65,8 @@ public class SignatureV31 extends Signature {
                     try {
                         rank = getSignatureRank();
                     } catch (IOException ex) {
-                        Logger.getLogger(SignatureV31.class.getName())
-                                            .log(Level.SEVERE, null, ex);
+                        System.err.println("SignatureV31: failed to get "
+                                + "signature rank.");
                     }
                 }
             }
@@ -97,8 +95,7 @@ public class SignatureV31 extends Signature {
             Node lastNode = dataSet.nodes.get(nodeOffsets[nodeOffsets.length - 1]);
             return lastNode.position + lastNode.getLength() + 1;
         } catch (IOException ex) {
-            Logger.getLogger(SignatureV31.class.getName())
-                                               .log(Level.SEVERE, null, ex);
+            System.err.println("SignatureV31: failed to get the last node.");
         }
         return -1;
     }

@@ -27,8 +27,6 @@ import fiftyone.mobile.detection.readers.BinaryReader;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * A list of properties in memory as a fixed list. Contains an accessor which 
@@ -68,8 +66,8 @@ public class PropertiesList extends MemoryFixedList<Property> {
                         try {
                             propertyNameDictionary.put(p.getName(), p);
                         } catch (IOException ex) {
-                            Logger.getLogger(PropertiesList.class.getName())
-                                                .log(Level.SEVERE, null, ex);
+                            System.err.println("PropertiesList: failed to "
+                                    + "add property "+p+" to the map.");
                         }
                     }
                 }

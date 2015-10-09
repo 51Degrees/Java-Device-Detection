@@ -45,10 +45,7 @@ public class LicenceKey {
             if (validate(licenceKey)) {
                 key = licenceKey;
             } else {
-                /*_logger.info(
-                        String.format(
-                        "Licence key '%s' was invalid.",
-                        licenceKey)); */              
+                //Not a 51Degrees key. Do nothing.          
             }
         }
     }

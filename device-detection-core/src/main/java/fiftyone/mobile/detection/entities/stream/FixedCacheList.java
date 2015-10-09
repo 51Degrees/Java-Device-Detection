@@ -24,8 +24,6 @@ import fiftyone.mobile.detection.entities.BaseEntity;
 import fiftyone.mobile.detection.factories.BaseEntityFactory;
 import fiftyone.mobile.detection.readers.BinaryReader;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 
 /**
@@ -120,8 +118,8 @@ public class FixedCacheList<T extends BaseEntity> extends StreamFixedList<T>
             cache.addRecent(key, item);
             cache.incrementRequestsByOne();
         } catch (IOException ex) {
-            Logger.getLogger(FixedCacheList.class.getName())
-                                    .log(Level.SEVERE, null, ex);
+            System.err.println("Cache: failed to retrieve an item "
+                    + "with key "+key);
         }
         return item;
     }

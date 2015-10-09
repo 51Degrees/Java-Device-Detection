@@ -30,9 +30,6 @@ import java.nio.ByteOrder;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 /**
  * Encapsulates either a file containing the uncompressed data structures 
  * used by the data set.
@@ -103,7 +100,8 @@ public class SourceFile extends SourceFileBase {
             handles.add(handle);
             byteBuffer = handle.byteBuffer;
         } catch (IOException ex) {
-            Logger.getLogger(SourceFile.class.getName()).log(Level.SEVERE, null, ex);
+            System.err.println("SourceFile: failed to create stream to read "
+                    + "from the data file.");
         }
         return byteBuffer;
     }
@@ -121,7 +119,8 @@ public class SourceFile extends SourceFileBase {
             try {
                 handle.dispose();
             } catch (IOException ex) {
-                Logger.getLogger(SourceFile.class.getName()).log(Level.SEVERE, null, ex);
+                System.err.println("SourceFile: failed to dispose of the file "
+                        + "handle in the dispose method for this class.");
             }
         }
         // Delete the file if it's temporary.

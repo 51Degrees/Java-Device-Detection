@@ -102,8 +102,9 @@ public class MemoryFactory {
     public static Dataset create(String filename) throws IOException {
         File f = new File(filename);
         if (!f.exists() || !f.isFile())
-            throw new Error("Could not construct dataset. Binary file does +"
-                    + "nor exist or is a directory.");
+            throw new IllegalArgumentException("Could not construct a dataset "
+                    + "for MemoryProvider. The path you have provided is "
+                    + "either a directory or does not exist: "+filename);
         Date lm = new Date(f.lastModified());
         return create(filename, false, lm);
     }
@@ -119,8 +120,9 @@ public class MemoryFactory {
     public static Dataset create(String filename, boolean init) throws IOException {
         File f = new File(filename);
         if (!f.exists() || !f.isFile())
-            throw new Error("Could not construct dataset. Binary file does +"
-                    + "nor exist or is a directory.");
+            throw new IllegalArgumentException("Could not construct a dataset "
+                    + "for MemoryProvider. The path you have provided is "
+                    + "either a directory or does not exist: "+filename);
         Date lm = new Date(f.lastModified());
         return create(filename, init, lm);
     }

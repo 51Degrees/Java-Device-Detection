@@ -29,9 +29,6 @@ import fiftyone.mobile.detection.Dataset;
 import fiftyone.mobile.detection.SortedList;
 import fiftyone.mobile.detection.readers.BinaryReader;
 import fiftyone.properties.DetectionConstants;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 /**
  * Signature of a user agent. <p> A signature contains those characters of a
  * user agent which are relevant for the purposes of device detection. For
@@ -238,7 +235,8 @@ public abstract class Signature extends BaseEntity implements Comparable<Signatu
                     try {
                         nodes = doGetNodes();
                     } catch (IOException ex) {
-                        Logger.getLogger(Signature.class.getName()).log(Level.SEVERE, null, ex);
+                        System.err.println("Signature: failed to get nodes "
+                                + "associated with the signatures.");
                     }
                 }
             }

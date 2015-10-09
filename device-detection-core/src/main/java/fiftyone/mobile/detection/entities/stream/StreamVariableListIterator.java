@@ -91,6 +91,7 @@ public class StreamVariableListIterator<T extends BaseEntity>
      */
     @Override
     public void remove() {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("Remove is not a valid action "
+                + "for the StreamVariableListIterator");
     }
 }

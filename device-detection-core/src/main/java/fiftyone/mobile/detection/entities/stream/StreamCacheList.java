@@ -24,8 +24,6 @@ import fiftyone.mobile.detection.entities.BaseEntity;
 import fiftyone.mobile.detection.factories.BaseEntityFactory;
 import fiftyone.mobile.detection.readers.BinaryReader;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Lists can be stored as a set of related objects entirely within memory, or 
@@ -81,8 +79,8 @@ public abstract class StreamCacheList<T extends BaseEntity>
                 cache.active.put(key, item);
                 cache.incrementMissesByOne();
             } catch (IOException ex) {
-                Logger.getLogger(StreamCacheList.class.getName())
-                                                .log(Level.SEVERE, null, ex);
+                System.err.println("StreamCacheList: failed to retrieve an "
+                        + "element at position: "+key);
             }
         }
         cache.addRecent(key, item);

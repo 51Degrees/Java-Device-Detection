@@ -27,8 +27,6 @@ import fiftyone.mobile.detection.factories.BaseEntityFactory;
 import fiftyone.mobile.detection.readers.BinaryReader;
 import java.io.IOException;
 import java.util.Iterator;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Class implements the logic of IEnumerable in C#. When you need to read a 
@@ -126,14 +124,15 @@ public class StreamFixedListRangeIterator<T> implements IDisposableIterator<T> {
             item = (T)entityFactory.create(dataSet, currentIndex, reader);
             currentIndex++;
         } catch (IOException ex) {
-            Logger.getLogger(StreamFixedListRangeIterator.class.getName())
-                                            .log(Level.SEVERE, null, ex);
+            System.out.println("StreamFixedListRangeIterator: failed to "
+                    + "retrieve the next item in the list.");
         }
         return item;
     }
 
     @Override
     public void remove() {
-        throw new UnsupportedOperationException(
-                "Items can not be removed from DataSet lists.");    }
+        throw new UnsupportedOperationException("Remove is not a valid action "
+                + "for the StreamFixedListRangeIterator.");    
+    }
 }

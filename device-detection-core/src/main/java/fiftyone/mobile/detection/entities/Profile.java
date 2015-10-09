@@ -166,8 +166,8 @@ public abstract class Profile extends BaseEntity implements Comparable<Profile> 
         else if(month.toLowerCase().equals("december"))
             return 12;
         else
-            throw new Error("Month name does not appear to be valid. Expecting "
-                    + "a full month name i.e. january.");
+            throw new IllegalArgumentException("Month name does not appear to "
+                    + "be valid. Expecting a full month name i.e. january.");
     }
     
     /**

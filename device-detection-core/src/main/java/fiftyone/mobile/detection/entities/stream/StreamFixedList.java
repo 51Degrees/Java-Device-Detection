@@ -85,7 +85,8 @@ public class StreamFixedList<T extends BaseEntity> extends StreamBaseList<T>
      */
     @Override
     public void dispose() {
-        throw new UnsupportedOperationException("Not supported yet."); 
+        throw new UnsupportedOperationException("Nothing to dispose of in the "
+                + "StreamFixedList."); 
         //To change body of generated methods, choose Tools | Templates.
     }
 

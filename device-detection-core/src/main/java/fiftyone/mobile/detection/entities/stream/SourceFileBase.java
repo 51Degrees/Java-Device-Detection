@@ -21,8 +21,6 @@
 package fiftyone.mobile.detection.entities.stream;
 
 import java.io.File;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Base class for file sources.
@@ -49,10 +47,8 @@ public abstract class SourceFileBase extends SourceBase {
     public SourceFileBase(String fileName, boolean isTempFile) {
         this.fileInfo = new File(fileName);
         if (this.fileInfo.setReadOnly() == false) {
-            Logger.getLogger(SourceFileBase.class.getName())
-                            .log(Level.INFO, null, "Could not set file read "
-                                    + "mode to read-only for the file: "
-                                    +fileName);
+            System.err.println("Source file base: failed to set file as "
+                    + "read-only.");
         }
         this.isTempFile = isTempFile;
     }
@@ -67,8 +63,7 @@ public abstract class SourceFileBase extends SourceBase {
                 StringBuilder sb = new StringBuilder();
                 sb.append("Could not delete the data file that was marked as "
                         + "temporary when the dataset was created.");
-                Logger.getLogger(SourceFileBase.class.getName())
-                            .log(Level.INFO, null, sb.toString());
+                System.err.println(sb.toString());
             }
         }
     }
