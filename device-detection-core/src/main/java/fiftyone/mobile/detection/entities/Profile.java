@@ -135,42 +135,6 @@ public abstract class Profile extends BaseEntity implements Comparable<Profile> 
     }
     
     /**
-     * Returns the month name as an integer. The else-if implementation instead 
-     * of switch is to ensure backwards compatibility with 1.6.
-     * @param month Name of the month, i.e. January.
-     * @return The integer representation of the month.
-     */
-    private static int getMonthAsInt(String month) {
-        if (month.toLowerCase().equals("january"))
-            return 1;
-        else if(month.toLowerCase().equals("february"))
-            return 2;
-        else if(month.toLowerCase().equals("march"))
-            return 3;
-        else if(month.toLowerCase().equals("april"))
-            return 4;
-        else if(month.toLowerCase().equals("may"))
-            return 5;
-        else if(month.toLowerCase().equals("june"))
-            return 6;
-        else if(month.toLowerCase().equals("july"))
-            return 7;
-        else if(month.toLowerCase().equals("august"))
-            return 8;
-        else if(month.toLowerCase().equals("september"))
-            return 9;
-        else if(month.toLowerCase().equals("october"))
-            return 10;
-        else if(month.toLowerCase().equals("november"))
-            return 11;
-        else if(month.toLowerCase().equals("december"))
-            return 12;
-        else
-            throw new IllegalArgumentException("Month name does not appear to "
-                    + "be valid. Expecting a full month name i.e. january.");
-    }
-    
-    /**
      * Returns an array of properties the profile relates to.
      * @return An array of properties associated with the profile.
      * @throws java.io.IOException indicates an I/O exception occurred
@@ -378,43 +342,6 @@ public abstract class Profile extends BaseEntity implements Comparable<Profile> 
             }
         }
         return propertyIndexToValues;
-    }
-    
-    /**
-     * The release date of the profile if it's a hardware profile.
-     * @return The release date of the profile if it's a hardware profile.
-     * @throws IOException 
-     */
-    private Date getReleaseDate() throws IOException {
-        String releaseMonth = null;
-        String releaseYear = null;
-        if (!releaseDateChecked) {
-            synchronized(this) {
-                if (!releaseDateChecked) {
-                    for(Value v : values) {
-                        if (v.getProperty().getName().equals("ReleaseMonth")) {
-                            releaseMonth = v.getName();
-                        }
-                    }
-                    for(Value v : values) {
-                        if (v.getProperty().getName().equals("ReleaseYear")) {
-                            releaseYear = v.getName();
-                        }
-                    }
-                    if (releaseMonth != null && releaseYear != null) {
-                        int monthValue = getMonthAsInt(releaseMonth);
-                        int yearValue = Integer.valueOf(releaseYear);
-                        Calendar calendar = Calendar.getInstance();
-                        calendar.clear();
-                        calendar.set(Calendar.MONTH, monthValue);
-                        calendar.set(Calendar.YEAR, yearValue);
-                        releaseDate = calendar.getTime();
-                    }
-                    releaseDateChecked = true;
-                }
-            }
-        }
-        return releaseDate;
     }
     
     /**
