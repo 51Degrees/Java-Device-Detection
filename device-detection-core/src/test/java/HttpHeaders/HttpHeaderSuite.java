@@ -1,5 +1,8 @@
 package HttpHeaders;
 
+import HttpHeaders.Enterprise.V31ArrayTest;
+import HttpHeaders.Enterprise.V32ArrayTest;
+import HttpHeaders.Enterprise.V32TrieFileTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
@@ -26,12 +29,12 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-    HttpHeaders.Premium.V31Array.class,
-    HttpHeaders.Premium.V32Array.class,
-    HttpHeaders.Premium.V32TrieFile.class,
-    HttpHeaders.Enterprise.V31Array.class,
-    HttpHeaders.Enterprise.V32Array.class,
-    HttpHeaders.Enterprise.V32TrieFile.class
+    HttpHeaders.Premium.V31ArrayTest.class,
+    HttpHeaders.Premium.V32ArrayTest.class,
+    HttpHeaders.Premium.V32TrieFileTest.class,
+    V31ArrayTest.class,
+    V32ArrayTest.class,
+    V32TrieFileTest.class
 })
 public class HttpHeaderSuite {
 }

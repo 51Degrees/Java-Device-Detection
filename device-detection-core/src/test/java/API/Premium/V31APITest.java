@@ -29,7 +29,7 @@ import java.io.IOException;
  */
 public class V31APITest extends API.Base {
     
-    public V31APITest() throws IOException {
+    public V31APITest() {
         super(Constants.PREMIUM_PATTERN_V31);
     }
     

@@ -26,8 +26,8 @@ import org.junit.Test;
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
 
-public class V31File extends FileBase {
-    public V31File() {
+public class V31FileTest extends FileBase {
+    public V31FileTest() {
         super(Constants.PREMIUM_PATTERN_V31);
     }
     

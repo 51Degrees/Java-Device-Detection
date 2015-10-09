@@ -1,4 +1,4 @@
-package MetaData.Premium;
+package MetaData.Lite;
 
 import MetaData.MemoryBase;
 import Properties.Constants;
@@ -26,33 +26,33 @@ import org.junit.Test;
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
 
-public class V31Memory extends MemoryBase {
-    public V31Memory() {
-        super(Constants.PREMIUM_PATTERN_V31);
-    }
+public class V32MemoryTest extends MemoryBase {
+    public V32MemoryTest() {
+        super(Constants.LITE_PATTERN_V32);
+    }    
     
     @Test
-    public void PremiumV31Memory_RetrieveComponents() throws IOException { 
+    public void LiteV32Memory_RetrieveComponents() throws IOException { 
         super.retrieveComponents(); 
     }
 
     @Test
-    public void PremiumV31Memory_RetrieveProperties() throws IOException { 
+    public void LiteV32Memory_RetrieveProperties() throws IOException { 
         super.retrieveProperties(); 
     }
 
     @Test
-    public void PremiumV31Memory_RetrieveValues() throws IOException {
+    public void LiteV32Memory_RetrieveValues() throws IOException {
         super.retrieveValues(); 
     }
 
     @Test
-    public void PremiumV31Memory_CheckPropertyCount() { 
-        super.checkPropertyCount(130); 
+    public void LiteV32Memory_CheckPropertyCount() { 
+        super.checkPropertyCount(57); 
     }
 
     @Test
-    public void PremiumV31Memory_ValidatePropertiesHaveDescription() throws IOException { 
+    public void LiteV32Memory_ValidatePropertiesHaveDescription() throws IOException { 
         super.validatePropertiesHaveDescription(); 
-    }
+    }    
 }

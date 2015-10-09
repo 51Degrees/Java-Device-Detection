@@ -1,6 +1,6 @@
-package Performance.Lite;
+package Performance.Premium;
 
-import Performance.FileBase;
+import Performance.MemoryBase;
 import Properties.Constants;
 import java.io.IOException;
 import org.junit.Test;
@@ -26,90 +26,90 @@ import org.junit.Test;
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
 
-public class V32File extends FileBase {
-    public V32File() {
-        super(Constants.LITE_PATTERN_V32);
+public class V31MemoryTest extends MemoryBase {
+    public V31MemoryTest() {
+        super(Constants.PREMIUM_PATTERN_V31);
     }
     
     @Override
     protected int getMaxSetupTime() {
-        return 500;
+        return 10000;
     }
     
     @Test
-    public void LiteV32File_Performance_InitializeTime()
+    public void PremiumV31Memory_Performance_InitializeTime()
     {
         super.initializeTime();
     }
 
     @Test
-    public void LiteV32File_Performance_BadUserAgentsMulti() throws IOException
+    public void PremiumV31Memory_Performance_BadUserAgentsMulti() throws IOException
     {
         super.badUserAgentsMulti(null, 1);
     }
 
     @Test
-    public void LiteV32File_Performance_BadUserAgentsSingle() throws IOException
+    public void PremiumV31Memory_Performance_BadUserAgentsSingle() throws IOException
     {
-        super.badUserAgentsSingle(null, 6);
+        super.badUserAgentsSingle(null, 1);
     }
 
     @Test
-    public void LiteV32File_Performance_UniqueUserAgentsMulti() throws IOException
+    public void PremiumV31Memory_Performance_UniqueUserAgentsMulti() throws IOException
     {
         super.uniqueUserAgentsMulti(null, 1);
     }
 
     @Test
-    public void LiteV32File_Performance_UniqueUserAgentsSingle() throws IOException
+    public void PremiumV31Memory_Performance_UniqueUserAgentsSingle() throws IOException
     {
         super.uniqueUserAgentsSingle(null, 1);
     }
 
     @Test
-    public void LiteV32File_Performance_RandomUserAgentsMulti() throws IOException
+    public void PremiumV31Memory_Performance_RandomUserAgentsMulti() throws IOException
     {
         super.randomUserAgentsMulti(null, 1);
     }
 
     @Test
-    public void LiteV32File_Performance_RandomUserAgentsSingle() throws IOException
+    public void PremiumV31Memory_Performance_RandomUserAgentsSingle() throws IOException
     {
         super.randomUserAgentsSingle(null, 1);
     }
 
     @Test
-    public void LiteV32File_Performance_BadUserAgentsMultiAll() throws IOException
+    public void PremiumV31Memory_Performance_BadUserAgentsMultiAll() throws IOException
     {
         super.badUserAgentsMulti(super.dataSet.properties, 1);
     }
 
     @Test
-    public void LiteV32File_Performance_BadUserAgentsSingleAll() throws IOException
+    public void PremiumV31Memory_Performance_BadUserAgentsSingleAll() throws IOException
     {
-        super.badUserAgentsSingle(super.dataSet.properties, 4);
+        super.badUserAgentsSingle(super.dataSet.properties, 2);
     }
 
     @Test
-    public void LiteV32File_Performance_UniqueUserAgentsMultiAll() throws IOException
+    public void PremiumV31Memory_Performance_UniqueUserAgentsMultiAll() throws IOException
     {
         super.uniqueUserAgentsMulti(super.dataSet.properties, 1);
     }
 
     @Test
-    public void LiteV32File_Performance_UniqueUserAgentsSingleAll() throws IOException
+    public void PremiumV31Memory_Performance_UniqueUserAgentsSingleAll() throws IOException
     {
         super.uniqueUserAgentsSingle(super.dataSet.properties, 1);
     }
 
     @Test
-    public void LiteV32File_Performance_RandomUserAgentsMultiAll() throws IOException
+    public void PremiumV31Memory_Performance_RandomUserAgentsMultiAll() throws IOException
     {
         super.randomUserAgentsMulti(super.dataSet.properties, 1);
     }
 
     @Test
-    public void LiteV32File_Performance_RandomUserAgentsSingleAll() throws IOException
+    public void PremiumV31Memory_Performance_RandomUserAgentsSingleAll() throws IOException
     {
         super.randomUserAgentsSingle(super.dataSet.properties, 1);
     }

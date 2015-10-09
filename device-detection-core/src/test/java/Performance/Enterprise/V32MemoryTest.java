@@ -26,8 +26,8 @@ import org.junit.Test;
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
 
-public class V32Memory extends MemoryBase {
-    public V32Memory() {
+public class V32MemoryTest extends MemoryBase {
+    public V32MemoryTest() {
         super(Constants.ENTERPRISE_PATTERN_V32);
     }
     

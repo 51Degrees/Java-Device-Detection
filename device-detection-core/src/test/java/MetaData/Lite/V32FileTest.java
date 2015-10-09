@@ -1,4 +1,4 @@
-package MetaData.Premium;
+package MetaData.Lite;
 
 import MetaData.FileBase;
 import Properties.Constants;
@@ -26,33 +26,33 @@ import org.junit.Test;
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
 
-public class V32File extends FileBase {
-    public V32File() {
-        super(Constants.PREMIUM_PATTERN_V32);
+public class V32FileTest extends FileBase {
+    public V32FileTest() {
+        super(Constants.LITE_PATTERN_V32);
     }
     
     @Test
-    public void PremiumV32File_RetrieveComponents() throws IOException { 
+    public void LiteV32File_RetrieveComponents() throws IOException { 
         super.retrieveComponents(); 
     }
 
     @Test
-    public void PremiumV32File_RetrieveProperties() throws IOException { 
+    public void LiteV32File_RetrieveProperties() throws IOException { 
         super.retrieveProperties(); 
     }
 
     @Test
-    public void PremiumV32File_RetrieveValues() throws IOException {
+    public void LiteV32File_RetrieveValues() throws IOException {
         super.retrieveValues(); 
     }
 
     @Test
-    public void PremiumV32File_CheckPropertyCount() { 
-        super.checkPropertyCount(130); 
+    public void LiteV32File_CheckPropertyCount() { 
+        super.checkPropertyCount(57); 
     }
 
     @Test
-    public void PremiumV32File_ValidatePropertiesHaveDescription() throws IOException { 
+    public void LiteV32File_ValidatePropertiesHaveDescription() throws IOException { 
         super.validatePropertiesHaveDescription(); 
     }    
 }

@@ -44,11 +44,12 @@ public abstract class Base {
     
     public Base(String dataFile) {
         this.dataFile = dataFile;
+        Utils.checkFileExists(dataFile);
+
     }
-    
+
     @Before
     public void createDataset() {
-        Utils.checkFileExists(dataFile);
         try {
             this.dataset = StreamFactory.create(this.dataFile, false);
             this.provider = new Provider(dataset);
@@ -56,19 +57,19 @@ public abstract class Base {
             Logger.getLogger(Base.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
     @After
     public void dispose() {
         dispose(true);
         System.gc();
     }
-    
+
     private void dispose(boolean disposing) {
         if (this.dataset != null) {
             dataset.dispose();
         }
     }
-    
+
     @Test
     public void API_AllHeaders() {
         Map<String, String> headers = new HashMap<String, String>();

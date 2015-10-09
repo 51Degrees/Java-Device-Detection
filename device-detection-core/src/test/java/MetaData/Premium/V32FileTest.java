@@ -1,9 +1,10 @@
-package MetaData.Lite;
+package MetaData.Premium;
 
-import MetaData.MemoryBase;
+import MetaData.FileBase;
 import Properties.Constants;
 import java.io.IOException;
 import org.junit.Test;
+
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
  * Copyright © 2014 51Degrees Mobile Experts Limited, 5 Charlotte Close,
@@ -25,33 +26,33 @@ import org.junit.Test;
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
 
-public class V31Memory extends MemoryBase {
-    public V31Memory() {
-        super(Constants.LITE_PATTERN_V31);
+public class V32FileTest extends FileBase {
+    public V32FileTest() {
+        super(Constants.PREMIUM_PATTERN_V32);
     }
-            
+    
     @Test
-    public void LiteV31Memory_RetrieveComponents() throws IOException { 
+    public void PremiumV32File_RetrieveComponents() throws IOException { 
         super.retrieveComponents(); 
     }
 
     @Test
-    public void LiteV31Memory_RetrieveProperties() throws IOException { 
+    public void PremiumV32File_RetrieveProperties() throws IOException { 
         super.retrieveProperties(); 
     }
 
     @Test
-    public void LiteV31Memory_RetrieveValues() throws IOException {
+    public void PremiumV32File_RetrieveValues() throws IOException {
         super.retrieveValues(); 
     }
 
     @Test
-    public void LiteV31Memory_CheckPropertyCount() { 
-        super.checkPropertyCount(57); 
+    public void PremiumV32File_CheckPropertyCount() { 
+        super.checkPropertyCount(130); 
     }
 
     @Test
-    public void LiteV31Memory_ValidatePropertiesHaveDescription() throws IOException { 
+    public void PremiumV32File_ValidatePropertiesHaveDescription() throws IOException { 
         super.validatePropertiesHaveDescription(); 
-    }
+    }    
 }

@@ -1,5 +1,9 @@
 package MetaData;
 
+import MetaData.Enterprise.V31FileTest;
+import MetaData.Enterprise.V31MemoryTest;
+import MetaData.Enterprise.V32FileTest;
+import MetaData.Enterprise.V32MemoryTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
@@ -26,17 +30,17 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-    MetaData.Lite.V31File.class,
-    MetaData.Lite.V32File.class, 
-    MetaData.Lite.V31Memory.class, 
-    MetaData.Lite.V32Memory.class, 
-    MetaData.Premium.V31File.class,
-    MetaData.Premium.V32File.class, 
-    MetaData.Premium.V31Memory.class, 
-    MetaData.Premium.V32Memory.class,     
-    MetaData.Enterprise.V31File.class,
-    MetaData.Enterprise.V32File.class, 
-    MetaData.Enterprise.V31Memory.class, 
-    MetaData.Enterprise.V32Memory.class})
+    MetaData.Lite.V31FileTest.class,
+    MetaData.Lite.V32FileTest.class,
+    MetaData.Lite.V31MemoryTest.class,
+    MetaData.Lite.V32MemoryTest.class,
+    MetaData.Premium.V31FileTest.class,
+    MetaData.Premium.V32FileTest.class,
+    MetaData.Premium.V31MemoryTest.class,
+    MetaData.Premium.V32MemoryTest.class,
+    V31FileTest.class,
+    V32FileTest.class,
+    V31MemoryTest.class,
+    V32MemoryTest.class})
 public class MetaDataSuite {
 }

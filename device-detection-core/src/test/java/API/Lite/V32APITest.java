@@ -2,6 +2,8 @@ package API.Lite;
 
 import Properties.Constants;
 
+import java.io.IOException;
+
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
  * Copyright © 2014 51Degrees Mobile Experts Limited, 5 Charlotte Close,

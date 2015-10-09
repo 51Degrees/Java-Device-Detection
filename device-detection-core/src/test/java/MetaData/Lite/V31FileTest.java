@@ -1,6 +1,6 @@
 package MetaData.Lite;
 
-import MetaData.MemoryBase;
+import MetaData.FileBase;
 import Properties.Constants;
 import java.io.IOException;
 import org.junit.Test;
@@ -26,33 +26,33 @@ import org.junit.Test;
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
 
-public class V32Memory extends MemoryBase {
-    public V32Memory() {
-        super(Constants.LITE_PATTERN_V32);
-    }    
+public class V31FileTest extends FileBase {
+    public V31FileTest() {
+        super(Constants.LITE_PATTERN_V31);
+    }
     
     @Test
-    public void LiteV32Memory_RetrieveComponents() throws IOException { 
+    public void LiteV31File_RetrieveComponents() throws IOException { 
         super.retrieveComponents(); 
     }
 
     @Test
-    public void LiteV32Memory_RetrieveProperties() throws IOException { 
+    public void LiteV31File_RetrieveProperties() throws IOException { 
         super.retrieveProperties(); 
     }
 
     @Test
-    public void LiteV32Memory_RetrieveValues() throws IOException {
+    public void LiteV31File_RetrieveValues() throws IOException {
         super.retrieveValues(); 
     }
 
     @Test
-    public void LiteV32Memory_CheckPropertyCount() { 
+    public void LiteV31File_CheckPropertyCount() { 
         super.checkPropertyCount(57); 
     }
 
     @Test
-    public void LiteV32Memory_ValidatePropertiesHaveDescription() throws IOException { 
+    public void LiteV31File_ValidatePropertiesHaveDescription() throws IOException { 
         super.validatePropertiesHaveDescription(); 
-    }    
+    }
 }
