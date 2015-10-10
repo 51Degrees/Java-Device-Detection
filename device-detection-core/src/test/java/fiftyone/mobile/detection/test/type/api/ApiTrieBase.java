@@ -21,20 +21,14 @@
 
 package fiftyone.mobile.detection.test.type.api;
 
-import fiftyone.mobile.detection.test.DetectionTestSupport;
 import fiftyone.mobile.detection.TrieProvider;
-import fiftyone.mobile.detection.factories.TrieFactory;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
+import fiftyone.mobile.detection.test.DetectionTestSupport;
 import fiftyone.mobile.detection.test.TestType;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Super class containing Api Trie tests. Subclassed to test Tries data sets at
@@ -45,154 +39,104 @@ import org.junit.experimental.categories.Category;
  */
 @Category(TestType.TypeApi.class)
 public abstract class ApiTrieBase extends DetectionTestSupport {
-    
-    private TrieProvider provider;
-    protected String dataFile;
-    
-    public ApiTrieBase(String dataFile) {
-        this.dataFile = dataFile;
-        assertFileExists(dataFile);
-    }
 
-    @Before
-    public void createDataSet() {
-        try {
-            this.provider = TrieFactory.create(dataFile, false);
-        } catch (IOException ex) {
-            Logger.getLogger(ApiTrieBase.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
-    @After
-    public void dispose() {
-        dispose(true);
-        System.gc();
-    }
-
-    private void dispose(boolean disposing) {
-        if (this.provider != null) {
-            provider.close();
-        }
-    }
-
-
-    
-    /* Tests */
+    public abstract TrieProvider getProvider();
 
     // NB Do not remove the @Category annotation it seems to be needed to trigger the
     // correct operation of the class level annotation
-
     @Test
     @Category(TestType.TypeApi.class)
-    public void API_Trie_AllHeaders() {
+    public void allHeaders() {
         Map<String, String> headers = new HashMap<String, String>();
-        for (String header : provider.getHttpHeaders()) {
+        for (String header : getProvider().getHttpHeaders()) {
             headers.put(header, fiftyone.mobile.detection.test.common.UserAgentGenerator.getRandomUserAgent(0));
         }
-        fetchAllProperties(provider.getDeviceIndexes(headers));
+        fetchAllProperties(getProvider().getDeviceIndexes(headers));
     }
     
     @Test
-    public void API_Trie_AllHeadersNull() {
+    public void allHeadersNull() {
         Map<String, String> headers = new HashMap<String, String>();
-        for (String header : provider.getHttpHeaders()) {
+        for (String header : getProvider().getHttpHeaders()) {
             headers.put(header, null);
         }
-        fetchAllProperties(provider.getDeviceIndexes(headers));
+        fetchAllProperties(getProvider().getDeviceIndexes(headers));
     }
     
     @Test
-    public void API_Trie_DuplicateHeaders() {
+    public void duplicateHeaders() {
         Map<String, String> headers = new HashMap<String, String>();
         for (int i = 0; i < 5; i++) {
-            for (String header : provider.getHttpHeaders()) {
+            for (String header : getProvider().getHttpHeaders()) {
                 headers.put(header, fiftyone.mobile.detection.test.common.UserAgentGenerator.getRandomUserAgent(0));
             }
         }
-        fetchAllProperties(provider.getDeviceIndexes(headers));
+        fetchAllProperties(getProvider().getDeviceIndexes(headers));
     }
     
     @Test
-    public void API_Trie_DuplicateHeadersNull() {
+    public void duplicateHeadersNull() {
         Map<String, String> headers = new HashMap<String, String>();
         for (int i = 0; i < 5; i++) {
-            for (String header : provider.getHttpHeaders()) {
+            for (String header : getProvider().getHttpHeaders()) {
                 headers.put(header, null);
             }
         }
-        fetchAllProperties(provider.getDeviceIndexes(headers));
+        fetchAllProperties(getProvider().getDeviceIndexes(headers));
     }
     
     @Test
-    public void API_Trie_EmptyHeaders() {
-        Map<String, String> headers = new HashMap<String, String>();
-        fetchAllProperties(provider.getDeviceIndexes(headers));
+    public void emptyHeaders() {
+        fetchAllProperties(getProvider().getDeviceIndexes(new HashMap<String, String>()));
     }
     
     @Test
-    public void API_Trie_EmptyUserAgent() {
-        String emptyUA = "";
-        try {
-            fetchAllProperties(provider.getDeviceIndex(emptyUA));
-        } catch (Exception ex) {
-            Logger.getLogger(ApiTrieBase.class.getName()).log(Level.SEVERE, null, ex);
-        }
+    public void emptyUserAgent() throws Exception {
+        fetchAllProperties(getProvider().getDeviceIndex(""));
     }
     
     @Test
-    public void API_Trie_LongUserAgent() {
+    public void longUserAgent() throws Exception {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < 10; i++) {
             sb.append(fiftyone.mobile.detection.test.common.UserAgentGenerator.getRandomUserAgent(10));
         }
-        try {
-            fetchAllProperties(provider.getDeviceIndex(sb.toString()));
-        } catch (Exception ex) {
-            Logger.getLogger(ApiTrieBase.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        fetchAllProperties(getProvider().getDeviceIndex(sb.toString()));
     }
     
     @Test
-    public void API_Trie_NullHeaders() {
-        Map<String, String> headers = null;
-        fetchAllProperties(provider.getDeviceIndexes(headers));
+    public void nullHeaders() {
+        fetchAllProperties(getProvider().getDeviceIndexes(null));
     }
     
     @Test
-    public void API_Trie_NullUserAgent() {
-        String userAgent = null;
-        try {
-            fetchAllProperties(provider.getDeviceIndex(userAgent));
-        } catch (Exception ex) {
-            Logger.getLogger(ApiTrieBase.class.getName()).log(Level.SEVERE, null, ex);
-        }
+    public void nullUserAgent() throws Exception {
+        fetchAllProperties(getProvider().getDeviceIndex(null));
     }
     
     /* Support methods */
     
     private void fetchAllProperties(Map<String, Integer> deviceIndexes) {
-        int checkSum = 0;
-        for (String propertyName : provider.propertyNames()) {
-            String value = provider.getPropertyValue(deviceIndexes, propertyName);
-            System.out.print(propertyName+": ");
+        int checksum = 0;
+        for (String propertyName : getProvider().propertyNames()) {
+            String value = getProvider().getPropertyValue(deviceIndexes, propertyName);
+            logger.debug("{}: {}", propertyName, value);
             if (value != null) {
-                System.out.println(value);
-                checkSum += value.hashCode();
+                checksum += value.hashCode();
             }
         }
-        System.out.println("Check sum: "+checkSum);
+        logger.debug("Checksum: {}", checksum);
     }
     
     private void fetchAllProperties(int deviceIndex) {
-        int checkSum = 0;
-        for (String propertyName : provider.propertyNames()) {
-            String value = provider.getPropertyValue(deviceIndex, propertyName);
-            System.out.print(propertyName+": ");
+        int checksum = 0;
+        for (String propertyName : getProvider().propertyNames()) {
+            String value = getProvider().getPropertyValue(deviceIndex, propertyName);
+            logger.debug("{}: {}", propertyName, value);
             if (value != null) {
-                System.out.println(value);
-                checkSum += value.hashCode();
+                checksum += value.hashCode();
             }
         }
-        System.out.println("Check sum: "+checkSum);
+        logger.debug("Checksum: {}", checksum);
     }
 }

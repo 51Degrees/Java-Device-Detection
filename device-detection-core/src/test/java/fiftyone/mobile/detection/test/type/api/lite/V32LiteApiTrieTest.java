@@ -21,10 +21,16 @@
 
 package fiftyone.mobile.detection.test.type.api.lite;
 
+import fiftyone.mobile.detection.TrieProvider;
+import fiftyone.mobile.detection.factories.TrieFactory;
 import fiftyone.mobile.detection.test.Filename;
 import fiftyone.mobile.detection.test.TestType;
 import fiftyone.mobile.detection.test.type.api.ApiTrieBase;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.experimental.categories.Category;
+
+import java.io.IOException;
 
 /**
  *
@@ -32,8 +38,19 @@ import org.junit.experimental.categories.Category;
 @Category(TestType.DataSetLite.class)
 public class V32LiteApiTrieTest extends ApiTrieBase {
 
-    public V32LiteApiTrieTest() {
-        super(Filename.LITE_TRIE_V32);
+    private static TrieProvider provider;
+
+    @BeforeClass
+    public static void createDataSet() throws IOException {
+        provider = TrieFactory.create(Filename.LITE_TRIE_V32, false);
     }
-    
+
+    @AfterClass
+    public static void dispose() {
+        provider.close();
+    }
+    @Override
+    public TrieProvider getProvider() {
+        return provider;
+    }
 }
