@@ -21,10 +21,17 @@
 
 package fiftyone.mobile.detection.test.type.api.lite;
 
+import fiftyone.mobile.detection.Dataset;
+import fiftyone.mobile.detection.Provider;
+import fiftyone.mobile.detection.factories.StreamFactory;
 import fiftyone.mobile.detection.test.Filename;
 import fiftyone.mobile.detection.test.TestType;
 import fiftyone.mobile.detection.test.type.api.ApiBase;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.experimental.categories.Category;
+
+import java.io.IOException;
 
 /**
  *
@@ -32,8 +39,29 @@ import org.junit.experimental.categories.Category;
 @Category(TestType.DataSetLite.class)
 public class V32LiteApiTest extends ApiBase {
 
-    public V32LiteApiTest() {
-        super(Filename.LITE_PATTERN_V32);
+    private static Dataset dataset;
+    private static Provider provider;
+
+    @BeforeClass
+    public static void createDataset() throws IOException {
+        dataset = StreamFactory.create(Filename.LITE_PATTERN_V32, false);
+        provider = new Provider(dataset);
+    }
+
+    @AfterClass
+    public static void dispose() {
+        dataset.close();
+        dataset=null;
+    }
+
+    @Override
+    public Provider getProvider() {
+        return provider;
+    }
+
+    @Override
+    public Dataset getDataset() {
+        return dataset;
     }
     
 }

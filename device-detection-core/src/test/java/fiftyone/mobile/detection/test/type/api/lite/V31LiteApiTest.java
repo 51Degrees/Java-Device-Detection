@@ -21,10 +21,21 @@
 
 package fiftyone.mobile.detection.test.type.api.lite;
 
+import fiftyone.mobile.detection.Dataset;
+import fiftyone.mobile.detection.Provider;
+import fiftyone.mobile.detection.factories.StreamFactory;
 import fiftyone.mobile.detection.test.Filename;
 import fiftyone.mobile.detection.test.TestType;
 import fiftyone.mobile.detection.test.type.api.ApiBase;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.experimental.categories.Category;
+
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * 
@@ -32,8 +43,28 @@ import org.junit.experimental.categories.Category;
 @Category(TestType.DataSetLite.class)
 public class V31LiteApiTest extends ApiBase {
 
-    public V31LiteApiTest() {
-        super(Filename.LITE_PATTERN_V31);
+    private static Dataset dataset;
+    private static Provider provider;
+
+    @BeforeClass
+    public static void createDataset() throws IOException {
+        dataset = StreamFactory.create(Filename.LITE_PATTERN_V31, false);
+        provider = new Provider(dataset);
     }
-    
+
+    @AfterClass
+    public static void dispose() {
+        dataset.close();
+        dataset=null;
+    }
+
+    @Override
+    public Provider getProvider() {
+        return provider;
+    }
+
+    @Override
+    public Dataset getDataset() {
+        return dataset;
+    }
 }
