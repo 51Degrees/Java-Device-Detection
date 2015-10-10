@@ -227,7 +227,7 @@ public class Controller {
         } catch (InterruptedException ignored) {
         } finally {
             // TODO provider should have a close method
-            provider.dataSet.dispose();
+            provider.dataSet.close();
         }
 
         System.exit(0);
