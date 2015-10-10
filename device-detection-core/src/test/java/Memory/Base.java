@@ -1,6 +1,7 @@
 package Memory;
 
-import common.Utils;
+import fiftyone.mobile.detection.DetectionTestSupport;
+import fiftyone.mobile.detection.common.Results;
 import fiftyone.mobile.detection.Dataset;
 import fiftyone.mobile.detection.Provider;
 import java.io.IOException;
@@ -30,7 +31,7 @@ import org.junit.rules.TestName;
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
 
-public abstract class Base {
+public abstract class Base extends DetectionTestSupport {
     
     @Rule 
     public TestName currentTestName = new TestName();
@@ -95,7 +96,7 @@ public abstract class Base {
     protected void userAgentsSingle(Iterable<String> userAgents,
             double maxAllowedMemory) throws IOException {
         memory.reset();
-        Utils.detectLoopSingleThreaded(
+        Results.detectLoopSingleThreaded(
             new Provider(this.dataSet),
             userAgents,
             memory);
@@ -113,10 +114,10 @@ public abstract class Base {
     protected void userAgentsMulti(Iterable<String> userAgents,
             double maxAllowedMemory) throws IOException {
         memory.reset();
-        Utils.detectLoopMultiThreaded(
-            new Provider(this.dataSet),
-            userAgents,
-            memory);
+        Results.detectLoopMultiThreaded(
+                new Provider(this.dataSet),
+                userAgents,
+                memory);
         System.out.printf(
             "Average Used: '%dMB'\r\nMax Allowed: '%dMB'\r\n", 
             memory.getAverageMemoryUsed(),

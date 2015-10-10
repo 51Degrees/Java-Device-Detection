@@ -1,13 +1,9 @@
 package Performance;
 
-import common.MatchProcessor;
-import common.Results;
-import common.RetrieveProperties;
-import common.Utils;
-import static common.Utils.assertPool;
-import static common.Utils.reportMethods;
-import static common.Utils.reportProvider;
-import static common.Utils.reportTime;
+import fiftyone.mobile.detection.DetectionTestSupport;
+import fiftyone.mobile.detection.common.MatchProcessor;
+import fiftyone.mobile.detection.common.Results;
+import fiftyone.mobile.detection.common.RetrieveProperties;
 import fiftyone.mobile.detection.Dataset;
 import fiftyone.properties.MatchMethods;
 import fiftyone.mobile.detection.Provider;
@@ -39,7 +35,7 @@ import org.junit.rules.TestName;
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
 
-public abstract class Base {
+public abstract class Base extends DetectionTestSupport {
     
     @Rule 
     public TestName currentTestName = new TestName();
@@ -117,7 +113,7 @@ public abstract class Base {
         MatchProcessor processor) throws IOException {
         System.out.printf("Processor: %s\r\n", processor.getClass().getSimpleName());
         Provider provider = new Provider(this.dataSet);
-        Results results = Utils.detectLoopSingleThreaded(
+        Results results = Results.detectLoopSingleThreaded(
             provider,
             userAgents,
             processor);
@@ -130,7 +126,7 @@ public abstract class Base {
             MatchProcessor processor) throws IOException {
         System.out.printf("Processor: %s\r\n", processor.getClass().getSimpleName());
         Provider provider = new Provider(this.dataSet);
-        Results results =  Utils.detectLoopMultiThreaded(
+        Results results =  Results.detectLoopMultiThreaded(
             provider,
             userAgents,
             processor);

@@ -1,8 +1,8 @@
 package Performance;
 
-import common.Asserts;
-import common.Results;
-import common.Utils;
+import fiftyone.mobile.detection.DetectionTestSupport;
+import fiftyone.mobile.detection.common.Results;
+import fiftyone.mobile.detection.common.UserAgentGenerator;
 import fiftyone.properties.MatchMethods;
 import fiftyone.mobile.detection.entities.Property;
 import fiftyone.mobile.detection.factories.StreamFactory;
@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.util.Calendar;
 import static org.junit.Assert.fail;
 import org.junit.Before;
-import common.UserAgentGenerator;
 
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
@@ -44,7 +43,7 @@ public abstract class FileBase extends Base {
      */
     @Before
     public void setUp() {
-        Utils.checkFileExists(super.dataFile);
+        assertFileExists(super.dataFile);
         long startTime = Calendar.getInstance().getTimeInMillis();
         try {
             super.dataSet = StreamFactory.create(super.dataFile, false);
@@ -61,7 +60,7 @@ public abstract class FileBase extends Base {
         Results results = super.userAgentsMulti(
             UserAgentGenerator.getBadUserAgents(), properties, maxDetectionTime);
         assertTrueMethodLessThan(results, MatchMethods.EXACT, 0.2);
-        Asserts.AssertCacheMissesBad(super.dataSet);
+        DetectionTestSupport.AssertCacheMissesBad(super.dataSet);
         return results;
     }
 
@@ -70,7 +69,7 @@ public abstract class FileBase extends Base {
         Results results = super.userAgentsSingle(
             UserAgentGenerator.getBadUserAgents(), properties, maxDetectionTime);
         assertTrueMethodLessThan(results, MatchMethods.EXACT, 0.2);
-        Asserts.AssertCacheMissesBad(super.dataSet);
+        DetectionTestSupport.AssertCacheMissesBad(super.dataSet);
         return results;
     }
 
@@ -79,7 +78,7 @@ public abstract class FileBase extends Base {
         Results results = super.userAgentsMulti(
             UserAgentGenerator.getRandomUserAgents(), properties, maxDetectionTime);
         assertTrueMethodGreaterThan(results, MatchMethods.EXACT, 0.95);
-        Asserts.AssertCacheMissesGood(super.dataSet);
+        DetectionTestSupport.AssertCacheMissesGood(super.dataSet);
         return results;
     }
 
@@ -88,7 +87,7 @@ public abstract class FileBase extends Base {
         Results results = super.userAgentsSingle(
             UserAgentGenerator.getRandomUserAgents(), properties, maxDetectionTime);
         assertTrueMethodGreaterThan(results, MatchMethods.EXACT, 0.95);
-        Asserts.AssertCacheMissesGood(super.dataSet);
+        DetectionTestSupport.AssertCacheMissesGood(super.dataSet);
         return results;
     }
 
@@ -97,7 +96,7 @@ public abstract class FileBase extends Base {
         Results results = super.userAgentsMulti(
             UserAgentGenerator.getUniqueUserAgents(), properties, maxDetectionTime);
         assertTrueMethodGreaterThan(results, MatchMethods.EXACT, 0.95);
-        Asserts.AssertCacheMissesGood(super.dataSet);
+        DetectionTestSupport.AssertCacheMissesGood(super.dataSet);
         return results;
     }
 
@@ -106,7 +105,7 @@ public abstract class FileBase extends Base {
         Results results = super.userAgentsSingle(
             UserAgentGenerator.getUniqueUserAgents(), properties, maxDetectionTime);
         assertTrueMethodGreaterThan(results, MatchMethods.EXACT, 0.95);
-        Asserts.AssertCacheMissesGood(super.dataSet);
+        DetectionTestSupport.AssertCacheMissesGood(super.dataSet);
         return results;
     }
 }

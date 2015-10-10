@@ -1,7 +1,7 @@
 package MetaData.Enterprise;
 
 import MetaData.FileBase;
-import Properties.Constants;
+import fiftyone.mobile.detection.Filename;
 import java.io.IOException;
 import org.junit.Test;
 
@@ -28,7 +28,7 @@ import org.junit.Test;
 
 public class V32FileTest extends FileBase {
     public V32FileTest() {
-        super(Constants.ENTERPRISE_PATTERN_V32);
+        super(Filename.ENTERPRISE_PATTERN_V32);
     }
     
     @Test

@@ -1,8 +1,9 @@
 package HttpHeaders;
 
 import Memory.*;
-import common.Results;
-import common.UserAgentGenerator;
+import fiftyone.mobile.detection.DetectionTestSupport;
+import fiftyone.mobile.detection.common.Results;
+import fiftyone.mobile.detection.common.UserAgentGenerator;
 import fiftyone.mobile.detection.Dataset;
 import fiftyone.mobile.detection.Match;
 import fiftyone.mobile.detection.Provider;
@@ -40,10 +41,7 @@ import org.junit.rules.TestName;
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
 
-public abstract class Base {
-    
-    @Rule 
-    public TestName currentTestName = new TestName();
+public abstract class Base extends DetectionTestSupport {
     
     /**
      * Data set used to perform the tests on.

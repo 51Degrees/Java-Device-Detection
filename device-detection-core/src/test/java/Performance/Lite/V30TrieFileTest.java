@@ -1,6 +1,7 @@
 package Performance.Lite;
 
 import Performance.TrieFile;
+import fiftyone.mobile.detection.Filename;
 
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
@@ -25,6 +26,6 @@ import Performance.TrieFile;
 public class V30TrieFileTest extends TrieFile {
 
     public V30TrieFileTest() {
-        super(Properties.Constants.LITE_TRIE_V30);
+        super(Filename.LITE_TRIE_V30);
     }   
 }

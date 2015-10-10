@@ -1,6 +1,5 @@
 package MetaData;
 
-import common.Utils;
 import fiftyone.mobile.detection.factories.StreamFactory;
 import java.io.IOException;
 import static org.junit.Assert.fail;
@@ -38,7 +37,7 @@ public abstract class FileBase extends Base {
      */
     @Before
     public void setUp() {
-        Utils.checkFileExists(super.dataFile);
+        assertFileExists(super.dataFile);
         try {
             this.dataSet = StreamFactory.create(super.dataFile, false);
         } catch (IOException ex) {

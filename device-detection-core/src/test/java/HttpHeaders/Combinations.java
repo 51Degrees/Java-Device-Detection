@@ -23,7 +23,7 @@ import java.io.IOException;
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
 
-public class Combinations extends Base{
+public class Combinations extends Base {
 
     public Combinations(String dataFile) {
         super(dataFile);

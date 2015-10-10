@@ -1,8 +1,8 @@
 package Memory.Lite;
 
 import Memory.MemoryBase;
-import Properties.Constants;
-import common.UserAgentGenerator;
+import fiftyone.mobile.detection.Filename;
+import fiftyone.mobile.detection.common.UserAgentGenerator;
 import java.io.IOException;
 import org.junit.Test;
 
@@ -30,7 +30,7 @@ import org.junit.Test;
 public class V32MemoryTest extends MemoryBase {
 
     public V32MemoryTest() {
-        super(Constants.LITE_PATTERN_V32);
+        super(Filename.LITE_PATTERN_V32);
     }
 
     @Test

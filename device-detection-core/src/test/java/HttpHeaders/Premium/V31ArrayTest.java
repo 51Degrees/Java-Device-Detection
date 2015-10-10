@@ -1,8 +1,7 @@
 package HttpHeaders.Premium;
 
 import HttpHeaders.Combinations;
-import Properties.Constants;
-import common.Utils;
+import fiftyone.mobile.detection.Filename;
 import fiftyone.mobile.detection.factories.StreamFactory;
 import java.io.IOException;
 import org.junit.Before;
@@ -32,14 +31,14 @@ import org.junit.Test;
 public class V31ArrayTest extends Combinations {
 
     public V31ArrayTest() {
-        super(Constants.PREMIUM_PATTERN_V31);
+        super(Filename.PREMIUM_PATTERN_V31);
     }
 
     @Before
     public void createDataSet() throws IOException
     {
-        Utils.checkFileExists(super.dataFile);
-        super.dataSet = StreamFactory.create(Utils.readAllBytes(super.dataFile));
+        assertFileExists(super.dataFile);
+        super.dataSet = StreamFactory.create(readAllBytes(super.dataFile));
     }
 
     @Test

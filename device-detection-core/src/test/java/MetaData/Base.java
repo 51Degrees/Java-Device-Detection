@@ -1,6 +1,7 @@
 package MetaData;
 
 import fiftyone.mobile.detection.Dataset;
+import fiftyone.mobile.detection.DetectionTestSupport;
 import fiftyone.mobile.detection.entities.Component;
 import fiftyone.mobile.detection.entities.Profile;
 import fiftyone.mobile.detection.entities.Property;
@@ -30,7 +31,7 @@ import static org.junit.Assert.*;
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
 
-public abstract class Base {
+public abstract class Base extends DetectionTestSupport {
     
     /**
      * Data set used to perform the tests on.

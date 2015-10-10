@@ -20,6 +20,25 @@
             <version>${junit.version}</version>
              <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j-api.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>${logback.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-core</artifactId>
+            <version>${logback.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -27,35 +46,60 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>${maven-surefire-plugin.version}</version>
+                <!-- Default profile only tests Lite data sets -->
                 <configuration>
-                    <includes><include>**/Lite/*Test.java</include></includes>
+                    <excludedGroups>fiftyone.mobile.detection.category.DataSetPremium,
+                        fiftyone.mobile.detection.category.DataSetEnterprise
+                    </excludedGroups>
                 </configuration>
             </plugin>
         </plugins>
     </build>
 
     <profiles>
+        <!-- this profile tests all data sets -->
         <profile>
-            <id>Non-Lite-Tests</id>
+            <id>test-all-datasets</id>
             <build>
                 <plugins>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-surefire-plugin</artifactId>
-                        <version>${maven-surefire-plugin.version}</version>
                         <configuration>
-                            <includes>
-                                <include>**/Lite/*Test.java</include>
-                                <include>**/Enterprise/*Test.java</include>
-                                <include>**/Premium/*Test.java</include>
-                            </includes>
+                            <excludedGroups combine.self="override"/>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>test-everything</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration combine.self="override" />
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <!-- this profile tests only the api category -->
+        <profile>
+            <id>test-api</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <groups>fiftyone.mobile.detection.category.TypeApi</groups>
+                            <excludedGroups combine.self="append" />
                         </configuration>
                     </plugin>
                 </plugins>
             </build>
         </profile>
     </profiles>
-
 
 </project>

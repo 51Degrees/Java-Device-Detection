@@ -1,8 +1,7 @@
 package HttpHeaders.Premium;
 
 import HttpHeaders.TrieCombinations;
-import Properties.Constants;
-import common.Utils;
+import fiftyone.mobile.detection.Filename;
 import fiftyone.mobile.detection.factories.TrieFactory;
 import java.io.IOException;
 import org.junit.Before;
@@ -31,13 +30,13 @@ import org.junit.Test;
 public class V32TrieFileTest extends TrieCombinations {
     
     public V32TrieFileTest() {
-        super(Constants.PREMIUM_TRIE_V32);
+        super(Filename.PREMIUM_TRIE_V32);
     }
     
     @Before
     public void createDataSet() throws IOException
     {
-        Utils.checkFileExists(super.dataFile);
+        assertFileExists(super.dataFile);
         super.provider = TrieFactory.create(super.dataFile);
     }
     

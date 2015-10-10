@@ -1,6 +1,5 @@
 package MetaData;
 
-import common.Utils;
 import fiftyone.mobile.detection.factories.MemoryFactory;
 import java.io.IOException;
 import static org.junit.Assert.fail;
@@ -38,7 +37,7 @@ public abstract class MemoryBase extends Base {
      */
     @Before
     public void setUp() {
-        Utils.checkFileExists(super.dataFile);
+        assertFileExists(super.dataFile);
         try {
             this.dataSet = MemoryFactory.create(super.dataFile);
         } catch (IOException ex) {

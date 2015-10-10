@@ -1,8 +1,7 @@
 package Performance;
 
-import common.Results;
-import common.UserAgentGenerator;
-import common.Utils;
+import fiftyone.mobile.detection.common.Results;
+import fiftyone.mobile.detection.common.UserAgentGenerator;
 import fiftyone.properties.MatchMethods;
 import fiftyone.mobile.detection.entities.Property;
 import fiftyone.mobile.detection.factories.MemoryFactory;
@@ -43,7 +42,7 @@ public abstract class MemoryBase extends Base {
      */
     @Before
     public void setUp() {
-        Utils.checkFileExists(super.dataFile);
+        assertFileExists(super.dataFile);
         long startTime = Calendar.getInstance().getTimeInMillis();
         try {
             super.dataSet = MemoryFactory.create(super.dataFile);

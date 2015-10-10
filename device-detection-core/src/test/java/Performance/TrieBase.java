@@ -1,10 +1,10 @@
 package Performance;
 
-import common.Results;
+import fiftyone.mobile.detection.DetectionTestSupport;
+import fiftyone.mobile.detection.common.Results;
 import fiftyone.mobile.detection.TrieProvider;
 import org.junit.After;
 import static org.junit.Assert.assertTrue;
-import org.junit.Test;
 
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
@@ -26,7 +26,7 @@ import org.junit.Test;
  * This Source Code Form is "Incompatible With Secondary Licenses", as
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
-public abstract class TrieBase {
+public abstract class TrieBase extends DetectionTestSupport {
     
     protected TrieProvider provider;
     protected String dataFile;
@@ -56,12 +56,12 @@ public abstract class TrieBase {
     
     /* Test support methods */
     
-    protected common.Results userAgentMulti(Iterable<String> userAgents) {
-        return common.Utils.detectLoopMultiThreaded(provider, userAgents);
+    protected fiftyone.mobile.detection.common.Results userAgentMulti(Iterable<String> userAgents) {
+        return Results.detectLoopMultiThreaded(provider, userAgents);
     }
     
-    protected common.Results userAgentmultiAll(Iterable<String> userAgents) {
-        Results results = common.Utils.detectLoopMultiThreaded(provider, userAgents);
+    protected fiftyone.mobile.detection.common.Results userAgentmultiAll(Iterable<String> userAgents) {
+        Results results = Results.detectLoopMultiThreaded(provider, userAgents);
         System.out.printf("Values check sum: '%d'\r\n", results.checkSum.longValue());
         assertTrue(
             String.format("Average time of '%d' ms exceeded guidance time of '%d' ms",
@@ -71,12 +71,12 @@ public abstract class TrieBase {
         return results;
     }
     
-    protected common.Results userAgentsSingle(Iterable<String> userAgents) {
-        return common.Utils.detectLoopSingleThreaded(provider, userAgents);
+    protected fiftyone.mobile.detection.common.Results userAgentsSingle(Iterable<String> userAgents) {
+        return Results.detectLoopSingleThreaded(provider, userAgents);
     }
     
-    protected common.Results userAgentsSingleAll(Iterable<String> userAgents) {
-        Results results = common.Utils.detectLoopSingleThreaded(provider, userAgents);
+    protected fiftyone.mobile.detection.common.Results userAgentsSingleAll(Iterable<String> userAgents) {
+        Results results = Results.detectLoopSingleThreaded(provider, userAgents);
         System.out.println(String.format("Values check sum: '%s'", results.checkSum));
         try {
             assertTrue(results.getAverageTime() < getGuidanceTime());

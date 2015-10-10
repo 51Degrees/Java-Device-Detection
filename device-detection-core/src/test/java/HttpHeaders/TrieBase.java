@@ -1,9 +1,10 @@
 package HttpHeaders;
 
-import common.Results;
-import common.UserAgentGenerator;
+import fiftyone.mobile.detection.DetectionTestSupport;
+import fiftyone.mobile.detection.common.Results;
+import fiftyone.mobile.detection.common.UserAgentGenerator;
 import fiftyone.mobile.detection.TrieProvider;
-import fiftyone.properties.MatchMethods;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -37,11 +38,8 @@ import org.junit.rules.TestName;
  * This Source Code Form is "Incompatible With Secondary Licenses", as
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
-public class TrieBase {
-    
-    @Rule 
-    public TestName currentTestName = new TestName();
-    
+public class TrieBase extends DetectionTestSupport {
+
     protected String dataFile;
     
     protected TrieProvider provider;
