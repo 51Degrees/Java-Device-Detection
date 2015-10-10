@@ -20,8 +20,8 @@
  * ********************************************************************* */
 package fiftyone.mobile.detection.entities.stream;
 
-import fiftyone.mobile.detection.IDisposable;
 import fiftyone.mobile.detection.readers.BinaryReader;
+import java.io.Closeable;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +33,7 @@ import java.util.List;
  * Must be disposed to ensure that the readers are closed and any resources
  * free for other uses.
  */
-public abstract class SourceBase implements IDisposable {
+public abstract class SourceBase implements Closeable {
 
     /**
      * List of binary readers opened against the data source. 
@@ -56,10 +56,10 @@ public abstract class SourceBase implements IDisposable {
      * Releases the reference to memory and forces garbage collection.
      */
     @Override
-    public void dispose() {
+    public void close() {
         synchronized(readers) {
             for (BinaryReader br : readers) {
-                br.dispose();
+                br.close();
             }
             readers.clear();
         }

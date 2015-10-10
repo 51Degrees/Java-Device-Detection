@@ -20,8 +20,8 @@
  * ********************************************************************* */
 package fiftyone.mobile.detection.entities.stream;
 
-import fiftyone.mobile.detection.IDisposable;
 import fiftyone.mobile.detection.readers.BinaryReader;
+import java.io.Closeable;
 import java.io.IOException;
 import java.util.Queue;
 import java.util.concurrent.LinkedBlockingDeque;
@@ -36,7 +36,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * The DetectorDataSet must be disposed of to ensure the readers in the pool 
  * are closed.
  */
-public class Pool implements IDisposable {
+public class Pool implements Closeable {
 
     /**
      * List of readers available to be used.
@@ -94,9 +94,9 @@ public class Pool implements IDisposable {
      * Disposes of the source ensuring all the readers are also closed.
      */
     @Override
-    public void dispose() {
+    public void close() {
         readers.clear();
-        source.dispose();
+        source.close();
     }
     
     /**

@@ -31,11 +31,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import fiftyone.mobile.detection.Dataset;
-import fiftyone.mobile.detection.IDisposable;
 import fiftyone.mobile.detection.Match;
 import fiftyone.mobile.detection.Provider;
 import fiftyone.mobile.detection.factories.MemoryFactory;
 import fiftyone.mobile.detection.factories.StreamFactory;
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -45,7 +45,7 @@ import java.util.Date;
 import java.util.UUID;
 import javax.servlet.ServletContext;
 
-public class WebProvider extends Provider implements IDisposable {
+public class WebProvider extends Provider implements Closeable {
 
     /**
      * Used to store the results for previous matches to reduce the number of
@@ -110,10 +110,10 @@ public class WebProvider extends Provider implements IDisposable {
      * Disposes of the data set created by the WebProvider.
      */
     @Override
-    public void dispose() {
+    public void close() {
         // Dispose of the data set if it exists.
         if (super.dataSet != null) {
-            super.dataSet.dispose();
+            super.dataSet.close();
         }
         
         // Dispose of the temporary data file if it exists.
@@ -496,7 +496,7 @@ public class WebProvider extends Provider implements IDisposable {
                 if (activeProvider != null) {
                     WebProvider oldProvider = activeProvider;
                     activeProvider = null;
-                    oldProvider.dispose();
+                    oldProvider.close();
                 }
             }
         }

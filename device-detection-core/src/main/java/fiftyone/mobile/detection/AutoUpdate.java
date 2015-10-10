@@ -86,7 +86,7 @@ public class AutoUpdate {
                 if (!oldDataset.getName().contains("Lite")) {
                     lastModified = oldDataFile.lastModified();
                 }
-                oldDataset.dispose();
+                oldDataset.close();
             }
             System.gc();
             // Download the data to the temporary data file.
@@ -114,9 +114,9 @@ public class AutoUpdate {
                 copyFile = newDataSet.published.getTime() > currentDataSet.published.getTime() || 
                         !newDataSet.getName().equals(currentDataSet.getName());
 
-                currentDataSet.dispose();
+                currentDataSet.close();
             }
-            newDataSet.dispose();
+            newDataSet.close();
             System.gc();
             //If the downloaded file is either newer, or has a different name.
             if (copyFile) {

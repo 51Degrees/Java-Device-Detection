@@ -21,7 +21,7 @@
 package fiftyone.mobile.detection.entities.memory;
 
 import fiftyone.mobile.detection.Dataset;
-import fiftyone.mobile.detection.IDisposableIterator;
+import fiftyone.mobile.detection.IClosableIterator;
 import fiftyone.mobile.detection.IFixedList;
 import fiftyone.mobile.detection.entities.BaseEntity;
 import fiftyone.mobile.detection.factories.BaseEntityFactory;
@@ -96,7 +96,7 @@ public class MemoryFixedList<T extends BaseEntity> extends MemoryBaseList<T>
      * @return the MemoryFixedListIterator for specific range.
      */
     @Override
-    public IDisposableIterator<T> getRange(int index, int count) {
+    public IClosableIterator<T> getRange(int index, int count) {
         return new MemoryFixedListIterator<T>(this, index, count);
     }
 }

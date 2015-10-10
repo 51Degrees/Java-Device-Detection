@@ -120,6 +120,7 @@ public class DetectionConstants {
      * rather than the browser.
      */
     public static final String[] DEVICE_USER_AGENT_HEADERS = new String[]{
+        "User-Agent",
         "Device-Stock-UA",
         "x-Device-User-Agent",
         "X-Device-User-Agent",

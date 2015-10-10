@@ -84,9 +84,9 @@ public class Dataset extends fiftyone.mobile.detection.Dataset {
      * Dispose of the dataset and the pool of readers.
      */
     @Override
-    public void dispose() {
-        pool.dispose();
-        super.dispose();
+    public void close() {
+        pool.close();
+        super.close();
     }
     
     /**

@@ -6,7 +6,7 @@
  * This Source Code Form is the subject of the following patent 
  * applications, owned by 51Degrees Mobile Experts Limited of 5 Charlotte
  * Close, Caversham, Reading, Berkshire, United Kingdom RG4 7BY: 
- * European Patent Application No. 13192291.6; and
+ * European Patent Application No. 13192291.6; and 
  * United States Patent Application Nos. 14/085,223 and 14/085,301.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -20,11 +20,14 @@
  * ********************************************************************* */
 package fiftyone.mobile.detection;
 
-public interface IDisposable {
+import java.util.Iterator;
 
-    /**
-     * Performs application-defined tasks associated with freeing, releasing, or
-     * resetting unmanaged resources.
-     */
-    void dispose();
+/**
+ * Should be used if at some point resources will have to be released. I.e. with 
+ * lazy loading of the properties where the reader has to be released.
+ */
+public interface IClosableIterator<T> extends Iterator<T> {
+
+    public void close();
+    
 }

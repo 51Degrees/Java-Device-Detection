@@ -20,11 +20,10 @@
  * ********************************************************************* */
 package fiftyone.mobile.detection.entities.stream;
 
-import fiftyone.mobile.detection.IDisposable;
-import fiftyone.mobile.detection.IDisposableIterator;
-import fiftyone.mobile.detection.entities.BaseEntity;
+import fiftyone.mobile.detection.IClosableIterator;
 import fiftyone.mobile.detection.factories.BaseEntityFactory;
 import fiftyone.mobile.detection.readers.BinaryReader;
+import java.io.Closeable;
 import java.io.IOException;
 import java.util.Iterator;
 
@@ -35,7 +34,7 @@ import java.util.Iterator;
  * provides a way to read the integers one by one.
  * @param <T>
  */
-public class StreamFixedListRangeIterator<T> implements IDisposableIterator<T> {
+public class StreamFixedListRangeIterator<T> implements IClosableIterator<T> {
     /**
      * Reader set to the position at the start of the list.
      */
@@ -85,31 +84,13 @@ public class StreamFixedListRangeIterator<T> implements IDisposableIterator<T> {
     
     /**
      * Returns the reader to the pool.
-     * @param disposing 
      */
-    protected void disposing(boolean disposing) {
+    @Override
+    public void close() {
         if (reader != null) {
             dataSet.pool.release(reader);
             reader = null;
         }
-    }
-    
-    /**
-     * Return reader to the pool when the enumerable is
-     * disposed of.
-     */
-    @Override
-    public void dispose() {
-        disposing(true);
-    }
-
-    /**
-     * When garbage collected, make sure the reader is returned to the pool.
-     * @throws Throwable 
-     */
-    @Override
-    protected void finalize() throws Throwable {
-        disposing(false);
     }
 
     @Override

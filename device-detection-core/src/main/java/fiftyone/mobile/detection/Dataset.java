@@ -44,6 +44,7 @@ import fiftyone.mobile.detection.entities.memory.MemoryFixedList;
 import fiftyone.mobile.detection.entities.memory.PropertiesList;
 import fiftyone.mobile.detection.entities.stream.ICacheList;
 import fiftyone.properties.DetectionConstants;
+import java.io.Closeable;
 
 /**
  * Data set used for device detection created by the reader classes. 
@@ -60,7 +61,7 @@ import fiftyone.properties.DetectionConstants;
  * 
  * For more information see https://51degrees.com/Support/Documentation/Java
  */
-public class Dataset implements IDisposable {
+public class Dataset implements Closeable {
     /**
      * Age of the data in months when exported.
      */
@@ -780,7 +781,7 @@ public class Dataset implements IDisposable {
      * Disposes of the data set.
      */
     @Override
-    public void dispose() {
+    public void close() {
         disposed = true;
     }
     
