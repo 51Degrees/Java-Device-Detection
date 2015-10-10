@@ -1,11 +1,10 @@
-package API;
+package fiftyone.mobile.detection.common;
 
-import API.Lite.V30APITrieTest;
-import API.Lite.V31APITest;
-import API.Lite.V32APITest;
-import API.Lite.V32APITrieTest;
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
+import fiftyone.mobile.detection.Match;
+import fiftyone.mobile.detection.entities.Property;
+import fiftyone.mobile.detection.entities.Values;
+import java.io.IOException;
+import java.util.ArrayList;
 
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
@@ -28,18 +27,27 @@ import org.junit.runners.Suite;
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
 
-@RunWith(Suite.class)
-@Suite.SuiteClasses({
-    V31APITest.class,
-    V32APITest.class,
-    V30APITrieTest.class,
-    V32APITrieTest.class,
-    API.Enterprise.V31APITest.class,
-    API.Enterprise.V32APITest.class,
-    API.Premium.V31APITest.class,
-    API.Premium.V32APITest.class})
-/**
- * Legacy for running outside surefire context
- */
-public class ApiSuite {
+public class RetrieveProperties extends MatchProcessor {
+
+    private final ArrayList<Property> properties = new ArrayList<Property>();
+    
+    public RetrieveProperties(Iterable<Property> properties) {
+        if (properties != null) {
+            for (Property property : properties) {
+                this.properties.add(property);
+            }
+        }
+    }
+    
+    @Override
+    public void Process(Match match, Results result) throws IOException {
+        long checkSum = 0;
+        for(Property property : this.properties) {
+            Values values = match.getValues(property);
+            if (values != null) {
+                checkSum += match.getValues(property).toString().hashCode();
+            }
+        }
+        result.checkSum.getAndAdd(checkSum);
+    }
 }

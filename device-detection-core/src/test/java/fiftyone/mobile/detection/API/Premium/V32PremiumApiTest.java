@@ -1,7 +1,9 @@
-package common;
+package fiftyone.mobile.detection.api.premium;
 
-import fiftyone.mobile.detection.Match;
-import java.io.IOException;
+import fiftyone.mobile.detection.Filename;
+import fiftyone.mobile.detection.api.ApiBase;
+import fiftyone.mobile.detection.category.DataSetPremium;
+import org.junit.experimental.categories.Category;
 
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
@@ -23,13 +25,14 @@ import java.io.IOException;
  * This Source Code Form is "Incompatible With Secondary Licenses", as
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
+/**
+ *
+ */
+@Category(DataSetPremium.class)
+public class V32PremiumApiTest extends ApiBase {
 
-public abstract class MatchProcessor {
-    /**
-     * Performs some action with the match returns from detection.
-     * @param match
-     * @param result 
-     */
-    public abstract void Process(Match match, Results result)  
-            throws IOException ;
+    public V32PremiumApiTest() {
+        super(Filename.PREMIUM_PATTERN_V32);
+    }
+    
 }

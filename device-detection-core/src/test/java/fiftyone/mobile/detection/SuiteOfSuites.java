@@ -1,10 +1,11 @@
-package common;
+package fiftyone.mobile.detection;
 
-import fiftyone.mobile.detection.Match;
-import fiftyone.mobile.detection.entities.Property;
-import fiftyone.mobile.detection.entities.Values;
-import java.io.IOException;
-import java.util.ArrayList;
+import HttpHeaders.HttpHeaderSuite;
+import Memory.MemorySuite;
+import MetaData.MetaDataSuite;
+import Performance.PerformanceSuite;
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
 
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
@@ -27,27 +28,14 @@ import java.util.ArrayList;
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
 
-public class RetrieveProperties extends MatchProcessor {
-
-    private final ArrayList<Property> properties = new ArrayList<Property>();
-    
-    public RetrieveProperties(Iterable<Property> properties) {
-        if (properties != null) {
-            for (Property property : properties) {
-                this.properties.add(property);
-            }
-        }
-    }
-    
-    @Override
-    public void Process(Match match, Results result) throws IOException {
-        long checkSum = 0;
-        for(Property property : this.properties) {
-            Values values = match.getValues(property);
-            if (values != null) {
-                checkSum += match.getValues(property).toString().hashCode();
-            }
-        }
-        result.checkSum.getAndAdd(checkSum);
-    }
+@RunWith(org.junit.runners.Suite.class)
+@org.junit.runners.Suite.SuiteClasses({
+    MetaDataSuite.class,
+    PerformanceSuite.class,
+    MemorySuite.class,
+    HttpHeaderSuite.class})
+/**
+ * Container for all suites when not running Maven tests
+ */
+public class SuiteOfSuites {
 }

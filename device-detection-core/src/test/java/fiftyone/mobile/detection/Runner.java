@@ -1,8 +1,8 @@
-package API.Premium;
+package fiftyone.mobile.detection;
 
-import Properties.Constants;
-
-import java.io.IOException;
+import org.junit.runner.JUnitCore;
+import org.junit.runner.Result;
+import org.junit.runner.notification.Failure;
 
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
@@ -24,13 +24,19 @@ import java.io.IOException;
  * This Source Code Form is "Incompatible With Secondary Licenses", as
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
+
 /**
- *
+ * Runner for use outside of Maven
  */
-public class V32APITest extends API.Base {
-    
-    public V32APITest() {
-        super(Constants.PREMIUM_PATTERN_V32);
-    }
-    
-}
+public class Runner {
+   public static void main(String[] args) {
+        Result result = JUnitCore.runClasses(SuiteOfSuites.class);
+        if (result.getFailureCount() > 0) {
+            for (Failure failure : result.getFailures()) {
+               System.out.println(failure.toString());
+            }
+        } else {
+            System.out.println(result.wasSuccessful());
+        }
+   }
+}  	

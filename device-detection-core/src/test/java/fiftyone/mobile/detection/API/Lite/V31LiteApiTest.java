@@ -1,8 +1,9 @@
-package API.Lite;
+package fiftyone.mobile.detection.api.lite;
 
-import Properties.Constants;
-
-import java.io.IOException;
+import fiftyone.mobile.detection.Filename;
+import fiftyone.mobile.detection.api.ApiBase;
+import fiftyone.mobile.detection.category.DataSetLite;
+import org.junit.experimental.categories.Category;
 
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
@@ -25,12 +26,13 @@ import java.io.IOException;
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
 /**
- *
+ * 
  */
-public class V32APITest extends API.Base{
+@Category(DataSetLite.class)
+public class V31LiteApiTest extends ApiBase {
 
-    public V32APITest() {
-        super(Constants.LITE_PATTERN_V32);
+    public V31LiteApiTest() {
+        super(Filename.LITE_PATTERN_V31);
     }
     
 }

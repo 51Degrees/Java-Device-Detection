@@ -1,7 +1,7 @@
 package Memory;
 
-import common.MatchProcessor;
-import common.Results;
+import fiftyone.mobile.detection.common.MatchProcessor;
+import fiftyone.mobile.detection.common.Results;
 import fiftyone.mobile.detection.Match;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;

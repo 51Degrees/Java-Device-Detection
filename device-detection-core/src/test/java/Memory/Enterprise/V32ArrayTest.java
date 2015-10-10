@@ -1,8 +1,8 @@
 package Memory.Enterprise;
 
 import Memory.ArrayBase;
-import Properties.Constants;
-import common.UserAgentGenerator;
+import fiftyone.mobile.detection.Filename;
+import fiftyone.mobile.detection.common.UserAgentGenerator;
 import java.io.IOException;
 import org.junit.Test;
 
@@ -30,7 +30,7 @@ import org.junit.Test;
 public class V32ArrayTest extends ArrayBase {
 
     public V32ArrayTest() {
-        super(Constants.ENTERPRISE_PATTERN_V32);
+        super(Filename.ENTERPRISE_PATTERN_V32);
     }
 
     @Test

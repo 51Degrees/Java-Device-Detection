@@ -1,7 +1,9 @@
-package API.Enterprise;
-import Properties.Constants;
+package fiftyone.mobile.detection.api.premium;
 
-import java.io.IOException;
+import fiftyone.mobile.detection.Filename;
+import fiftyone.mobile.detection.api.ApiBase;
+import fiftyone.mobile.detection.category.DataSetPremium;
+import org.junit.experimental.categories.Category;
 
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
@@ -20,16 +22,17 @@ import java.io.IOException;
  * If a copy of the MPL was not distributed with this file, You can obtain
  * one at http://mozilla.org/MPL/2.0/.
  * 
- * This Source Code Form is “Incompatible With Secondary Licenses”, as
+ * This Source Code Form is "Incompatible With Secondary Licenses", as
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
 /**
  *
  */
-public class V31APITest extends API.Base {
-    
-    public V31APITest() {
-        super(Constants.ENTERPRISE_PATTERN_V31);
+@Category(DataSetPremium.class)
+public class V31PremiumApiTest extends ApiBase {
+
+    public V31PremiumApiTest() {
+        super(Filename.PREMIUM_PATTERN_V31);
     }
     
 }

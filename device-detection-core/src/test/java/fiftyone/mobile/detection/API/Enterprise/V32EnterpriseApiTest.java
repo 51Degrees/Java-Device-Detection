@@ -1,6 +1,9 @@
-import org.junit.runner.JUnitCore;
-import org.junit.runner.Result;
-import org.junit.runner.notification.Failure;
+package fiftyone.mobile.detection.api.enterprise;
+
+import fiftyone.mobile.detection.Filename;
+import fiftyone.mobile.detection.api.ApiBase;
+import fiftyone.mobile.detection.category.DataSetPremium;
+import org.junit.experimental.categories.Category;
 
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
@@ -22,16 +25,14 @@ import org.junit.runner.notification.Failure;
  * This Source Code Form is "Incompatible With Secondary Licenses", as
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
+/**
+ *
+ */
+@Category(DataSetPremium.class)
+public class V32EnterpriseApiTest extends ApiBase {
 
-public class Runner {
-   public static void main(String[] args) {
-        Result result = JUnitCore.runClasses(SuiteOfSuites.class);
-        if (result.getFailureCount() > 0) {
-            for (Failure failure : result.getFailures()) {
-               System.out.println(failure.toString());
-            }
-        } else {
-            System.out.println(result.wasSuccessful());
-        }
-   }
-}  	
+    public V32EnterpriseApiTest() {
+        super(Filename.ENTERPRISE_PATTERN_V32);
+    }
+    
+}

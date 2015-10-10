@@ -1,6 +1,5 @@
 package Memory;
 
-import common.Utils;
 import fiftyone.mobile.detection.factories.StreamFactory;
 import java.io.IOException;
 import static org.junit.Assert.fail;
@@ -39,7 +38,7 @@ public abstract class FileBase extends Base {
     @Before
     @Override
     public void setUp() {
-        Utils.checkFileExists(super.dataFile);
+        assertFileExists(super.dataFile);
         super.memory = new Measurements();
         try {
             super.dataSet = StreamFactory.create(super.dataFile, false);

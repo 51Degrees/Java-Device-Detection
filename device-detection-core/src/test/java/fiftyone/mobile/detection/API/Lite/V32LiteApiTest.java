@@ -1,6 +1,9 @@
-package common;
+package fiftyone.mobile.detection.api.lite;
 
-import fiftyone.mobile.detection.Match;
+import fiftyone.mobile.detection.Filename;
+import fiftyone.mobile.detection.api.ApiBase;
+import fiftyone.mobile.detection.category.DataSetLite;
+import org.junit.experimental.categories.Category;
 
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
@@ -22,10 +25,14 @@ import fiftyone.mobile.detection.Match;
  * This Source Code Form is "Incompatible With Secondary Licenses", as
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
+/**
+ *
+ */
+@Category(DataSetLite.class)
+public class V32LiteApiTest extends ApiBase {
 
-public class DoNothing extends MatchProcessor {
-    @Override
-    public void Process(Match match, Results result) {
-        // Do nothing.
+    public V32LiteApiTest() {
+        super(Filename.LITE_PATTERN_V32);
     }
+    
 }

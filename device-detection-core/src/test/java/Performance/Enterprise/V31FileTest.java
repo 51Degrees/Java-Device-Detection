@@ -1,7 +1,7 @@
 package Performance.Enterprise;
 
 import Performance.FileBase;
-import Properties.Constants;
+import fiftyone.mobile.detection.Filename;
 import java.io.IOException;
 import org.junit.Test;
 
@@ -28,7 +28,7 @@ import org.junit.Test;
 
 public class V31FileTest extends FileBase {
     public V31FileTest() {
-        super(Constants.ENTERPRISE_PATTERN_V31);
+        super(Filename.ENTERPRISE_PATTERN_V31);
     }
     
     @Override

@@ -1,9 +1,10 @@
-package API;
+package fiftyone.mobile.detection.api;
 
-import common.Utils;
+import fiftyone.mobile.detection.DetectionTestSupport;
 import fiftyone.mobile.detection.Dataset;
 import fiftyone.mobile.detection.Match;
 import fiftyone.mobile.detection.Provider;
+import fiftyone.mobile.detection.category.TypeApi;
 import fiftyone.mobile.detection.entities.Property;
 import fiftyone.mobile.detection.factories.StreamFactory;
 import java.io.IOException;
@@ -14,6 +15,7 @@ import java.util.logging.Logger;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
@@ -36,25 +38,31 @@ import org.junit.Test;
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
 
-public abstract class Base {
+/**
+ * Superclass containing API pattern tests, subclassed for each type of Pattern file
+ *  * <p>
+ * Beware: The class level {@link Category} annotation does not seem to work
+ * without one of the test methods being annotated
+ */
+@Category(TypeApi.class)
+public abstract class ApiBase extends DetectionTestSupport {
     
-    private Dataset dataset;
-    private Provider provider;
-    private final String dataFile;
+    protected Dataset dataset;
+    protected Provider provider;
+    protected final String dataFile;
     
-    public Base(String dataFile) {
+    public ApiBase(String dataFile) {
         this.dataFile = dataFile;
-        Utils.checkFileExists(dataFile);
-
+        assertFileExists(dataFile);
     }
 
     @Before
-    public void createDataset() {
+    public void createDataset() throws IOException {
         try {
             this.dataset = StreamFactory.create(this.dataFile, false);
             this.provider = new Provider(dataset);
         } catch (IOException ex) {
-            Logger.getLogger(Base.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ApiBase.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -70,16 +78,19 @@ public abstract class Base {
         }
     }
 
+    // NB Do not remove the @Category annotation it seems to be needed to trigger the
+    // correct operation of the class level annotation
     @Test
+    @Category(TypeApi.class)
     public void API_AllHeaders() {
         Map<String, String> headers = new HashMap<String, String>();
         for (String header : dataset.getHttpHeaders()) {
-            headers.put(header, common.UserAgentGenerator.getRandomUserAgent(0));
+            headers.put(header, fiftyone.mobile.detection.common.UserAgentGenerator.getRandomUserAgent(0));
         }
         try {
             fetchAllProperties(provider.match(headers));
         } catch (IOException ex) {
-            Logger.getLogger(Base.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ApiBase.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     
@@ -92,7 +103,7 @@ public abstract class Base {
         try {
             fetchAllProperties(provider.match(headers));
         } catch (IOException ex) {
-            Logger.getLogger(Base.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ApiBase.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     
@@ -101,13 +112,13 @@ public abstract class Base {
         Map<String, String> headers = new HashMap<String, String>();
         for (int i = 0; i < 5; i++) {
             for (String header : dataset.getHttpHeaders()) {
-                headers.put(header, common.UserAgentGenerator.getRandomUserAgent(0));
+                headers.put(header, fiftyone.mobile.detection.common.UserAgentGenerator.getRandomUserAgent(0));
             }
         }
         try {
             fetchAllProperties(provider.match(headers));
         } catch (IOException ex) {
-            Logger.getLogger(Base.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ApiBase.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     
@@ -122,7 +133,7 @@ public abstract class Base {
         try {
             fetchAllProperties(provider.match(headers));
         } catch (IOException ex) {
-            Logger.getLogger(Base.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ApiBase.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     
@@ -132,7 +143,7 @@ public abstract class Base {
         try {
             fetchAllProperties(provider.match(headers));
         } catch (IOException ex) {
-            Logger.getLogger(Base.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ApiBase.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     
@@ -142,7 +153,7 @@ public abstract class Base {
         try {
             fetchAllProperties(provider.match(empty));
         } catch (IOException ex) {
-            Logger.getLogger(Base.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ApiBase.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     
@@ -150,13 +161,13 @@ public abstract class Base {
     public void API_LongUserAgent() {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < 10; i++) {
-            sb.append(common.UserAgentGenerator.getRandomUserAgent(10));
+            sb.append(fiftyone.mobile.detection.common.UserAgentGenerator.getRandomUserAgent(10));
         }
         String userAgent = sb.toString();
         try {
             fetchAllProperties(provider.match(userAgent));
         } catch (IOException ex) {
-            Logger.getLogger(Base.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ApiBase.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     
@@ -166,7 +177,7 @@ public abstract class Base {
         try {
             fetchAllProperties(provider.match(headers));
         } catch (IOException ex) {
-            Logger.getLogger(Base.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ApiBase.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     
@@ -176,7 +187,7 @@ public abstract class Base {
         try {
             fetchAllProperties(provider.match(userAgent));
         } catch (IOException ex) {
-            Logger.getLogger(Base.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ApiBase.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     

@@ -1,7 +1,7 @@
 package MetaData.Premium;
 
 import MetaData.MemoryBase;
-import Properties.Constants;
+import fiftyone.mobile.detection.Filename;
 import java.io.IOException;
 import org.junit.Test;
 
@@ -28,7 +28,7 @@ import org.junit.Test;
 
 public class V32MemoryTest extends MemoryBase {
     public V32MemoryTest() {
-        super(Constants.PREMIUM_PATTERN_V32);
+        super(Filename.PREMIUM_PATTERN_V32);
     }
     
     @Test

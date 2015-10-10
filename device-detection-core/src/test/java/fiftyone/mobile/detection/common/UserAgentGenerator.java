@@ -1,6 +1,6 @@
-package common;
+package fiftyone.mobile.detection.common;
 
-import Properties.Constants;
+import fiftyone.mobile.detection.Filename;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -57,7 +57,7 @@ public class UserAgentGenerator {
                     BufferedReader reader = null;
                     try {
                         reader = new BufferedReader(
-                            new FileReader(Constants.GOOD_USERAGENTS_FILE));
+                            new FileReader(Filename.GOOD_USERAGENTS_FILE));
                         String line = reader.readLine();
                         while (line != null) {
                             userAgents.add(line);

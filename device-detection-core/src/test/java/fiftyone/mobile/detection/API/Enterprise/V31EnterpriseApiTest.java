@@ -1,9 +1,8 @@
-import HttpHeaders.HttpHeaderSuite;
-import Memory.MemorySuite;
-import MetaData.MetaDataSuite;
-import Performance.PerformanceSuite;
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
+package fiftyone.mobile.detection.api.enterprise;
+import fiftyone.mobile.detection.Filename;
+import fiftyone.mobile.detection.api.ApiBase;
+import fiftyone.mobile.detection.category.DataSetPremium;
+import org.junit.experimental.categories.Category;
 
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
@@ -22,15 +21,17 @@ import org.junit.runners.Suite;
  * If a copy of the MPL was not distributed with this file, You can obtain
  * one at http://mozilla.org/MPL/2.0/.
  * 
- * This Source Code Form is "Incompatible With Secondary Licenses", as
+ * This Source Code Form is “Incompatible With Secondary Licenses”, as
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
+/**
+ *
+ */
+@Category(DataSetPremium.class)
+public class V31EnterpriseApiTest extends ApiBase {
 
-@RunWith(org.junit.runners.Suite.class)
-@org.junit.runners.Suite.SuiteClasses({
-    MetaDataSuite.class,
-    PerformanceSuite.class,
-    MemorySuite.class,
-    HttpHeaderSuite.class})
-public class SuiteOfSuites {
+    public V31EnterpriseApiTest() {
+        super(Filename.ENTERPRISE_PATTERN_V31);
+    }
+    
 }

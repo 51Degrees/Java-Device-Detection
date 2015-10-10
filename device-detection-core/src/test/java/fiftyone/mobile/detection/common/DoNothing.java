@@ -1,8 +1,6 @@
-package API.Enterprise;
+package fiftyone.mobile.detection.common;
 
-import Properties.Constants;
-
-import java.io.IOException;
+import fiftyone.mobile.detection.Match;
 
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
@@ -24,13 +22,10 @@ import java.io.IOException;
  * This Source Code Form is "Incompatible With Secondary Licenses", as
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
-/**
- *
- */
-public class V32APITest extends API.Base {
-    
-    public V32APITest() {
-        super(Constants.ENTERPRISE_PATTERN_V32);
+
+public class DoNothing extends MatchProcessor {
+    @Override
+    public void Process(Match match, Results result) {
+        // Do nothing.
     }
-    
 }

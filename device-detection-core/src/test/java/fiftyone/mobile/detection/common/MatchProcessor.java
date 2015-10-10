@@ -1,7 +1,6 @@
-package API.Lite;
+package fiftyone.mobile.detection.common;
 
-import Properties.Constants;
-
+import fiftyone.mobile.detection.Match;
 import java.io.IOException;
 
 /* *********************************************************************
@@ -24,13 +23,13 @@ import java.io.IOException;
  * This Source Code Form is "Incompatible With Secondary Licenses", as
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
-/**
- * 
- */
-public class V31APITest extends API.Base {
-    
-    public V31APITest() {
-        super(Constants.LITE_PATTERN_V31);
-    }
-    
+
+public abstract class MatchProcessor {
+    /**
+     * Performs some action with the match returns from detection.
+     * @param match
+     * @param result 
+     */
+    public abstract void Process(Match match, Results result)  
+            throws IOException ;
 }
