@@ -20,7 +20,7 @@
  * ********************************************************************* */
 package fiftyone.mobile.detection.readers;
 
-import fiftyone.mobile.detection.IDisposable;
+import java.io.Closeable;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -30,7 +30,7 @@ import java.nio.channels.FileChannel.MapMode;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BinaryReader implements IDisposable {
+public class BinaryReader implements Closeable {
 
     /**
      * List of integers used to create arrays of integers where the length of
@@ -102,7 +102,7 @@ public class BinaryReader implements IDisposable {
      * methods will fail with a null object exception.
      */
     @Override
-    public void dispose() {
+    public void close() {
         byteBuffer = null;
         if (channel != null) {
             try {

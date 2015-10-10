@@ -20,8 +20,8 @@
  * ********************************************************************* */
 package fiftyone.mobile.detection.entities.stream;
 
-import fiftyone.mobile.detection.IDisposable;
 import fiftyone.mobile.detection.readers.TrieReader;
+import java.io.Closeable;
 import java.io.IOException;
 import java.util.Queue;
 import java.util.concurrent.LinkedBlockingDeque;
@@ -33,7 +33,7 @@ import java.util.concurrent.LinkedBlockingDeque;
  * DetectorDataSet must be disposed of to ensure the readers in the pool are
  * closed.
  */
-public class TriePool implements IDisposable {
+public class TriePool implements Closeable {
 
     // List of readers available to be used.
     private final Queue<TrieReader> readers = new LinkedBlockingDeque<TrieReader>();
@@ -74,7 +74,7 @@ public class TriePool implements IDisposable {
     }
 
     @Override
-    public void dispose() {
-        source.dispose();
+    public void close() {
+        source.close();
     }
 }
