@@ -20,6 +20,7 @@
  */
 
 package fiftyone.mobile.detection.test.type.api.enterprise;
+
 import fiftyone.mobile.detection.Dataset;
 import fiftyone.mobile.detection.Provider;
 import fiftyone.mobile.detection.factories.StreamFactory;
@@ -27,6 +28,7 @@ import fiftyone.mobile.detection.test.Filename;
 import fiftyone.mobile.detection.test.TestType;
 import fiftyone.mobile.detection.test.type.api.ApiBase;
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.experimental.categories.Category;
 
@@ -38,19 +40,27 @@ import java.io.IOException;
 @Category(TestType.DataSetEnterprise.class)
 public class V31EnterpriseApiTest extends ApiBase {
 
+    private static String filename = Filename.ENTERPRISE_PATTERN_V31;
     private static Dataset dataset;
     private static Provider provider;
 
     @BeforeClass
     public static void createDataset() throws IOException {
-        dataset = StreamFactory.create(Filename.ENTERPRISE_PATTERN_V31, false);
-        provider = new Provider(dataset);
+        if (fileExists(filename)) {
+            dataset = StreamFactory.create(filename, false);
+            provider = new Provider(dataset);
+        }
+    }
+
+    @Before
+    public void checkFileExists() {
+        assumeFileExists(filename);
     }
 
     @AfterClass
     public static void dispose() {
-        dataset.close();
-        dataset=null;
+        if (dataset != null) dataset.close();
+        dataset = null;
     }
 
     @Override
@@ -62,5 +72,5 @@ public class V31EnterpriseApiTest extends ApiBase {
     public Dataset getDataset() {
         return dataset;
     }
-    
+
 }

@@ -21,23 +21,49 @@
 
 package fiftyone.mobile.detection.test.type.memory.lite;
 
-import fiftyone.mobile.detection.test.TestType;
-import fiftyone.mobile.detection.test.type.memory.MemoryBase;
+import fiftyone.mobile.detection.Dataset;
+import fiftyone.mobile.detection.factories.MemoryFactory;
 import fiftyone.mobile.detection.test.Filename;
+import fiftyone.mobile.detection.test.TestType;
 import fiftyone.mobile.detection.test.common.UserAgentGenerator;
-import java.io.IOException;
+import fiftyone.mobile.detection.test.type.memory.MemoryBase;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-@Category(TestType.DataSetLite.class)
+import java.io.IOException;
+
+@Category({TestType.DataSetLite.class, TestType.TypeMemory.class})
 public class V32LiteMemoryMemoryTest extends MemoryBase {
 
-    public V32LiteMemoryMemoryTest() {
-        super(Filename.LITE_PATTERN_V32);
+    private static String filename = Filename.LITE_PATTERN_V32;
+    private static Dataset dataset;
+
+    @Override
+    protected Dataset getDataset() {
+        return dataset;
+    }
+
+    @BeforeClass
+    public static void setUp() throws IOException {
+        if (fileExists(filename)) dataset = MemoryFactory.create(filename, false);
+    }
+
+    @Before
+    public void checkFileExists() {
+        assumeFileExists(filename);
+    }
+
+    @AfterClass
+    public static void tearDown() {
+        if (dataset != null) dataset.close();
+        dataset = null;
     }
 
     @Test
-    @Category(TestType.DataSetLite.class)
+    @Category({TestType.DataSetLite.class, TestType.TypeMemory.class})
     public void LiteV32Memory_Memory_UniqueUserAgentsMulti() throws IOException {
         super.userAgentsMulti(UserAgentGenerator.getUniqueUserAgents(), 200);
     }

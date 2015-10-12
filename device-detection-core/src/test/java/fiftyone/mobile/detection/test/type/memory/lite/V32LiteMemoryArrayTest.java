@@ -21,23 +21,44 @@
 
 package fiftyone.mobile.detection.test.type.memory.lite;
 
-import fiftyone.mobile.detection.test.TestType;
-import fiftyone.mobile.detection.test.type.memory.ArrayBase;
+import fiftyone.mobile.detection.Dataset;
+import fiftyone.mobile.detection.factories.StreamFactory;
 import fiftyone.mobile.detection.test.Filename;
+import fiftyone.mobile.detection.test.TestType;
 import fiftyone.mobile.detection.test.common.UserAgentGenerator;
-import java.io.IOException;
+import fiftyone.mobile.detection.test.type.memory.MemoryBase;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-@Category(TestType.DataSetLite.class)
-public class V32LiteMemoryArrayTest extends ArrayBase {
+import java.io.IOException;
 
-    public V32LiteMemoryArrayTest() {
-        super(Filename.LITE_PATTERN_V32);
+@Category({TestType.DataSetLite.class, TestType.TypeMemory.class})
+public class V32LiteMemoryArrayTest extends MemoryBase {
+
+    private static String filename = Filename.LITE_PATTERN_V32;
+    private static Dataset dataset;
+
+    @BeforeClass
+    public static void setUp() throws IOException {
+        if (fileExists(filename)) dataset = StreamFactory.create(readAllBytes(filename));
+    }
+
+    @Before
+    public void checkFileExists() {
+        assumeFileExists(filename);
+    }
+
+    @AfterClass
+    public static void tearDown() {
+        if (dataset != null) dataset.close();
+        dataset = null;
     }
 
     @Test
-    @Category(TestType.DataSetLite.class)
+    @Category({TestType.DataSetLite.class, TestType.TypeMemory.class})
     public void LiteV32Array_Memory_UniqueUserAgentsMulti() throws IOException {
         super.userAgentsMulti(UserAgentGenerator.getUniqueUserAgents(), 60);
     }
@@ -65,5 +86,10 @@ public class V32LiteMemoryArrayTest extends ArrayBase {
     @Test
     public void LiteV32Array_Memory_BadUserAgentsSingle() throws IOException {
         super.userAgentsSingle(UserAgentGenerator.getBadUserAgents(), 80);
+    }
+
+    @Override
+    protected Dataset getDataset() {
+        return dataset;
     }
 }

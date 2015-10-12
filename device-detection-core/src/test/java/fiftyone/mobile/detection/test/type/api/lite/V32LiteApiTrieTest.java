@@ -27,6 +27,7 @@ import fiftyone.mobile.detection.test.Filename;
 import fiftyone.mobile.detection.test.TestType;
 import fiftyone.mobile.detection.test.type.api.ApiTrieBase;
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.experimental.categories.Category;
 
@@ -38,19 +39,27 @@ import java.io.IOException;
 @Category(TestType.DataSetLite.class)
 public class V32LiteApiTrieTest extends ApiTrieBase {
 
+    private static String filename = Filename.LITE_TRIE_V32;
+
     private static TrieProvider provider;
+
+    @Override
+    public TrieProvider getProvider() {
+        return provider;
+    }
 
     @BeforeClass
     public static void createDataSet() throws IOException {
-        provider = TrieFactory.create(Filename.LITE_TRIE_V32, false);
+        if (fileExists(filename)) provider = TrieFactory.create(filename, false);
+    }
+
+    @Before
+    public void checkFileExists () {
+        assumeFileExists(filename);
     }
 
     @AfterClass
     public static void dispose() {
-        provider.close();
-    }
-    @Override
-    public TrieProvider getProvider() {
-        return provider;
+        if (provider != null) provider.close();
     }
 }

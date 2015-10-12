@@ -46,60 +46,45 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <!-- Default profile only tests Lite data sets -->
-                <configuration>
-                    <excludedGroups>fiftyone.mobile.detection.test.TestType$DataSetPremium,
-                        fiftyone.mobile.detection.test.TestType$DataSetEnterprise
-                    </excludedGroups>
-                </configuration>
-            </plugin>
+             </plugin>
         </plugins>
     </build>
 
     <profiles>
-        <!-- this profile tests all data sets -->
+        <!-- this profile tests lite only -->
         <profile>
-            <id>test-all-datasets</id>
+            <id>test-dataset-lite-only</id>
             <build>
                 <plugins>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-surefire-plugin</artifactId>
                         <configuration>
-                            <excludedGroups combine.self="override"/>
+                            <excludedGroups>fiftyone.mobile.detection.test.TestType$DataSetPremium,
+                                fiftyone.mobile.detection.test.TestType$DataSetEnterprise
+                            </excludedGroups>
                         </configuration>
                     </plugin>
                 </plugins>
             </build>
         </profile>
+        <!-- this profile tests the api category only -->
         <profile>
-            <id>test-everything</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-surefire-plugin</artifactId>
-                        <configuration combine.self="override" />
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <!-- this profile tests only the api category -->
-        <profile>
-            <id>test-api</id>
+            <id>test-type-api-only</id>
             <build>
                 <plugins>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-surefire-plugin</artifactId>
                         <configuration>
-                            <groups>fiftyone.mobile.detection.test.TestType$TypeApi</groups>
+                            <groups combine.self="append">fiftyone.mobile.detection.test.TestType$TypeApi</groups>
                             <excludedGroups combine.self="append" />
                         </configuration>
                     </plugin>
                 </plugins>
             </build>
         </profile>
+
     </profiles>
 
 </project>

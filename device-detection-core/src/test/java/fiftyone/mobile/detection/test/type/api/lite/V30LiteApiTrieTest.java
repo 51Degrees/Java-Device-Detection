@@ -43,19 +43,27 @@ import java.util.logging.Logger;
 @Category(TestType.DataSetLite.class)
 public class V30LiteApiTrieTest extends ApiTrieBase {
 
+    private static String filename = Filename.LITE_TRIE_V30;
+
     private static TrieProvider provider;
+
+    @Override
+    public TrieProvider getProvider() {
+        return provider;
+    }
 
     @BeforeClass
     public static void createDataSet() throws IOException {
-        provider = TrieFactory.create(Filename.LITE_TRIE_V30, false);
+        if (fileExists(filename)) provider = TrieFactory.create(filename, false);
+    }
+
+    @Before
+    public void checkFileExists () {
+        assumeFileExists(filename);
     }
 
     @AfterClass
     public static void dispose() {
-        provider.close();
-    }
-    @Override
-    public TrieProvider getProvider() {
-        return provider;
+        if (provider != null) provider.close();
     }
 }

@@ -21,23 +21,49 @@
 
 package fiftyone.mobile.detection.test.type.memory.premium;
 
-import fiftyone.mobile.detection.test.TestType;
-import fiftyone.mobile.detection.test.type.memory.FileBase;
+import fiftyone.mobile.detection.Dataset;
+import fiftyone.mobile.detection.factories.StreamFactory;
 import fiftyone.mobile.detection.test.Filename;
+import fiftyone.mobile.detection.test.TestType;
 import fiftyone.mobile.detection.test.common.UserAgentGenerator;
-import java.io.IOException;
+import fiftyone.mobile.detection.test.type.memory.MemoryBase;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-@Category(TestType.DataSetPremium.class)
-public class V31PremiumMemoryFileTest extends FileBase {
+import java.io.IOException;
 
-    public V31PremiumMemoryFileTest() {
-        super(Filename.PREMIUM_PATTERN_V31);
+@Category({TestType.DataSetPremium.class, TestType.TypeMemory.class})
+public class V31PremiumMemoryFileTest extends MemoryBase {
+
+    private static String filename = Filename.PREMIUM_PATTERN_V31;
+    private static Dataset dataset;
+
+    @Override
+    protected Dataset getDataset() {
+        return dataset;
+    }
+
+    @BeforeClass
+    public static void setUp() throws IOException {
+        if (fileExists(filename)) dataset = StreamFactory.create(filename, false);
+    }
+
+    @Before
+    public void checkFileExists() {
+        assumeFileExists(filename);
+    }
+
+    @AfterClass
+    public static void tearDown() {
+        if (dataset != null) dataset.close();
+        dataset = null;
     }
 
     @Test
-    @Category(TestType.DataSetPremium.class)
+    @Category({TestType.DataSetPremium.class, TestType.TypeMemory.class})
     public void PremiumV31File_Memory_UniqueUserAgentsMulti() throws IOException {
         super.userAgentsMulti(UserAgentGenerator.getUniqueUserAgents(), 20);
     }

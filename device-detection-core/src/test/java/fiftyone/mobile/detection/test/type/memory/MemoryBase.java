@@ -21,30 +21,56 @@
 
 package fiftyone.mobile.detection.test.type.memory;
 
-import fiftyone.mobile.detection.factories.MemoryFactory;
-import java.io.IOException;
-import static org.junit.Assert.fail;
+import fiftyone.mobile.detection.Dataset;
+import fiftyone.mobile.detection.Provider;
+import fiftyone.mobile.detection.test.DetectionTestSupport;
+import fiftyone.mobile.detection.test.common.Results;
+import org.junit.After;
 import org.junit.Before;
 
-public abstract class MemoryBase extends Base {
+import java.io.IOException;
 
-    public MemoryBase(String dataFile) {
-        super(dataFile);
-    }
+import static org.junit.Assert.assertTrue;
+
+public abstract class MemoryBase extends DetectionTestSupport {
+
+    protected abstract Dataset getDataset();
 
     /**
-     * Creates the data set to be used for the tests.
+     * Used to monitor memory usage through the test.
      */
+    protected Measurements memory = new Measurements();;
+
     @Before
-    @Override
-    public void setUp() {
-        assertFileExists(super.dataFile);
-        super.memory = new Measurements();
-        try {
-            super.dataSet = MemoryFactory.create(super.dataFile);
-        } catch (IOException ex) {
-            fail(ex.getMessage());
+    public void setUpMemory () {
+        memory.reset();
+    }
+
+    @After
+    public void tearDownMemory () {
+        memory = null;
+    }
+
+    protected void userAgentsSingle(Iterable<String> userAgents, double maxAllowedMemory) throws IOException {
+        memory.reset();
+        Results.detectLoopSingleThreaded(new Provider(getDataset()), userAgents, memory);
+        display(maxAllowedMemory);
+    }
+
+    protected void userAgentsMulti(Iterable<String> userAgents, double maxAllowedMemory) throws IOException {
+        memory.reset();
+        Results.detectLoopMultiThreaded(new Provider(getDataset()), userAgents, memory);
+        display(maxAllowedMemory);
+    }
+
+    private void display(double maxAllowedMemory) {
+        String message = String.format("Average Used: '%dMB' Max Allowed: '%dMB'", memory.getAverageMemoryUsed(),(int) maxAllowedMemory);
+        if (memory.getAverageMemoryUsed() < maxAllowedMemory) {
+            logger.info(message);
+        } else {
+            logger.error(message);
         }
-        super.setUp();
-    }    
+        assertTrue(message, memory.getAverageMemoryUsed() < maxAllowedMemory);
+    }
+
 }

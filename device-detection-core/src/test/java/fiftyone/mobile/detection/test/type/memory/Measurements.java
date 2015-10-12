@@ -21,9 +21,10 @@
 
 package fiftyone.mobile.detection.test.type.memory;
 
+import fiftyone.mobile.detection.Match;
 import fiftyone.mobile.detection.test.common.MatchProcessor;
 import fiftyone.mobile.detection.test.common.Results;
-import fiftyone.mobile.detection.Match;
+
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
@@ -32,7 +33,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * Used to approximate the amount of memory used during the test.
  */
 public class Measurements extends MatchProcessor {
-    
+
     public AtomicLong totalMemory = new AtomicLong();
 
     public AtomicInteger memorySamples = new AtomicInteger();
@@ -40,21 +41,23 @@ public class Measurements extends MatchProcessor {
     public Measurements() {
     }
 
-    private int allocatedMemory() {
+    private long allocatedMemory() {
         Runtime runtime = Runtime.getRuntime();
-        System.gc();
-        return (int)(runtime.totalMemory() - runtime.freeMemory());
-    }
-    
-    public int getAverageMemoryUsed() {
-        double averageMemoryUsed = ((totalMemory.longValue() / 
-                memorySamples.intValue())) / 
-                (double)(1024 * 1024); 
-        return (int)averageMemoryUsed;
+        return runtime.totalMemory() - runtime.freeMemory();
     }
 
-    public void reset()
-    {
+    public int getAverageMemoryUsed() {
+        long averageMemoryUsed = totalMemory.longValue() / memorySamples.longValue();
+        long aveMenoryUsedMb = averageMemoryUsed / (1024l * 1024l);
+        return (int) aveMenoryUsedMb;
+    }
+
+    public void reset() {
+        System.gc();
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException ignored) {}
+
         totalMemory.set(0);
         memorySamples.set(0);
     }
