@@ -59,11 +59,12 @@ public class V30LiteApiTrieTest extends ApiTrieBase {
 
     @Before
     public void checkFileExists () {
-        assumeFileExists(filename);
+        assertFileExists(filename);
     }
 
     @AfterClass
     public static void dispose() {
         if (provider != null) provider.close();
+        provider = null;
     }
 }

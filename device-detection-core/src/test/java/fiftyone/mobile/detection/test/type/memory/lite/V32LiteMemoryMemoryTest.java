@@ -53,7 +53,7 @@ public class V32LiteMemoryMemoryTest extends MemoryBase {
 
     @Before
     public void checkFileExists() {
-        assumeFileExists(filename);
+        assertFileExists(filename);
     }
 
     @AfterClass

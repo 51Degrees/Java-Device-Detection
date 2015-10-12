@@ -22,7 +22,7 @@
 package fiftyone.mobile.detection.test.common;
 
 import fiftyone.mobile.detection.test.Filename;
-import org.junit.Assume;
+import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,11 +68,7 @@ class UserAgentGeneratorLoader {
      * @return array of User-Agents.
      */
     protected static ArrayList<String> getUserAgents() {
-        if (privateUserAgents.size() == 0) {
-            logger.warn("There were no user agent values with which to carry out the tests");
-            // guaranteed fail
-            Assume.assumeTrue("There were no user agent values with which to carry out the tests", false);
-        }
+        Assert.assertFalse("There were no user agent values with which to carry out the tests", privateUserAgents.size() == 0);
         return privateUserAgents;
     }
 }

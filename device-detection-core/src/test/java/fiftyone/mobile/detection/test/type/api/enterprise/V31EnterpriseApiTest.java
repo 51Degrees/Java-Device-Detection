@@ -61,6 +61,7 @@ public class V31EnterpriseApiTest extends ApiBase {
     public static void dispose() {
         if (dataset != null) dataset.close();
         dataset = null;
+        provider = null;
     }
 
     @Override
