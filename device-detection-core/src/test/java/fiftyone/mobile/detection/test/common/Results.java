@@ -77,6 +77,7 @@ public class Results {
         provider.dataSet.resetCache();
         Match match = provider.createMatch();
         for(String userAgent : userAgents) {
+            processor.prepare();
             processor.process(provider.match(userAgent, match), results);
             results.count.incrementAndGet();
             results.methods.get(match.method).incrementAndGet();
@@ -153,6 +154,7 @@ public class Results {
                     @Override
                     public void run() {
                         try {
+                            processor.prepare();
                             Match match = provider.match(userAgent);
                             processor.process(match, results);
                             results.count.incrementAndGet();

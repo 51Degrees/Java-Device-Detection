@@ -35,7 +35,6 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-    /*
     V31LiteMemoryFileTest.class,
     V32LiteMemoryFileTest.class,
     V31LiteMemoryArrayTest.class,
@@ -53,6 +52,6 @@ import org.junit.runners.Suite;
     V31EnterpriseMemoryArrayTest.class,
     V32EnterpriseMemoryArrayTest.class,
     V31EnterpriseMemoryMemoryTest.class,
-    V32EnterpriseMemoryMemoryTest.class*/})
+    V32EnterpriseMemoryMemoryTest.class})
 public class MemorySuite {
 }

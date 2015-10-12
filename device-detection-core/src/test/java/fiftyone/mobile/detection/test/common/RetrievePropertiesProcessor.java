@@ -28,7 +28,7 @@ import fiftyone.mobile.detection.entities.Values;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class RetrievePropertiesProcessor implements MatchProcessor {
+public class RetrievePropertiesProcessor extends MatchProcessor.Default {
 
     private final ArrayList<Property> properties = new ArrayList<Property>();
     
