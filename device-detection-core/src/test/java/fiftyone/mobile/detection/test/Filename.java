@@ -54,5 +54,5 @@ public class Filename {
 
     public static final String PREMIUM_TRIE_V32 = BASE_DIRECTORY + "51Degrees-PremiumV3.2.trie";
 
-    public static final int USERAGENT_COUNT = 20000;    
+    public static final int USERAGENT_COUNT = 20000;
 }

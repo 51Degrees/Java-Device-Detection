@@ -40,6 +40,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assume.assumeTrue;
 
 /**
  * Supporting methods for detection tests, and common formatting e.g.
@@ -57,31 +58,59 @@ public class DetectionTestSupport {
 
     @Before
     public void beforeHeader() {
-        logger.info("*******************************");
-        logger.info("Starting test {} {}", this.getClass().getSimpleName(), getMethodName());
-        logger.info("*******************************");
+        logger.info("");
+        logger.info("------------------------------");
+        logger.info("Starting test {}.{}", this.getClass().getSimpleName(), getMethodName());
+        logger.info("..............................");
         startTime = System.currentTimeMillis();
     }
 
     @After
     public void afterHeader() {
-        logger.info("*******************************");
-        logger.info("Finished test {} in {} millis", getMethodName(), System.currentTimeMillis() - startTime);
-        logger.info("*******************************");
+        logger.info("..............................");
+        logger.info("Finished test {}.{}", this.getClass().getSimpleName(), getMethodName());
+        logger.info("Test took {} millis", System.currentTimeMillis() - startTime);
+        logger.info("------------------------------");
     }
 
     /**
-     * Asserts that the file exists. Used at the beginning of each test.
+     * Fail test if file not present
      * @param dataFile
      */
     public static void assertFileExists(String dataFile) {
         assertTrue(String.format(
                         "Data file '%s' could not be found. " +
                                 "See https://51degrees.com/compare-data-options to complete this test.",
-                        dataFile),
-                new File(dataFile).exists());
+                        dataFile), fileExists(dataFile));
     }
 
+    /**
+     * Skip test if file not present
+     * @param filename the name of the file
+     * @return the name of the file
+     */
+    public String assumeFileExists(String filename) {
+        if (!fileExists(filename)) {
+            logger.warn("Data file {} does not exist, skipping test.", filename);
+            logger.warn("See https://51degrees.com/compare-data-options to complete this test.");
+        }
+        assumeTrue("Data file " + filename + " does not exist, skipping test. ", fileExists(filename));
+        return filename;
+    }
+
+    /**
+     * Check for file existence
+     * @param filename a pathname
+     * @return true if file exists
+     */
+    public static boolean fileExists(String filename) {
+        return new File(filename).exists();
+    }
+
+    /**
+     *
+     * @param provider
+     */
     public static void assertPool(Provider provider) {
         if (provider.dataSet instanceof fiftyone.mobile.detection.entities.stream.Dataset) {
             fiftyone.mobile.detection.entities.stream.Dataset dataSet =

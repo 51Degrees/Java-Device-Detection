@@ -27,35 +27,40 @@ import fiftyone.mobile.detection.factories.StreamFactory;
 import fiftyone.mobile.detection.test.Filename;
 import fiftyone.mobile.detection.test.TestType;
 import fiftyone.mobile.detection.test.type.api.ApiBase;
-import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.experimental.categories.Category;
 
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
- * 
+ *
  */
 @Category(TestType.DataSetLite.class)
 public class V31LiteApiTest extends ApiBase {
 
+    private static String filename= Filename.LITE_PATTERN_V31;
     private static Dataset dataset;
     private static Provider provider;
 
     @BeforeClass
     public static void createDataset() throws IOException {
-        dataset = StreamFactory.create(Filename.LITE_PATTERN_V31, false);
-        provider = new Provider(dataset);
+        if (fileExists(filename)) {
+            dataset = StreamFactory.create(filename, false);
+            provider = new Provider(dataset);
+        }
+    }
+
+    @Before
+    public void checkFileExists() {
+        assumeFileExists(filename);
     }
 
     @AfterClass
     public static void dispose() {
-        dataset.close();
-        dataset=null;
+        if (dataset != null) dataset.close();
+        dataset = null;
     }
 
     @Override

@@ -52,7 +52,7 @@ public abstract class ApiBase extends DetectionTestSupport {
     // correct operation of the class level annotation
     @Test
     @Category(TestType.TypeApi.class)
-    public void AllHeaders() throws IOException {
+    public void allHeaders() throws IOException {
         Map<String, String> headers = new HashMap<String, String>();
         for (String header : getDataset().getHttpHeaders()) {
             headers.put(header, getRandomUserAgent(0));
