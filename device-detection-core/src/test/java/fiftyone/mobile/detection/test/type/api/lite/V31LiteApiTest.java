@@ -54,13 +54,14 @@ public class V31LiteApiTest extends ApiBase {
 
     @Before
     public void checkFileExists() {
-        assumeFileExists(filename);
+        assertFileExists(filename);
     }
 
     @AfterClass
     public static void dispose() {
         if (dataset != null) dataset.close();
         dataset = null;
+        provider = null;
     }
 
     @Override

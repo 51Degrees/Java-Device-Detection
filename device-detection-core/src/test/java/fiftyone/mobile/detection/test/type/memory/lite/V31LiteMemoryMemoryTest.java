@@ -48,7 +48,7 @@ public class V31LiteMemoryMemoryTest extends MemoryBase {
 
     @Before
     public void checkFileExists() {
-        assumeFileExists(filename);
+        assertFileExists(filename);
     }
 
     @AfterClass
