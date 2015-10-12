@@ -44,7 +44,7 @@ public abstract class MemoryBase extends DetectionTestSupport {
 
     @Before
     public void setUpMemory () {
-        memory.reset();
+        // nothing special to do
     }
 
     @After
@@ -54,17 +54,19 @@ public abstract class MemoryBase extends DetectionTestSupport {
 
     protected void userAgentsSingle(Iterable<String> userAgents, double maxAllowedMemory) throws IOException {
         memory.reset();
-        Results.detectLoopSingleThreaded(new Provider(getDataset()), userAgents, memory);
-        display(maxAllowedMemory);
+        Results results = Results.detectLoopSingleThreaded(new Provider(getDataset()), userAgents, memory);
+        display(results, maxAllowedMemory);
     }
 
     protected void userAgentsMulti(Iterable<String> userAgents, double maxAllowedMemory) throws IOException {
         memory.reset();
-        Results.detectLoopMultiThreaded(new Provider(getDataset()), userAgents, memory);
-        display(maxAllowedMemory);
+        Results results = Results.detectLoopMultiThreaded(new Provider(getDataset()), userAgents, memory);
+        display(results, maxAllowedMemory);
     }
 
-    private void display(double maxAllowedMemory) {
+    private void display(Results results, double maxAllowedMemory) {
+        logger.info("Average Allocated per Detection {}", memory.getAverageMemoryAllocatedPerDetection(results));
+        memory.logHeapState();
         String message = String.format("Average Used: '%dMB' Max Allowed: '%dMB'", memory.getAverageMemoryUsed(),(int) maxAllowedMemory);
         if (memory.getAverageMemoryUsed() < maxAllowedMemory) {
             logger.info(message);

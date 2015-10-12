@@ -24,6 +24,13 @@ package fiftyone.mobile.detection.test.common;
 import fiftyone.mobile.detection.Match;
 
 import java.io.IOException;
+import java.lang.management.ManagementFactory;
+import com.sun.management.ThreadMXBean;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.text.NumberFormat;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -32,36 +39,86 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 public class MemoryMeasurementProcessor implements MatchProcessor {
 
+    private Logger logger = LoggerFactory.getLogger(MemoryMeasurementProcessor.class);
+
     public AtomicLong totalMemory = new AtomicLong();
 
     public AtomicInteger memorySamples = new AtomicInteger();
 
+    private ThreadMXBean threadMXBean = (ThreadMXBean) ManagementFactory.getThreadMXBean();
+
+    private NumberFormat numberFormat = NumberFormat.getNumberInstance();
+
+    long heapAtStart;
+
+    private ConcurrentHashMap<Long, Long> lastThreadAllocation = new ConcurrentHashMap<Long, Long>();
+    private ConcurrentHashMap<Long, Long> totalCumulativeThreadAllocation = new ConcurrentHashMap<Long, Long>();
+    private Runtime runtime = Runtime.getRuntime();
+
     public MemoryMeasurementProcessor() {
     }
 
-    private long allocatedMemory() {
-        Runtime runtime = Runtime.getRuntime();
+    private long heapSize() {
         return runtime.totalMemory() - runtime.freeMemory();
+    }
+
+    private long allocatedMemory() {
+
+        logger.trace("Before GC Runtime: {} Thread Allocated Now {}",
+                numberFormat.format(heapSize()),
+                numberFormat.format(totalCumulativeThreadAllocation.get(Thread.currentThread().getId())));
+        runtime.gc();
+        logger.trace("After  GC Runtime: {}", numberFormat.format(heapSize()));
+        return heapSize();
     }
 
     public int getAverageMemoryUsed() {
         long averageMemoryUsed = totalMemory.longValue() / memorySamples.longValue();
-        long aveMenoryUsedMb = averageMemoryUsed / (1024l * 1024l);
-        return (int) aveMenoryUsedMb;
+        long aveMemoryUsedMb = averageMemoryUsed / (1024l * 1024l);
+        return (int) aveMemoryUsedMb;
+    }
+
+    public int getAverageMemoryAllocatedPerDetection(Results results) {
+        long totalAllocatedAllThreads = 0;
+        for (long allocatedMemory: totalCumulativeThreadAllocation.values()) {
+            totalAllocatedAllThreads += allocatedMemory;
+        }
+        long averageMemoryUsed = totalAllocatedAllThreads / results.count.get();
+        return (int) averageMemoryUsed;
     }
 
     public void reset() {
-        System.gc();
-        try {
-            Thread.sleep(500);
-        } catch (InterruptedException ignored) {}
-
         totalMemory.set(0);
         memorySamples.set(0);
+        lastThreadAllocation.clear();
+        totalCumulativeThreadAllocation.clear();
+        threadMXBean.setThreadAllocatedMemoryEnabled(true);
+        logHeapState();
+        heapAtStart = heapSize();
+        logger.info("Heap at start of test {}",numberFormat.format(heapAtStart));
+    }
+
+    public void logHeapState() {
+        logger.info("Heap before GC {}", numberFormat.format(heapSize()));
+        runtime.gc();
+        logger.info("Heap after GC {}", numberFormat.format(heapSize()));
+    }
+
+    public void prepare () {
+        final long threadId = Thread.currentThread().getId();
+        lastThreadAllocation.put(threadId, threadMXBean.getThreadAllocatedBytes(threadId));
+        if (totalCumulativeThreadAllocation.get(threadId) == null) {
+            totalCumulativeThreadAllocation.put(threadId, 0l);
+        }
     }
 
     @Override
     public void process(Match match, Results result) throws IOException {
+        final long threadId = Thread.currentThread().getId();
+        long totalAllocatedNow = threadMXBean.getThreadAllocatedBytes(threadId);
+        long allocated = totalAllocatedNow - lastThreadAllocation.get(threadId);
+        totalCumulativeThreadAllocation.put(threadId, totalCumulativeThreadAllocation.get(threadId) + allocated);
+
         if (result.count.intValue() % 1000 == 0) {
             memorySamples.incrementAndGet();
             totalMemory.addAndGet(allocatedMemory());

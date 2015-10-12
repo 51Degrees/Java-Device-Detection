@@ -26,15 +26,24 @@ import java.io.IOException;
 
 public interface MatchProcessor {
     /**
+     * Does something to prepare for the next iteration
+     */
+    void prepare();
+    /**
      * Performs some action with the match returns from detection.
      * @param match
      * @param result 
      */
-    public abstract void process(Match match, Results result) throws IOException ;
+    void process(Match match, Results result) throws IOException ;
 
-    public static class Default implements MatchProcessor {
+    class Default implements MatchProcessor {
         @Override
-        public void process(Match match, Results result) {
+        public void prepare() {
+            // do nothing
+        }
+
+        @Override
+        public void process(Match match, Results result) throws IOException {
             // Do nothing.
         }
     }
