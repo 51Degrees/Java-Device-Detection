@@ -34,6 +34,8 @@ import fiftyone.mobile.detection.entities.stream.TriePool;
 import fiftyone.mobile.detection.readers.TrieReader;
 import java.io.Closeable;
 import java.util.Map.Entry;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Decision trie data structure provider.
@@ -125,7 +127,7 @@ public abstract class TrieProvider implements Closeable {
     /**
      * A list of Http headers that the provider can use for device detection.
      */
-    private List<String> httpHeaders;
+    private volatile List<String> httpHeaders;
     /**
      * List of all property names for the provider.
      * @return list of all property names for the provider
@@ -172,10 +174,12 @@ public abstract class TrieProvider implements Closeable {
      * device detection.
      */
     public List<String> getHttpHeaders() {
-        if (httpHeaders == null) {
+        List<String> localHttpHeaders = httpHeaders;
+        if (localHttpHeaders == null) {
             synchronized(this) {
-                if (httpHeaders == null) {
-                    httpHeaders = new ArrayList<String>();
+                localHttpHeaders = httpHeaders;
+                if (localHttpHeaders == null) {
+                    httpHeaders = localHttpHeaders = new ArrayList<String>();
                     for (String[] sa : propertyHttpHeaders) {
                         for (String s : sa) {
                             if (!httpHeaders.contains(s))
@@ -185,7 +189,7 @@ public abstract class TrieProvider implements Closeable {
                 }
             }
         }
-        return httpHeaders;
+        return localHttpHeaders;
     }
     
     /**
@@ -272,6 +276,12 @@ public abstract class TrieProvider implements Closeable {
                     pool.release(reader);
                 }
             }
+        } else {
+            try {
+                indexes.put("User-Agent", getDeviceIndex(null));
+            } catch (Exception ex) {
+                
+            }
         }
         return indexes;
     }
@@ -295,7 +305,21 @@ public abstract class TrieProvider implements Closeable {
      * @return The value of the property for the given device index.
      */
     public String getPropertyValue(Map<String, Integer> deviceIndexes, String property) {
+        if (deviceIndexes == null || deviceIndexes.isEmpty()) {
+            return getDefaultPropertyValue(property);
+        }
         return getPropertyValue(deviceIndexes, _propertyIndex.get(property));
+    }
+    
+    /**
+     * 
+     * @param propertyName
+     * @return 
+     */
+    public String getDefaultPropertyValue(String propertyName) {
+        String ua = null;
+        return getPropertyValue(0, propertyName);
+
     }
     
     /**
@@ -307,6 +331,14 @@ public abstract class TrieProvider implements Closeable {
      */
     public String getPropertyValue(Map<String, Integer> deviceIndexes, int propertyIndex) {
         Integer deviceIndex;
+        if (propertyHttpHeaders.get(propertyIndex).length == 0) {
+            if (deviceIndexes.isEmpty()) {
+                deviceIndex = 0;
+            } else {
+                deviceIndex = deviceIndexes.get("User-Agent");
+            }
+            return getDeviceId(deviceIndex);
+        }        
         for (String header : propertyHttpHeaders.get(propertyIndex)) {
             deviceIndex = deviceIndexes.get(header);
             if (deviceIndex != null) {
