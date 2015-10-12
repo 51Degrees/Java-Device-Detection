@@ -21,7 +21,6 @@
 
 package fiftyone.mobile.detection.test.common;
 
-import java.text.Normalizer;
 import java.util.Iterator;
 import java.util.Random;
 import java.util.regex.Pattern;
@@ -32,27 +31,27 @@ public class UserAgentGenerator extends UserAgentGeneratorLoader {
     private static final Random random = new Random();
 
     /**
-     * Returns a random user agent which may also have been randomised.
+     * Get a random user agent whose characters may be swapped with each other
      *
-     * @param randomness a randomness factor
+     * @param swaps how many character swaps to do
      * @return a random user agent which may also have been randomised.
      */
-    public static String getRandomUserAgent(int randomness) {
-        String value = getUserAgents().get(random.nextInt(getUserAgents().size()));
-        if (randomness > 0) {
-            byte[] bytes = value.getBytes();
-            for (int i = 0; i < randomness; i++) {
-                int indexA = random.nextInt(value.length());
-                int indexB = random.nextInt(value.length());
-                byte temp = bytes[indexA];
-                bytes[indexA] = bytes[indexB];
-                bytes[indexB] = temp;
+    public static String getRandomUserAgent(int swaps) {
+        // get a random user agent
+        String result = getUserAgents().get(random.nextInt(getUserAgents().size()));
+        // swap as many chars in the user agent as determined by the parameter
+        if (swaps > 0) {
+            StringBuilder buf = new StringBuilder(result);
+            for (int i = 0; i < swaps; i++) {
+                int indexA = random.nextInt(result.length());
+                char temp = buf.charAt(indexA);
+                int indexB = random.nextInt(result.length());
+                buf.setCharAt(indexB, buf.charAt(indexA));
+                buf.setCharAt(indexA, temp);
             }
-            // TODO should this not be done on load? why not needed for all other tests?
-            value = Normalizer.normalize(new String(bytes), Normalizer.Form.NFD)
-                    .replaceAll("[^\\p{ASCII}]", "");
+            result = buf.toString();
         }
-        return value;
+        return result;
     }
 
     /**
