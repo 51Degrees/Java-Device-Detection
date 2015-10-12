@@ -69,7 +69,7 @@ public class Dataset implements Closeable {
     /**
      * The browser component.
      */
-    private Component browsers;
+    private volatile Component browsers;
     /**
      * A list of all the components the data set contains.
      */
@@ -77,7 +77,7 @@ public class Dataset implements Closeable {
     /**
      * The copyright notice associated with the data set.
      */
-    public String copyright;
+    public volatile String copyright;
     /**
      * The offset for the copyright notice associated with the data set.
      */
@@ -85,7 +85,7 @@ public class Dataset implements Closeable {
     /**
      * The crawler component.
      */
-    private Component crawlers;
+    private volatile Component crawlers;
     /**
      * The number of bytes to allocate to a buffer returning CSV format data for
      * a match.
@@ -106,7 +106,7 @@ public class Dataset implements Closeable {
     /**
      * The name of the property map used to create the dataset.
      */
-    public String format;
+    public volatile String format;
     /**
      * The offset for the name of the property map used to create the dataset.
      */
@@ -114,7 +114,7 @@ public class Dataset implements Closeable {
     /**
      * The hardware component.
      */
-    private Component hardware;
+    private volatile Component hardware;
     /**
      * The highest character the character trees can contain.
      */
@@ -123,7 +123,7 @@ public class Dataset implements Closeable {
      * List of unique HTTP Headers that the data set needs to consider to 
      * perform the most accurate matches.
      */
-    private String[] httpHeaders;
+    private volatile String[] httpHeaders;
     /**
      * The number of bytes to allocate to a buffer returning JSON format data
      * for a match.
@@ -164,7 +164,7 @@ public class Dataset implements Closeable {
     /**
      * The largest rank value that can be returned.
      */
-    public int maximumRank;
+    public volatile int maximumRank;
     /**
      * The minimum number of times a user agent should have been seen before it
      * was included in the dataset.
@@ -181,7 +181,7 @@ public class Dataset implements Closeable {
     /**
      * The common name of the data set.
      */
-    public String name;
+    public volatile String name;
     /**
      * The offset for the common name of the data set.
      */
@@ -243,7 +243,7 @@ public class Dataset implements Closeable {
     /**
      * The software component.
      */
-    private Component software;
+    private volatile Component software;
     /**
      * A list of ASCII byte arrays for strings used by the dataset.
      */
@@ -355,14 +355,16 @@ public class Dataset implements Closeable {
      * @return The largest rank value that can be returned.
      */
     public int getMaximumRank() {
-        if (maximumRank == 0 && rankedSignatureIndexes != null) {
+        int maxRank = maximumRank;
+        if (maxRank == 0 && rankedSignatureIndexes != null) {
             synchronized(this) {
-                if (maximumRank == 0 && rankedSignatureIndexes != null) {
-                    maximumRank = rankedSignatureIndexes.size();
+                maxRank = maximumRank;
+                if (maxRank == 0 && rankedSignatureIndexes != null) {
+                    maximumRank = maxRank = rankedSignatureIndexes.size();
                 }
             }
         }
-        return maximumRank;
+        return maxRank;
     }
     
     /**
@@ -379,14 +381,16 @@ public class Dataset implements Closeable {
      * @throws IOException signals an I/O exception occurred
      */
     public Component getHardware() throws IOException {
-        if (hardware == null) {
+        Component localHardware = hardware;
+        if (localHardware == null) {
             synchronized (this) {
-                if (hardware == null) {
-                    hardware = getComponent("HardwarePlatform");
+                localHardware = hardware;
+                if (localHardware == null) {
+                    hardware = localHardware = getComponent("HardwarePlatform");
                 }
             }
         }
-        return hardware;
+        return localHardware;
     }
     
 
@@ -396,14 +400,16 @@ public class Dataset implements Closeable {
      * @throws IOException signals an I/O exception occurred
      */
     public Component getSoftware() throws IOException {
-        if (software == null) {
+        Component localSoftware = software;
+        if (localSoftware == null) {
             synchronized (this) {
-                if (software == null) {
-                    software = getComponent("SoftwarePlatform");
+                localSoftware = software;
+                if (localSoftware == null) {
+                    software = localSoftware = getComponent("SoftwarePlatform");
                 }
             }
         }
-        return software;
+        return localSoftware;
     }
     
 
@@ -413,14 +419,16 @@ public class Dataset implements Closeable {
      * @throws IOException signals an I/O exception occurred
      */
     public Component getBrowsers() throws IOException {
-        if (browsers == null) {
+        Component localBrowsers = browsers;
+        if (localBrowsers == null) {
             synchronized (this) {
-                if (browsers == null) {
-                    browsers = getComponent("BrowserUA");
+                localBrowsers = browsers;
+                if (localBrowsers == null) {
+                    browsers = localBrowsers = getComponent("BrowserUA");
                 }
             }
         }
-        return browsers;
+        return localBrowsers;
     }
 
     /**
@@ -429,14 +437,16 @@ public class Dataset implements Closeable {
      * @throws IOException signals an I/O exception has occurred
      */
     public Component getCrawlers() throws IOException {
-        if (crawlers == null) {
+        Component localCrawlers = crawlers;
+        if (localCrawlers == null) {
             synchronized (this) {
-                if (crawlers == null) {
-                    crawlers = getComponent("Crawler");
+                localCrawlers = crawlers;
+                if (localCrawlers == null) {
+                    crawlers = localCrawlers = getComponent("Crawler");
                 }
             }
         }
-        return crawlers;
+        return localCrawlers;
     }
 
     /**
@@ -445,14 +455,16 @@ public class Dataset implements Closeable {
      * @throws IOException signals an I/O exception occurred
      */
     public String getCopyright() throws IOException {
-        if (copyright == null) {
+        String localCopyright = copyright;
+        if (localCopyright == null) {
             synchronized (this) {
-                if (copyright == null) {
-                    copyright = strings.get(copyrightOffset).toString();
+                localCopyright = copyright;
+                if (localCopyright == null) {
+                    copyright = localCopyright = strings.get(copyrightOffset).toString();
                 }
             }
         }
-        return copyright;
+        return localCopyright;
     }
 
     /**
@@ -461,14 +473,16 @@ public class Dataset implements Closeable {
      * @throws IOException signals an I/O exception occurred
      */
     public String getName() throws IOException {
-        if (name == null) {
+        String localName = name;
+        if (localName == null) {
             synchronized (this) {
-                if (name == null) {
-                    name = strings.get(nameOffset).toString();
+                localName = name;
+                if (localName == null) {
+                    name = localName = strings.get(nameOffset).toString();
                 }
             }
         }
-        return name;
+        return localName;
     }
 
     /**
@@ -477,14 +491,16 @@ public class Dataset implements Closeable {
      * @throws IOException signals an I/O exception occurred
      */
     public String getFormat() throws IOException {
-        if (format == null) {
+        String localFormat = format;
+        if (localFormat == null) {
             synchronized (this) {
-                if (format == null) {
-                    format = strings.get(formatOffset).toString();
+                localFormat = format;
+                if (localFormat == null) {
+                    format = localFormat = strings.get(formatOffset).toString();
                 }
             }
         }
-        return format;
+        return localFormat;
     }
 
 
@@ -576,9 +592,11 @@ public class Dataset implements Closeable {
      * @return list of HTTP headers as Strings.
      */
     public String[] getHttpHeaders() {
-        if (httpHeaders == null) {
+        String[] localHttpHeaders = httpHeaders;
+        if (localHttpHeaders == null) {
             synchronized(this) {
-                if (httpHeaders == null) {
+                localHttpHeaders = httpHeaders;
+                if (localHttpHeaders == null) {
                     List<String> tempList = new ArrayList<String>();
                     for (Component c : components) {
                        for (String s : c.getHttpheaders()) {
@@ -587,12 +605,12 @@ public class Dataset implements Closeable {
                            }
                        }
                     }
-                    httpHeaders = new String[tempList.size()];
-                    httpHeaders = tempList.toArray(httpHeaders);
+                    httpHeaders = localHttpHeaders = new String[tempList.size()];
+                    tempList.toArray(localHttpHeaders);
                 }
             }
         }
-        return httpHeaders;
+        return localHttpHeaders;
     }
     
     /**

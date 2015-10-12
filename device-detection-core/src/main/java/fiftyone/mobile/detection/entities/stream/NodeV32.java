@@ -40,7 +40,7 @@ public class NodeV32 extends Node {
     /**
      * A list of all the signature indexes that relate to this node.
      */
-    private int[] rankedSignatureIndexes;
+    private volatile int[] rankedSignatureIndexes;
     
     /**
      * Constructs a new instance of NodeV32.
@@ -89,14 +89,17 @@ public class NodeV32 extends Node {
      */
     @Override
     public int[] getRankedSignatureIndexes() {
-        if (rankedSignatureIndexes == null) {
+        int[] localRankedSignatureIndexes = rankedSignatureIndexes;
+        if (localRankedSignatureIndexes == null) {
             synchronized (this) {
-                if (rankedSignatureIndexes == null) {
-                    rankedSignatureIndexes = getRankedSignatureIndexesAsArray();
+                localRankedSignatureIndexes = rankedSignatureIndexes;
+                if (localRankedSignatureIndexes == null) {
+                    rankedSignatureIndexes = localRankedSignatureIndexes = 
+                            getRankedSignatureIndexesAsArray();
                 }
             }
         }
-        return rankedSignatureIndexes;
+        return localRankedSignatureIndexes;
     }
     
     /**

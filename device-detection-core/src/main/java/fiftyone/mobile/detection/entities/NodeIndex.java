@@ -52,16 +52,18 @@ public class NodeIndex extends BaseEntity implements Comparable<NodeIndex> {
      * Returns the characters related to this node index.
      */
     byte[] getCharacters() throws IOException {
-        if (characters == null) {
+        byte[] localCharacters = characters;
+        if (localCharacters == null) {
             synchronized(this) {
-                if (characters == null) {
-                    characters = getCharacters(getDataSet(), isString, value);
+                localCharacters = characters;
+                if (localCharacters == null) {
+                    characters = localCharacters = getCharacters(getDataSet(), isString, value);
                 }
             }
         }
-        return characters;
+        return localCharacters;
     }
-    private byte[] characters;
+    private volatile byte[] characters;
 
     /**
      * The node this index relates to.

@@ -34,7 +34,7 @@ public class SignatureV32 extends Signature {
      * List of the node offsets the signature relates to ordered by 
      * offset of the node.
      */
-    private int[] nodeOffsets;
+    private volatile int[] nodeOffsets;
     /**
      * The rank of the signature.
      */
@@ -88,9 +88,11 @@ public class SignatureV32 extends Signature {
      */
     @Override
     public int[] getNodeOffsets() {
-        if (this.nodeOffsets == null) {
+        int[] localNodeOffsets = this.nodeOffsets;
+        if (localNodeOffsets == null) {
             synchronized(this) {
-                if (this.nodeOffsets == null) {
+                localNodeOffsets = this.nodeOffsets;
+                if (localNodeOffsets == null) {
                     int[] nodeOffsets = new int[nodeCount];
                     IClosableIterator<IntegerEntity> iterator = null;
                     try {
@@ -105,11 +107,11 @@ public class SignatureV32 extends Signature {
                     } finally {
                         iterator.close();
                     }
-                    this.nodeOffsets = nodeOffsets;
+                    this.nodeOffsets = localNodeOffsets = nodeOffsets;
                 }
             }
         }
-        return this.nodeOffsets;
+        return localNodeOffsets;
     }
 
     /**

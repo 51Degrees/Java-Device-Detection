@@ -42,7 +42,7 @@ public abstract class Profile extends BaseEntity implements Comparable<Profile> 
     /**
      * The component the profile belongs to.
      */
-    private Component component;
+    private volatile Component component;
     /**
      * Index of the component the profile belongs to.
      */
@@ -50,15 +50,15 @@ public abstract class Profile extends BaseEntity implements Comparable<Profile> 
     /**
      * List of Values associated with the property name.
      */
-    private SortedList<String, Values> nameToValues;
+    private volatile SortedList<String, Values> nameToValues;
     /**
      * Array of Properties associated with the profile.
      */
-    private Property[] properties;
+    private volatile Property[] properties;
     /**
      * List of Property indexes wit the corresponding list of values.
      */
-    private SortedList<Integer, Values> propertyIndexToValues;
+    private volatile SortedList<Integer, Values> propertyIndexToValues;
     /**
      * The release date of the profile if it's a hardware profile.
      */
@@ -70,20 +70,20 @@ public abstract class Profile extends BaseEntity implements Comparable<Profile> 
     /**
      * Array of signatures associated with the profile.
      */
-    private Signature[] signatures;
+    private volatile Signature[] signatures;
     /**
      * An array of the signature indexes associated with the profile.
      * @abstract
      */
-    protected int[] signatureIndexes;
+    protected volatile int[] signatureIndexes;
     /**
      * A string representation of the profile.
      */
-    private String stringValue;
+    private volatile String stringValue;
     /**
      * An array of values associated with the profile.
      */
-    private Value[] values;
+    private volatile Value[] values;
     /**
      * Unique Id of the profile. Does not change between different data sets.
      */
@@ -92,7 +92,7 @@ public abstract class Profile extends BaseEntity implements Comparable<Profile> 
      * A list of the indexes of the values associated with the profile.
      * @abstract
      */
-    protected int[] valueIndexes;
+    protected volatile int[] valueIndexes;
     
     /**
      * Constructs a new instance of the Profile
@@ -124,14 +124,16 @@ public abstract class Profile extends BaseEntity implements Comparable<Profile> 
      * @throws java.io.IOException
      */
     public Component getComponent() throws IOException {
-        if (component == null) {
+        Component localComponent = component;
+        if (localComponent == null) {
             synchronized (this) {
-                if (component == null) {
-                    component = getDataSet().getComponents().get(componentIndex);
+                localComponent = component;
+                if (localComponent == null) {
+                    component = localComponent = getDataSet().getComponents().get(componentIndex);
                 }
             }
         }
-        return component;
+        return localComponent;
     }
     
     /**
@@ -140,14 +142,16 @@ public abstract class Profile extends BaseEntity implements Comparable<Profile> 
      * @throws java.io.IOException indicates an I/O exception occurred
      */
     public Property[] getProperties() throws IOException {
-        if (properties == null) {
+        Property[] localProperties = properties;
+        if (localProperties == null) {
             synchronized (this) {
-                if (properties == null) {
-                    properties = doGetProperties();
+                localProperties = properties;
+                if (localProperties == null) {
+                    properties = localProperties = doGetProperties();
                 }
             }
         }
-        return properties;
+        return localProperties;
     }
     
     /**
@@ -196,10 +200,12 @@ public abstract class Profile extends BaseEntity implements Comparable<Profile> 
      */
     public Values getValues(Property property) throws IOException {
         // Does the storage structure already exist?
-        if (nameToValues == null) {
+        SortedList<String, Values> localNameToValues = nameToValues;
+        if (localNameToValues == null) {
             synchronized (this) {
-                if (nameToValues == null) {
-                    nameToValues = new SortedList<String, Values>();
+                localNameToValues = nameToValues;
+                if (localNameToValues == null) {
+                    nameToValues = localNameToValues = new SortedList<String, Values>();
                 }
             }
         }
@@ -238,14 +244,16 @@ public abstract class Profile extends BaseEntity implements Comparable<Profile> 
      * @throws java.io.IOException indicates an I/O exception occurred
      */
     public Signature[] getSignatures() throws IOException {
-        if (signatures == null) {
+        Signature[] localSignatures = signatures;
+        if (localSignatures == null) {
             synchronized (this) {
-                if (signatures == null) {
-                    signatures = doGetSignatures();
+                localSignatures = signatures;
+                if (localSignatures == null) {
+                    signatures = localSignatures = doGetSignatures();
                 }
             }
         }
-        return signatures;
+        return localSignatures;
     }
     
     /**
@@ -266,14 +274,16 @@ public abstract class Profile extends BaseEntity implements Comparable<Profile> 
      * @throws java.io.IOException indicates an I/O exception occurred
      */
     public Value[] getValues() throws IOException {
-        if (values == null) {
+        Value[] localValues = values;
+        if (localValues == null) {
             synchronized (this) {
-                if (values == null) {
-                    values = doGetValues();
+                localValues = values;
+                if (localValues == null) {
+                    values = localValues = doGetValues();
                 }
             }
         }
-        return values;
+        return localValues;
     }
     
     /**
@@ -334,14 +344,16 @@ public abstract class Profile extends BaseEntity implements Comparable<Profile> 
      * @return 
      */
     private SortedList<Integer, Values> getPropertyIndexToValues() {
-        if (propertyIndexToValues == null) {
+        SortedList<Integer, Values> localPropertyIndexToValues = propertyIndexToValues;
+        if (localPropertyIndexToValues == null) {
             synchronized(this) {
-                if (propertyIndexToValues == null) {
-                    propertyIndexToValues = new SortedList<Integer, Values>();
+                localPropertyIndexToValues = propertyIndexToValues;
+                if (localPropertyIndexToValues == null) {
+                    propertyIndexToValues = localPropertyIndexToValues = new SortedList<Integer, Values>();
                 }
             }
         }
-        return propertyIndexToValues;
+        return localPropertyIndexToValues;
     }
     
     /**
@@ -351,9 +363,11 @@ public abstract class Profile extends BaseEntity implements Comparable<Profile> 
      */
     @Override
     public String toString() {
-        if (stringValue == null) {
+        String localStringValue = stringValue;
+        if (localStringValue == null) {
             synchronized (this) {
-                if (stringValue == null) {
+                localStringValue = stringValue;
+                if (localStringValue == null) {
                     List<Value> list = new ArrayList<Value>();
                     try {
                         for (int i = 0; i < getValues().length; i++) {
@@ -376,17 +390,17 @@ public abstract class Profile extends BaseEntity implements Comparable<Profile> 
                                     sb.append("/");
                                 }
                             }
-                            stringValue = sb.toString();
+                            stringValue = localStringValue = sb.toString();
                         } else {
-                            stringValue = String.valueOf(profileId);
+                            stringValue = localStringValue = String.valueOf(profileId);
                         }
                     } catch (IOException e) {
-                        stringValue = String.valueOf(profileId);
+                        stringValue = localStringValue = String.valueOf(profileId);
                     }
                 }
             }
         }
-        return stringValue;
+        return localStringValue;
     }
     
     /**

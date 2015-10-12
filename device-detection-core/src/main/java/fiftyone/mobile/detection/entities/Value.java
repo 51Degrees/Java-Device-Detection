@@ -50,7 +50,7 @@ public class Value extends BaseEntity implements Comparable<Value> {
      * The value as an integer. Integer instead of int because of the nullable 
      * requirement.
      */
-    private Integer asInt;
+    private volatile Integer asInt;
     
     /**
      * The length in bytes of the value record in the data file.
@@ -62,16 +62,18 @@ public class Value extends BaseEntity implements Comparable<Value> {
      * @throws IOException indicates an I/O exception occurred
      */
     public String getName() throws IOException {
-        if (name == null) {
+        String localName = name;
+        if (localName == null) {
             synchronized (this) {
-                if (name == null) {
-                    name = getDataSet().strings.get(nameIndex).toString();
+                localName = name;
+                if (localName == null) {
+                    name = localName = getDataSet().strings.get(nameIndex).toString();
                 }
             }
         }
-        return name;
+        return localName;
     }
-    private String name;
+    private volatile String name;
     private final int nameIndex;
 
     /**
@@ -79,48 +81,54 @@ public class Value extends BaseEntity implements Comparable<Value> {
      * @throws IOException indicates an I/O exception occurred
      */
     public Signature[] getSignatures() throws IOException {
-        if (signatures == null) {
+        Signature[] localSignatures = signatures;
+        if (localSignatures == null) {
             synchronized (this) {
-                if (signatures == null) {
-                    signatures = doGetSignatures();
+                localSignatures = signatures;
+                if (localSignatures == null) {
+                    signatures = localSignatures = doGetSignatures();
                 }
             }
         }
-        return signatures;
+        return localSignatures;
     }
-    private Signature[] signatures;
+    private volatile Signature[] signatures;
 
     /**
      * @return Array containing the profiles the value is associated with.
      * @throws IOException indicates an I/O exception occurred
      */
     public Profile[] getProfiles() throws IOException {
-        if (profiles == null) {
+        Profile[] localProfiles = profiles;
+        if (localProfiles == null) {
             synchronized (this) {
-                if (profiles == null) {
-                    profiles = doGetProfiles();
+                localProfiles = profiles;
+                if (localProfiles == null) {
+                    profiles = localProfiles = doGetProfiles();
                 }
             }
         }
-        return profiles;
+        return localProfiles;
     }
-    private Profile[] profiles;
+    private volatile Profile[] profiles;
 
     /**
      * @return The property the value relates to.
      * @throws IOException indicates an I/O exception occurred
      */
     public Property getProperty() throws IOException {
-        if (property == null) {
+        Property localProperty = property;
+        if (localProperty == null) {
             synchronized (this) {
-                if (property == null) {
-                    property = getDataSet().getProperties().get(propertyIndex);
+                localProperty = property;
+                if (localProperty == null) {
+                    property = localProperty = getDataSet().getProperties().get(propertyIndex);
                 }
             }
         }
-        return property;
+        return localProperty;
     }
-    private Property property;
+    private volatile Property property;
     final int propertyIndex;
 
     /**
@@ -137,17 +145,19 @@ public class Value extends BaseEntity implements Comparable<Value> {
      * @throws IOException indicates an I/O exception occurred
      */
     public String getDescription() throws IOException {
-        if (descriptionIndex >= 0 && description == null) {
+        String localDescription = description;
+        if (descriptionIndex >= 0 && localDescription == null) {
             synchronized (this) {
-                if (description == null) {
-                    description = getDataSet().strings
+                localDescription = description;
+                if (localDescription == null) {
+                    description = localDescription = getDataSet().strings
                             .get(descriptionIndex).toString();
                 }
             }
         }
-        return description;
+        return localDescription;
     }
-    private String description;
+    private volatile String description;
     private final int descriptionIndex;
 
     /**
@@ -155,17 +165,19 @@ public class Value extends BaseEntity implements Comparable<Value> {
      * @throws IOException indicates an I/O exception occurred
      */
     public URL getUrl() throws IOException {
-        if (urlIndex >= 0 && url == null) {
+        URL localUrl = url;
+        if (urlIndex >= 0 && localUrl == null) {
             synchronized (this) {
-                if (url == null) {
-                    url = new URL(getDataSet().strings.get(urlIndex)
+                localUrl = url;
+                if (localUrl == null) {
+                    url = localUrl = new URL(getDataSet().strings.get(urlIndex)
                             .toString());
                 }
             }
         }
-        return url;
+        return localUrl;
     }
-    private URL url;
+    private volatile URL url;
     private final int urlIndex;
 
     /**
@@ -291,40 +303,44 @@ public class Value extends BaseEntity implements Comparable<Value> {
      * @throws IOException indicates an I/O exception occurred
      */
     public double toDouble() throws IOException {
-        if (asNumber == null) {
+        Double localAsNumber = asNumber;
+        if (localAsNumber == null) {
             synchronized (this) {
-                if (asNumber == null) {
+                localAsNumber = asNumber;
+                if (localAsNumber == null) {
                     try {
-                        asNumber = Double.parseDouble(getName());
+                        asNumber = localAsNumber = Double.parseDouble(getName());
                     } catch (NumberFormatException e) {
                         if (this != getProperty().getDefaultValue()) {
-                            asNumber = getProperty().getDefaultValue().toDouble();
+                            asNumber = localAsNumber = getProperty().getDefaultValue().toDouble();
                         } else {
-                            asNumber = (double) 0;
+                            asNumber = localAsNumber = (double) 0;
                         }
                     }
                 }
             }
         }
-        return (double) asNumber;
+        return (double) localAsNumber;
     }
-    private Double asNumber;
+    private volatile Double asNumber;
 
     /**
      * @return Returns the value as a boolean.
      * @throws IOException indicates an I/O exception occurred
      */
     public boolean toBool() throws IOException {
-        if (asBool == null) {
+        Boolean localAsBool = asBool;
+        if (localAsBool == null) {
             synchronized (this) {
-                if (asBool == null) {
-                    asBool = Boolean.parseBoolean(getName());
+                localAsBool = asBool;
+                if (localAsBool == null) {
+                    asBool = localAsBool = Boolean.parseBoolean(getName());
                 }
             }
         }
-        return (boolean) asBool;
+        return (boolean) localAsBool;
     }
-    private Boolean asBool;
+    private volatile Boolean asBool;
 
     /**
      * Returns true if the value is the null value for the property. If the
@@ -349,13 +365,15 @@ public class Value extends BaseEntity implements Comparable<Value> {
      * used. If no conversion is possible 0 is returned.
      */
     public int toInt() {
-        if (asInt == null) {
-            synchronized (asInt) {
-                if (asInt == null) {
+        Integer localAsInt = asInt;
+        if (localAsInt == null) {
+            synchronized (this) {
+                localAsInt = asInt;
+                if (localAsInt == null) {
                     Double d;
                     try {
                         d = toDouble();
-                        asInt = d.intValue();
+                        asInt = localAsInt = d.intValue();
                     } catch (IOException ex) {
                         System.err.println("Value: failed to convert Double "
                                 + "to Integer.");
@@ -363,6 +381,6 @@ public class Value extends BaseEntity implements Comparable<Value> {
                 }
             }
         }
-        return asInt;
+        return localAsInt;
     }
 }

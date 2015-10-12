@@ -63,27 +63,27 @@ public abstract class Signature extends BaseEntity implements Comparable<Signatu
     /**
      * List of the profiles the signature relates to.
      */
-    private Profile[] profiles;
+    private volatile Profile[] profiles;
     /**
      * An array of nodes associated with the signature.
      */
-    private Node[] nodes;
+    private volatile Node[] nodes;
     /**
      * The unique Device Id for the signature.
      */
-    private String deviceId;
+    private volatile String deviceId;
     /**
      * The length in bytes of the signature.
      */
-    private int _length;
+    private volatile int _length;
     /**
      * The signature as a string.
      */
-    private String stringValue;
+    private volatile String stringValue;
     /**
      * Values associated with the property names.
      */
-    private SortedList<String, Values> nameToValues;
+    private volatile SortedList<String, Values> nameToValues;
 
     /**
      * Constructs a new instance of Signature
@@ -107,14 +107,16 @@ public abstract class Signature extends BaseEntity implements Comparable<Signatu
      * @throws IOException indicates an I/O exception occurred
      */
     public Profile[] getProfiles() throws IOException {
-        if (profiles == null) {
+        Profile[] localProfiles = profiles;
+        if (localProfiles == null) {
             synchronized (this) {
-                if (profiles == null) {
-                    profiles = getProfiles(profileOffsets);
+                localProfiles = profiles;
+                if (localProfiles == null) {
+                    profiles = localProfiles = getProfiles(profileOffsets);
                 }
             }
         }
-        return profiles;
+        return localProfiles;
     }
     
     /**
@@ -123,14 +125,16 @@ public abstract class Signature extends BaseEntity implements Comparable<Signatu
      * @throws IOException indicates an I/O exception occurred
      */
     public String getDeviceId() throws IOException {
-        if (deviceId == null) {
+        String localDeviceId = deviceId;
+        if (localDeviceId == null) {
             synchronized (this) {
-                if (deviceId == null) {
-                    deviceId = initGetDeviceId();
+                localDeviceId = deviceId;
+                if (localDeviceId == null) {
+                    deviceId = localDeviceId = initGetDeviceId();
                 }
             }
         }
-        return deviceId;
+        return localDeviceId;
     }
     
     /**
@@ -142,10 +146,12 @@ public abstract class Signature extends BaseEntity implements Comparable<Signatu
      */
     public Values getValues(String propertyName) throws IOException {
         // Does the storage structure already exist?
-        if (nameToValues == null) {
+        SortedList<String, Values> localNameToValues = nameToValues;
+        if (localNameToValues == null) {
             synchronized (this) {
-                if (nameToValues == null) {
-                    nameToValues = new SortedList<String, Values>();
+                localNameToValues = nameToValues;
+                if (localNameToValues == null) {
+                    nameToValues = localNameToValues = new SortedList<String, Values>();
                 }
             }
         }
@@ -182,16 +188,18 @@ public abstract class Signature extends BaseEntity implements Comparable<Signatu
     }
     
     public Value[] getValues() throws IOException {
-        if (values == null) {
+        Value[] localValues = values;
+        if (localValues == null) {
             synchronized (this) {
-                if (values == null) {
-                    values = initGetValues();
+                localValues = values;
+                if (localValues == null) {
+                    values = localValues = initGetValues();
                 }
             }
         }
-        return values;
+        return localValues;
     }
-    private Value[] values;
+    private volatile Value[] values;
    
     
     /**
@@ -201,14 +209,16 @@ public abstract class Signature extends BaseEntity implements Comparable<Signatu
      * @throws IOException indicates an I/O exception occurred
      */
     public int getLength() throws IOException {
-        if (_length == 0) {
+        int localLength = _length;
+        if (localLength == 0) {
             synchronized (this) {
-                if (_length == 0) {
-                    _length = getSignatureLength();
+                localLength = _length;
+                if (localLength == 0) {
+                    _length = localLength = getSignatureLength();
                 }
             }
         }
-        return _length;
+        return localLength;
     }
 
     /**
@@ -228,20 +238,17 @@ public abstract class Signature extends BaseEntity implements Comparable<Signatu
      * An array of nodes associated with the signature.
      * @return  An array of nodes associated with the signature.
      */
-    public Node[] getNodes() {
-        if (nodes == null) {
+    public Node[] getNodes() throws IOException {
+        Node[] localNodes = nodes;
+        if (localNodes == null) {
             synchronized(this) {
-                if (nodes == null) {
-                    try {
-                        nodes = doGetNodes();
-                    } catch (IOException ex) {
-                        System.err.println("Signature: failed to get nodes "
-                                + "associated with the signatures.");
-                    }
+                localNodes = nodes;
+                if (localNodes == null) {
+                    nodes = localNodes = doGetNodes();
                 }
             }
         }
-        return nodes;
+        return localNodes;
     }
 
     /**
@@ -413,9 +420,11 @@ public abstract class Signature extends BaseEntity implements Comparable<Signatu
      */
     @Override
     public String toString() {
-        if (stringValue == null) {
+        String localStringValue = stringValue;
+        if (localStringValue == null) {
             synchronized (this) {
-                if (stringValue == null) {
+                localStringValue = stringValue;
+                if (localStringValue == null) {
                     try {
                         byte[] buffer = new byte[getLength()];
                         for (Node n : getNodes()) {
@@ -426,14 +435,14 @@ public abstract class Signature extends BaseEntity implements Comparable<Signatu
                                 buffer[i] = ' ';
                             }
                         }
-                        stringValue = new String(buffer, "US-ASCII");
+                        stringValue = localStringValue = new String(buffer, "US-ASCII");
                     } catch (IOException e) {
                         return e.getMessage();
                     }
                 }
             }
         }
-        return stringValue;
+        return localStringValue;
     }
     
     /**

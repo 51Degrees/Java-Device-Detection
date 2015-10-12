@@ -43,14 +43,17 @@ public class Profile extends fiftyone.mobile.detection.entities.Profile {
     
     @Override
     public int[] getValueIndexes() {
-        if(valueIndexes == null) {
+        int[] localValueIndexes = valueIndexes;
+        if(localValueIndexes == null) {
             synchronized(this) {
-                if(valueIndexes == null) {
+                localValueIndexes = valueIndexes;
+                if(localValueIndexes == null) {
                     BinaryReader reader = null;
                     try {
                         reader = pool.getReader();
                         reader.setPos(position);
-                        valueIndexes = BaseEntity.readIntegerArray(reader, valueIndexesCount);
+                        valueIndexes = localValueIndexes = 
+                                BaseEntity.readIntegerArray(reader, valueIndexesCount);
                     } catch (IOException ex) {
                         System.err.println("Failed to get a reader from the "
                                 + "pool for reading ValueIndexes."
@@ -63,19 +66,23 @@ public class Profile extends fiftyone.mobile.detection.entities.Profile {
                 }
             }
         }
-        return valueIndexes;
+        return localValueIndexes;
     }
     
+    @Override
     public int[] getSignatureIndexes() {
-        if(signatureIndexes == null) {
+        int[] localSignatureIndexes = signatureIndexes;
+        if(localSignatureIndexes == null) {
             synchronized(this) {
-                if (signatureIndexes == null) {
+                localSignatureIndexes = signatureIndexes;
+                if (localSignatureIndexes == null) {
                     BinaryReader reader = null;
                     try {
                         reader = pool.getReader();
                         int offset = valueIndexesCount * (Integer.SIZE / Byte.SIZE);
                         reader.setPos(position + offset);
-                        signatureIndexes = BaseEntity.readIntegerArray(reader, signatureIndexesCount);
+                        signatureIndexes = localSignatureIndexes = 
+                                BaseEntity.readIntegerArray(reader, signatureIndexesCount);
                     } catch (IOException ex) {
                         System.err.println("Failed to get a reader from the "
                                 + "pool for reading ValueIndexes."
@@ -87,6 +94,6 @@ public class Profile extends fiftyone.mobile.detection.entities.Profile {
                 }
             }
         }
-        return signatureIndexes;
+        return localSignatureIndexes;
     }
 }

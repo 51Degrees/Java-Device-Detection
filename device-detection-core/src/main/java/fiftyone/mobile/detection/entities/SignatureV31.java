@@ -38,7 +38,7 @@ public class SignatureV31 extends Signature {
     /**
      * The rank of this signature.
      */
-    protected Integer rank;
+    protected volatile Integer rank;
     
     /**
      * Constructs a new instance of SignatureV31.
@@ -59,11 +59,13 @@ public class SignatureV31 extends Signature {
      */
     @Override
     public int getRank() {
-        if (rank == null) {
+        Integer localRank = rank;
+        if (localRank == null) {
             synchronized(this) {
-                if (rank == null) {
+                localRank = rank;
+                if (localRank == null) {
                     try {
-                        rank = getSignatureRank();
+                        rank = localRank = getSignatureRank();
                     } catch (IOException ex) {
                         System.err.println("SignatureV31: failed to get "
                                 + "signature rank.");
@@ -71,7 +73,7 @@ public class SignatureV31 extends Signature {
                 }
             }
         }
-        return rank;
+        return localRank;
     }
 
     /**

@@ -46,7 +46,7 @@ public abstract class Component extends BaseEntity
     /**
      * The default profile that should be returned for the component.
      */
-    private Profile defaultProfile;
+    private volatile Profile defaultProfile;
     /**
      * Offset for the default profile that should be returned for the component.
      */
@@ -54,7 +54,7 @@ public abstract class Component extends BaseEntity
     /**
      * The unique name of the component.
      */
-    private String name;
+    private volatile String name;
     /**
      * Offset for the unique name of the component.
      */
@@ -62,7 +62,7 @@ public abstract class Component extends BaseEntity
     /**
      * An array of profiles associated with the component.
      */
-    private Profile[] profiles;
+    private volatile Profile[] profiles;
     /**
      * The unique Id of the component. Does not change between different data
      * sets.
@@ -71,7 +71,7 @@ public abstract class Component extends BaseEntity
     /**
      * Array of properties associated with the component.
      */
-    private Property[] properties;
+    private volatile Property[] properties;
 
     /**
      * Constructs a new instance of Component
@@ -105,15 +105,17 @@ public abstract class Component extends BaseEntity
      * @throws java.io.IOException indicates an I/O exception occurred
      */
     public Profile getDefaultProfile() throws IOException {
-        if (defaultProfile == null) {
+        Profile localDefaultProfile = defaultProfile;
+        if (localDefaultProfile == null) {
             synchronized (this) {
-                if (defaultProfile == null) {
-                    defaultProfile = getDataSet().getProfiles().get(
+                localDefaultProfile = defaultProfile;
+                if (localDefaultProfile == null) {
+                    defaultProfile = localDefaultProfile = getDataSet().getProfiles().get(
                             defaultProfileOffset);
                 }
             }
         }
-        return defaultProfile;
+        return localDefaultProfile;
     }
     
     /**
@@ -122,14 +124,16 @@ public abstract class Component extends BaseEntity
      * @throws java.io.IOException indicates an I/O exception occurred
      */
     public Profile[] getProfiles() throws IOException {
-        if (profiles == null) {
+        Profile[] localProfiles = profiles;
+        if (localProfiles == null) {
             synchronized (this) {
-                if (profiles == null) {
-                    profiles = doGetProfiles();
+                localProfiles = profiles;
+                if (localProfiles == null) {
+                    profiles = localProfiles = doGetProfiles();
                 }
             }
         }
-        return profiles;
+        return localProfiles;
     }
     
     /**
@@ -139,14 +143,16 @@ public abstract class Component extends BaseEntity
      * @throws IOException indicates an I/O exception occurred
      */
     public Property[] getProperties() throws IOException {
-        if (properties == null) {
+        Property[] localProperties = properties;
+        if (localProperties == null) {
             synchronized (this) {
-                if (properties == null) {
-                    properties = doGetProperties();
+                localProperties = properties;
+                if (localProperties == null) {
+                    properties = localProperties = doGetProperties();
                 }
             }
         }
-        return properties;
+        return localProperties;
     }
     
     /**
@@ -168,14 +174,16 @@ public abstract class Component extends BaseEntity
      * @throws java.io.IOException indicates an I/O exception occurred 
      */
     public String getName() throws IOException {
-        if (name == null) {
+        String localName = name;
+        if (localName == null) {
             synchronized (this) {
-                if (name == null) {
-                    name = getDataSet().strings.get(nameOffset).toString();
+                localName = name;
+                if (localName == null) {
+                    name = localName = getDataSet().strings.get(nameOffset).toString();
                 }
             }
         }
-        return name;
+        return localName;
     }
 
     /**

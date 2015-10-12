@@ -476,16 +476,18 @@ public class Match {
      * @throws IOException indicates an I/O exception occurred
      */
     public Profile[] getProfiles() throws IOException {
-        if (profiles == null && signature != null) {
+        Profile[] localProfiles = profiles;
+        if (localProfiles == null && signature != null) {
             synchronized (this) {
-                if (profiles == null) {
-                    profiles = signature.getProfiles();
+                localProfiles = profiles;
+                if (localProfiles == null) {
+                    profiles = localProfiles = signature.getProfiles();
                 }
             }
         }
-        return profiles;
+        return localProfiles;
     }
-    Profile[] profiles;
+    volatile Profile[] profiles;
 
     /**
      * The user agent of the matching device with irrelevant characters removed.
@@ -774,9 +776,11 @@ public class Match {
     }
 
     public Map<String, String[]> getResults() throws IOException {
-        if (results == null) {
+        Map<String, String[]> localResults = results;
+        if (localResults == null) {
             synchronized (this) {
-                if (results == null) {
+                localResults = results;
+                if (localResults == null) {
                     Map<String, String[]> newResults =
                             new HashMap<String, String[]>();
 
@@ -807,13 +811,13 @@ public class Match {
                     newResults.put(DetectionConstants.DEVICEID,
                             new String[]{getDeviceId()});
 
-                    results = newResults;
+                    results = localResults = newResults;
                 }
             }
         }
-        return this.results;
+        return localResults;
     }
-    protected Map<String, String[]> results;
+    protected volatile Map<String, String[]> results;
 
     /**
      * Replaces any characters in the target user agent which are outside the

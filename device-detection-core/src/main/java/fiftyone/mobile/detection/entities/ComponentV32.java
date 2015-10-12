@@ -36,7 +36,7 @@ public class ComponentV32 extends Component {
      * List of HTTP headers that should be checked in order to perform a 
      * detection where more headers than User-Agent are available.
      */
-    private String[] httpHeaders;
+    private volatile String[] httpHeaders;
     /**
      * Offsets of the HTTP headers in the data file.
      */
@@ -67,9 +67,11 @@ public class ComponentV32 extends Component {
      */
     @Override
     public String[] getHttpheaders() {
-        if (httpHeaders == null) {
+        String[] localHttpHeaders = httpHeaders;
+        if (localHttpHeaders == null) {
             synchronized(this) {
-                if (httpHeaders == null) {
+                localHttpHeaders = httpHeaders;
+                if (localHttpHeaders == null) {
                     List<String> tempList = new ArrayList<String>();
                     for (int element : httpHeaderOffsets) {
                         try {
@@ -79,12 +81,12 @@ public class ComponentV32 extends Component {
                                     + "retrieve or add HTTP headers.");
                         }
                     }
-                    httpHeaders = tempList.toArray(new String[tempList.size()]);
+                    httpHeaders = localHttpHeaders = tempList.toArray(new String[tempList.size()]);
                     tempList.clear();
                 }
             }
         }
-        return httpHeaders;
+        return localHttpHeaders;
     }
     
 }

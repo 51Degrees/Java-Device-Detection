@@ -83,26 +83,25 @@ public class Property extends BaseEntity implements Comparable<Property> {
     final int firstValueIndex;
     /**
      * @return an array of maps associated with the property.
+     * @throws java.io.IOException
      */
-    public String[] getMaps() throws IOException
-    {
-        if (maps == null)
-        {
-            synchronized (this)
-            {
-                if (maps == null)
-                {
+    public String[] getMaps() throws IOException {
+        String[] localMaps = maps;
+        if (localMaps == null) {
+            synchronized (this) {
+                localMaps = maps;
+                if (localMaps == null) {
                     String[] temp = new String[mapCount];
                     for(int i = 0; i < mapCount; i++) {
                         temp[i] = dataSet.maps.get(i + firstMapIndex).getName();
                     }
-                    maps = temp;
+                    maps = localMaps = temp;
                 }
             }
         }
-        return maps;
+        return localMaps;
     }
-    private String[] maps;
+    private volatile String[] maps;
     private final int mapCount;
     private final int firstMapIndex;
 
@@ -112,27 +111,25 @@ public class Property extends BaseEntity implements Comparable<Property> {
      * @return the name of the property when used in javascript.
      * @throws IOException 
      */
-    public String getJavaScriptName() throws IOException
-    {
-        if (javascriptName == null)
-        {
-            synchronized(this)
-            {
-                if (javascriptName == null)
-                {
+    public String getJavaScriptName() throws IOException {
+        String localJavascriptName = javascriptName;
+        if (localJavascriptName == null) {
+            synchronized(this) {
+                localJavascriptName = javascriptName;
+                if (localJavascriptName == null) {
                     StringBuilder temp = new StringBuilder();
                     for(char character : getName().toCharArray()) {
                         if (Character.isLetterOrDigit(character)) {
                             temp.append(character);
                         }
                     }
-                    javascriptName = temp.toString();
+                    javascriptName = localJavascriptName = temp.toString();
                 }
             }
         }
-        return javascriptName;
+        return localJavascriptName;
     }
-    private String javascriptName;
+    private volatile String javascriptName;
     
     /**
      * The name of the property.
@@ -140,16 +137,18 @@ public class Property extends BaseEntity implements Comparable<Property> {
      * @throws java.io.IOException indicates an I/O exception occurred
      */
     public String getName() throws IOException {
-        if (name == null) {
+        String localName = name;
+        if (localName == null) {
             synchronized (this) {
-                if (name == null) {
-                    name = getDataSet().strings.get(nameOffset).toString();
+                localName = name;
+                if (localName == null) {
+                    name = localName = getDataSet().strings.get(nameOffset).toString();
                 }
             }
         }
-        return name;
+        return localName;
     }
-    private String name;
+    private volatile String name;
     private final int nameOffset;
     
     /**
@@ -163,17 +162,19 @@ public class Property extends BaseEntity implements Comparable<Property> {
      * @throws java.io.IOException indicates an I/O exception occurred
      */
     public Value getDefaultValue() throws IOException {
-        if (defaultValue == null &&
+        Value localDefaultValue = defaultValue;
+        if (localDefaultValue == null &&
             defaultValueIndex >= 0) {
             synchronized (this) {
-                if (defaultValue == null) {
-                    defaultValue = getDataSet().getValues().get(defaultValueIndex);
+                localDefaultValue = defaultValue;
+                if (localDefaultValue == null) {
+                    defaultValue = localDefaultValue = getDataSet().getValues().get(defaultValueIndex);
                 }
             }
         }
-        return defaultValue;
+        return localDefaultValue;
     }
-    private Value defaultValue;
+    private volatile Value defaultValue;
     private final int defaultValueIndex;
 
     /**
@@ -182,16 +183,18 @@ public class Property extends BaseEntity implements Comparable<Property> {
      * @throws java.io.IOException indicates an I/O exception occurred
      */
     public Component getComponent() throws IOException {
-        if (component == null) {
+        Component localComponent = component;
+        if (localComponent == null) {
             synchronized (this) {
-                if (component == null) {
-                    component = getDataSet().components.get(componentIndex);
+                localComponent = component;
+                if (localComponent == null) {
+                    component = localComponent = getDataSet().components.get(componentIndex);
                 }
             }
         }
-        return component;
+        return localComponent;
     }
-    private Component component;
+    private volatile Component component;
     private final int componentIndex;
 
     /**
@@ -201,16 +204,18 @@ public class Property extends BaseEntity implements Comparable<Property> {
      * @throws IOException indicates an I/O exception occurred
      */
     public Values getValues() throws IOException {
-        if (values == null) {
+        Values localValues = values;
+        if (localValues == null) {
             synchronized (this) {
-                if (values == null) {
-                    values = doGetValues();
+                localValues = values;
+                if (localValues == null) {
+                    values = localValues = doGetValues();
                 }
             }
         }
-        return values;
+        return localValues;
     }
-    private Values values;
+    private volatile Values values;
 
     /**
      * A description of the property suitable to be displayed to end users via a
@@ -221,17 +226,19 @@ public class Property extends BaseEntity implements Comparable<Property> {
      * @throws IOException indicates an I/O exception occurred
      */
     public String getDescription() throws IOException {
-        if (description == null && descriptionOffset >= 0) {
+        String localDescription = description;
+        if (localDescription == null && descriptionOffset >= 0) {
             synchronized (this) {
-                if (description == null) {
-                    description = getDataSet().strings
+                localDescription = description;
+                if (localDescription == null) {
+                    description = localDescription = getDataSet().strings
                             .get(descriptionOffset).toString();
                 }
             }
         }
-        return description;
+        return localDescription;
     }
-    private String description;
+    private volatile String description;
     private final int descriptionOffset;
 
     /**
@@ -241,17 +248,19 @@ public class Property extends BaseEntity implements Comparable<Property> {
      * @throws IOException indicates an I/O exception occurred
      */
     public String getCategory() throws IOException {
-        if (category == null && categoryOffset >= 0) {
+        String localCategory = category;
+        if (localCategory == null && categoryOffset >= 0) {
             synchronized (this) {
-                if (category == null) {
-                    category = getDataSet().strings.get(categoryOffset)
+                localCategory = category;
+                if (localCategory == null) {
+                    category = localCategory = getDataSet().strings.get(categoryOffset)
                             .toString();
                 }
             }
         }
-        return category;
+        return localCategory;
     }
-    private String category;
+    private volatile String category;
     private final int categoryOffset;
 
     /**
@@ -261,21 +270,23 @@ public class Property extends BaseEntity implements Comparable<Property> {
      * @throws IOException indicates an I/O exception occurred
      */
     public URL getUrl() throws IOException {
-        if (url == null && urlOffset >= 0) {
+        URL localUrl = url;
+        if (localUrl == null && urlOffset >= 0) {
             synchronized (this) {
-                if (url == null) {
+                localUrl = url;
+                if (localUrl == null) {
                     try {
-                        url = new URL(getDataSet().strings.get(urlOffset)
+                        url = localUrl = new URL(getDataSet().strings.get(urlOffset)
                                 .toString());
                     } catch (MalformedURLException e) {
-                        url = null;
+                        url = localUrl = null;
                     }
                 }
             }
         }
-        return url;
+        return localUrl;
     }
-    private URL url;
+    private volatile URL url;
     private final int urlOffset;
     private final int lastValueIndex;
 

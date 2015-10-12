@@ -23,17 +23,13 @@ package fiftyone.mobile.detection.test;
 
 import fiftyone.mobile.detection.test.type.api.ApiSuite;
 import fiftyone.mobile.detection.test.type.httpheader.HttpHeaderSuite;
-import fiftyone.mobile.detection.test.type.memory.MemorySuite;
 import fiftyone.mobile.detection.test.type.metadata.MetaDataSuite;
-import fiftyone.mobile.detection.test.type.performance.PerformanceSuite;
 import org.junit.runner.RunWith;
 
 @RunWith(org.junit.runners.Suite.class)
 @org.junit.runners.Suite.SuiteClasses({
     ApiSuite.class,
     MetaDataSuite.class,
-    PerformanceSuite.class,
-    MemorySuite.class,
     HttpHeaderSuite.class})
 /**
  * Container for all suites when not running Maven tests
