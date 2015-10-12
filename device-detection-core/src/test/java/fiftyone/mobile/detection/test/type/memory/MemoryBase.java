@@ -24,6 +24,7 @@ package fiftyone.mobile.detection.test.type.memory;
 import fiftyone.mobile.detection.Dataset;
 import fiftyone.mobile.detection.Provider;
 import fiftyone.mobile.detection.test.DetectionTestSupport;
+import fiftyone.mobile.detection.test.common.MemoryMeasurementProcessor;
 import fiftyone.mobile.detection.test.common.Results;
 import org.junit.After;
 import org.junit.Before;
@@ -39,7 +40,7 @@ public abstract class MemoryBase extends DetectionTestSupport {
     /**
      * Used to monitor memory usage through the test.
      */
-    protected Measurements memory = new Measurements();;
+    protected MemoryMeasurementProcessor memory = new MemoryMeasurementProcessor();;
 
     @Before
     public void setUpMemory () {
