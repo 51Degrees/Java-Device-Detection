@@ -24,8 +24,8 @@ package fiftyone.mobile.detection.test.type.performance;
 import fiftyone.mobile.detection.test.DetectionTestSupport;
 import fiftyone.mobile.detection.test.common.MatchProcessor;
 import fiftyone.mobile.detection.test.common.Results;
-import fiftyone.mobile.detection.test.common.RetrieveProperties;
 import fiftyone.mobile.detection.Dataset;
+import fiftyone.mobile.detection.test.common.RetrievePropertiesProcessor;
 import fiftyone.properties.MatchMethods;
 import fiftyone.mobile.detection.Provider;
 import fiftyone.mobile.detection.entities.Property;
@@ -139,7 +139,7 @@ public abstract class Base extends DetectionTestSupport {
 
     protected Results userAgentsMulti(Iterable<String> userAgents, 
             Iterable<Property> properties, int guidanceTime) throws IOException {
-        Results results = userAgentsMulti(userAgents, new RetrieveProperties(properties));
+        Results results = userAgentsMulti(userAgents, new RetrievePropertiesProcessor(properties));
         System.out.printf("Values check sum: '%d'\r\n", results.checkSum.longValue());
         assertTrue(
             String.format("Average time of '%d' ms exceeded guidance time of '%d' ms",
@@ -150,7 +150,7 @@ public abstract class Base extends DetectionTestSupport {
     }
 
     protected Results userAgentsSingle(Iterable<String> userAgents, Iterable<Property> properties, int guidanceTime) throws IOException {
-        Results results = userAgentsSingle(userAgents, new RetrieveProperties(properties));
+        Results results = userAgentsSingle(userAgents, new RetrievePropertiesProcessor(properties));
         System.out.printf("Values check sum: '%d'\r\n", results.checkSum.longValue());
         assertTrue(
             String.format("Average time of '%d' ms exceeded guidance time of '%d' ms",

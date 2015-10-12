@@ -24,12 +24,18 @@ package fiftyone.mobile.detection.test.common;
 import fiftyone.mobile.detection.Match;
 import java.io.IOException;
 
-public abstract class MatchProcessor {
+public interface MatchProcessor {
     /**
      * Performs some action with the match returns from detection.
      * @param match
      * @param result 
      */
-    public abstract void Process(Match match, Results result)  
-            throws IOException ;
+    public abstract void process(Match match, Results result) throws IOException ;
+
+    public static class Default implements MatchProcessor {
+        @Override
+        public void process(Match match, Results result) {
+            // Do nothing.
+        }
+    }
 }

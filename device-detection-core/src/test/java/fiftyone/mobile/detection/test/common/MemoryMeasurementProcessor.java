@@ -19,11 +19,9 @@
  * defined by the Mozilla Public License, v. 2.0.
  */
 
-package fiftyone.mobile.detection.test.type.memory;
+package fiftyone.mobile.detection.test.common;
 
 import fiftyone.mobile.detection.Match;
-import fiftyone.mobile.detection.test.common.MatchProcessor;
-import fiftyone.mobile.detection.test.common.Results;
 
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -32,13 +30,13 @@ import java.util.concurrent.atomic.AtomicLong;
 /**
  * Used to approximate the amount of memory used during the test.
  */
-public class Measurements extends MatchProcessor {
+public class MemoryMeasurementProcessor implements MatchProcessor {
 
     public AtomicLong totalMemory = new AtomicLong();
 
     public AtomicInteger memorySamples = new AtomicInteger();
 
-    public Measurements() {
+    public MemoryMeasurementProcessor() {
     }
 
     private long allocatedMemory() {
@@ -63,7 +61,7 @@ public class Measurements extends MatchProcessor {
     }
 
     @Override
-    public void Process(Match match, Results result) throws IOException {
+    public void process(Match match, Results result) throws IOException {
         if (result.count.intValue() % 1000 == 0) {
             memorySamples.incrementAndGet();
             totalMemory.addAndGet(allocatedMemory());

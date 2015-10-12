@@ -23,6 +23,15 @@ package fiftyone.mobile.detection.test.common;
 
 import java.io.IOException;
 
-public abstract class TrieProcessor {
-    public abstract void Process(Results result) throws IOException ;
+public interface TrieProcessor {
+
+    void process(Results result) throws IOException ;
+
+    class Default implements TrieProcessor{
+
+        @Override
+        public void process(Results result) throws IOException {
+            //Do nothing.
+        }
+    }
 }

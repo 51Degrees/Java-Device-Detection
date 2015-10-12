@@ -24,14 +24,15 @@ package fiftyone.mobile.detection.test.common;
 import fiftyone.mobile.detection.Match;
 import fiftyone.mobile.detection.entities.Property;
 import fiftyone.mobile.detection.entities.Values;
+
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class RetrieveProperties extends MatchProcessor {
+public class RetrievePropertiesProcessor implements MatchProcessor {
 
     private final ArrayList<Property> properties = new ArrayList<Property>();
     
-    public RetrieveProperties(Iterable<Property> properties) {
+    public RetrievePropertiesProcessor(Iterable<Property> properties) {
         if (properties != null) {
             for (Property property : properties) {
                 this.properties.add(property);
@@ -40,7 +41,7 @@ public class RetrieveProperties extends MatchProcessor {
     }
     
     @Override
-    public void Process(Match match, Results result) throws IOException {
+    public void process(Match match, Results result) throws IOException {
         long checkSum = 0;
         for(Property property : this.properties) {
             Values values = match.getValues(property);

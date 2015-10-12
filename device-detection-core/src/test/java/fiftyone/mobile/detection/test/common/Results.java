@@ -77,7 +77,7 @@ public class Results {
         provider.dataSet.resetCache();
         Match match = provider.createMatch();
         for(String userAgent : userAgents) {
-            processor.Process(provider.match(userAgent, match), results);
+            processor.process(provider.match(userAgent, match), results);
             results.count.incrementAndGet();
             results.methods.get(match.method).incrementAndGet();
         }
@@ -154,7 +154,7 @@ public class Results {
                     public void run() {
                         try {
                             Match match = provider.match(userAgent);
-                            processor.Process(match, results);
+                            processor.process(match, results);
                             results.count.incrementAndGet();
                             results.methods.get(match.method).incrementAndGet();
                         } catch (IOException ex) {

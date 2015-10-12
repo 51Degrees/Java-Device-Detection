@@ -28,7 +28,7 @@ import fiftyone.mobile.detection.Dataset;
 import fiftyone.mobile.detection.Match;
 import fiftyone.mobile.detection.Provider;
 import fiftyone.mobile.detection.entities.Property;
-import fiftyone.mobile.detection.test.type.memory.Measurements;
+import fiftyone.mobile.detection.test.common.MemoryMeasurementProcessor;
 import fiftyone.properties.MatchMethods;
 import java.io.IOException;
 import java.util.HashMap;
@@ -49,7 +49,7 @@ public abstract class Base extends DetectionTestSupport {
     /**
      * Used to monitor memory usage through the test.
      */
-    protected Measurements memory;
+    protected MemoryMeasurementProcessor memory;
     
     /** 
      * The path to the data file to use to create the dataset.
