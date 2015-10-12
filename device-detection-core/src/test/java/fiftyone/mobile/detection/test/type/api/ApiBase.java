@@ -35,6 +35,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static fiftyone.mobile.detection.test.common.UserAgentGenerator.getRandomUserAgent;
+import static org.junit.Assert.fail;
 
 /**
  * Superclass containing API pattern tests, subclassed for each type of Pattern file
@@ -126,7 +127,9 @@ public abstract class ApiBase extends DetectionTestSupport {
         for (Property property : match.dataSet.getProperties()) {
             String propName = property.getName();
             logger.debug("Property {}: {}", propName, match.getValues(property));
-            if (match.getValues(property) != null) {
+            if (match.getValues(property) == null) {
+                fail("Null value found for property " + propName );
+            } else {
                 checksum += match.getValues(propName).hashCode();
             }
         }
