@@ -45,7 +45,7 @@ import org.junit.runners.Suite;
     V31PremiumApiTest.class,
     V32PremiumApiTest.class})
 @Categories.IncludeCategory(TestType.TypeApi.class)
-@Categories.ExcludeCategory({TestType.DataSetEnterprise.class, TestType.DataSetPremium.class})
+//@Categories.ExcludeCategory({TestType.DataSetEnterprise.class, TestType.DataSetPremium.class})
 /**
  * For running outside Maven test context
  */

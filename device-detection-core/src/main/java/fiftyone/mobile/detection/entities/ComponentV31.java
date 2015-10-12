@@ -33,7 +33,7 @@ public class ComponentV31 extends Component {
      * List of HTTP headers that should be checked in order to perform a 
      * detection where more headers than User-Agent are available.
      */
-    private String[] httpHeaders;
+    private volatile String[] httpHeaders;
 
     /**
      * Constructs a new instance of ComponentV31. Reads the string offsets to 
@@ -56,26 +56,28 @@ public class ComponentV31 extends Component {
      */
     @Override
     public String[] getHttpheaders() {
-        if (httpHeaders == null) {
+        String[] localHttpHeaders = httpHeaders;
+        if (localHttpHeaders == null) {
             synchronized(this) {
-                if (httpHeaders == null) {
+                localHttpHeaders = httpHeaders;
+                if (localHttpHeaders == null) {
                     try {
                         // Implemented as if else for 1.6 compatibility rasons.
                         String cName = super.getName();
                         
                         if (cName.equals("HardwarePlatform")) {
-                            httpHeaders = 
+                            httpHeaders = localHttpHeaders = 
                                     DetectionConstants.DEVICE_USER_AGENT_HEADERS;
                         } else if (cName.equals("SoftwarePlatform")) {
-                            httpHeaders = 
+                            httpHeaders = localHttpHeaders = 
                                     DetectionConstants.DEVICE_USER_AGENT_HEADERS;
                         } else if (cName.equals("BrowserUA")) {
-                            httpHeaders = 
+                            httpHeaders = localHttpHeaders = 
                                     new String[] {
                                         DetectionConstants.USER_AGENT_HEADER
                                                  };
                         } else if (cName.equals("Crawler")) {
-                            httpHeaders = 
+                            httpHeaders = localHttpHeaders = 
                                     new String[] {
                                         DetectionConstants.USER_AGENT_HEADER
                                     };
@@ -87,7 +89,7 @@ public class ComponentV31 extends Component {
                 }
             }
         }
-        return httpHeaders;
+        return localHttpHeaders;
     }
     
     

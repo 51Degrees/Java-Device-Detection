@@ -76,14 +76,16 @@ public class AsciiString extends BaseEntity {
      */
     @Override
     public String toString() {
-        if (stringValue == null) {
+        String localStringValue = stringValue;
+        if (localStringValue == null) {
             synchronized (this) {
-                if (stringValue == null) {
-                    stringValue = new String(value);
+                localStringValue = stringValue;
+                if (localStringValue == null) {
+                    stringValue = localStringValue = new String(value);
                 }
             }
         }
-        return stringValue;
+        return localStringValue;
     }
-    private String stringValue = null;
+    private volatile String stringValue = null;
 }

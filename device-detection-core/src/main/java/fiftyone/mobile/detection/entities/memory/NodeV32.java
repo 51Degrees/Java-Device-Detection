@@ -32,7 +32,7 @@ import java.io.IOException;
  */
 public class NodeV32 extends Node{
 
-    private int[] rankedSignatureIndexes;
+    private volatile int[] rankedSignatureIndexes;
     
     private int nodeRankedSignatureValue;
     
@@ -125,11 +125,13 @@ public class NodeV32 extends Node{
      */
     @Override
     public int[] getRankedSignatureIndexes() {
-        if (rankedSignatureIndexes == null) {
+        int[] localRankedSignatureIndexes = rankedSignatureIndexes;
+        if (localRankedSignatureIndexes == null) {
             synchronized(this) {
-                if (rankedSignatureIndexes == null) {
+                localRankedSignatureIndexes = rankedSignatureIndexes;
+                if (localRankedSignatureIndexes == null) {
                     try {
-                        rankedSignatureIndexes = getRankedSignatureIndexesAsArray();
+                        rankedSignatureIndexes = localRankedSignatureIndexes = getRankedSignatureIndexesAsArray();
                     } catch (IOException ex) {
                         System.err.println("NodeV32: failed to get ranked "
                                 + "signature indexes.");
@@ -137,7 +139,7 @@ public class NodeV32 extends Node{
                 }
             }
         }
-        return rankedSignatureIndexes;
+        return localRankedSignatureIndexes;
     }
     
 }

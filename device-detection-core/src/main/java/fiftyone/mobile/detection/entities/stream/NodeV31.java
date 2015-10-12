@@ -39,7 +39,7 @@ public class NodeV31 extends Node {
     /**
      * An array of the ranked signature indexes for the node.
      */
-    private int[] rankedSignatureIndexes;
+    private volatile int[] rankedSignatureIndexes;
     
     /**
      * Constructs a new instance of NodeV31.
@@ -77,9 +77,11 @@ public class NodeV31 extends Node {
      */
     @Override
     public int[] getRankedSignatureIndexes() {
-        if (rankedSignatureIndexes == null) {
+        int[] localRankedSignatureIndexes = rankedSignatureIndexes;
+        if (localRankedSignatureIndexes == null) {
             synchronized (this) {
-                if (rankedSignatureIndexes == null) {
+                localRankedSignatureIndexes = rankedSignatureIndexes;
+                if (localRankedSignatureIndexes == null) {
                     BinaryReader reader = null;
                     try {
                         reader = pool.getReader();
@@ -87,7 +89,8 @@ public class NodeV31 extends Node {
                             ((DetectionConstants.SIZE_OF_SHORT + 
                               DetectionConstants.SIZE_OF_INT) * 
                                     getNumericChildrenLength()));
-                        rankedSignatureIndexes = readIntegerArray(reader, rankedSignatureCount);
+                        rankedSignatureIndexes = localRankedSignatureIndexes = 
+                                readIntegerArray(reader, rankedSignatureCount);
                     } catch (IOException ex) {
                         System.err.println("NodeV31: failed to get ranked "
                                 + "signature indexes.");
@@ -99,6 +102,6 @@ public class NodeV31 extends Node {
                 }
             }
         }
-        return rankedSignatureIndexes;
+        return localRankedSignatureIndexes;
     }
 }

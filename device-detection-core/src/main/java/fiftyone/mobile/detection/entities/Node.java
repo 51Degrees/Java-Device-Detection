@@ -83,7 +83,7 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
      * The characters that make up the node if it's a complete node or null 
      * if it's incomplete.
      */
-    private byte[] characters;
+    private volatile byte[] characters;
     /**
      * Number of numeric children associated with the node.
      */
@@ -123,11 +123,11 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
     /**
      * Parent node for this node.
      */
-    private Node parent = null;
+    private volatile Node parent = null;
     /**
      * Root node for this node.
      */
-    private Node root;
+    private volatile Node root;
 
     /**
      * Constructs a new instance of Node
@@ -157,14 +157,16 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
      * @throws java.io.IOException indicates an I/O exception occurred
      */
     public Node getRoot() throws IOException {
-        if (root == null) {
+        Node localRoot = root;
+        if (localRoot == null) {
             synchronized (this) {
-                if (root == null) {
-                    root = getParent() == null ? this : getParent().getRoot();
+                localRoot = root;
+                if (localRoot == null) {
+                    root = localRoot = getParent() == null ? this : getParent().getRoot();
                 }
             }
         }
-        return root;
+        return localRoot;
     }
 
     /**
@@ -172,14 +174,16 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
      * @reurn the parent node for this node.
      */
     Node getParent() throws IOException {
-        if (parentOffset >= 0 && parent == null) {
+        Node localParent = parent;
+        if (parentOffset >= 0 && localParent == null) {
             synchronized (this) {
-                if (parent == null) {
-                    parent = getDataSet().getNodes().get(parentOffset);
+                localParent = parent;
+                if (localParent == null) {
+                    parent = localParent = getDataSet().getNodes().get(parentOffset);
                 }
             }
         }
-        return parent;
+        return localParent;
     }
 
     /**
@@ -229,15 +233,17 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
      * @throws java.io.IOException indicates an I/O exception occurred
      */
     public byte[] getCharacters() throws IOException {
-        if (characters == null && characterStringOffset >= 0) {
+        byte[] localCharacters = characters;
+        if (localCharacters == null && characterStringOffset >= 0) {
             synchronized (this) {
-                if (characters == null) {
-                    characters = super.getDataSet().strings.
+                localCharacters = characters;
+                if (localCharacters == null) {
+                    characters = localCharacters = super.getDataSet().strings.
                             get(characterStringOffset).value;
                 }
             }
         }
-        return characters;
+        return localCharacters;
     }
 
     /**

@@ -37,16 +37,18 @@ public class Map extends BaseEntity implements Comparable<Map> {
      * @throws java.io.IOException indicates an I/O exception occurred
      */
     public String getName() throws IOException {
-        if (name == null) {
+        String localName = name;
+        if (localName == null) {
             synchronized (this) {
-                if (name == null) {
-                    name = getDataSet().strings.get(nameIndex).toString();
+                localName = name;
+                if (localName == null) {
+                    name = localName = getDataSet().strings.get(nameIndex).toString();
                 }
             }
         }
-        return name;
+        return localName;
     }
-    private String name;
+    private volatile String name;
     private final int nameIndex;
 
     /**

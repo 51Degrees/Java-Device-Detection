@@ -47,16 +47,18 @@ public class NodeNumericIndex extends BaseEntity {
      * @throws IOException
      */
     Node getNode() throws IOException {
-        if (_node == null) {
+        Node localNode = _node;
+        if (localNode == null) {
             synchronized (this) {
-                if (_node == null) {
-                    _node = getDataSet().nodes.get(RelatedNodeOffset);
+                localNode = _node;
+                if (localNode == null) {
+                    _node = localNode = getDataSet().nodes.get(RelatedNodeOffset);
                 }
             }
         }
-        return _node;
+        return localNode;
     }
-    private Node _node;
+    private volatile Node _node;
 
     /**
      *
