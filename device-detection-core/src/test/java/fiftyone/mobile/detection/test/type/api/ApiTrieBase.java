@@ -30,6 +30,8 @@ import org.junit.experimental.categories.Category;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.junit.Assert.fail;
+
 /**
  * Super class containing Api Trie tests. Subclassed to test Tries data sets at
  * various revisions.
@@ -121,7 +123,9 @@ public abstract class ApiTrieBase extends DetectionTestSupport {
         for (String propertyName : getProvider().propertyNames()) {
             String value = getProvider().getPropertyValue(deviceIndexes, propertyName);
             logger.debug("{}: {}", propertyName, value);
-            if (value != null) {
+            if (value == null) {
+                fail("Null value found for property " + propertyName );
+            } else {
                 checksum += value.hashCode();
             }
         }
@@ -133,7 +137,9 @@ public abstract class ApiTrieBase extends DetectionTestSupport {
         for (String propertyName : getProvider().propertyNames()) {
             String value = getProvider().getPropertyValue(deviceIndex, propertyName);
             logger.debug("{}: {}", propertyName, value);
-            if (value != null) {
+            if (value == null) {
+                fail("Null value found for property " + propertyName );
+            } else {
                 checksum += value.hashCode();
             }
         }
