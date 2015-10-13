@@ -46,15 +46,13 @@ public class FutureUaProcessor extends UaProcessor.Base {
 
     private class Result {
         String userAgent;
-        String deviceId;
         Match match;
         long time;
 
-        Result(String userAgent, long time, String deviceId, Match match) {
+        Result(String userAgent, long time, Match match) {
             this.userAgent = userAgent;
             this.match = match;
             this.time = time;
-            this.deviceId = deviceId;
         }
     }
 
@@ -80,7 +78,8 @@ public class FutureUaProcessor extends UaProcessor.Base {
     public void process() throws Exception {
 
         ExecutorService es = Executors.newFixedThreadPool(numberOfThreads);
-        ExecutorCompletionService<Result> ecs = new ExecutorCompletionService<Result>(es);
+        BlockingQueue<Future<Result>> completionQueue = new LinkedBlockingQueue<Future<Result>>(20000);
+        ExecutorCompletionService<Result> ecs = new ExecutorCompletionService<Result>(es, completionQueue);
 
         try {
             // keep track of how many futures we have processed
@@ -99,7 +98,8 @@ public class FutureUaProcessor extends UaProcessor.Base {
                                         long start = getCpuTime();
                                         // do the detection
                                         Match match = provider.match(nextUserAgent);
-                                        return new Result(nextUserAgent, getCpuTime() - start, match.getDeviceId(), match);
+                                        long time = getCpuTime() - start;
+                                        return new Result(nextUserAgent, time, match);
                                     }
                                 }
                 );
