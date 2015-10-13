@@ -29,6 +29,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.rules.TestName;
+import org.junit.rules.TestWatcher;
+import org.junit.runner.Description;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,6 +56,23 @@ public class DetectionTestSupport {
     @Rule
     public TestName testName = new TestName();
 
+    @Rule
+    public TestWatcher watchman= new TestWatcher() {
+        @Override
+        protected void failed(Throwable e, Description description) {
+            result = "FAILED " + e.getMessage();
+            afterHeader();
+        }
+
+        @Override
+        protected void succeeded(Description description) {
+            result = "Passed";
+            afterHeader();
+        }
+    };
+
+    private String result;
+
     private long startTime;
 
     @Before
@@ -65,10 +84,10 @@ public class DetectionTestSupport {
         startTime = System.currentTimeMillis();
     }
 
-    @After
+    //@After
     public void afterHeader() {
         logger.info("..............................");
-        logger.info("Finished test {}.{}", this.getClass().getSimpleName(), getMethodName());
+        logger.info(result + " {}.{}", this.getClass().getSimpleName(), getMethodName());
         logger.info("Test took {} millis", System.currentTimeMillis() - startTime);
         logger.info("------------------------------");
     }
