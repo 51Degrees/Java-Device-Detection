@@ -95,7 +95,7 @@ public class MemoryMeasurementProcessor implements MatchProcessor {
         threadMXBean.setThreadAllocatedMemoryEnabled(true);
         logHeapState();
         heapAtStart = heapSize();
-        logger.info("Heap at start of test {}",numberFormat.format(heapAtStart));
+        logger.info("Heap at start of test {}", numberFormat.format(heapAtStart));
     }
 
     public void logHeapState() {
@@ -104,6 +104,7 @@ public class MemoryMeasurementProcessor implements MatchProcessor {
         logger.info("Heap after GC {}", numberFormat.format(heapSize()));
     }
 
+    @Override
     public void prepare () {
         final long threadId = Thread.currentThread().getId();
         lastThreadAllocation.put(threadId, threadMXBean.getThreadAllocatedBytes(threadId));
