@@ -33,9 +33,6 @@ import org.junit.BeforeClass;
 import org.junit.experimental.categories.Category;
 
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 
 /**
  *
