@@ -123,10 +123,10 @@ public class Controller {
         OptionSpec<Integer> sleepOption = parser.accepts("sleep", "time to sleep between iterations in msec").withRequiredArg().ofType( Integer.class ).defaultsTo(1000);
         OptionSpec<Integer> waitOption = parser.accepts("wait", "time to wait after initialization and before starting the tests in msec").withRequiredArg().ofType( Integer.class ).defaultsTo(0);
 
+        Controller controller = new Controller();
         try {
             OptionSet options = parser.parse(args);
 
-            Controller controller = new Controller();
             controller.limit = limitOption.value(options);
             controller.iterations = iterationOption.value(options);
             controller.numberOfThreads = threadsOption.value(options);
@@ -159,16 +159,15 @@ public class Controller {
                 throw new Exception(String.format("Detection file %s does not exist%n", detectionFilenameOption.value(options)));
             }
 
-
             System.out.println("Running with options: " + options.asMap());
-
-            controller.process();
 
         } catch (Exception e) {
             System.err.println(e.getClass() + ": " + e.getMessage());
             parser.printHelpOn(System.out);
             System.exit(1);
         }
+
+        controller.process();
     }
 
     private void process() throws Exception {
