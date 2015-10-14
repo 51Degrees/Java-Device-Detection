@@ -84,6 +84,17 @@ public abstract class Signature extends BaseEntity implements Comparable<Signatu
      * Values associated with the property names.
      */
     private volatile SortedList<String, Values> nameToValues;
+    /**
+     * Returned when the property has no values in the provide.
+     */
+    private Value[] emptyValues = new Value[0];
+    /**
+     * A dictionary relating the index of a property to the values returned by 
+     * the signature.
+     */
+    private volatile SortedList<Integer, Values> propertyIndexToValues;
+    
+    private volatile SortedList<String, Values> propertyNameToValues;
 
     /**
      * Constructs a new instance of Signature
@@ -99,6 +110,45 @@ public abstract class Signature extends BaseEntity implements Comparable<Signatu
         this.nodes = null;
         this.profiles = null;
         this.nameToValues = null;
+    }
+    
+    /**
+     * A hash map relating the index of a property to the values returned 
+     * by the signature. Used to speed up subsequent data processing.
+     * @return dictionary relating the index of a property to the values returned 
+     * by the signature.
+     */
+    private SortedList<Integer, Values> getPropertyIndexToValues() {
+        SortedList<Integer, Values> localPropertyIndexToValues = propertyIndexToValues;
+        if (localPropertyIndexToValues == null) {
+            synchronized (this) {
+                localPropertyIndexToValues = propertyIndexToValues;
+                if (localPropertyIndexToValues == null) {
+                    propertyIndexToValues = localPropertyIndexToValues = 
+                            new SortedList<Integer, Values>();
+                }
+            }
+        }
+        return localPropertyIndexToValues;
+    }
+    
+    /**
+     * A hash map relating the name of a property to the values returned by 
+     * the signature. Used to speed up subsequent data processing.
+     * @return a hash map with values mapped to specific property.
+     */
+    private SortedList<String, Values> getPropertyNameToValues() {
+        SortedList<String, Values> localPropertyNameToValues = propertyNameToValues;
+        if (localPropertyNameToValues == null) {
+            synchronized (this) {
+                localPropertyNameToValues = propertyNameToValues;
+                if (localPropertyNameToValues == null) {
+                    propertyNameToValues = localPropertyNameToValues = 
+                            new SortedList<String, Values>();
+                }
+            }
+        }
+        return localPropertyNameToValues;
     }
     
     /**
@@ -138,6 +188,26 @@ public abstract class Signature extends BaseEntity implements Comparable<Signatu
     }
     
     /**
+     * Gets the values associated with the property.
+     * @param property The property whose values are required
+     * @return Value(s) associated with the property, or null if the property 
+     * does not exist
+     */
+    public Values getValues(Property property) throws IOException {
+        Values localValues = propertyIndexToValues.get(property.index);
+        if (localValues == null) {
+            synchronized (this) {
+                localValues = propertyIndexToValues.get(property.index);
+                if (localValues == null) {
+                    localValues = getPropertyValues(property);
+                    getPropertyIndexToValues().add(property.index, localValues);
+                }
+            }
+        }
+        return localValues;
+    }
+    
+    /**
      * Gets the values associated with the property name.
      * @param propertyName Name of the property whose values are required.
      * @return Value(s) associated with the property, or null if the property 
@@ -145,17 +215,22 @@ public abstract class Signature extends BaseEntity implements Comparable<Signatu
      * @throws java.io.IOException
      */
     public Values getValues(String propertyName) throws IOException {
-        // Does the storage structure already exist?
-        SortedList<String, Values> localNameToValues = nameToValues;
-        if (localNameToValues == null) {
+        Values localValues = getPropertyNameToValues().get(propertyName);
+        if (localValues == null) {
             synchronized (this) {
-                localNameToValues = nameToValues;
-                if (localNameToValues == null) {
-                    nameToValues = localNameToValues = new SortedList<String, Values>();
+                localValues = getPropertyNameToValues().get(propertyName);
+                if (localValues == null) {
+                    Property property = dataSet.get(propertyName);
+                    if (property != null) {
+                        localValues = this.getValues(property);
+                    }
+                    getPropertyNameToValues().add(propertyName, localValues);
                 }
             }
         }
+        return localValues;
 
+        /*
         // Do the values already exist for the property?
         synchronized (nameToValues) {
             Values result = nameToValues.get(propertyName);
@@ -185,8 +260,34 @@ public abstract class Signature extends BaseEntity implements Comparable<Signatu
 
             return result;
         }
+        */
     }
     
+    /**
+     * Gets the values associated with the property for this signature.
+     * @param property Property to be returned.
+     * @return  Array of values associated with the property and signature, or 
+     * an empty array if property not found.
+     * @throws IOException 
+     */
+    private Values getPropertyValues(Property property) throws IOException {
+        Profile profileForProperty = null;
+        for (Profile localProfile : profiles) {
+            if (property.getComponent().getComponentId() == 
+                    localProfile.getComponent().getComponentId()) {
+                profileForProperty = localProfile;
+                break;
+            }
+        }
+        return profileForProperty != null ? 
+                profileForProperty.getValues(property) :
+                null;
+    }
+    
+    /**
+     * @return an array of values associated with the signature.
+     * @throws IOException 
+     */
     public Value[] getValues() throws IOException {
         Value[] localValues = values;
         if (localValues == null) {
@@ -200,7 +301,6 @@ public abstract class Signature extends BaseEntity implements Comparable<Signatu
         return localValues;
     }
     private volatile Value[] values;
-   
     
     /**
      * The length in bytes of the signature.

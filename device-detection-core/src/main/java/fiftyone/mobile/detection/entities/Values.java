@@ -21,8 +21,6 @@
 package fiftyone.mobile.detection.entities;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
 
 import fiftyone.properties.DetectionConstants;
 
@@ -33,12 +31,16 @@ import fiftyone.properties.DetectionConstants;
  * The class contains helper methods to make consuming the data set easier.
  */
 @SuppressWarnings("serial")
-public class Values extends ArrayList<Value> {
+public class Values {
 
     /**
      * The property the list of values relates to.
      */
     private final Property property;
+    /**
+     * An array of values to expose.
+     */
+    private Value[] values;
 
     /**
      * Constructs a new instance of the values list.
@@ -46,8 +48,8 @@ public class Values extends ArrayList<Value> {
      * @param property Property the values list relates to
      * @param values IEnumerable of values to use to initialise the list
      */
-    Values(Property property, Collection<Value> values) {
-        super(values);
+    Values(Property property, Value[] values) {
+        this.values = values;
         this.property = property;
     }
 
@@ -64,7 +66,7 @@ public class Values extends ArrayList<Value> {
             throw new UnsupportedOperationException(
                     "Can't convert list to a boolean.");
         }
-        if (super.isEmpty() == false) {
+        if (values.length > 0) {
             return  get(0).toBool();
         }
         return false;
@@ -81,7 +83,7 @@ public class Values extends ArrayList<Value> {
             throw new UnsupportedOperationException(
                     "Can't convert list to double.");
         }
-        if (super.isEmpty() != false) {
+        if (values.length > 0) {
             return get(0).toDouble();
         }
         return 0;
@@ -94,8 +96,8 @@ public class Values extends ArrayList<Value> {
      * @throws IOException indicates an I/O exception occurred
      */
     public String[] toStringArray() throws IOException {
-        String[] array = new String[size()];
-        for (int i = 0; i < size(); i++) {
+        String[] array = new String[values.length];
+        for (int i = 0; i < values.length; i++) {
             array[i] = this.get(i).getName();
         }
         return array;
@@ -111,10 +113,10 @@ public class Values extends ArrayList<Value> {
     public String toString() {
         StringBuilder result = new StringBuilder();
 
-        for (int i = 0; i < size(); i++) {
+        for (int i = 0; i < values.length; i++) {
             result.append(get(i));
 
-            if (i != size() - 1) {
+            if (i != values.length - 1) {
                 result.append(DetectionConstants.VALUE_SEPARATOR);
             }
         }
@@ -129,11 +131,44 @@ public class Values extends ArrayList<Value> {
      * @throws IOException indicates an I/O exception occurred
      */
     public boolean getIsDefault() throws IOException {
-        for (Value value : this) {
+        for (Value value : values) {
             if (value.getIsDefault()) {
                 return true;
             }
         }
         return false;
     }
+    
+    public Value[] getAll() {
+        return values;
+    }
+    
+    public Value get(int index) {
+        return values[index];
+    }
+    
+    public boolean contains(Value item) {
+        for (Value v : values) {
+            if (v.equals(item)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    public void copyTo(Value[] array, int arrayIndex) {
+        int current = arrayIndex;
+        int i = 0;
+        while (current < values.length) {
+            array[i] = values[current];
+            current++;
+            i++;
+        }
+    }
+    
+    public int count() {
+        return values.length;
+    }
+    
+    
 }
