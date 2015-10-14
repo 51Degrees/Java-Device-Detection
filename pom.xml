@@ -15,6 +15,7 @@
         <module>device-detection-core</module>
         <module>device-detection-webapp</module>
         <module>device-detection-examples</module>
+        <module>device-detection-webapp-examples</module>
     </modules>
 
     <properties>
