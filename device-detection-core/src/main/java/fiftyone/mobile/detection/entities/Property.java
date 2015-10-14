@@ -291,6 +291,13 @@ public class Property extends BaseEntity implements Comparable<Property> {
     private final int lastValueIndex;
 
     /**
+     * @return The index of the last value related to the property.
+     */
+    public int getLastIndexValue() {
+        return lastValueIndex;
+    }
+    
+    /**
      * Constructs a new instance of Property
      *
      * @param dataSet data set to construct from
@@ -342,11 +349,18 @@ public class Property extends BaseEntity implements Comparable<Property> {
      * @throws IOException
      */
     private Values doGetValues() throws IOException {
+        Value[] values = new Value[lastValueIndex - firstValueIndex + 1];
+        for (int i = firstValueIndex, v = 0; i <= lastValueIndex; i++, v++) {
+            values[v] = dataSet.getValues().get(i);
+        }
+        return new Values(this, values);
+        /*
         List<Value> list = new ArrayList<Value>(lastValueIndex - firstValueIndex + 1);
         for (int index = firstValueIndex; index <= lastValueIndex; index++) {
             list.add(getDataSet().getValues().get(index));
         }
         return new Values(this, list);
+        */
     }
 
     /**

@@ -312,14 +312,15 @@ public abstract class TrieProvider implements Closeable {
     }
     
     /**
-     * 
-     * @param propertyName
-     * @return 
+     * Returns the default property value for a null User-Agent. Should be used 
+     * when a property has been requested but the User-Agent or a collection of 
+     * HTTP headers is null.
+     * @param propertyName String representing name of the property required.
+     * @return String with value associated with a specific property when the 
+     * User-Agent Header is set to null.
      */
     public String getDefaultPropertyValue(String propertyName) {
-        String ua = null;
         return getPropertyValue(0, propertyName);
-
     }
     
     /**
@@ -331,14 +332,6 @@ public abstract class TrieProvider implements Closeable {
      */
     public String getPropertyValue(Map<String, Integer> deviceIndexes, int propertyIndex) {
         Integer deviceIndex;
-        if (propertyHttpHeaders.get(propertyIndex).length == 0) {
-            if (deviceIndexes.isEmpty()) {
-                deviceIndex = 0;
-            } else {
-                deviceIndex = deviceIndexes.get("User-Agent");
-            }
-            return getDeviceId(deviceIndex);
-        }        
         for (String header : propertyHttpHeaders.get(propertyIndex)) {
             deviceIndex = deviceIndexes.get(header);
             if (deviceIndex != null) {

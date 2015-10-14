@@ -25,6 +25,7 @@ import fiftyone.mobile.detection.SortedList;
 import fiftyone.mobile.detection.readers.BinaryReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
@@ -93,6 +94,10 @@ public abstract class Profile extends BaseEntity implements Comparable<Profile> 
      * @abstract
      */
     protected volatile int[] valueIndexes;
+    /**
+     * Returned when the property has no values in the provide.
+     */
+    private final Value[] emptyValues = new Value[0];
     
     /**
      * Constructs a new instance of the Profile
@@ -187,7 +192,21 @@ public abstract class Profile extends BaseEntity implements Comparable<Profile> 
      * @throws IOException indicates an I/O exception occurred
      */
     public Values getValues(String propertyName) throws IOException {
-        return getValues(getDataSet().get(propertyName));
+        Values localValues = null;
+        localValues = getPropertyNameToValues().get(propertyName);
+        if (localValues == null) {
+            synchronized (this) {
+                getPropertyNameToValues().get(propertyName);
+                if (localValues == null) {
+                    Property property = dataSet.get(propertyName);
+                    if (property != null) {
+                        localValues = this.getValues(property);
+                        getPropertyNameToValues().add(propertyName, localValues);
+                    }
+                }
+            }
+        }
+        return localValues;
     }
     
     /**
@@ -199,18 +218,20 @@ public abstract class Profile extends BaseEntity implements Comparable<Profile> 
      * @throws java.io.IOException indicates an I/O exception occurred
      */
     public Values getValues(Property property) throws IOException {
-        // Does the storage structure already exist?
-        SortedList<String, Values> localNameToValues = nameToValues;
-        if (localNameToValues == null) {
+        Values localValues = null;
+        localValues = getPropertyIndexToValues().get(property.getIndex());
+        if (localValues == null) {
             synchronized (this) {
-                localNameToValues = nameToValues;
-                if (localNameToValues == null) {
-                    nameToValues = localNameToValues = new SortedList<String, Values>();
+                localValues = getPropertyIndexToValues().get(property.getIndex());
+                if (localValues == null) {
+                    Value[] v = getPropertyValues(property);
+                    localValues = new Values(property, v);
+                    getPropertyIndexToValues().add(property.getIndex(), localValues);
                 }
             }
         }
-
-        // Do the values already exist for the property?
+        return localValues;
+        /*
         synchronized (nameToValues) {
 
             Values result = nameToValues.get(property.getName());
@@ -236,6 +257,61 @@ public abstract class Profile extends BaseEntity implements Comparable<Profile> 
 
             return result;
         }
+        */
+    }
+    
+    /**
+     * Gets the values associated with the property for this profile.
+     * @param property Property to be returned.
+     * @return Array of values associated with the property and profile.
+     */
+    private Value[] getPropertyValues(Property property) throws IOException {
+        // Work out the start and end index in the values associated
+        // with the profile that relate to this property.
+        Value[] result;
+        //Arrays.sort(getValueIndexes());
+        //int start = getValuesIndex(property.firstValueIndex, 0);
+        int start = Arrays.binarySearch(getValueIndexes(), property.firstValueIndex);
+        
+        // If the start is negative then the first value doesn't exist.
+        // Take the complement and use this as the first index which will 
+        // relate to the first value associated with the profile for the
+        // property.
+        if (start < 0) {
+            start = ~start;
+        }
+        
+        //int end = getValuesIndex(property.getLastIndexValue(), start);
+        int end = Arrays.binarySearch(getValueIndexes(), 
+                start, 
+                (getValueIndexes().length), 
+                property.getLastIndexValue());
+        
+        // If the end is negative then the last value doesn't exist. Take
+        // the complement and use this as the last index. However if this 
+        // value doesn't relate to the property then it's the first value
+        // for the next property and we need to move back one in the list.
+        if (end < 0) {
+            end = ~end;
+            if (end >= valueIndexes.length ||
+                    valueIndexes[end] > property.getLastIndexValue()) {
+                end--;
+            }
+        }
+        // If start is greater than end then there are no values for this
+        // property in this profile. Return an empty array.
+        if (start > end) {
+            result = emptyValues;
+        } else {
+            result = new Value[end - start + 1];
+            for (int i = start, v = 0; i <= end; i++, v++) {
+                Value value = dataSet.values.get(valueIndexes[i]);
+                result[v] = value;
+            }
+        }
+        // Create the array and populate it with the values for the profile
+        // and property.
+        return result;
     }
     
     /**
@@ -304,14 +380,15 @@ public abstract class Profile extends BaseEntity implements Comparable<Profile> 
      * @return 
      */
     private int getValuesIndex(int valueIndex, int lower) {
-        int upper = valueIndexes.length - 1;
+        //int upper = valueIndexes.length - 1;
+        int upper = getValueIndexes().length - 1;
         int middle = 0;
         
         while(lower <= upper) {
             middle = lower + (upper - lower) / 2;
-            if (valueIndexes[middle] == 0) {
+            if (getValueIndexes()[middle] == 0) {
                 return middle;
-            } else if(valueIndexes[middle] == 0) {
+            } else if(getValueIndexes()[middle] == 0) {
                 upper = middle - 1;
             } else {
                 lower = middle + 1;
@@ -340,8 +417,29 @@ public abstract class Profile extends BaseEntity implements Comparable<Profile> 
     }
     
     /**
-     * 
-     * @return 
+     * A hash map relating the name of a property to the values returned by 
+     * the profile. Used to speed up subsequent data processing.
+     * @return a hash map with values mapped to specific property.
+     */
+    private SortedList<String, Values> getPropertyNameToValues() {
+        SortedList<String, Values> localPropertyNameToValues = propertyNameToValues;
+        if (localPropertyNameToValues == null) {
+            synchronized (this) {
+                localPropertyNameToValues = propertyNameToValues;
+                if (localPropertyNameToValues == null) {
+                    propertyNameToValues = localPropertyNameToValues = 
+                            new SortedList<String, Values>();
+                }
+            }
+        }
+        return localPropertyNameToValues;
+    }
+    private volatile SortedList<String, Values> propertyNameToValues;
+    
+    /**
+     * A hash map relating the index of a property to the values returned 
+     * by the profile. Used to speed up subsequent data processing.
+     * @return a hash map with property indexes mapped to corresponding values.
      */
     private SortedList<Integer, Values> getPropertyIndexToValues() {
         SortedList<Integer, Values> localPropertyIndexToValues = propertyIndexToValues;
@@ -349,7 +447,8 @@ public abstract class Profile extends BaseEntity implements Comparable<Profile> 
             synchronized(this) {
                 localPropertyIndexToValues = propertyIndexToValues;
                 if (localPropertyIndexToValues == null) {
-                    propertyIndexToValues = localPropertyIndexToValues = new SortedList<Integer, Values>();
+                    propertyIndexToValues = localPropertyIndexToValues = 
+                            new SortedList<Integer, Values>();
                 }
             }
         }
