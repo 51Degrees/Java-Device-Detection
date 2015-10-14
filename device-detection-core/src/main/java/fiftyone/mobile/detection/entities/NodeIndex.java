@@ -67,24 +67,37 @@ public class NodeIndex extends BaseEntity implements Comparable<NodeIndex> {
 
     /**
      * The node this index relates to.
+     * 
+     * If the data set is operating in memory mode then there will only ever
+     * be one instance of the associated node. Therefore double checked locking
+     * can be used to retrieve this single instance and store a reference to it.
+     * 
+     * When stream mode is being used we wish to ensure that instances of unused
+     * objects are freed by the garbage collector quickly. If the reference to 
+     * the cached instance were retained by the NodeIndex instance then more 
+     * memory would be used as the garbage collector would not recognise that 
+     * it could be freed.
      */
     Node getNode() throws IOException {
-        if (node != null) {
-            return node;
+        Node result = node;
+        if (result != null) {
+            return result;
         } else if (getDataSet().nodes instanceof MemoryBaseList) {
-            if (node == null) {
+            if (result == null) {
                 synchronized (this) {
-                    if (node == null) {
-                        node = getDataSet().getNodes().get(relatedNodeOffset);
+                    result = node;
+                    if (result == null) {
+                        node = result = getDataSet().getNodes().get(
+                                relatedNodeOffset);
                     }
                 }
             }
-            return node;
         } else {
-            return getDataSet().getNodes().get(relatedNodeOffset);
+            node = result = getDataSet().getNodes().get(relatedNodeOffset);
         }
+        return result;
     }
-    private Node node;
+    private volatile Node node;
 
     /**
      * Constructs a new instance of NodeIndex

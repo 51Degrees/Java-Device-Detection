@@ -123,10 +123,16 @@ public abstract class ApiTrieBase extends DetectionTestSupport {
         for (String propertyName : getProvider().propertyNames()) {
             String value = getProvider().getPropertyValue(deviceIndexes, propertyName);
             logger.debug("{}: {}", propertyName, value);
-            if (value == null) {
+            // Value is null and the property is not Id.
+            // Trie does not work with profiles and hence has no way of knowing 
+            // what profile is more relevant for each HTTP header. Hence it is 
+            // possible for the Id to be null.
+            if (value == null && (propertyName.equals("Id") == false)) {
                 fail("Null value found for property " + propertyName );
             } else {
-                checksum += value.hashCode();
+                if (value != null) {
+                    checksum += value.hashCode();
+                }
             }
         }
         logger.debug("Checksum: {}", checksum);
