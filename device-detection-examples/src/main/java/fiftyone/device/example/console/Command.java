@@ -18,7 +18,7 @@
  * This Source Code Form is "Incompatible With Secondary Licenses", as
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
-package fiftyone.mobile.console;
+package fiftyone.device.example.console;
 
 import fiftyone.mobile.detection.AutoUpdateException;
 import fiftyone.mobile.detection.Match;
