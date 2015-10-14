@@ -137,7 +137,7 @@ public abstract class Base extends DetectionTestSupport {
 
             System.out.println("Values:");
             int valuesChecksum = 0;
-            for(Value value : property.getValues())
+            for(Value value : property.getValues().getAll())
             {
                 valuesChecksum += value.toString().hashCode();
             }
