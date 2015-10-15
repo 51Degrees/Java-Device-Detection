@@ -36,27 +36,31 @@ public class V32LiteMetadataFileTest extends FileBase {
     
     @Test
     @Category(TestType.DataSetPremium.class)
-    public void PremiumV32File_RetrieveComponents() throws IOException {
+    @Override
+    public void retrieveComponents() throws IOException {
         super.retrieveComponents(); 
     }
 
     @Test
-    public void PremiumV32File_RetrieveProperties() throws IOException { 
+    @Override
+    public void retrieveProperties() throws IOException { 
         super.retrieveProperties(); 
     }
 
     @Test
-    public void PremiumV32File_RetrieveValues() throws IOException {
+    @Override
+    public void retrieveValues() throws IOException {
         super.retrieveValues(); 
     }
 
     @Test
-    public void PremiumV32File_CheckPropertyCount() { 
+    public void checkPropertyCount() { 
         super.checkPropertyCount(130); 
     }
 
     @Test
-    public void PremiumV32File_ValidatePropertiesHaveDescription() throws IOException { 
+    @Override
+    public void validatePropertiesHaveDescription() throws IOException { 
         super.validatePropertiesHaveDescription(); 
     }    
 }
