@@ -77,8 +77,7 @@ public class ComponentV32 extends Component {
                         try {
                             tempList.add(dataSet.strings.get(element).toString());
                         } catch (IOException ex) {
-                            System.err.println("Component V32 failed to "
-                                    + "retrieve or add HTTP headers.");
+                            //TODO: handle exception.
                         }
                     }
                     httpHeaders = localHttpHeaders = tempList.toArray(new String[tempList.size()]);

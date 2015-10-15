@@ -375,8 +375,7 @@ public class Value extends BaseEntity implements Comparable<Value> {
                         d = toDouble();
                         asInt = localAsInt = d.intValue();
                     } catch (IOException ex) {
-                        System.err.println("Value: failed to convert Double "
-                                + "to Integer.");
+                        //TODO: handle exception.
                     }
                 }
             }

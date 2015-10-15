@@ -293,8 +293,8 @@ public abstract class Profile extends BaseEntity implements Comparable<Profile> 
         // for the next property and we need to move back one in the list.
         if (end < 0) {
             end = ~end;
-            if (end >= valueIndexes.length ||
-                    valueIndexes[end] > property.getLastIndexValue()) {
+            if (end >= getValueIndexes().length ||
+                    getValueIndexes()[end] > property.getLastIndexValue()) {
                 end--;
             }
         }
@@ -305,7 +305,7 @@ public abstract class Profile extends BaseEntity implements Comparable<Profile> 
         } else {
             result = new Value[end - start + 1];
             for (int i = start, v = 0; i <= end; i++, v++) {
-                Value value = dataSet.values.get(valueIndexes[i]);
+                Value value = dataSet.values.get(getValueIndexes()[i]);
                 result[v] = value;
             }
         }
@@ -523,7 +523,8 @@ public abstract class Profile extends BaseEntity implements Comparable<Profile> 
     };
     
     /**
-     * A array of the indexes of the values associated with the profile.
+     * A array of the indexes of the values associated with the profile in order
+     * of value index in the data set values list.
      * @return A array of the indexes of the values associated with the profile.
      */
     public abstract int[] getValueIndexes();

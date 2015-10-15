@@ -48,7 +48,7 @@ public abstract class ApiTrieBase extends DetectionTestSupport {
     // correct operation of the class level annotation
     @Test
     @Category(TestType.TypeApi.class)
-    public void allHeaders() {
+    public void allHeaders() throws Exception {
         Map<String, String> headers = new HashMap<String, String>();
         for (String header : getProvider().getHttpHeaders()) {
             headers.put(header, fiftyone.mobile.detection.test.common.UserAgentGenerator.getRandomUserAgent(0));
@@ -57,7 +57,7 @@ public abstract class ApiTrieBase extends DetectionTestSupport {
     }
     
     @Test
-    public void allHeadersNull() {
+    public void allHeadersNull() throws Exception {
         Map<String, String> headers = new HashMap<String, String>();
         for (String header : getProvider().getHttpHeaders()) {
             headers.put(header, null);
@@ -66,7 +66,7 @@ public abstract class ApiTrieBase extends DetectionTestSupport {
     }
     
     @Test
-    public void duplicateHeaders() {
+    public void duplicateHeaders() throws Exception {
         Map<String, String> headers = new HashMap<String, String>();
         for (int i = 0; i < 5; i++) {
             for (String header : getProvider().getHttpHeaders()) {
@@ -77,7 +77,7 @@ public abstract class ApiTrieBase extends DetectionTestSupport {
     }
     
     @Test
-    public void duplicateHeadersNull() {
+    public void duplicateHeadersNull() throws Exception {
         Map<String, String> headers = new HashMap<String, String>();
         for (int i = 0; i < 5; i++) {
             for (String header : getProvider().getHttpHeaders()) {
@@ -88,7 +88,7 @@ public abstract class ApiTrieBase extends DetectionTestSupport {
     }
     
     @Test
-    public void emptyHeaders() {
+    public void emptyHeaders() throws Exception {
         fetchAllProperties(getProvider().getDeviceIndexes(new HashMap<String, String>()));
     }
     
@@ -107,7 +107,7 @@ public abstract class ApiTrieBase extends DetectionTestSupport {
     }
     
     @Test
-    public void nullHeaders() {
+    public void nullHeaders() throws Exception {
         fetchAllProperties(getProvider().getDeviceIndexes(null));
     }
     

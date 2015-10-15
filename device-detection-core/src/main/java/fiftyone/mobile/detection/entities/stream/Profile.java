@@ -55,9 +55,7 @@ public class Profile extends fiftyone.mobile.detection.entities.Profile {
                         valueIndexes = localValueIndexes = 
                                 BaseEntity.readIntegerArray(reader, valueIndexesCount);
                     } catch (IOException ex) {
-                        System.err.println("Failed to get a reader from the "
-                                + "pool for reading ValueIndexes."
-                                +ex.getMessage());
+                        //TODO: handle exception.
                     } finally {
                         if (reader != null) {
                             pool.release(reader);
@@ -84,9 +82,7 @@ public class Profile extends fiftyone.mobile.detection.entities.Profile {
                         signatureIndexes = localSignatureIndexes = 
                                 BaseEntity.readIntegerArray(reader, signatureIndexesCount);
                     } catch (IOException ex) {
-                        System.err.println("Failed to get a reader from the "
-                                + "pool for reading ValueIndexes."
-                                +ex.getMessage());
+                        //TODO: handle exception.
                     } finally {
                         if (reader != null)
                             pool.release(reader);

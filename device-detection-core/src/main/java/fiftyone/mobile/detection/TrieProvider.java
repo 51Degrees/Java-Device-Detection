@@ -255,8 +255,12 @@ public abstract class TrieProvider implements Closeable {
      * are ignored.
      * @param headers Collection of HTTP headers and values.
      * @return Collection of headers and device indexes for each one.
+     * @throws java.io.IOException
      */
-    public Map<String, Integer> getDeviceIndexes(final Map<String, String> headers) {
+    public Map<String, Integer> getDeviceIndexes( 
+                                    final Map<String, String> headers ) throws 
+                                                                IOException, 
+                                                                Exception {
         Map<String, Integer> indexes = new TreeMap<String, Integer>();
         if (headers != null) {
             TrieReader reader = null;
@@ -268,9 +272,6 @@ public abstract class TrieProvider implements Closeable {
                         indexes.put(header, getDeviceIndex(headers.get(header)));
                     }
                 }
-            } catch (Exception ex) {
-                System.err.println("Failed to retrieve device indexes for "
-                        + "TrieProvider.");
             } finally {
                 if (reader != null) {
                     pool.release(reader);
@@ -360,8 +361,11 @@ public abstract class TrieProvider implements Closeable {
      * @param headers Collection of HTTP headers and values.
      * @param propertyName Name of the property required.
      * @return The value of the property for the given user agent.
+     * @throws java.lang.Exception
      */
-    public String getPropertyValueWithMultiHeaders(Map<String, String> headers, String propertyName) {
+    public String getPropertyValueWithMultiHeaders( Map<String, String> headers, 
+                                                    String propertyName ) throws 
+                                                                Exception {
         return getPropertyValue(getDeviceIndexes(headers), propertyName);
     }
     

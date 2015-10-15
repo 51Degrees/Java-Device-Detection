@@ -52,7 +52,7 @@ public class TrieBase extends DetectionTestSupport {
     }
     
     protected Results process(String userAgentPattern, String devicePattern, TrieValidation state) 
-                                                                            throws IOException
+                                                                            throws IOException, Exception
     {
         Results results = new Results();
         Random random = new Random();

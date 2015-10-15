@@ -79,8 +79,7 @@ public abstract class StreamCacheList<T extends BaseEntity>
                 cache.active.put(key, item);
                 cache.incrementMissesByOne();
             } catch (IOException ex) {
-                System.err.println("StreamCacheList: failed to retrieve an "
-                        + "element at position: "+key);
+                //TODO: handle exception.
             }
         }
         cache.addRecent(key, item);

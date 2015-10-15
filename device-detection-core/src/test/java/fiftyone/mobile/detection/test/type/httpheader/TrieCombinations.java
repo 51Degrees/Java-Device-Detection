@@ -29,7 +29,7 @@ public class TrieCombinations extends TrieBase {
         super(dataFile);
     }
     
-    protected void OperaMini_Samsung() throws IOException
+    protected void OperaMini_Samsung() throws IOException, Exception
     {
         TrieValidation validation = new TrieValidation(super.provider);
         validation.put("BrowserName", "Opera(.*)");
@@ -40,7 +40,7 @@ public class TrieCombinations extends TrieBase {
             validation);
     }
     
-    protected void OperaMini_iPhone() throws IOException
+    protected void OperaMini_iPhone() throws IOException, Exception
     {
         TrieValidation validation = new TrieValidation(super.provider);
         validation.put("BrowserName", "Opera(.*)");
@@ -51,7 +51,7 @@ public class TrieCombinations extends TrieBase {
             validation);
     }
     
-    protected void OperaMini_HTC() throws IOException
+    protected void OperaMini_HTC() throws IOException, Exception
     {
         TrieValidation validation = new TrieValidation(super.provider);
         validation.put("BrowserName", "Opera(.*)");

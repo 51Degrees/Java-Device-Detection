@@ -118,8 +118,7 @@ public class FixedCacheList<T extends BaseEntity> extends StreamFixedList<T>
             cache.addRecent(key, item);
             cache.incrementRequestsByOne();
         } catch (IOException ex) {
-            System.err.println("Cache: failed to retrieve an item "
-                    + "with key "+key);
+            //TODO: handle exception.
         }
         return item;
     }
