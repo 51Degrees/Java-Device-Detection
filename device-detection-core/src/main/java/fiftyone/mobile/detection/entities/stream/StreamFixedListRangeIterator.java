@@ -105,8 +105,7 @@ public class StreamFixedListRangeIterator<T> implements IClosableIterator<T> {
             item = (T)entityFactory.create(dataSet, currentIndex, reader);
             currentIndex++;
         } catch (IOException ex) {
-            System.out.println("StreamFixedListRangeIterator: failed to "
-                    + "retrieve the next item in the list.");
+            //TODO: handle exception.
         }
         return item;
     }
