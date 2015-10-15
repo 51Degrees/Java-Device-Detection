@@ -29,8 +29,8 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 @Category(TestType.DataSetLite.class)
-public class V32ArrayTest extends ArrayBase {
-    public V32ArrayTest() {
+public class V32LitePerformanceArrayTest extends ArrayBase {
+    public V32LitePerformanceArrayTest() {
         super(Filename.LITE_PATTERN_V32);
     }
     

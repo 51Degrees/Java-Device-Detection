@@ -21,34 +21,34 @@
 
 package fiftyone.mobile.detection.test.type.performance;
 
-import fiftyone.mobile.detection.test.type.performance.enterprise.V31ArrayTest;
-import fiftyone.mobile.detection.test.type.performance.enterprise.V31FileTest;
-import fiftyone.mobile.detection.test.type.performance.enterprise.V31MemoryTest;
-import fiftyone.mobile.detection.test.type.performance.enterprise.V32ArrayTest;
-import fiftyone.mobile.detection.test.type.performance.enterprise.V32FileTest;
-import fiftyone.mobile.detection.test.type.performance.enterprise.V32MemoryTest;
+import fiftyone.mobile.detection.test.type.performance.enterprise.V31EnterprisePerformanceArrayTest;
+import fiftyone.mobile.detection.test.type.performance.enterprise.V31EnterprisePerformanceFileTest;
+import fiftyone.mobile.detection.test.type.performance.enterprise.V31EnterprisePerformanceMemoryTest;
+import fiftyone.mobile.detection.test.type.performance.enterprise.V32EnterprisePerformanceArrayTest;
+import fiftyone.mobile.detection.test.type.performance.enterprise.V32EnterprisePerformanceFileTest;
+import fiftyone.mobile.detection.test.type.performance.enterprise.V32EnterprisePerformanceMemoryTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-    fiftyone.mobile.detection.test.type.performance.lite.V31FileTest.class,
-    fiftyone.mobile.detection.test.type.performance.lite.V32FileTest.class,
-    fiftyone.mobile.detection.test.type.performance.lite.V31ArrayTest.class,
-    fiftyone.mobile.detection.test.type.performance.lite.V32ArrayTest.class,
-    fiftyone.mobile.detection.test.type.performance.lite.V31MemoryTest.class,
-    fiftyone.mobile.detection.test.type.performance.lite.V32MemoryTest.class,
-    fiftyone.mobile.detection.test.type.performance.premium.V31FileTest.class,
-    fiftyone.mobile.detection.test.type.performance.premium.V32FileTest.class,
-    fiftyone.mobile.detection.test.type.performance.premium.V31ArrayTest.class,
-    fiftyone.mobile.detection.test.type.performance.premium.V32ArrayTest.class,
-    fiftyone.mobile.detection.test.type.performance.premium.V31MemoryTest.class,
-    fiftyone.mobile.detection.test.type.performance.premium.V32MemoryTest.class,
-    V31FileTest.class,
-    V32FileTest.class,
-    V31ArrayTest.class,
-    V32ArrayTest.class,
-    V31MemoryTest.class,
-    V32MemoryTest.class})
+    fiftyone.mobile.detection.test.type.performance.lite.V31LitePerformanceFileTest.class,
+    fiftyone.mobile.detection.test.type.performance.lite.V32LitePerformanceFileTest.class,
+    fiftyone.mobile.detection.test.type.performance.lite.V31LitePerformanceArrayTest.class,
+    fiftyone.mobile.detection.test.type.performance.lite.V32LitePerformanceArrayTest.class,
+    fiftyone.mobile.detection.test.type.performance.lite.V31LitePerformanceMemoryTest.class,
+    fiftyone.mobile.detection.test.type.performance.lite.V32LitePerformanceMemoryTest.class,
+    fiftyone.mobile.detection.test.type.performance.premium.V31PremiumPerformanceFileTest.class,
+    fiftyone.mobile.detection.test.type.performance.premium.V32PremiumPerformanceFileTest.class,
+    fiftyone.mobile.detection.test.type.performance.premium.V31PremiumPerformanceArrayTest.class,
+    fiftyone.mobile.detection.test.type.performance.premium.V32PremiumPerformanceArrayTest.class,
+    fiftyone.mobile.detection.test.type.performance.premium.V31PremiumPerformanceMemoryTest.class,
+    fiftyone.mobile.detection.test.type.performance.premium.V32PremiumPerformanceMemoryTest.class,
+    V31EnterprisePerformanceFileTest.class,
+    V32EnterprisePerformanceFileTest.class,
+    V31EnterprisePerformanceArrayTest.class,
+    V32EnterprisePerformanceArrayTest.class,
+    V31EnterprisePerformanceMemoryTest.class,
+    V32EnterprisePerformanceMemoryTest.class})
 public class PerformanceSuite {
 }

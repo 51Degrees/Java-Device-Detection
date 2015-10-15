@@ -29,8 +29,8 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 @Category(TestType.DataSetPremium.class)
-public class V32ArrayTest extends ArrayBase {
-    public V32ArrayTest() {
+public class V32PremiumPerformanceArrayTest extends ArrayBase {
+    public V32PremiumPerformanceArrayTest() {
         super(Filename.PREMIUM_PATTERN_V32);
     }
     

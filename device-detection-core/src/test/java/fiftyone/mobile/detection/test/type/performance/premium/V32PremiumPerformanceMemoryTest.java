@@ -29,8 +29,8 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 @Category(TestType.DataSetPremium.class)
-public class V32MemoryTest extends MemoryBase {
-    public V32MemoryTest() {
+public class V32PremiumPerformanceMemoryTest extends MemoryBase {
+    public V32PremiumPerformanceMemoryTest() {
         super(Filename.PREMIUM_PATTERN_V32);
     }
     

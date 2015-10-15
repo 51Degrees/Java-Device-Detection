@@ -27,9 +27,9 @@ import fiftyone.mobile.detection.Filename;
 import org.junit.experimental.categories.Category;
 
 @Category(TestType.DataSetLite.class)
-public class V32TrieFileTest extends TrieFile {
+public class V32LitePerformanceTrieFileTest extends TrieFile {
 
-    public V32TrieFileTest() {
+    public V32LitePerformanceTrieFileTest() {
         super(Filename.LITE_TRIE_V30);
     }
     

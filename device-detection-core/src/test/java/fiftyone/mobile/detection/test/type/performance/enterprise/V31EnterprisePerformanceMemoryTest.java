@@ -29,8 +29,8 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 @Category(TestType.DataSetEnterprise.class)
-public class V31MemoryTest extends MemoryBase {
-    public V31MemoryTest() {
+public class V31EnterprisePerformanceMemoryTest extends MemoryBase {
+    public V31EnterprisePerformanceMemoryTest() {
         super(Filename.ENTERPRISE_PATTERN_V31);
     }
     

@@ -29,8 +29,8 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 @Category(TestType.DataSetPremium.class)
-public class V32FileTest extends FileBase {
-    public V32FileTest() {
+public class V32PremiumPerformanceFileTest extends FileBase {
+    public V32PremiumPerformanceFileTest() {
         super(Filename.PREMIUM_PATTERN_V32);
     }
     
