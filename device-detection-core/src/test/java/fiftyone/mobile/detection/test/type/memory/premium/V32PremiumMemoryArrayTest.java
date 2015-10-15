@@ -36,7 +36,7 @@ import org.junit.experimental.categories.Category;
 import java.io.IOException;
 
 @Category({TestType.DataSetPremium.class, TestType.TypeMemory.class})
-public class V32PremiumArrayTest extends MemoryBase {
+public class V32PremiumMemoryArrayTest extends MemoryBase {
 
     private static String filename = Filename.PREMIUM_PATTERN_V32;
     private static Dataset dataset;

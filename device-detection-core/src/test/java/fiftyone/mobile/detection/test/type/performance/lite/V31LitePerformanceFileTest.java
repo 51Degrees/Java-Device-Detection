@@ -29,8 +29,8 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 @Category(TestType.DataSetLite.class)
-public class V31FileTest extends FileBase {
-    public V31FileTest() {
+public class V31LitePerformanceFileTest extends FileBase {
+    public V31LitePerformanceFileTest() {
         super(Filename.LITE_PATTERN_V31);
     }
     

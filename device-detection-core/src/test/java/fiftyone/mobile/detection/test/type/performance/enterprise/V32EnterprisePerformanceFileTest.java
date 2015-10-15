@@ -29,8 +29,8 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 @Category(TestType.DataSetEnterprise.class)
-public class V32FileTest extends FileBase {
-    public V32FileTest() {
+public class V32EnterprisePerformanceFileTest extends FileBase {
+    public V32EnterprisePerformanceFileTest() {
         super(Filename.ENTERPRISE_PATTERN_V32);
     }
     

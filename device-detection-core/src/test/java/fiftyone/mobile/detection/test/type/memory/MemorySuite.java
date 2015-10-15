@@ -44,7 +44,7 @@ import org.junit.runners.Suite;
     V31PremiumMemoryFileTest.class,
     V32PremiumMemoryFileTest.class,
     V31PremiumMemoryArrayTest.class,
-    V32PremiumArrayTest.class,
+    V32PremiumMemoryArrayTest.class,
     V31PremiumMemoryMemoryTest.class,
     V32PremiumMemoryMemoryTest.class,
     V31EnterpriseMemoryFileTest.class,
