@@ -36,7 +36,8 @@ public class V31EnterpriseMetadataMemoryTest extends MemoryBase {
     
     @Test
     @Category(TestType.DataSetEnterprise.class)
-    public void EnterpriseV31Memory_RetrieveComponents() throws IOException {
+    @Override
+    public void retrieveComponents() throws IOException {
         super.retrieveComponents(); 
     }
 
@@ -46,17 +47,19 @@ public class V31EnterpriseMetadataMemoryTest extends MemoryBase {
     }
 
     @Test
-    public void EnterpriseV31Memory_RetrieveValues() throws IOException {
+    @Override
+    public void retrieveValues() throws IOException {
         super.retrieveValues(); 
     }
 
     @Test
-    public void EnterpriseV31Memory_CheckPropertyCount() { 
+    public void checkPropertyCount() { 
         super.checkPropertyCount(160); 
     }
 
     @Test
-    public void EnterpriseV31Memory_ValidatePropertiesHaveDescription() throws IOException { 
+    @Override
+    public void validatePropertiesHaveDescription() throws IOException { 
         super.validatePropertiesHaveDescription(); 
     }
 }

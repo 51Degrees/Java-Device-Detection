@@ -45,19 +45,19 @@ public class V31EnterpriseHttpHeaderArrayTest extends Combinations {
     }
 
     @Test
-    public void EnterpriseV31Array_OperaMiniSamsung() throws IOException
+    public void operaMiniSamsung() throws IOException
     {
         super.OperaMini_Samsung();
     }
 
     @Test
-    public void EnterpriseV31Array_OperaMini_HTC() throws IOException
+    public void operaMiniHTC() throws IOException
     {
         super.OperaMini_HTC();
     }
 
     @Test
-    public void EnterpriseV31Array_OperaMini_iPhone() throws IOException
+    public void operaMiniIPhone() throws IOException
     {
         super.OperaMini_iPhone();
     } 

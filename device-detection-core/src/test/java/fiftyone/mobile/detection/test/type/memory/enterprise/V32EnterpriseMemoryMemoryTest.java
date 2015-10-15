@@ -64,32 +64,32 @@ public class V32EnterpriseMemoryMemoryTest extends MemoryBase {
 
     @Test
     @Category({TestType.DataSetEnterprise.class, TestType.TypeMemory.class})
-    public void EnterpriseV32Memory_Memory_UniqueUserAgentsMulti() throws IOException {
+    public void uniqueUserAgentsMulti() throws IOException {
         super.userAgentsMulti(UserAgentGenerator.getUniqueUserAgents(), 1200);
     }
 
     @Test
-    public void EnterpriseV32Memory_Memory_UniqueUserAgentsSingle() throws IOException {
+    public void uniqueUserAgentsSingle() throws IOException {
         super.userAgentsSingle(UserAgentGenerator.getUniqueUserAgents(), 1200);
     }
 
     @Test
-    public void EnterpriseV32Memory_Memory_RandomUserAgentsMulti() throws IOException {
+    public void randomUserAgentsMulti() throws IOException {
         super.userAgentsMulti(UserAgentGenerator.getRandomUserAgents(), 1200);
     }
 
     @Test
-    public void EnterpriseV32Memory_Memory_RandomUserAgentsSingle() throws IOException {
+    public void randomUserAgentsSingle() throws IOException {
         super.userAgentsSingle(UserAgentGenerator.getRandomUserAgents(), 1200);
     }
 
     @Test
-    public void EnterpriseV32Memory_Memory_BadUserAgentsMulti() throws IOException {
+    public void badUserAgentsMulti() throws IOException {
         super.userAgentsMulti(UserAgentGenerator.getBadUserAgents(), 1200);
     }
 
     @Test
-    public void EnterpriseV32Memory_Memory_BadUserAgentsSingle() throws IOException {
+    public void badUserAgentsSingle() throws IOException {
         super.userAgentsSingle(UserAgentGenerator.getBadUserAgents(), 1200);
     }
 }

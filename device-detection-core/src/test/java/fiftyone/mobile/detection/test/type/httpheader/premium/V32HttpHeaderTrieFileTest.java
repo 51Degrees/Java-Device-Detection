@@ -45,19 +45,19 @@ public class V32HttpHeaderTrieFileTest extends TrieCombinations {
     }
     
     @Test
-    public void EnterpriseV32Array_OperaMiniSamsung() throws IOException, Exception
+    public void operaMiniSamsung() throws IOException, Exception
     {
         super.OperaMini_Samsung();
     }
 
     @Test
-    public void EnterpriseV32Array_OperaMini_HTC() throws IOException, Exception
+    public void operaMiniHTC() throws IOException, Exception
     {
         super.OperaMini_HTC();
     }
 
     @Test
-    public void EnterpriseV32Array_OperaMini_iPhone() throws IOException, Exception
+    public void operaMiniIPhone() throws IOException, Exception
     {
         super.OperaMini_iPhone();
     } 

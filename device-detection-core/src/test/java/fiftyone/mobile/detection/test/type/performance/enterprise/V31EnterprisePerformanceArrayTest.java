@@ -41,79 +41,79 @@ public class V31EnterprisePerformanceArrayTest extends ArrayBase {
     
     @Test
     @Category(TestType.DataSetEnterprise.class)
-    public void EnterpriseV31Array_Performance_InitializeTime()
+    public void tnitializeTime()
     {
         super.initializeTime();
     }
 
     @Test
-    public void EnterpriseV31Array_Performance_BadUserAgentsMulti() throws IOException
+    public void badUserAgentsMulti() throws IOException
     {
         super.badUserAgentsMulti(null, 1);
     }
 
     @Test
-    public void EnterpriseV31Array_Performance_BadUserAgentsSingle() throws IOException
+    public void badUserAgentsSingle() throws IOException
     {
         super.badUserAgentsSingle(null, 1);
     }
 
     @Test
-    public void EnterpriseV31Array_Performance_UniqueUserAgentsMulti() throws IOException
+    public void uniqueUserAgentsMulti() throws IOException
     {
         super.uniqueUserAgentsMulti(null, 1);
     }
 
     @Test
-    public void EnterpriseV31Array_Performance_UniqueUserAgentsSingle() throws IOException
+    public void uniqueUserAgentsSingle() throws IOException
     {
         super.uniqueUserAgentsSingle(null, 1);
     }
 
     @Test
-    public void EnterpriseV31Array_Performance_RandomUserAgentsMulti() throws IOException
+    public void randomUserAgentsMulti() throws IOException
     {
         super.randomUserAgentsMulti(null, 1);
     }
 
     @Test
-    public void EnterpriseV31Array_Performance_RandomUserAgentsSingle() throws IOException
+    public void randomUserAgentsSingle() throws IOException
     {
         super.randomUserAgentsSingle(null, 1);
     }
 
     @Test
-    public void EnterpriseV31Array_Performance_BadUserAgentsMultiAll() throws IOException
+    public void badUserAgentsMultiAll() throws IOException
     {
         super.badUserAgentsMulti(super.dataSet.properties, 1);
     }
 
     @Test
-    public void EnterpriseV31Array_Performance_BadUserAgentsSingleAll() throws IOException
+    public void badUserAgentsSingleAll() throws IOException
     {
         super.badUserAgentsSingle(super.dataSet.properties, 2);
     }
 
     @Test
-    public void EnterpriseV31Array_Performance_UniqueUserAgentsMultiAll() throws IOException
+    public void uniqueUserAgentsMultiAll() throws IOException
     {
         super.uniqueUserAgentsMulti(super.dataSet.properties, 2);
     }
 
     @Test
-    public void EnterpriseV31Array_Performance_UniqueUserAgentsSingleAll() throws IOException
+    public void uniqueUserAgentsSingleAll() throws IOException
     {
         super.uniqueUserAgentsSingle(super.dataSet.properties, 1);
     }
 
     @Test
-    public void EnterpriseV31Array_Performance_RandomUserAgentsMultiAll() throws IOException
+    public void randomUserAgentsMultiAll() throws IOException
     {
         super.randomUserAgentsMulti(super.dataSet.properties, 1);
     }
 
     @Test
-    public void EnterpriseV31Array_Performance_RandomUserAgentsSingleAll() throws IOException
+    public void randomUserAgentsSingleAll() throws IOException
     {
         super.randomUserAgentsSingle(super.dataSet.properties, 1);
     }
