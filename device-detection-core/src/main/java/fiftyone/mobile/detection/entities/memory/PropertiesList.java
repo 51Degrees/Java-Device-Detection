@@ -57,23 +57,20 @@ public class PropertiesList extends MemoryFixedList<Property> {
      * name of the property. Used to rapidly return this property from the name.
      * @return HashMap of Property name -> Property object entries.
      */
-    private Map<String, Property> getPropertyNameDictionary() {
-        if (propertyNameDictionary.isEmpty()) {
+    private Map<String, Property> getPropertyNameDictionary() 
+            throws IOException {
+        Map<String, Property> result = propertyNameDictionary;
+        if (result.isEmpty()) {
             synchronized(this) {
-                if (propertyNameDictionary.isEmpty()) {
+                result = propertyNameDictionary;
+                if (result.isEmpty()) {
                     for (Property p : array) {
-                        //Equivalent of the this.ToDictionary(k => k.Name) in c#
-                        try {
-                            propertyNameDictionary.put(p.getName(), p);
-                        } catch (IOException ex) {
-                            System.err.println("PropertiesList: failed to "
-                                    + "add property "+p+" to the map.");
-                        }
+                        result.put(p.getName(), p);
                     }
                 }
             }
         }
-        return propertyNameDictionary;
+        return result;
     }
     
     /**
@@ -82,7 +79,7 @@ public class PropertiesList extends MemoryFixedList<Property> {
      * @param propertyName Property name required.
      * @return The property matching the name, otherwise null.
      */
-    public Property get(String propertyName) {
+    public Property get(String propertyName) throws IOException {
         Property property = getPropertyNameDictionary().get(propertyName);
         return property;
     }
