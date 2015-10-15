@@ -81,8 +81,7 @@ public class MemoryVariableList<T extends BaseEntity> extends
                 offset += entityFactory.getLength(entity);
             }
         } catch (IOException ex) {
-            System.err.println("MemoryVariableList: failed to read the list "
-                    + "into memory.");
+            //TODO: handle exception.
         }
     }
 

@@ -61,8 +61,7 @@ public class NodeV32 extends Node{
                 rankedSignatureIndexes = getRankedSignatureIndexesAsArray();
             }
         } catch (IOException ex) {
-            System.err.println("NodeV32: failed to read a Node from the "
-                    + "data file.");
+            //TODO: handle exception.
         }
     }
     
@@ -133,8 +132,7 @@ public class NodeV32 extends Node{
                     try {
                         rankedSignatureIndexes = localRankedSignatureIndexes = getRankedSignatureIndexesAsArray();
                     } catch (IOException ex) {
-                        System.err.println("NodeV32: failed to get ranked "
-                                + "signature indexes.");
+                        //TODO: handle exception.
                     }
                 }
             }

@@ -24,6 +24,8 @@ import fiftyone.mobile.detection.Dataset;
 import fiftyone.mobile.detection.readers.BinaryReader;
 import fiftyone.properties.DetectionConstants;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Returns constants for HTTP Headers.
@@ -63,28 +65,26 @@ public class ComponentV31 extends Component {
                 if (localHttpHeaders == null) {
                     try {
                         // Implemented as if else for 1.6 compatibility rasons.
-                        String cName = super.getName();
-                        
+                        String cName = super.getName(); 
                         if (cName.equals("HardwarePlatform")) {
-                            httpHeaders = localHttpHeaders = 
+                            httpHeaders = localHttpHeaders =
                                     DetectionConstants.DEVICE_USER_AGENT_HEADERS;
                         } else if (cName.equals("SoftwarePlatform")) {
-                            httpHeaders = localHttpHeaders = 
+                            httpHeaders = localHttpHeaders =
                                     DetectionConstants.DEVICE_USER_AGENT_HEADERS;
                         } else if (cName.equals("BrowserUA")) {
-                            httpHeaders = localHttpHeaders = 
+                            httpHeaders = localHttpHeaders =
                                     new String[] {
                                         DetectionConstants.USER_AGENT_HEADER
-                                                 };
+                                    };
                         } else if (cName.equals("Crawler")) {
-                            httpHeaders = localHttpHeaders = 
+                            httpHeaders = localHttpHeaders =
                                     new String[] {
                                         DetectionConstants.USER_AGENT_HEADER
                                     };
                         }
                     } catch (IOException ex) {
-                        System.err.println("ComponentV31 failed to get "
-                                + "component name.");
+                        //TODO: handle exception.
                     }
                 }
             }

@@ -23,6 +23,7 @@ package fiftyone.mobile.detection.test.type.httpheader;
 
 import fiftyone.mobile.detection.Dataset;
 import fiftyone.mobile.detection.entities.Property;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.regex.Pattern;
 
@@ -35,7 +36,7 @@ public class Validation extends HashMap<Property, Pattern> {
        this.dataSet = dataSet;
     }
 
-    public void put(String property, String pattern)
+    public void put(String property, String pattern) throws IOException
     {
        super.put(dataSet.properties.get(property), 
            Pattern.compile(pattern));

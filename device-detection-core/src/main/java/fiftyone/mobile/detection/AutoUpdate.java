@@ -72,8 +72,11 @@ public class AutoUpdate {
      * @param licenseKeys An array of licence keys with at least one entry 
      * represented as strings.
      */
-    private static boolean getNewDataset(final String[] licenseKeys, 
-                final String dataFilePath) throws AutoUpdateException {
+    private static boolean getNewDataset(   final String[] licenseKeys, 
+                                            final String dataFilePath ) throws 
+                                                    AutoUpdateException, 
+                                                    FileNotFoundException, 
+                                                    NoSuchAlgorithmException {
         try {
             //Initialize paths to temporary files.
             initTempFiles(dataFilePath);
@@ -98,10 +101,10 @@ public class AutoUpdate {
             //Delete compressed file.
             File compressedFile = new File(compressedTempFile);
             if (compressedFile.delete() == false) {
-                System.err.println("Auto update warning: could not delete the "
-                        + "compressed temporary data file used for storing "
-                        + "data downloaded from 51Degrees. Should not prevent "
-                        + "the data file from updating.");
+                throw new AutoUpdateException("Auto update warning: could not "
+                        + "delete the compressed temporary data file used for "
+                        + "storing data downloaded from 51Degrees. Should not "
+                        + "prevent the data file from updating.");
             }
             // Create a dataset and load the data in.
             final Dataset newDataSet = StreamFactory.create(uncompressedTempFile, true);
@@ -126,11 +129,10 @@ public class AutoUpdate {
                 
                 boolean moved = source.renameTo(destination);
                 if (!moved) {
-                    System.err.println("Auto update failed: Could not replace "
-                            + "master data file with new one. Please verify "
-                            + "the master data file is not used elsewhere in "
-                            + "your code.");
-                    return false;
+                    throw new AutoUpdateException("Auto update failed: Could "
+                            + "not replace existing data file with new one. "
+                            + "Please verify the original data file is not used "
+                            + "elsewhere in your code.");
                 }
                 source = null;
                 destination = null;
@@ -139,10 +141,12 @@ public class AutoUpdate {
                 int count = 5;
                 while (!tempMasterFile.delete()) {
                     if (count <= 0) {
-                        System.err.println("Can't delete the "
-                                + "uncompressed temporary file used for the "
-                                + "update. This is a housekeeping FYI and does "
-                                + "not affect the auto update.");
+                        throw new AutoUpdateException("Auto update warning: "
+                                + "failed to delete temporary file used to "
+                                + "store the uncompressed device data. This "
+                                + "error is not critical for the auto update. "
+                                + "Path to problem file: " 
+                                + tempMasterFile.getAbsolutePath());
                     }
                     try {
                         Thread.sleep(2000);
@@ -166,10 +170,11 @@ public class AutoUpdate {
                     "Exception reading data stream from server '%s'.",
                     DetectionConstants.AUTO_UPDATE_URL) + ex.getMessage());
         } catch (DataFormatException ex) {
-            System.err.print("The downloaded date file appears to be of the "
-                    + "unsupported version.");
+            throw new AutoUpdateException("Auto update error: the data file "
+                    + "downloaded from 51Degrees appears to be of the "
+                    + "unsupported format. " 
+                    + ex.getMessage());
         }
-        return false;
     }
 
     /**
@@ -179,7 +184,10 @@ public class AutoUpdate {
      * @param pathToFile calculate md5 of this file.
      * @return The MD5 hash of the given data.
      */
-    private static String getMd5Hash(String pathToFile) {
+    private static String getMd5Hash(String pathToFile) 
+                            throws  FileNotFoundException, 
+                                    NoSuchAlgorithmException, 
+                                    IOException {
         FileInputStream fis = null;
         MessageDigest md5 = null;
         try {
@@ -198,36 +206,15 @@ public class AutoUpdate {
             for (int i = 0; i < md5Bytes.length; i++) {
                 hashBuilder.append(String.format("%02X ", md5Bytes[i]));
             }
-            
-            //Release resources.
-            fis.close();
             md5Bytes = null;
             buffer = null;
-            
             // The hash retrived from the responce header is in lower case with 
             // no spaces, must make sure this hash conforms to the scheme too.
             return hashBuilder.toString().toLowerCase().replaceAll(" ", "");
-        } catch (FileNotFoundException ex) {
-            System.err.println("Auto update hash validation failed: file "
-                    + "not found.");
-            return null;
-        } catch (NoSuchAlgorithmException ex) {
-            System.err.println("Auto update hash validation failed: no "
-                    + "algorithm available.");
-            return null;
-        } catch (IOException ex) {
-            System.err.println("Auto update hash validation failed: could not "
-                    + "access the data file to perform validation.");
-            return null;
         } finally {
             //Release FileInputStream
             if (fis != null) {
-                try {
-                    fis.close();
-                } catch (IOException ex) {
-                    System.err.println("Failed to close the input stream after "
-                            + "validating Hash.");
-                }
+                fis.close();
             }
             //Release MD5
             if (md5 != null) {
@@ -246,9 +233,11 @@ public class AutoUpdate {
      * @param pathToFile path to compressed data file that has been downloaded.
      * @return True if the hashes match, else false.
      */
-    private static boolean validateMD5(
-            final HttpURLConnection client,
-            String pathToFile) {
+    private static boolean validateMD5( final HttpURLConnection client,
+                                        String pathToFile) throws 
+                                                    FileNotFoundException, 
+                                                    NoSuchAlgorithmException, 
+                                                    IOException {
         final String serverHash = client.getHeaderField("Content-MD5");
         final String downloadHash = getMd5Hash(pathToFile);
         return serverHash != null && serverHash.equals(downloadHash);
@@ -302,9 +291,14 @@ public class AutoUpdate {
      * unavailable, corrupt, older than the current data or not enough memory
      * was available. In that case the current data is used.
      * @throws AutoUpdateException exception detailing problem during the update
+     * @throws java.io.FileNotFoundException
+     * @throws java.security.NoSuchAlgorithmException
      */
-    public static boolean update(final String licenseKey, String dataFilePath) 
-            throws AutoUpdateException {
+    public static boolean update(   final String licenseKey, 
+                                    String dataFilePath ) throws 
+                                                AutoUpdateException, 
+                                                FileNotFoundException, 
+                                                NoSuchAlgorithmException {
         return update(new String[]{licenseKey}, dataFilePath);
     }
 
@@ -320,9 +314,16 @@ public class AutoUpdate {
      * @param uncompressedFile where the uncompressed data file should be located.
      * @return True if update was successful, False otherwise.
      * @throws AutoUpdateException 
+     * @throws java.io.FileNotFoundException 
+     * @throws java.security.NoSuchAlgorithmException 
      */
-    public static boolean update(final String licenseKey, String dataFilePath, 
-            String compressedFile, String uncompressedFile) throws AutoUpdateException {
+    public static boolean update(   final String licenseKey, 
+                                    String dataFilePath, 
+                                    String compressedFile, 
+                                    String uncompressedFile ) throws 
+                                                    AutoUpdateException, 
+                                                    FileNotFoundException, 
+                                                    NoSuchAlgorithmException {
         compressedTempFile = compressedFile;
         uncompressedTempFile = uncompressedFile;
         return update(new String[]{licenseKey}, dataFilePath);
@@ -339,9 +340,14 @@ public class AutoUpdate {
      * unavailable, corrupt, older than the current data or not enough memory
      * was available. In that case the current data is used.
      * @throws AutoUpdateException exception detailing problem during the update
+     * @throws java.io.FileNotFoundException
+     * @throws java.security.NoSuchAlgorithmException
      */
-    public static boolean update(final String[] licenseKeys, String dataFilePath) 
-            throws AutoUpdateException {
+    public static boolean update(   final String[] licenseKeys, 
+                                    String dataFilePath ) throws 
+                                                    AutoUpdateException, 
+                                                    FileNotFoundException, 
+                                                    NoSuchAlgorithmException {
 
         if (licenseKeys == null || licenseKeys.length == 0) {
             throw new AutoUpdateException(
@@ -383,8 +389,13 @@ public class AutoUpdate {
      * @param licenseKeys an array of keys to fetch a new data file with.
      * @return a decompressed byte array containing the data.
      */
-    private static boolean download(final String[] licenseKeys, long lastModified, 
-            String pathToTempFile) throws AutoUpdateException {
+    private static boolean download(final String[] licenseKeys, 
+                                    long lastModified, 
+                                    String pathToTempFile) throws 
+                                                    AutoUpdateException, 
+                                                    FileNotFoundException, 
+                                                    NoSuchAlgorithmException,
+                                                    IOException {
         //Declare resources so that they can be released in finally block.
         HttpURLConnection client = null;
         FileOutputStream outputStream = null;
@@ -433,7 +444,8 @@ public class AutoUpdate {
                 StringBuilder message = new StringBuilder();
                 message.append("Could not commence data file download. ");
                 if(client.getResponseCode() == 429) {
-                    message.append("Server response: 429 - too many download attempts. ");
+                    message.append("Server response: 429 -  ");
+                    message.append("too many download attempts.");
                 } else if (client.getResponseCode() == 304) {
                     message.append("Server response: 304 - not modified. ");
                     message.append("You already have the latest data.");
@@ -456,22 +468,10 @@ public class AutoUpdate {
                 client.disconnect();
             }
             if (outputStream != null) {
-                try {
-                    outputStream.close();
-                } catch (IOException ex) {
-                    System.err.println("Auto update download: Failed to close "
-                            + "output stream after the new device data file "
-                            + "download was complete.");
-                }
+                outputStream.close();
             }
             if (inputStream != null) {
-                try {
-                    inputStream.close();
-                } catch (IOException ex) {
-                    System.err.println("Auto update download: Failed to close "
-                            + "input stream after the new device data file "
-                            + "download was complete.");
-                }
+                inputStream.close();
             }
         }
     }

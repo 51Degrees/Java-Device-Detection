@@ -100,8 +100,7 @@ public class SourceFile extends SourceFileBase {
             handles.add(handle);
             byteBuffer = handle.byteBuffer;
         } catch (IOException ex) {
-            System.err.println("SourceFile: failed to create stream to read "
-                    + "from the data file.");
+            //TODO: handle exception.
         }
         return byteBuffer;
     }
@@ -119,8 +118,7 @@ public class SourceFile extends SourceFileBase {
             try {
                 handle.dispose();
             } catch (IOException ex) {
-                System.err.println("SourceFile: failed to dispose of the file "
-                        + "handle in the dispose method for this class.");
+                //TODO: handle exception.
             }
         }
         // Delete the file if it's temporary.

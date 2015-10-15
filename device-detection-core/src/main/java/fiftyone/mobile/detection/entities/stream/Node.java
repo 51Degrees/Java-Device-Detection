@@ -70,9 +70,7 @@ public abstract class Node extends fiftyone.mobile.detection.entities.Node {
                         super.numericChildren = readNodeNumericIndexes(dataSet, 
                                                 reader, numericChildrenCount);
                     } catch(IOException ex) {
-                        System.err.println("Failed to get a reader from the "
-                                + "pool for reading NodeNumericIndexes."
-                                +ex.getMessage());
+                        //TODO: handle exception.
                     } finally {
                         if (reader != null) {
                             pool.release(reader);

@@ -74,8 +74,7 @@ public class MemoryFixedList<T extends BaseEntity> extends MemoryBaseList<T>
                 array.add(entityFactory.create(dataSet, index, reader));
             }
         } catch (IOException ex) {
-            System.err.println("MemoryFixedList: failed to read the list into "
-                    + "memory.");
+            //TODO: handle exception.
         }
     }
 

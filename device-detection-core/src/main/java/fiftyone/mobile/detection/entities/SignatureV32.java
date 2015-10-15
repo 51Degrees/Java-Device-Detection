@@ -102,8 +102,7 @@ public class SignatureV32 extends Signature {
                             nodeOffsets[i] = iterator.next().value;
                         }
                     } catch (IOException ex) {
-                        System.err.println("SignatureV32: failed to get node "
-                                + "offsets.");
+                        //TODO: handle exception.
                     } finally {
                         iterator.close();
                     }
@@ -125,7 +124,7 @@ public class SignatureV32 extends Signature {
                             .get(nodeCount + firstNodeOffsetIndex - 1).value);
             return lastNode.position + lastNode.getLength() + 1;
         } catch (IOException ex) {
-            System.err.println("SignatureV32: failed to get the last node.");
+            //TODO: handle exception.
         }
         return -1;
     }

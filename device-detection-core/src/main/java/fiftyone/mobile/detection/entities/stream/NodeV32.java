@@ -29,6 +29,8 @@ import fiftyone.mobile.detection.readers.BinaryReader;
 import fiftyone.properties.DetectionConstants;
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Represents a Node which can be used with the Stream data set. NumericChidren 
@@ -94,8 +96,12 @@ public class NodeV32 extends Node {
             synchronized (this) {
                 localRankedSignatureIndexes = rankedSignatureIndexes;
                 if (localRankedSignatureIndexes == null) {
-                    rankedSignatureIndexes = localRankedSignatureIndexes = 
-                            getRankedSignatureIndexesAsArray();
+                    try {
+                        rankedSignatureIndexes = localRankedSignatureIndexes =
+                                getRankedSignatureIndexesAsArray();
+                    } catch (IOException ex) {
+                        //TODO: handle exception.
+                    }
                 }
             }
         }
@@ -107,7 +113,7 @@ public class NodeV32 extends Node {
      * @return An array of length _rankedSignatureCount filled with ranked 
      * signature indexes.
      */
-    private int[] getRankedSignatureIndexesAsArray() {
+    private int[] getRankedSignatureIndexesAsArray() throws IOException {
         int[] rsi = null;
         if (rankedSignatureCount == 0) {
             rsi = new int[0];
@@ -149,9 +155,6 @@ public class NodeV32 extends Node {
                         range.close();
                     }
                 }
-            } catch (IOException ex) {
-                System.err.println("NodeV32: failed to get ranked signature "
-                        + "indexes.");
             } finally {
                 if (reader != null) {
                     pool.release(reader);

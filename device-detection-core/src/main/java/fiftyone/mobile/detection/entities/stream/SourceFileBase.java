@@ -46,10 +46,12 @@ public abstract class SourceFileBase extends SourceBase {
      */
     public SourceFileBase(String fileName, boolean isTempFile) {
         this.fileInfo = new File(fileName);
+        /*
         if (this.fileInfo.setReadOnly() == false) {
             System.err.println("Source file base: failed to set file as "
                     + "read-only.");
         }
+        */
         this.isTempFile = isTempFile;
     }
     
@@ -60,10 +62,9 @@ public abstract class SourceFileBase extends SourceBase {
         if (this.isTempFile) {
             boolean deleted = this.fileInfo.delete();
             if (!deleted) {
-                StringBuilder sb = new StringBuilder();
-                sb.append("Could not delete the data file that was marked as "
-                        + "temporary when the dataset was created.");
-                System.err.println(sb.toString());
+                throw new RuntimeException("Failed to delete data file used "
+                        + "to construt Stream dataSet. This file was marked "
+                        + "as temporary when the dataSet object was created.");
             }
         }
     }

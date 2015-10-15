@@ -92,8 +92,7 @@ public class NodeV31 extends Node {
                         rankedSignatureIndexes = localRankedSignatureIndexes = 
                                 readIntegerArray(reader, rankedSignatureCount);
                     } catch (IOException ex) {
-                        System.err.println("NodeV31: failed to get ranked "
-                                + "signature indexes.");
+                        //TODO: handle exception.
                     } finally {
                         if (reader != null) {
                             pool.release(reader);
