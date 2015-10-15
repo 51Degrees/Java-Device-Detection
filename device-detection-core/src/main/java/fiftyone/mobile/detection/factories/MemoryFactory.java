@@ -62,7 +62,7 @@ import java.util.Date;
  * If initialisation is not performed then references will be calculated when 
  * needed. As such avoiding initialisation improves the time taken to create the
  * data set, at the expense of performance for the initial detections. The
- * default setting is to initialise the data set. 
+ * default setting is not to initialise the data set.
  * 
  * For more information see:
  * http://51degrees.com/Support/Documentation/Java
@@ -136,18 +136,67 @@ public class MemoryFactory {
      * @return filled with data from the array.
      * @throws IOException 
      */
-    @SuppressWarnings({"UnusedDeclaration"})
-    public static Dataset create(String filename, boolean init, 
+    public static Dataset create(String filename, boolean init,
                                  Date lastModified) throws IOException {
-        Dataset dataSet = new Dataset(lastModified, Modes.MEMORY);
         FileInputStream fileInputStream = new FileInputStream(filename);
-        BinaryReader reader = null;
         try {
-            reader = new BinaryReader(fileInputStream);
-            load(dataSet, reader, init);
+            return create(fileInputStream, init, lastModified);
         } finally {
             fileInputStream.close();
         }
+    }
+
+    /**
+     * Creates a lazily initialised {@link Dataset} from a {@link FileInputStream}.
+     * <p>
+     * It is the caller's responsibility to close the passed fileInputStream
+     *
+     * @param fileInputStream Source of data
+     * @return Uninitialised Dataset
+     * @throws IOException on problems with the Stream
+     */
+    public static Dataset create(FileInputStream fileInputStream)
+            throws IOException {
+        return create(fileInputStream, false);
+    }
+
+    /**
+     * Creates an optionally initialised {@link Dataset} from a {@link FileInputStream}.
+     * <p>
+     * It is the caller's responsibility to close the passed fileInputStream
+     * <p>
+     * Initialisation increases load time and initial memory footprint,
+     * but improves run time performance.
+     *
+     * @param fileInputStream Source of data
+     * @param init preemptive initialise if tue
+     * @return Optionally initialised Dataset
+     * @throws IOException on problems with the Stream
+     */
+    public static Dataset create(FileInputStream fileInputStream, boolean init)
+            throws IOException {
+        return create(fileInputStream, init, new Date (Long.MIN_VALUE));
+    }
+
+    /**
+     * Creates an optionally initialised {@link Dataset} from a {@link FileInputStream}.
+     * <p>
+     * It is the caller's responsibility to close the passed fileInputStream
+     * <p>
+     * Initialisation increases load time and initial memory footprint,
+     * but improves run time performance.
+     *
+     * @param fileInputStream Source of data
+     * @param init preemptive initialise if tue
+     * @param lastModified the date of data update
+     * @return Optionally initialised Dataset
+     * @throws IOException on problems with the Stream
+     */
+    public static Dataset create(FileInputStream fileInputStream, boolean init,
+                Date lastModified) throws IOException {
+        Dataset dataSet = new Dataset(lastModified, Modes.MEMORY);
+        BinaryReader reader = new BinaryReader(fileInputStream);
+        load(dataSet, reader, init);
         return dataSet;
     }
 
