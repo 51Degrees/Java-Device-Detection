@@ -732,23 +732,21 @@ public class Dataset implements Closeable {
      * @throws java.io.IOException
      */
     public Property get(String propertyName) throws IOException {
-        return getPropertyByName(propertyName);
+        return this.properties.get(propertyName);
     }
     
     /**
+     * Method is deprecated and should not be used. Use get( StringpropertyName)
+     * instead.
      * Method searches for a property with the given name and returns the 
      * Property if found. Returns null otherwise.
      * @param propertyName name of the property to find as a string.
      * @return Property object or null if no property with requested name exists
      * @throws IOException 
      */
+    @Deprecated
     public Property getPropertyByName(String propertyName) throws IOException {
-        for (Property property : properties) {
-            if (propertyName.equals(property.getName())) {
-                return property;
-            }
-        }
-        return null;
+        return this.properties.get(propertyName);
     }
 
     /**
