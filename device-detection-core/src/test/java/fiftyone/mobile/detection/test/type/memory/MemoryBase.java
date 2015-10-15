@@ -23,7 +23,7 @@ package fiftyone.mobile.detection.test.type.memory;
 
 import fiftyone.mobile.detection.Dataset;
 import fiftyone.mobile.detection.Provider;
-import fiftyone.mobile.detection.test.DetectionTestSupport;
+import fiftyone.mobile.detection.DetectionTestSupport;
 import fiftyone.mobile.detection.test.common.MemoryMeasurementProcessor;
 import fiftyone.mobile.detection.test.common.Results;
 import org.junit.After;

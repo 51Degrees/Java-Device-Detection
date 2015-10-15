@@ -21,7 +21,7 @@
 
 package fiftyone.mobile.detection.test.common;
 
-import fiftyone.mobile.detection.test.Filename;
+import fiftyone.mobile.detection.Filename;
 import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

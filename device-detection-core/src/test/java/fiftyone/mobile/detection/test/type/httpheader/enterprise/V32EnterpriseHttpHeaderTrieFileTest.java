@@ -23,7 +23,7 @@ package fiftyone.mobile.detection.test.type.httpheader.enterprise;
 
 import fiftyone.mobile.detection.test.TestType;
 import fiftyone.mobile.detection.test.type.httpheader.TrieCombinations;
-import fiftyone.mobile.detection.test.Filename;
+import fiftyone.mobile.detection.Filename;
 import fiftyone.mobile.detection.factories.TrieFactory;
 import java.io.IOException;
 import org.junit.Before;

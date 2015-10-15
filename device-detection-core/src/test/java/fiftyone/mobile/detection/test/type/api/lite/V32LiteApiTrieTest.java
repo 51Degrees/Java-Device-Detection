@@ -23,7 +23,7 @@ package fiftyone.mobile.detection.test.type.api.lite;
 
 import fiftyone.mobile.detection.TrieProvider;
 import fiftyone.mobile.detection.factories.TrieFactory;
-import fiftyone.mobile.detection.test.Filename;
+import fiftyone.mobile.detection.Filename;
 import fiftyone.mobile.detection.test.TestType;
 import fiftyone.mobile.detection.test.type.api.ApiTrieBase;
 import org.junit.AfterClass;

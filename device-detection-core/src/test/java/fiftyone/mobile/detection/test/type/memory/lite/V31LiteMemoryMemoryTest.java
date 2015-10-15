@@ -23,7 +23,7 @@ package fiftyone.mobile.detection.test.type.memory.lite;
 
 import fiftyone.mobile.detection.Dataset;
 import fiftyone.mobile.detection.factories.MemoryFactory;
-import fiftyone.mobile.detection.test.Filename;
+import fiftyone.mobile.detection.Filename;
 import fiftyone.mobile.detection.test.TestType;
 import fiftyone.mobile.detection.test.common.UserAgentGenerator;
 import fiftyone.mobile.detection.test.type.memory.MemoryBase;

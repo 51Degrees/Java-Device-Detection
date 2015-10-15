@@ -22,7 +22,7 @@
 package fiftyone.mobile.detection.test.type.api;
 
 import fiftyone.mobile.detection.TrieProvider;
-import fiftyone.mobile.detection.test.DetectionTestSupport;
+import fiftyone.mobile.detection.DetectionTestSupport;
 import fiftyone.mobile.detection.test.TestType;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
