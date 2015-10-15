@@ -25,7 +25,7 @@ import fiftyone.mobile.detection.Dataset;
 import fiftyone.mobile.detection.Match;
 import fiftyone.mobile.detection.Provider;
 import fiftyone.mobile.detection.entities.Property;
-import fiftyone.mobile.detection.test.DetectionTestSupport;
+import fiftyone.mobile.detection.DetectionTestSupport;
 import fiftyone.mobile.detection.test.TestType;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;

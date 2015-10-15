@@ -22,7 +22,7 @@
 package fiftyone.mobile.detection.test.type.metadata;
 
 import fiftyone.mobile.detection.Dataset;
-import fiftyone.mobile.detection.test.DetectionTestSupport;
+import fiftyone.mobile.detection.DetectionTestSupport;
 import fiftyone.mobile.detection.entities.Component;
 import fiftyone.mobile.detection.entities.Profile;
 import fiftyone.mobile.detection.entities.Property;

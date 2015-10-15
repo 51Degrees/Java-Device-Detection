@@ -23,7 +23,7 @@ package fiftyone.mobile.detection.test.type.performance.lite;
 
 import fiftyone.mobile.detection.test.TestType;
 import fiftyone.mobile.detection.test.type.performance.FileBase;
-import fiftyone.mobile.detection.test.Filename;
+import fiftyone.mobile.detection.Filename;
 import java.io.IOException;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;

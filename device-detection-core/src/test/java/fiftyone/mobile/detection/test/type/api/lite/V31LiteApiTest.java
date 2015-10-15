@@ -24,7 +24,7 @@ package fiftyone.mobile.detection.test.type.api.lite;
 import fiftyone.mobile.detection.Dataset;
 import fiftyone.mobile.detection.Provider;
 import fiftyone.mobile.detection.factories.StreamFactory;
-import fiftyone.mobile.detection.test.Filename;
+import fiftyone.mobile.detection.Filename;
 import fiftyone.mobile.detection.test.TestType;
 import fiftyone.mobile.detection.test.type.api.ApiBase;
 import org.junit.AfterClass;

@@ -21,7 +21,7 @@
 
 package fiftyone.mobile.detection.test.type.performance;
 
-import fiftyone.mobile.detection.test.DetectionTestSupport;
+import fiftyone.mobile.detection.DetectionTestSupport;
 import fiftyone.mobile.detection.test.common.Results;
 import fiftyone.mobile.detection.test.common.UserAgentGenerator;
 import fiftyone.properties.MatchMethods;

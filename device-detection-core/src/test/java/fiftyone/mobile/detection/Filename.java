@@ -19,7 +19,7 @@
  * defined by the Mozilla Public License, v. 2.0.
  */
 
-package fiftyone.mobile.detection.test;
+package fiftyone.mobile.detection;
 
 /**
  * Locations of files for tests

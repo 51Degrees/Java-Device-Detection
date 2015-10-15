@@ -19,7 +19,7 @@
  * defined by the Mozilla Public License, v. 2.0.
  */
 
-package fiftyone.mobile.detection.test;
+package fiftyone.mobile.detection;
 
 import fiftyone.mobile.detection.Dataset;
 import fiftyone.mobile.detection.Provider;
