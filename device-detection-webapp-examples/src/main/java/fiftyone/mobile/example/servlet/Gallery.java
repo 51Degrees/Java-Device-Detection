@@ -18,7 +18,7 @@
  * This Source Code Form is "Incompatible With Secondary Licenses", as
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
-package fiftyone.device.example.servlet.servlet;
+package fiftyone.mobile.example.servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
