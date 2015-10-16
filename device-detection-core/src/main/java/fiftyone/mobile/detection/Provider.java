@@ -21,7 +21,7 @@
 package fiftyone.mobile.detection;
 
 import fiftyone.properties.MatchMethods;
-import fiftyone.mobile.detection.Match.MatchState;
+import fiftyone.mobile.detection.MatchState;
 import fiftyone.mobile.detection.entities.Component;
 import fiftyone.mobile.detection.entities.Profile;
 import fiftyone.properties.DetectionConstants;
@@ -129,7 +129,7 @@ public class Provider {
      * specified.
      * @param dataSet
      * @param controller
-     * @param cacheServiceInternal 
+     * @param cacheSize
      */
     Provider(Dataset dataSet, Controller controller, int cacheSize) {
         this.detectionCount = new AtomicLong();
@@ -371,14 +371,14 @@ public class Provider {
             //Increase cache requests.
             userAgentCache.incrementRequestsByOne();
             
-            state = userAgentCache.tryGetValue(targetUserAgent);
+            state = userAgentCache.active.get(targetUserAgent);
             if (state == null) {
                 // The user agent has not been checked previously. Therefore perform
                 // the match and store the results in the cache.
                 match = matchNoCache(targetUserAgent, match);
 
                 // Record the match state in the cache for next time.
-                state = match.new MatchState(match);
+                state = new MatchState(match);
                 //userAgentCache.setActive(targetUserAgent, state);
                 userAgentCache.active.put(targetUserAgent, state);
                 
@@ -406,9 +406,7 @@ public class Provider {
         detectionCount.incrementAndGet();
         synchronized (methodCounts) {
             MatchMethods method = match.getMethod();
-            Long count = methodCounts.get(method);
-            long value = count.longValue();
-            methodCounts.put(method, value++);
+            methodCounts.put(method, methodCounts.get(method) + 1);
         }
 
         return match;

@@ -67,165 +67,7 @@ public class Match {
      */
     long elapsed;
     
-    /**
-     * Used to persist the match results to the cache. Used with the SetState
-     * method of the match class to retrieve the state.
-     */
-    class MatchState {
 
-        final MatchMethods method;
-        final int nodesEvaluated;
-        final Profile[] profiles;
-        final int rootNodesEvaluated;
-        final Signature signature;
-        final int signaturesCompared;
-        final int signaturesRead;
-        final int stringsRead;
-        final int lowestScore;
-        final String targetUserAgent;
-        final byte[] targetUserAgentArray;
-        final ArrayList<Node> nodes;
-        final int closestSignaturesCount;
-
-        /**
-         * Creates the state based on the match provided.
-         * @param match Match object to update with results.
-         */
-        MatchState(Match match) throws IOException {
-            method = match.getMethod();
-            nodesEvaluated = match.getNodesEvaluated();
-            profiles = match.getProfiles();
-            rootNodesEvaluated = match.getRootNodesEvaluated();
-            signature = match.getSignature();
-            signaturesCompared = match.getSignaturesCompared();
-            signaturesRead = match.getSignaturesRead();
-            stringsRead = match.getStringsRead();
-            closestSignaturesCount = match.getClosestSignaturesCount();
-            lowestScore = match.getLowestScore();
-            targetUserAgent = match.getTargetUserAgent();
-            targetUserAgentArray = match.getTargetUserAgentArray();
-            nodes = new ArrayList<Node>(match.nodes);
-        }
-    }
-
-    /**
-     * Used to iterate over the closest signatures.
-     */
-    public interface RankedSignatureIterator {
-
-        /**
-         * Resets the iterator to be used again.
-         */
-        void reset();
-
-        /**
-         * @return returns true if there are more elements in the next property.
-         */
-        boolean hasNext();
-
-        /**
-         * @return the next integer in the iteration.
-         */
-        int next();
-    }
-
-    /**
-     * A custom linked list used to identify the most frequently occurring
-     * signature indexes.
-     */
-    private class PossibleSignatures {
-
-        PossibleSignature first;
-        PossibleSignature last;
-        int size = 0;
-
-        void addBefore(PossibleSignature existing, PossibleSignature newItem) {
-            newItem.next = existing;
-            newItem.previous = existing.previous;
-            if (existing.previous != null) {
-                existing.previous.next = newItem;
-            }
-            existing.previous = newItem;
-            if (existing == first) {
-                first = newItem;
-            }
-            size++;
-        }
-
-        void addAfter(PossibleSignature existing, PossibleSignature newItem) {
-            newItem.next = existing.next;
-            newItem.previous = existing;
-            if (existing.next != null) {
-                existing.next.previous = newItem;
-            }
-            existing.next = newItem;
-            if (existing == last) {
-                last = newItem;
-            }
-            size++;
-        }
-
-        /**
-         * Adds the item to the end of the linked list.
-         */
-        void add(PossibleSignature newItem) {
-            if (last != null) {
-                addAfter(last, newItem);
-            } else {
-                first = newItem;
-                last = newItem;
-                size++;
-            }
-        }
-
-        /**
-         * Removes any reference to this element from the linked list.
-         */
-        void remove(PossibleSignature existing) {
-            if (first == existing) {
-                first = existing.next;
-            }
-            if (last == existing) {
-                last = existing.previous;
-            }
-            if (existing.previous != null) {
-                existing.previous.next = existing.next;
-            }
-            if (existing.next != null) {
-                existing.next.previous = existing.previous;
-            }
-            size--;
-        }
-    }
-
-    /**
-     * Used to represent a signature index and the number of times it occurs in
-     * the matched nodes.
-     */
-    private class PossibleSignature {
-
-        /**
-         * The ranked signature index.
-         */
-        public final int rankedSignatureIndex;
-        /**
-         * The number of times the signature index occurs.
-         */
-        public int frequency;
-        /**
-         * The next signature index in the linked list.
-         */
-        public PossibleSignature next;
-        /**
-         * The previous signature index in the linked list.
-         */
-        public PossibleSignature previous;
-
-        PossibleSignature(int rankedSignatureIndex, int frequency) {
-            this.rankedSignatureIndex = rankedSignatureIndex;
-            this.frequency = frequency;
-        }
-    }
     /**
      * Comparator used to order the nodes by length with the shortest first.
      */
@@ -501,7 +343,7 @@ public class Match {
      * The current lowest score for the target user agent. Initialised to the
      * largest possible result.
      */
-    public Integer lowestScore;
+    public int lowestScore;
 
     /**
      * Reset the next character position index based on the length of the target
@@ -705,14 +547,11 @@ public class Match {
         return nodes;
     }
 
-    public Integer getLowestScore() {
-        if (lowestScore == null) {
-            lowestScore = 0;
-        }
+    public int getLowestScore() {
         return lowestScore;
     }
 
-    public void setLowestScore(Integer lowestScore) {
+    public void setLowestScore(int lowestScore) {
         this.lowestScore = lowestScore;
     }
 
@@ -921,5 +760,104 @@ public class Match {
         nodes.add(index, node);
 
         return index;
+    }
+}
+
+
+/**
+ * A custom linked list used to identify the most frequently occurring
+ * signature indexes.
+ */
+class PossibleSignatures {
+
+    PossibleSignature first;
+    PossibleSignature last;
+    int size = 0;
+
+    void addBefore(PossibleSignature existing, PossibleSignature newItem) {
+        newItem.next = existing;
+        newItem.previous = existing.previous;
+        if (existing.previous != null) {
+            existing.previous.next = newItem;
+        }
+        existing.previous = newItem;
+        if (existing == first) {
+            first = newItem;
+        }
+        size++;
+    }
+
+    void addAfter(PossibleSignature existing, PossibleSignature newItem) {
+        newItem.next = existing.next;
+        newItem.previous = existing;
+        if (existing.next != null) {
+            existing.next.previous = newItem;
+        }
+        existing.next = newItem;
+        if (existing == last) {
+            last = newItem;
+        }
+        size++;
+    }
+
+    /**
+     * Adds the item to the end of the linked list.
+     */
+    void add(PossibleSignature newItem) {
+        if (last != null) {
+            addAfter(last, newItem);
+        } else {
+            first = newItem;
+            last = newItem;
+            size++;
+        }
+    }
+
+    /**
+     * Removes any reference to this element from the linked list.
+     */
+    void remove(PossibleSignature existing) {
+        if (first == existing) {
+            first = existing.next;
+        }
+        if (last == existing) {
+            last = existing.previous;
+        }
+        if (existing.previous != null) {
+            existing.previous.next = existing.next;
+        }
+        if (existing.next != null) {
+            existing.next.previous = existing.previous;
+        }
+        size--;
+    }
+}
+
+/**
+ * Used to represent a signature index and the number of times it occurs in
+ * the matched nodes.
+ */
+class PossibleSignature {
+
+    /**
+     * The ranked signature index.
+     */
+    public final int rankedSignatureIndex;
+    /**
+     * The number of times the signature index occurs.
+     */
+    public int frequency;
+    /**
+     * The next signature index in the linked list.
+     */
+    public PossibleSignature next;
+    /**
+     * The previous signature index in the linked list.
+     */
+    public PossibleSignature previous;
+
+    PossibleSignature(int rankedSignatureIndex, int frequency) {
+        this.rankedSignatureIndex = rankedSignatureIndex;
+        this.frequency = frequency;
     }
 }
