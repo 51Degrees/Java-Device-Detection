@@ -52,11 +52,11 @@ public class Cache<K, V> {
     /**
      * The active list of cached items.
      */
-    public ConcurrentHashMap<K, V> active;
+    volatile public ConcurrentHashMap<K, V> active;
     /**
      * The list of inactive cached items.
      */
-    public ConcurrentHashMap<K, V> background;
+    volatile public ConcurrentHashMap<K, V> background;
     /**
      * The number of items the cache lists should have capacity for.
      */
@@ -76,7 +76,7 @@ public class Cache<K, V> {
     /**
      * Indicates a switch operation is in progress.
      */
-    private boolean switching;
+    volatile private boolean switching;
 
     /**
      * Constructs a new instance of the cache.
@@ -128,7 +128,7 @@ public class Cache<K, V> {
      * @param value item value.
      */
     public void addRecent(K key, V value) {
-        setBackground(key, value);
+        background.putIfAbsent(key, value);
         if (background.size() > cacheServiceSize && !switching) {
             synchronized(this) {
                 if (background.size() > cacheServiceSize && !switching) {
@@ -146,32 +146,6 @@ public class Cache<K, V> {
         }
     }
 
-    /**
-     * Attempts to get the value with the given, or null if no key is found.
-     */
-    V tryGetValue(K key) {
-        return active.get(key);
-    }
-
-    /**
-     * Add a new entry to the active list if entry is not already in the list.
-     * @param key Some identified that can later be used for entry lookup.
-     * @param result The value corresponding to the key.
-     */
-    void setActive(K key, V result) {
-        active.putIfAbsent(key, result);
-    }
-
-    /**
-     * Add a new entry to the background list if entry is not already in the 
-     * list.
-     * @param key Some identified that can later be used for entry lookup.
-     * @param result The value corresponding to the key.
-     */
-    void setBackground(K key, V result) {
-        background.putIfAbsent(key, result);
-    }
-    
     /**
      * @return the percentage of times cache request did not return a result.
      */
