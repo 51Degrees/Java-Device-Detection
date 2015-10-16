@@ -52,7 +52,7 @@ abstract class BaseScore {
      * @throws IOException 
      */
     void evaluateSignatures(Match match,
-            Match.RankedSignatureIterator closestSignatures) throws IOException {
+            RankedSignatureIterator closestSignatures) throws IOException {
         int count = 0, signatureIndex, rankedSignatureIndex;
         closestSignatures.reset();
         match.setLowestScore(Integer.MAX_VALUE);

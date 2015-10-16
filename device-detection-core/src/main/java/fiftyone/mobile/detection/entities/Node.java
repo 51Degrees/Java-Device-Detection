@@ -344,13 +344,9 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
                         if (node != null) {
                             int difference = 
                                         Math.abs(target - current.getValue());
-                            if (match.getLowestScore() == null) {
-                                match.setLowestScore(difference);
-                            } else {
-                                match.setLowestScore(
-                                        match.getLowestScore() + difference
-                                        );
-                            }
+                            match.setLowestScore(
+                                    match.getLowestScore() + difference
+                                    );
                             break;
                         }
                     }
