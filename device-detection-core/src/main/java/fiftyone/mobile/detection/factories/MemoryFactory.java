@@ -217,7 +217,7 @@ public class MemoryFactory {
      * @throws IOException 
      */
     public static void load(Dataset dataSet, BinaryReader reader, boolean init) 
-            throws IOException {
+            throws IOException {     
         CommonFactory.loadHeader(dataSet, reader);
 
         MemoryVariableList<AsciiString> strings = new MemoryVariableList<AsciiString>(

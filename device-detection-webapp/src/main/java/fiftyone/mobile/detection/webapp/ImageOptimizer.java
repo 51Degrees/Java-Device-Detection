@@ -193,7 +193,7 @@ class ImageOptimizer {
      * @throws IOException 
      */
     static void sendImage(HttpServletRequest request, HttpServletResponse response)
-            throws IOException {
+            throws IOException, Exception {
         
         // Check to see if this is for an empty image.
         if ("/Empty.gif".equalsIgnoreCase(request.getPathInfo())) {
@@ -257,7 +257,9 @@ class ImageOptimizer {
                     cacheDirectory, sourceFile, size.width, size.height);
             
             logger.debug(String.format(
-                "Image processor is responding with image '%s' of width '%d' and height '%d'",
+                    Constants.VERSION +
+                    " Image processor is responding with image '%s' of width "
+                    + "'%d' and height '%d'",
                 sourceFile,
                 size.width,
                 size.height));
@@ -433,7 +435,8 @@ class ImageOptimizer {
                 resource.close();
             } catch (IOException ex) {
                 logger.debug(
-                    "Exception closing resource",
+                    Constants.VERSION +
+                    " Exception closing resource",
                     ex);
             }
         }
@@ -500,7 +503,7 @@ class ImageOptimizer {
      * @return
      * @throws IOException 
      */
-    static String getJavascript(HttpServletRequest request) throws IOException {
+    static String getJavascript(HttpServletRequest request) throws IOException, Exception {
         Map<String, String[]> results = WebProvider.getResult(request);
         if (results != null) {
             String[] values = results.get("JavascriptImageOptimiser");
