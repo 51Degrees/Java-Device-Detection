@@ -37,11 +37,11 @@ public class Profile extends fiftyone.mobile.detection.entities.Profile {
     /**
      * Array of value indexes associated with the profile.
      */
-    private int[] valueIndexes;
+    //private int[] valueIndexes;
     /**
      * Array of signature indexes associated with the profile.
      */
-    private int[] signatureIndexes;
+    //private int[] signatureIndexes;
     
     /**
      * Constructs a new instance of the Profile.

@@ -21,6 +21,7 @@
 package fiftyone.mobile.detection.webapp;
 
 import java.io.IOException;
+import java.util.logging.Level;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -43,14 +44,37 @@ public final class FiftyOneDegreesServlet extends HttpServlet {
         // Check the path information to find the resource being requested.
         String pathInfo = request.getPathInfo();
         if (JAVASCRIPT_CORE.equals(pathInfo)) {
-            JavascriptProvider.sendCoreJavaScript(request, response);
+            try {
+                JavascriptProvider.sendCoreJavaScript(request, response);
+            } catch (Exception ex) {
+                logger.debug(
+                        Constants.VERSION
+                        + " Failed to find the core.js in the provided path:  "
+                        + pathInfo + " "
+                        + ex);
+            }
         } else if (JAVASCRIPT_FEATURES.equals(pathInfo)) {
-            JavascriptProvider.sendFeatureJavaScript(request, response);
+            try {
+                JavascriptProvider.sendFeatureJavaScript(request, response);
+            } catch (Exception ex) {
+                logger.debug(
+                        Constants.VERSION
+                        + " Failed to find the features.js in the provided path:  "
+                        + pathInfo + " "
+                        + ex);
+            }
         } else if (
                 pathInfo.toLowerCase().endsWith("jpg") ||
                 pathInfo.toLowerCase().endsWith("png") ||
                 pathInfo.toLowerCase().endsWith("gif")) {
-            ImageOptimizer.sendImage(request, response);
+            try {
+                ImageOptimizer.sendImage(request, response);
+            } catch (Exception ex) {
+                logger.debug(
+                        Constants.VERSION
+                        + " Failed to send image to be processed by the optimiser."
+                        + ex);
+            }
         }
     }
 }

@@ -3,8 +3,21 @@
 *Premium*.dat
 *Enterprise*.trie
 *Premium*.trie
+result.txt
+licence.txt
+*.iml
 *.lic
 *.pfk
 *.class
 */target/*
 
+/device-detection-webapp/website/nbproject/private/
+/device-detection-webapp/website/build/
+/device-detection-webapp/MySite/nbproject/private/
+/Netbeans/
+/.idea/
+/device-detection-examples/results-*
+/device-detection-examples/result.txt
+*/nb-configuration.xml
+/device-detection-examples/nb-*
+/device-detection-core/nb-*

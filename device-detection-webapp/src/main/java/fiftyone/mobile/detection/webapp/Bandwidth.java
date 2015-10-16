@@ -87,7 +87,9 @@ class Bandwidth {
                         break;
 
                     } catch (NumberFormatException e) {
-                        logger.error("Error parsing 51D_Bandwidth cookie", e);
+                        logger.error(
+                                Constants.VERSION +
+                                " Error parsing 51D_Bandwidth cookie", e);
                     }
                 } catch (NoSuchElementException e) {
                     // do nothing
@@ -118,7 +120,7 @@ class Bandwidth {
      * @return
      * @throws IOException 
      */
-    static String getJavascript(HttpServletRequest request) throws IOException {
+    static String getJavascript(HttpServletRequest request) throws IOException, Exception {
         Map<String, String[]> results = WebProvider.getResult(request);
         if (results != null) {
             String[] values = results.get("JavascriptBandwidth");

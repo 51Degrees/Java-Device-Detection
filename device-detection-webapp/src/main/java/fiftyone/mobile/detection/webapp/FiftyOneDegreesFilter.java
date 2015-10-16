@@ -21,6 +21,8 @@
 package fiftyone.mobile.detection.webapp;
 
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -46,21 +48,25 @@ public class FiftyOneDegreesFilter implements Filter {
             FilterChain chain) throws IOException, ServletException {
         
         HttpServletRequest httpRequest = (HttpServletRequest)request;
-        if (Bandwidth.getJavascript(httpRequest) != null) {
-            HttpSession session = httpRequest.getSession();
-            Cookie[] cookies = httpRequest.getCookies();
-            String ServletPath = httpRequest.getServletPath();
-            
-            if(!ServletPath.equals("/51D")) {
-                if (cookies != null && session != null) {
-                    Bandwidth.process(
-                            (HttpServletRequest)request, 
-                            (HttpServletResponse)response,
-                            session,
-                            cookies);
+        try {
+            if (Bandwidth.getJavascript(httpRequest) != null) {
+                HttpSession session = httpRequest.getSession();
+                Cookie[] cookies = httpRequest.getCookies();
+                String ServletPath = httpRequest.getServletPath();
+                
+                if(!ServletPath.equals("/51D")) {
+                    if (cookies != null && session != null) {
+                        Bandwidth.process(
+                                (HttpServletRequest)request,
+                                (HttpServletResponse)response,
+                                session,
+                                cookies);
+                    }
                 }
             }
-        }    
+        } catch (Exception ex) {    
+            Logger.getLogger(FiftyOneDegreesFilter.class.getName()).log(Level.SEVERE, null, ex);
+        }
         chain.doFilter(request, response);
     }
 

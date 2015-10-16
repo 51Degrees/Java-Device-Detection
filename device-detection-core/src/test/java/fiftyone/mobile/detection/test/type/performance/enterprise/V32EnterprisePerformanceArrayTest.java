@@ -28,7 +28,7 @@ import java.io.IOException;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-@Category(TestType.DataSetEnterprise.class)
+@Category({TestType.DataSetEnterprise.class, TestType.TypePerformance.class})
 public class V32EnterprisePerformanceArrayTest extends ArrayBase {
     public V32EnterprisePerformanceArrayTest() {
         super(Filename.ENTERPRISE_PATTERN_V32);
@@ -40,7 +40,7 @@ public class V32EnterprisePerformanceArrayTest extends ArrayBase {
     }
     
     @Test
-    @Category(TestType.DataSetEnterprise.class)
+    @Category({TestType.DataSetEnterprise.class, TestType.TypePerformance.class})
     @Override
     public void initializeTime()
     {
