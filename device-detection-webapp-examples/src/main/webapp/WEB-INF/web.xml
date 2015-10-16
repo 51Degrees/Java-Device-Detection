@@ -65,13 +65,13 @@
         <description>Example Device Detection</description>
         <display-name>Example</display-name>
         <servlet-name>Example</servlet-name>
-        <servlet-class>fiftyone.device.example.servlet.servlet.Example</servlet-class>
+        <servlet-class>fiftyone.mobile.example.servlet.Example</servlet-class>
     </servlet>
     <servlet>
         <description>Example Image Gallery</description>
         <display-name>Gallery</display-name>
         <servlet-name>Gallery</servlet-name>
-        <servlet-class>fiftyone.device.example.servlet.servlet.Gallery</servlet-class>
+        <servlet-class>fiftyone.mobile.example.servlet.Gallery</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>FiftyOneDegreesServlet</servlet-name>
