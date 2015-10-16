@@ -28,21 +28,11 @@ package fiftyone.mobile.detection.entities.memory;
 import fiftyone.mobile.detection.Dataset;
 import fiftyone.mobile.detection.entities.BaseEntity;
 import fiftyone.mobile.detection.readers.BinaryReader;
-import java.io.IOException;
 
 /**
  * All data is loaded into memory when the entity is constructed.
  */
 public class Profile extends fiftyone.mobile.detection.entities.Profile {
-    /**
-     * Array of value indexes associated with the profile.
-     */
-    private int[] valueIndexes;
-    /**
-     * Array of signature indexes associated with the profile.
-     */
-    private int[] signatureIndexes;
-    
     /**
      * Constructs a new instance of the Profile.
      * @param dataSet The data set whose profile list the profile will be 
@@ -58,7 +48,7 @@ public class Profile extends fiftyone.mobile.detection.entities.Profile {
         this.valueIndexes = BaseEntity.readIntegerArray(reader, valueIndexesCount);
         this.signatureIndexes = BaseEntity.readIntegerArray(reader, signatureIndexesCount);
     }
-    
+
     /**
      * Get array of value indexes associated with the profile.
      * @return Array of value indexes associated with the profile.
@@ -67,7 +57,7 @@ public class Profile extends fiftyone.mobile.detection.entities.Profile {
     public int[] getValueIndexes() {
         return valueIndexes;
     }
-    
+
     /**
      * Get array of signature indexes associated with the profile.
      * @return Array of signature indexes associated with the profile.
@@ -75,16 +65,5 @@ public class Profile extends fiftyone.mobile.detection.entities.Profile {
     @Override
     public int[] getSignatureIndexes() {
         return signatureIndexes;
-    }
-    
-    /**
-     * Initialises the data and releases any memory for collection.
-     * @throws java.io.IOException
-     */
-    @Override
-    public void init() throws IOException {
-        super.init();
-        valueIndexes = null;
-        signatureIndexes = null;
     }
 }
