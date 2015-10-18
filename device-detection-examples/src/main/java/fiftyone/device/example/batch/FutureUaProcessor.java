@@ -85,6 +85,7 @@ public class FutureUaProcessor extends UaProcessor.Base {
             // keep track of how many futures we have processed
             // in this implementation we don't actually process any results before the end
             int taken = 0;
+
             // record the wall-clock time now
             start = System.currentTimeMillis();
 
