@@ -105,21 +105,23 @@ public class Provider {
         this.methodCounts.add(MatchMethods.NONE, new AtomicLong(0));
 
         userAgentCache = cache;
-        userAgentCache.setLoader(new Cache.Loader<String, MatchState>() {
-            @Override
-            public MatchState load(String key) {
-                return load(key, createMatch());
-            }
-
-            @Override
-            public MatchState load(String key, MatchState resultInstance) {
-                try {
-                    return new MatchState(matchNoCache(key, (Match) resultInstance));
-                } catch (IOException e) {
-                    return null;
+        if (cache != null) {
+            userAgentCache.setLoader(new Cache.Loader<String, MatchState>() {
+                @Override
+                public MatchState load(String key) {
+                    return load(key, createMatch());
                 }
-            }
-        });
+
+                @Override
+                public MatchState load(String key, MatchState resultInstance) {
+                    try {
+                        return new MatchState(matchNoCache(key, (Match) resultInstance));
+                    } catch (IOException e) {
+                        return null;
+                    }
+                }
+            });
+        }
     }
 
     /**
