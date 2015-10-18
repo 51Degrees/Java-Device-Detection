@@ -20,6 +20,7 @@
  * ********************************************************************* */
 package fiftyone.mobile.detection.entities.stream;
 
+import fiftyone.mobile.detection.cache.SwitchingCache;
 import fiftyone.mobile.detection.entities.BaseEntity;
 
 /**
@@ -28,34 +29,14 @@ import fiftyone.mobile.detection.entities.BaseEntity;
  * 
  * @param <T> The type of BaseEntity the cache will contain.
  */
-public class Cache<T extends BaseEntity> 
-                        extends fiftyone.mobile.detection.Cache<Integer, T> {
+public class StreamCache<T extends BaseEntity>
+                        extends SwitchingCache<Integer, T> {
 
     /**
      * Constructs a new instance of the cache.
      * @param cacheSize number of items in cache.
      */
-    public Cache(int cacheSize) {
+    public StreamCache(int cacheSize) {
         super(cacheSize);
-    }
-
-    /**
-     * Adds a new item to cache.
-     * @param index index of the item.
-     * @param item item to add.
-     */
-    public void addRecent(int index, T item) {
-        super.addRecent(index, item);
-    }
-    
-    /**
-     * Resets the stats for the cache.
-     */
-    public void resetCache() {
-        super.clearActiveList();
-        super.clearBackgroundList();
-        super.clearMisses();
-        super.clearRequests();
-        super.clearSwitches();
     }
 }

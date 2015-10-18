@@ -20,6 +20,7 @@
  * ********************************************************************* */
 package fiftyone.mobile.detection.entities.stream;
 
+import fiftyone.mobile.detection.cache.Cache;
 import fiftyone.mobile.detection.entities.BaseEntity;
 import fiftyone.mobile.detection.factories.BaseEntityFactory;
 import fiftyone.mobile.detection.readers.BinaryReader;
@@ -49,7 +50,7 @@ public abstract class StreamCacheList<T extends BaseEntity>
      * reduce memory consumption associated with creating new instances of 
      * entities already in use.
      */
-    private final Cache<T> cache;
+    private final StreamCache<T> cache;
     
     /**
      * Constructs a new instance of StreamBaseList{T} ready to read entities 
@@ -59,10 +60,10 @@ public abstract class StreamCacheList<T extends BaseEntity>
      * @param entityFactory Used to create new instances of the entity.
      * @param cacheSize Number of items in list to have capacity to cache.
      */
-    public StreamCacheList(Dataset dataSet, BinaryReader reader, 
+    public StreamCacheList(Dataset dataSet, BinaryReader reader,
                             BaseEntityFactory<T> entityFactory, int cacheSize) {
         super(dataSet, reader, entityFactory);
-        this.cache = new Cache<T>(cacheSize);
+        this.cache = new StreamCache<T>(cacheSize);
     }
 
     /**
@@ -72,19 +73,21 @@ public abstract class StreamCacheList<T extends BaseEntity>
      */
     @Override
     public T get(int key) {
-        T item = cache.active.get(key);
-        if (item == null) {
-            try {
-                item = super.get(key);
-                cache.active.put(key, item);
-                cache.incrementMissesByOne();
-            } catch (IOException ex) {
-                //TODO: handle exception.
+        return cache.get(key, new Cache.Loader<Integer, T>() {
+            @Override
+            public T load(Integer key) {
+                try {
+                    return StreamCacheList.super.get(key);
+                } catch (IOException e) {
+                    return null;
+                }
             }
-        }
-        cache.addRecent(key, item);
-        cache.incrementRequestsByOne();
-        return item;
+
+            @Override
+            public T load(Integer key, T resultInstance) {
+                throw new UnsupportedOperationException();
+            }
+        });
     }
 
     /**
