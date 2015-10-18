@@ -1,16 +1,53 @@
 package fiftyone.mobile.detection.cache;
 
-import fiftyone.mobile.detection.MatchState;
+import fiftyone.mobile.detection.Dataset;
+import fiftyone.mobile.detection.DetectionResult;
+import fiftyone.mobile.detection.entities.Node;
+import fiftyone.mobile.detection.entities.Profile;
+import fiftyone.mobile.detection.entities.Signature;
+import fiftyone.properties.MatchMethods;
+
+import java.io.IOException;
+import java.util.ArrayList;
 
 /**
  *
  */
 @SuppressWarnings("unused")
-public class NoOpCache <K> implements Cache <K,MatchState> {
-    MatchState matchState;
+public class NoOpCache <K> implements Cache <K,DetectionResult> {
+    DetectionResult detectionResult;
 
     public NoOpCache() {
-        this.matchState = new MatchState();
+        this.detectionResult = new DetectionResult((Dataset) null) {{
+            method = MatchMethods.EXACT;
+            nodesEvaluated = 0;
+            profiles = new Profile[0];
+            rootNodesEvaluated = 0;
+            signature = new Signature(null, 0, null) {
+                @Override
+                public int[] getNodeOffsets() {
+                    return new int[0];
+                }
+
+                @Override
+                protected int getSignatureLength() {
+                    return 0;
+                }
+
+                @Override
+                public int getRank() {
+                    return 0;
+                }
+            };
+            signaturesCompared = 0;
+            signaturesRead = 0;
+            stringsRead = 0;
+            closestSignaturesCount = 0;
+            lowestScore = 0;
+            targetUserAgent = "";
+            targetUserAgentArray = new byte[0];
+            nodes = new ArrayList<Node>();
+        }};
     }
 
     @Override
@@ -29,7 +66,7 @@ public class NoOpCache <K> implements Cache <K,MatchState> {
     }
 
     @Override
-    public void setLoader(Loader<K, MatchState> loader) {
+    public void setLoader(Loader<K, DetectionResult> loader) {
 
     }
 
@@ -49,22 +86,22 @@ public class NoOpCache <K> implements Cache <K,MatchState> {
     }
 
     @Override
-    public MatchState get(K key) {
-        return matchState;
+    public DetectionResult get(K key) {
+        return detectionResult;
     }
 
     @Override
-    public MatchState get(K key, MatchState resultInstance) {
+    public DetectionResult get(K key, DetectionResult resultInstance) {
         return resultInstance;
     }
 
     @Override
-    public MatchState getIfCached(K key) {
-        return matchState;
+    public DetectionResult getIfCached(K key) {
+        return detectionResult;
     }
 
     @Override
-    public MatchState get(K key, Loader<K, MatchState> loader) {
-        return matchState;
+    public DetectionResult get(K key, Loader<K, DetectionResult> loader) {
+        return detectionResult;
     }
 }

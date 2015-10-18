@@ -49,7 +49,7 @@ public class Provider {
     /**
      * A cache for user agents.
      */
-    private Cache<String, MatchState> userAgentCache = null;
+    private Cache<String, DetectionResult> userAgentCache = null;
     private AtomicLong detectionCount;
     private Controller controller;
 
@@ -69,7 +69,7 @@ public class Provider {
      * @param cacheSize Size in bytes of cache to use
      */
     public Provider(Dataset dataSet, int cacheSize) {
-        this(dataSet, new Controller(), cacheSize > 0 ? new SwitchingCache<String, MatchState>(cacheSize) : null);
+        this(dataSet, new Controller(), cacheSize > 0 ? new SwitchingCache<String, DetectionResult>(cacheSize) : null);
     }
 
     /**
@@ -78,7 +78,7 @@ public class Provider {
      * @param dataSet Data set to use for device detection
      * @param cache A cache to use
      */
-    public Provider(Dataset dataSet, Cache<String, MatchState> cache) {
+    public Provider(Dataset dataSet, Cache<String, DetectionResult> cache) {
         this(dataSet, new Controller(), cache);
     }
 
@@ -90,7 +90,7 @@ public class Provider {
      * @param controller Controller to use
      * @param cache a user agent cache
      */
-    Provider(Dataset dataSet, Controller controller, Cache<String, MatchState> cache) {
+    Provider(Dataset dataSet, Controller controller, Cache<String, DetectionResult> cache) {
         this.detectionCount = new AtomicLong();
         this.dataSet = dataSet;
         this.controller = controller;
@@ -106,16 +106,16 @@ public class Provider {
 
         userAgentCache = cache;
         if (cache != null) {
-            userAgentCache.setLoader(new Cache.Loader<String, MatchState>() {
+            userAgentCache.setLoader(new Cache.Loader<String, DetectionResult>() {
                 @Override
-                public MatchState load(String key) {
+                public DetectionResult load(String key) {
                     return load(key, createMatch());
                 }
 
                 @Override
-                public MatchState load(String key, MatchState resultInstance) {
+                public DetectionResult load(String key, DetectionResult resultInstance) {
                     try {
-                        return new MatchState(matchNoCache(key, (Match) resultInstance));
+                        return new DetectionResult(matchNoCache(key, (Match) resultInstance));
                     } catch (IOException e) {
                         return null;
                     }
@@ -156,6 +156,13 @@ public class Provider {
         return match(targetUserAgent, createMatch());
     }
 
+    public DetectionResult detect(String targetUserAgent) throws IOException {
+        if (userAgentCache != null && targetUserAgent != null) {
+            return userAgentCache.get(targetUserAgent);
+        }
+        return  matchNoCache(targetUserAgent, createMatch());
+    }
+
     /**
      * For a given user agent returns a match containing information about the
      * capabilities of the device and it's components.
@@ -170,7 +177,7 @@ public class Provider {
     public Match match(final String targetUserAgent, final Match match) throws IOException {
 
         if (userAgentCache != null && targetUserAgent != null) {
-            MatchState state = userAgentCache.get(targetUserAgent, match);
+            DetectionResult state = userAgentCache.get(targetUserAgent, match);
             match.setState(state);
         } else {
             // The cache does not exist so call the non caching method.
