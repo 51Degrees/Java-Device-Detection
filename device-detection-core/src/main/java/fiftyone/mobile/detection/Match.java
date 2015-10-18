@@ -60,13 +60,8 @@ import fiftyone.properties.DetectionConstants;
  * Generate when a device detection is requested to include the signature
  * matched, the confidence of the match and the method used to obtain the match.
  */
-public class Match extends MatchState {
+public class Match extends DetectionResult {
 
-    /**
-     * The data set used for the detection.
-     */
-    public final Dataset dataSet
-            ;
     private final List<Signature> signatures = new ArrayList<Signature>();
     /**
      * The next character position to be checked.
@@ -84,8 +79,7 @@ public class Match extends MatchState {
      * @param dataSet data set to be used for this match
      */
     public Match(Dataset dataSet) {
-        super();
-        this.dataSet = dataSet;
+        super(dataSet);
     }
 
     /**
@@ -99,7 +93,7 @@ public class Match extends MatchState {
      */
     public Match(Dataset dataSet, String targetUserAgent)
             throws UnsupportedEncodingException {
-        this.dataSet = dataSet;
+        super(dataSet);
         init(targetUserAgent);
     }
 
@@ -380,57 +374,6 @@ public class Match extends MatchState {
         nodesEvaluated++;
     }
 
-    Dataset getDataSet() {
-        return dataSet;
-    }
-
-    /**
-     * Gets the values associated with the property name using the profiles
-     * found by the match. If matched profiles don't contain a value then the
-     * default profiles for each of the components are also checked.
-     *
-     * @param property The property whose values are required
-     * @return Array of the values associated with the property, or null if the
-     * property does not exist
-     * @throws IOException indicates an I/O exception occurred
-     */
-    public Values getValues(Property property) throws IOException {
-        Values value = null;
-
-        if (property != null) {
-            // Get the property value from the profile returned
-            // from the match.
-            for (Profile profile : getProfiles()) {
-                if (profile.getComponent().getComponentId()
-                        == property.getComponent().getComponentId()) {
-                    value = profile.getValues(property);
-                    break;
-                }
-            }
-
-            // If the value has not been found use the default profile.
-            if (value == null) {
-                value = property.getComponent().getDefaultProfile().getValues(property);
-            }
-        }
-
-        return value;
-    }
-
-    /**
-     * Gets the values associated with the property name using the profiles
-     * found by the match. If matched profiles don't contain a value then the
-     * default profiles for each of the components are also checked.
-     *
-     * @param propertyName The property name whose values are required
-     * @return Array of the values associated with the property, or null if the
-     * property does not exist
-     * @throws IOException indicates an I/O exception occurred
-     */
-    public Values getValues(String propertyName) throws IOException {
-        return getValues(dataSet.get(propertyName));
-    }
-
     public Map<String, String[]> getResults() throws IOException {
         Map<String, String[]> localResults = results;
         if (localResults == null) {
@@ -584,7 +527,7 @@ public class Match extends MatchState {
      * @param state of a previous match from the cache.
      */
     public
-    void setState(MatchState state) {
+    void setState(DetectionResult state) {
         method = state.method;
         nodesEvaluated = state.nodesEvaluated;
         profiles = state.profiles;

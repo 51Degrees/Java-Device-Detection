@@ -20,7 +20,7 @@
  * ********************************************************************* */
 package fiftyone.device.example.batch;
 
-import fiftyone.mobile.detection.Match;
+import fiftyone.mobile.detection.DetectionResult;
 import fiftyone.mobile.detection.Provider;
 import fiftyone.mobile.detection.entities.Values;
 
@@ -67,7 +67,7 @@ public interface UaProcessor {
         protected final Provider provider;
 
         protected int count = 0; // the number of UAs processed so far
-        protected long start; // the Unix time in millis that the process started
+        protected long testStart; // the Unix time in millis that the process started
         protected long stop; // the Unix time in millis that the process completed
 
         public Base(BufferedReader useragents, Provider provider, int numberOfThreads, int limit) throws IOException {
@@ -79,8 +79,6 @@ public interface UaProcessor {
 
         @Override
         public void printStats(PrintWriter output) {
-            output.println("Heap is " + (Runtime.getRuntime().maxMemory() - Runtime.getRuntime().freeMemory()) / (1024 * 1024) + " MBytes");
-            output.printf("'%.3fms' average detection time%n", (double) (stop - start) / (double) count);
             if (provider.dataSet instanceof fiftyone.mobile.detection.entities.stream.Dataset) {
                 output.printf("'%.2f' Node cache misses%n", provider.dataSet.getPercentageNodeCacheMisses());
                 output.printf("'%.2f' Profiles cache misses%n", provider.dataSet.getPercentageProfilesCacheMisses());
@@ -123,7 +121,7 @@ public interface UaProcessor {
          * @param writer a writer to wrtie to
          * @throws IOException
          */
-        protected static void writeMatch(BufferedWriter writer, String s, long time, Match match) throws IOException {
+        protected static void writeResult(BufferedWriter writer, String s, long time, DetectionResult match) throws IOException {
             writer.write(s + "\t" + time + "\t" + match.getMethod() + "\t"
                     + getValue(match, "PlatformName") + "\t"
                     + getValue(match, "PlatformVersion") + "\t"
@@ -145,14 +143,14 @@ public interface UaProcessor {
 
         /**
          * local utility to format a property from a match
-         * @param match the match to format
+         * @param result the match to format
          * @param propertyName the name of the property to format
          * @return the formatted value
          */
-        private static String getValue(Match match, String propertyName) {
+        private static String getValue(DetectionResult result, String propertyName) {
             try {
-                if (match != null) {
-                    Values value = match.getValues(propertyName);
+                if (result != null) {
+                    Values value = result.getValues(propertyName);
                     if (value != null) {
                         return value.toString();
                     }

@@ -1,20 +1,20 @@
 package fiftyone.mobile.detection;
 
-import fiftyone.mobile.detection.entities.Node;
-import fiftyone.mobile.detection.entities.Profile;
-import fiftyone.mobile.detection.entities.Signature;
-import fiftyone.mobile.detection.entities.SignatureV32;
+import fiftyone.mobile.detection.entities.*;
 import fiftyone.properties.MatchMethods;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Used to persist the match results to the cache. Used with the SetState
  * method of the match class to retrieve the state.
  */
-public class MatchState {
+public class DetectionResult {
+    /**
+     * The data set used for the detection.
+     */
+    protected Dataset dataSet;
     /*final*/ protected  MatchMethods method;
     /*final*/ protected  int nodesEvaluated;
     /*final*/ protected  volatile Profile[] profiles;
@@ -26,45 +26,38 @@ public class MatchState {
     /*final*/ protected  int lowestScore;
     /*final*/ protected  String targetUserAgent;
     /*final*/ protected  byte[] targetUserAgentArray;
-    /*final*/ protected  ArrayList<Node> nodes;
+    /*final*/ protected  ArrayList<Node> nodes = new ArrayList<Node>();
     /*final*/ protected  int closestSignaturesCount;
+
+    public DetectionResult(Dataset dataSet) {
+        this.dataSet = dataSet;
+    }
 
     /**
      * Creates the state based on the one provided.
      * <p>this is an independent copy and isintended to be immutable.</p>
      *
-     * @param matchState Match object to update with results.
+     * @param detectionResult Match object to update with results.
      */
-    protected MatchState(MatchState matchState) throws IOException {
-        method = matchState.getMethod();
-        nodesEvaluated = matchState.getNodesEvaluated();
-        profiles = matchState.getProfiles().clone();
-        rootNodesEvaluated = matchState.getRootNodesEvaluated();
-        signature = matchState.getSignature();
-        signaturesCompared = matchState.getSignaturesCompared();
-        signaturesRead = matchState.getSignaturesRead();
-        stringsRead = matchState.getStringsRead();
-        closestSignaturesCount = matchState.getClosestSignaturesCount();
-        lowestScore = matchState.getLowestScore();
-        targetUserAgent = matchState.getTargetUserAgent();
-        targetUserAgentArray = matchState.getTargetUserAgentArray();
-        nodes = new ArrayList<Node>(matchState.getNodes());
+    protected DetectionResult(DetectionResult detectionResult) throws IOException {
+        dataSet = detectionResult.dataSet;
+        method = detectionResult.getMethod();
+        nodesEvaluated = detectionResult.getNodesEvaluated();
+        profiles = detectionResult.getProfiles().clone();
+        rootNodesEvaluated = detectionResult.getRootNodesEvaluated();
+        signature = detectionResult.getSignature();
+        signaturesCompared = detectionResult.getSignaturesCompared();
+        signaturesRead = detectionResult.getSignaturesRead();
+        stringsRead = detectionResult.getStringsRead();
+        closestSignaturesCount = detectionResult.getClosestSignaturesCount();
+        lowestScore = detectionResult.getLowestScore();
+        targetUserAgent = detectionResult.getTargetUserAgent();
+        targetUserAgentArray = detectionResult.getTargetUserAgentArray();
+        nodes = new ArrayList<Node>(detectionResult.getNodes());
     }
 
-    public MatchState() {
-        method = MatchMethods.EXACT;
-        nodesEvaluated = 0;
-        profiles = null;
-        rootNodesEvaluated = 0;
-        signature = null;
-        signaturesCompared = 0;
-        signaturesRead = 0;
-        stringsRead = 0;
-        closestSignaturesCount = 0;
-        lowestScore = 0;
-        targetUserAgent = "";
-        targetUserAgentArray = new byte[0];
-        nodes = new ArrayList<Node>();
+    public Dataset getDataSet() {
+        return dataSet;
     }
 
     /**
@@ -175,6 +168,53 @@ public class MatchState {
 
     public ArrayList<Node> getNodes() {
         return nodes;
+    }
+
+    /**
+     * Gets the values associated with the property name using the profiles
+     * found by the match. If matched profiles don't contain a value then the
+     * default profiles for each of the components are also checked.
+     *
+     * @param property The property whose values are required
+     * @return Array of the values associated with the property, or null if the
+     * property does not exist
+     * @throws IOException indicates an I/O exception occurred
+     */
+    public Values getValues(Property property) throws IOException {
+        Values value = null;
+
+        if (property != null) {
+            // Get the property value from the profile returned
+            // from the match.
+            for (Profile profile : getProfiles()) {
+                if (profile.getComponent().getComponentId()
+                        == property.getComponent().getComponentId()) {
+                    value = profile.getValues(property);
+                    break;
+                }
+            }
+
+            // If the value has not been found use the default profile.
+            if (value == null) {
+                value = property.getComponent().getDefaultProfile().getValues(property);
+            }
+        }
+
+        return value;
+    }
+
+    /**
+     * Gets the values associated with the property name using the profiles
+     * found by the match. If matched profiles don't contain a value then the
+     * default profiles for each of the components are also checked.
+     *
+     * @param propertyName The property name whose values are required
+     * @return Array of the values associated with the property, or null if the
+     * property does not exist
+     * @throws IOException indicates an I/O exception occurred
+     */
+    public Values getValues(String propertyName) throws IOException {
+        return getValues(dataSet.get(propertyName));
     }
 }
 
