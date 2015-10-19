@@ -39,7 +39,7 @@ import java.util.concurrent.*;
  * Implementation of UaProcessor that uses ExecutorCompletionService to do detections.
  * <p>
  * All results are stored in memory, so while this class is fast to execute it cannot carry
- * out large numbers of detections. It's fine for the 20k user agents distributed as a sample.
+ * out large numbers of detections. It's fine for the 20k HTTP User-Agents distributed as a sample.
  * <p>
  */
 public class FutureUaProcessor extends UaProcessor.Base {
@@ -87,7 +87,7 @@ public class FutureUaProcessor extends UaProcessor.Base {
             // record the wall-clock time now
             testStart = System.currentTimeMillis();
 
-            // submit all test user agent strings for detection
+            // submit all test HTTP User-Agent strings for detection
             while (count < limit && useragents.ready()) {
                 final String nextUserAgent = useragents.readLine();
                 ecs.submit(new Callable<Result>() {
