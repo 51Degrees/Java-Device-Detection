@@ -18,11 +18,10 @@
  * This Source Code Form is "Incompatible With Secondary Licenses", as
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
-package fiftyone.mobile.detection;
+package fiftyone.mobile.detection.cache;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Many of the entities used by the detector data set are requested repeatedly. 
@@ -44,7 +43,8 @@ import java.util.concurrent.atomic.AtomicLong;
  * @param <K> Key for the cache items.
  * @param <V> Value for the cache items.
  */
-public class Cache<K, V> {
+public class SwitchingCache<K, V> implements Cache<K,V> {
+
     /**
      * When this number of items are in the cache the lists should be switched.
      */
@@ -52,23 +52,11 @@ public class Cache<K, V> {
     /**
      * The active list of cached items.
      */
-    public ConcurrentHashMap<K, V> active;
+    private volatile ConcurrentHashMap<K, V> active;
     /**
      * The list of inactive cached items.
      */
-    public ConcurrentHashMap<K, V> background;
-    /**
-     * The number of items the cache lists should have capacity for.
-     */
-    private final int cacheSize;
-    /**
-     * The number of requests made to the cache.
-     */
-    private final AtomicLong requests;
-    /**
-     * The number of times an item was not available.
-     */
-    private final AtomicLong misses;
+    private volatile ConcurrentHashMap<K, V> background;
     /**
      * The number of times the cache was switched.
      */
@@ -76,34 +64,79 @@ public class Cache<K, V> {
     /**
      * Indicates a switch operation is in progress.
      */
-    private boolean switching;
+    private volatile boolean switching;
+
+    private CacheStats stats;
+    private Loader<K, V> loader;
 
     /**
      * Constructs a new instance of the cache.
      * @param cacheSize The number of items to store in the cache.
      */
-    public Cache(int cacheSize) {
+    public SwitchingCache(int cacheSize) {
+        this.stats = new CacheStats();
         this.switching = false;
-        this.requests = new AtomicLong(0);
         this.switches = new AtomicInteger(0);
-        this.misses = new AtomicLong(0);
-        this.cacheSize = cacheSize;
+
+        //The number of items the cache lists should have capacity for.
         cacheServiceSize = (cacheSize / 2);
-        active = new ConcurrentHashMap<K, V>(this.cacheSize);
-        background = new ConcurrentHashMap<K, V>(this.cacheSize);
+        active = new ConcurrentHashMap<K, V>(cacheSize);
+        background = new ConcurrentHashMap<K, V>(cacheSize);
+    }
+
+    @Override
+    public boolean enableStats(boolean enable) {
+        boolean result = stats.isEnabled();
+        stats.setEnabled(enable);
+        return result;
+    }
+
+    @Override
+    public V get(K key) {
+        return get(key, loader);
+    }
+
+    @Override
+    public V get(K key, V resultInstance) {
+        V result = getIfCached(key);
+        if (result == null) {
+            result = loader.load(key, resultInstance);
+            if (result != null) {
+                active.putIfAbsent(key, result);
+                addRecent(key, result);
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public V getIfCached(K key) {
+        stats.incRequests();
+        V result = active.get(key);
+        if (result != null) {
+            addRecent(key, result);
+        }
+        stats.incMisses();
+        return result;
+    }
+
+    @Override
+    public V get(K key, Loader<K, V> loader) {
+        V result = getIfCached(key);
+        if (result != null) {
+            return result;
+        }
+        result = loader.load(key);
+        if (result == null) {
+            return null;
+        }
+        active.putIfAbsent(key, result);
+        addRecent(key, result);
+        return result;
     }
 
     /**
-     * Returns the number of times active and inactive lists had to be swapped.
-     * @return the number of times active and inactive lists had to be swapped.
-     */
-    public int getCacheSwitches() {
-        return this.switches.intValue();
-    }
-    
-    /**
-     * Service the cache by switching the lists if the next service time has
-     * passed.
+     * Service the cache by switching the lists
      */
     private void service() {
         // Switch the cache dictionaries over.
@@ -127,8 +160,8 @@ public class Cache<K, V> {
      * @param key item key.
      * @param value item value.
      */
-    public void addRecent(K key, V value) {
-        setBackground(key, value);
+    private void addRecent(K key, V value) {
+        background.putIfAbsent(key, value);
         if (background.size() > cacheServiceSize && !switching) {
             synchronized(this) {
                 if (background.size() > cacheServiceSize && !switching) {
@@ -146,67 +179,45 @@ public class Cache<K, V> {
         }
     }
 
-    /**
-     * Attempts to get the value with the given, or null if no key is found.
-     */
-    V tryGetValue(K key) {
-        return active.get(key);
-    }
-
-    /**
-     * Add a new entry to the active list if entry is not already in the list.
-     * @param key Some identified that can later be used for entry lookup.
-     * @param result The value corresponding to the key.
-     */
-    void setActive(K key, V result) {
-        active.putIfAbsent(key, result);
-    }
-
-    /**
-     * Add a new entry to the background list if entry is not already in the 
-     * list.
-     * @param key Some identified that can later be used for entry lookup.
-     * @param result The value corresponding to the key.
-     */
-    void setBackground(K key, V result) {
-        background.putIfAbsent(key, result);
-    }
-    
-    /**
-     * @return the percentage of times cache request did not return a result.
-     */
     public double getPercentageMisses() {
         return (double)getCacheMisses() / (double)getCacheRequests();
     }
-    
-    /**
-     * Increment the total number of requests to cache by one.
-     */
-    public void incrementRequestsByOne() {
-        requests.incrementAndGet();
-    }
-    
-    /**
-     * @return the current number of total requests to cache.
-     */
+
+    @Override
     public long getCacheRequests() {
-        return requests.longValue();
+        return stats.getRequests();
     }
-    
-    /**
-     * @return the total number of misses for the current cache.
-     */
+
+    @Override
     public long getCacheMisses() {
-        return misses.longValue();
+        return stats.getMisses();
     }
-    
-    /**
-     * Increments the number of misses for the current cache by one.
-     */
-    public void incrementMissesByOne() {
-        misses.incrementAndGet();
+
+    @Override
+    public void resetCache() {
+        clearActiveList();
+        clearBackgroundList();
+        clearMisses();
+        clearRequests();
+        clearSwitches();
     }
-    
+
+    @Override
+    public void clearRequests() {
+        stats.clearRequests();
+    }
+
+    @Override
+    public void clearMisses() {
+        stats.clearMisses();
+    }
+
+    @Override
+    public void setLoader(Loader<K, V> loader) {
+        this.loader = loader;
+    }
+
+
     /**
      * Clear the active list.
      */
@@ -220,25 +231,19 @@ public class Cache<K, V> {
     public void clearBackgroundList() {
         this.background.clear();
     }
-    
+
     /**
-     * Reset the value of misses to 0.
+     * Returns the number of times active and inactive lists had to be swapped.
+     * @return the number of times active and inactive lists had to be swapped.
      */
-    public void clearMisses() {
-        this.misses.set(0);
+    public int getCacheSwitches() {
+        return this.switches.intValue();
     }
-    
+
     /**
      * Reset the value of switches to 0.
      */
     public void clearSwitches() {
         this.switches.set(0);
-    }
-    
-    /**
-     * Reset the value of requests to 0.
-     */
-    public void clearRequests() {
-        this.requests.set(0);
     }
 }
