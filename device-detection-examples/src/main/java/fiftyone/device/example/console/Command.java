@@ -32,7 +32,7 @@ import java.io.IOException;
 public class Command {
 
     /**
-     * Array of user agents for detection.
+     * Array of HTTP User-Agents for detection.
      */
     private static final String[] USERAGENTS = new String[]{
         // Internet explorer
