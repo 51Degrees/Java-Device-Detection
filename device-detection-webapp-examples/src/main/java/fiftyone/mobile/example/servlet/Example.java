@@ -37,6 +37,8 @@ import fiftyone.mobile.detection.entities.Property;
 import fiftyone.mobile.detection.entities.Property.PropertyValueType;
 import fiftyone.mobile.detection.webapp.BaseServlet;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -149,7 +151,7 @@ public class Example extends BaseServlet {
     private void printComponentProperties(
             final PrintWriter out, 
             final HttpServletRequest request, 
-            final Component component) throws ServletException, IOException {
+            final Component component) throws ServletException, IOException, Exception {
 
         final Map<String, String[]> result = super.getResult(request);
         final boolean isMobile = "True".equals(super.getProperty(request, "IsMobile"));
@@ -205,7 +207,7 @@ public class Example extends BaseServlet {
      * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+            throws ServletException, IOException, Exception {
         response.setContentType("text/html;charset=UTF-8");
 
         PrintWriter out = response.getWriter();
@@ -267,7 +269,11 @@ public class Example extends BaseServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        processRequest(request, response);
+            try {
+                processRequest(request, response);
+            } catch (Exception ex) {
+                
+            }
     }
 
     /**
@@ -282,7 +288,11 @@ public class Example extends BaseServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+            try {
+                processRequest(request, response);
+            } catch (Exception ex) {
+               
+            }
     }
 
     /**
