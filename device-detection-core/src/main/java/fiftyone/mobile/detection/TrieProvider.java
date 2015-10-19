@@ -420,7 +420,10 @@ public abstract class TrieProvider implements Closeable {
             }
             
         }
-        result[result.length - 1] = 0;
+        if (result.length > 0) {
+            result[result.length - 1] = 0;
+        }
+        
         return result;
     }
 
