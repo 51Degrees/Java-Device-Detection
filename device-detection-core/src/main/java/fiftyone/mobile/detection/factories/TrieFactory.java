@@ -94,7 +94,7 @@ public class TrieFactory {
         if (f.exists() && f.isFile()) {
             return create(new TriePool(new TrieSource(file, isTempFile)));
         }
-        return null;
+        throw new IOException("Selected filename is either a directory or does not exist: " + file);
     }
 
     private static short[] readLookupList(TrieReader reader) throws IOException {
