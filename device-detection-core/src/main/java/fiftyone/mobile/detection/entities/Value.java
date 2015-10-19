@@ -364,6 +364,7 @@ public class Value extends BaseEntity implements Comparable<Value> {
      * equal to the null value then the null value for the property will be 
      * used. If no conversion is possible 0 is returned.
      */
+    // TODO cannot return null will thow NPE
     public int toInt() {
         Integer localAsInt = asInt;
         if (localAsInt == null) {
