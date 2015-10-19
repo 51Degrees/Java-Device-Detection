@@ -36,7 +36,7 @@ import java.util.Date;
  * Demonstration of 51Degrees detection, with benchmarking outputs.
  * <dl>
  * <dt>Prerequisites</dt>
- * <dd>useragents : A file containing User Agent strings to detect, one per line</dd>
+ * <dd>useragents : A file containing HTTP User-Agent strings to detect, one per line</dd>
  * <dd>detection : A detection dataset file</dd>
  * </dl>
  * <p>
@@ -44,12 +44,12 @@ import java.util.Date;
  * By default this example will try to find files <code>../data/20000 User Agents.csv</code> and
  * <code>../data/51Degrees-LiteV3.2.dat</code> relative to its working directory.
  * <p>
- * By default this example carries out 6 iterations of detecting the user agents in the supplied file. The first
+ * By default this example carries out 6 iterations of detecting the HTTP User-Agents in the supplied file. The first
  * iteration serves to warm up the JVM and will populate the 51 degrees data structures and cache if one is specified.
  * Subsequent iterations provide a better indication of actual detection performance in live operation.
  * <p>
  * A results file is generated on the last iteration. This records the detailed detection results of each
- * User Agent detected and by default is placed in the working directory.
+ * HTTP User-Agent detected and by default is placed in the working directory.
  * <p>
  * For the Lite dataset a heap of 500 MBytes is recommended, for the Enterprise dataset 1GByte - i.e. run with -Xmx500m
  * or -Xmx1g as appropriate.
