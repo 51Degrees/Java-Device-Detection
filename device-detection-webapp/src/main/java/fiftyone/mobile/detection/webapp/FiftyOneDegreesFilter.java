@@ -21,8 +21,6 @@
 package fiftyone.mobile.detection.webapp;
 
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -33,9 +31,14 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class FiftyOneDegreesFilter implements Filter {
 
+    final private static Logger logger = LoggerFactory
+            .getLogger(FiftyOneDegreesFilter.class);
+    
     public FiftyOneDegreesFilter() {
     }
 
@@ -65,7 +68,9 @@ public class FiftyOneDegreesFilter implements Filter {
                 }
             }
         } catch (Exception ex) {    
-            Logger.getLogger(FiftyOneDegreesFilter.class.getName()).log(Level.SEVERE, null, ex);
+            logger.debug(
+                    Constants.VERSION  + 
+                    ex.getMessage());
         }
         chain.doFilter(request, response);
     }

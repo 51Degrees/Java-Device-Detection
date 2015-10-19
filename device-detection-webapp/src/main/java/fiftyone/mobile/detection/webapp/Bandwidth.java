@@ -93,7 +93,6 @@ class Bandwidth {
                     }
                 } catch (NoSuchElementException e) {
                     // do nothing
-                    System.out.println(e.toString());
                 }
             }
         }
