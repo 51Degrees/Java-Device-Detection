@@ -192,7 +192,7 @@ public class NodeIndex extends BaseEntity implements Comparable<NodeIndex> {
     @Override
     public String toString() {
         try {
-            return String.format("{0}[{1}]",
+            return String.format("%s[%d]]",
                     new String(getCharacters()),
                     relatedNodeOffset);
         } catch (IOException e) {

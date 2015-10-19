@@ -125,7 +125,7 @@ public class Controller {
                 } else if (match.getNodes().size() > 0) {
 
                     // Get the signatures that are closest to the target.
-                    Match.RankedSignatureIterator closestSignatures =
+                    RankedSignatureIterator closestSignatures =
                             match.getClosestSignatures();
 
                     // Try finding a signature with identical nodes just not in exactly the 

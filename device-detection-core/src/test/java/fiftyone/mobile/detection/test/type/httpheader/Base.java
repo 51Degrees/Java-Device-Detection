@@ -129,9 +129,9 @@ public abstract class Base extends DetectionTestSupport {
             provider.match(headers, match);
             assertTrue("Signature not equal null", match.getSignature() == null);
             assertTrue("Match difference not equal to zero", match.getDifference() == 0);
-            assertTrue("Match method not equal to Exact", match.method == MatchMethods.EXACT);
+            assertTrue("Match method not equal to Exact", match.getMethod() == MatchMethods.EXACT);
             validate(match, state);
-            results.methods.get(match.method).incrementAndGet();
+            results.methods.get(match.getMethod()).incrementAndGet();
         }
 
         return results;
