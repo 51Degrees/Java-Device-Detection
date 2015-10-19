@@ -124,7 +124,7 @@ public abstract class ApiBase extends DetectionTestSupport {
     
     private void fetchAllProperties(Match match) throws IOException {
         long checksum = 0;
-        for (Property property : match.dataSet.getProperties()) {
+        for (Property property : match.getDataSet().getProperties()) {
             String propName = property.getName();
             logger.debug("Property {}: {}", propName, match.getValues(property));
             if (match.getValues(property) == null) {

@@ -400,9 +400,8 @@ public abstract class Profile extends BaseEntity implements Comparable<Profile> 
     /**
      * Called after the entire data set has been loaded to ensure 
      * any further initialisation steps that require other items in
-     * the data set can be completed.Called after the entire data set has been loaded to ensure 
-     * any further initialisation steps that require other items in
      * the data set can be completed.
+     *
      * @throws java.io.IOException indicates an I/O exception occurred
      */
     public void init() throws IOException {

@@ -37,221 +37,41 @@ import fiftyone.mobile.detection.entities.Signature;
 import fiftyone.mobile.detection.entities.Value;
 import fiftyone.mobile.detection.entities.Values;
 import fiftyone.properties.DetectionConstants;
-import fiftyone.properties.MatchMethods;
 
 /**
  * Contains all the information associated with the device detection and matched
  * result.
- * 
- * The match property can be used to request results from the match using 
- * the accessor provided with a Property or the string name of the property. 
- * 
- * The Signature the target device match against can be returned along with 
- * the associated profiles. 
- * 
- * Statistics associated with the match can also be returned. For example: the 
- * Elapsed property returns the time taken to perform the match. The Confidence 
- * property provides a value to indicate the differences between the match 
+ * <p/>
+ * The match property can be used to request results from the match using
+ * the accessor provided with a Property or the string name of the property.
+ * <p/>
+ * The Signature the target device match against can be returned along with
+ * the associated profiles.
+ * <p/>
+ * Statistics associated with the match can also be returned. For example: the
+ * Elapsed property returns the time taken to perform the match. The Confidence
+ * property provides a value to indicate the differences between the match
  * result and the target user agent.
- *
+ * <p/>
  * For more information see http://51degrees.mobi/Support/Documentation/Java
  */
+
 /**
  * Generate when a device detection is requested to include the signature
  * matched, the confidence of the match and the method used to obtain the match.
  */
-public class Match {
+public class Match extends DetectionResult {
 
+    private final List<Signature> signatures = new ArrayList<Signature>();
+    /**
+     * The next character position to be checked.
+     */
+    public int nextCharacterPositionIndex;
+    protected volatile Map<String, String[]> results;
     /**
      * The elapsed time for the match.
      */
     long elapsed;
-    
-    /**
-     * Used to persist the match results to the cache. Used with the SetState
-     * method of the match class to retrieve the state.
-     */
-    class MatchState {
-
-        final MatchMethods method;
-        final int nodesEvaluated;
-        final Profile[] profiles;
-        final int rootNodesEvaluated;
-        final Signature signature;
-        final int signaturesCompared;
-        final int signaturesRead;
-        final int stringsRead;
-        final int lowestScore;
-        final String targetUserAgent;
-        final byte[] targetUserAgentArray;
-        final ArrayList<Node> nodes;
-        final int closestSignaturesCount;
-
-        /**
-         * Creates the state based on the match provided.
-         * @param match Match object to update with results.
-         */
-        MatchState(Match match) throws IOException {
-            method = match.getMethod();
-            nodesEvaluated = match.getNodesEvaluated();
-            profiles = match.getProfiles();
-            rootNodesEvaluated = match.getRootNodesEvaluated();
-            signature = match.getSignature();
-            signaturesCompared = match.getSignaturesCompared();
-            signaturesRead = match.getSignaturesRead();
-            stringsRead = match.getStringsRead();
-            closestSignaturesCount = match.getClosestSignaturesCount();
-            lowestScore = match.getLowestScore();
-            targetUserAgent = match.getTargetUserAgent();
-            targetUserAgentArray = match.getTargetUserAgentArray();
-            nodes = new ArrayList<Node>(match.nodes);
-        }
-    }
-
-    /**
-     * Used to iterate over the closest signatures.
-     */
-    public interface RankedSignatureIterator {
-
-        /**
-         * Resets the iterator to be used again.
-         */
-        void reset();
-
-        /**
-         * @return returns true if there are more elements in the next property.
-         */
-        boolean hasNext();
-
-        /**
-         * @return the next integer in the iteration.
-         */
-        int next();
-    }
-
-    /**
-     * A custom linked list used to identify the most frequently occurring
-     * signature indexes.
-     */
-    private class PossibleSignatures {
-
-        PossibleSignature first;
-        PossibleSignature last;
-        int size = 0;
-
-        void addBefore(PossibleSignature existing, PossibleSignature newItem) {
-            newItem.next = existing;
-            newItem.previous = existing.previous;
-            if (existing.previous != null) {
-                existing.previous.next = newItem;
-            }
-            existing.previous = newItem;
-            if (existing == first) {
-                first = newItem;
-            }
-            size++;
-        }
-
-        void addAfter(PossibleSignature existing, PossibleSignature newItem) {
-            newItem.next = existing.next;
-            newItem.previous = existing;
-            if (existing.next != null) {
-                existing.next.previous = newItem;
-            }
-            existing.next = newItem;
-            if (existing == last) {
-                last = newItem;
-            }
-            size++;
-        }
-
-        /**
-         * Adds the item to the end of the linked list.
-         */
-        void add(PossibleSignature newItem) {
-            if (last != null) {
-                addAfter(last, newItem);
-            } else {
-                first = newItem;
-                last = newItem;
-                size++;
-            }
-        }
-
-        /**
-         * Removes any reference to this element from the linked list.
-         */
-        void remove(PossibleSignature existing) {
-            if (first == existing) {
-                first = existing.next;
-            }
-            if (last == existing) {
-                last = existing.previous;
-            }
-            if (existing.previous != null) {
-                existing.previous.next = existing.next;
-            }
-            if (existing.next != null) {
-                existing.next.previous = existing.previous;
-            }
-            size--;
-        }
-    }
-
-    /**
-     * Used to represent a signature index and the number of times it occurs in
-     * the matched nodes.
-     */
-    private class PossibleSignature {
-
-        /**
-         * The ranked signature index.
-         */
-        public final int rankedSignatureIndex;
-        /**
-         * The number of times the signature index occurs.
-         */
-        public int frequency;
-        /**
-         * The next signature index in the linked list.
-         */
-        public PossibleSignature next;
-        /**
-         * The previous signature index in the linked list.
-         */
-        public PossibleSignature previous;
-
-        PossibleSignature(int rankedSignatureIndex, int frequency) {
-            this.rankedSignatureIndex = rankedSignatureIndex;
-            this.frequency = frequency;
-        }
-    }
-    /**
-     * Comparator used to order the nodes by length with the shortest first.
-     */
-    private static final Comparator<Node> nodeComparator = new Comparator<Node>() {
-        @Override
-        public int compare(Node o1, Node o2) {
-            int l0 = o1.getRankedSignatureIndexes().length;
-            int l1 = o2.getRankedSignatureIndexes().length;
-            if (l0 < l1) {
-                return -1;
-            }
-            if (l0 > l1) {
-                return 1;
-            }
-            if (l0 == l1) {
-                /* If both have the same rank, sort by position. */
-                if (o1.position > o2.position) {
-                    return 1;
-                }
-                if (o1.position < o2.position) {
-                    return -1;
-                }
-            }
-            return 0;
-        }
-    };
 
     /**
      * Constructs a new detection match ready to be used.
@@ -259,7 +79,7 @@ public class Match {
      * @param dataSet data set to be used for this match
      */
     public Match(Dataset dataSet) {
-        this.dataSet = dataSet;
+        super(dataSet);
     }
 
     /**
@@ -268,61 +88,14 @@ public class Match {
      *
      * @param dataSet data set to be used for this match
      * @param targetUserAgent user agent to identify
-     * @throws UnsupportedEncodingException indicates an Unsupported Encoding 
+     * @throws UnsupportedEncodingException indicates an Unsupported Encoding
      * exception occurred
      */
     public Match(Dataset dataSet, String targetUserAgent)
             throws UnsupportedEncodingException {
-        this.dataSet = dataSet;
+        super(dataSet);
         init(targetUserAgent);
     }
-    private final List<Signature> signatures = new ArrayList<Signature>();
-    /**
-     * List of nodes found for the match.
-     */
-    private final List<Node> nodes = new ArrayList<Node>();
-    /**
-     * The data set used for the detection.
-     */
-    public final Dataset dataSet;
-    /**
-     * The next character position to be checked.
-     */
-    public int nextCharacterPositionIndex;
-
-    /**
-     * The user agent string as an ASCII byte array.
-     * @return byte array representing user agent string
-     */
-    public byte[] getTargetUserAgentArray() {
-        return targetUserAgentArray;
-    }
-    private byte[] targetUserAgentArray;
-
-    /**
-     * The target user agent string used for the detection.
-     * @return target user agent string used for detection
-     */
-    public String getTargetUserAgent() {
-        return targetUserAgent;
-    }
-    public void setTargetuserAgent(String targetUserAgent) {
-        this.targetUserAgent = targetUserAgent;
-    }
-    private String targetUserAgent;
-
-    /**
-     * The signature with the closest match to the user agent provided.
-     * @return signature with closest match to the user agent provided
-     */
-    public Signature getSignature() {
-        return signature;
-    }
-
-    void setSignature(Signature signature) {
-        this.signature = signature;
-    }
-    private Signature signature;
 
     /**
      * Resets the match for the user agent returning all the fields to the
@@ -341,34 +114,13 @@ public class Match {
         stringsRead = 0;
 
         signatures.clear();
-        nodes.clear();
+        getNodes().clear();
         profiles = null;
         setSignature(null);
 
         init(targetUserAgent);
     }
 
-    /**
-     * Sets the match properties based on the state information provided.
-     *
-     * @param state of a previous match from the cache.
-     */
-    void setState(MatchState state) {
-        method = state.method;
-        nodesEvaluated = state.nodesEvaluated;
-        profiles = state.profiles;
-        rootNodesEvaluated = state.rootNodesEvaluated;
-        signature = state.signature;
-        signaturesCompared = state.signaturesCompared;
-        signaturesRead = state.signaturesRead;
-        stringsRead = state.stringsRead;
-        closestSignaturesCount = state.closestSignaturesCount;
-        lowestScore = state.lowestScore;
-        targetUserAgent = state.targetUserAgent;
-        targetUserAgentArray = state.targetUserAgentArray;
-        nodes.clear();
-        nodes.addAll(state.nodes);
-    }
 
     /**
      * Initialises the match object ready for detection.
@@ -382,7 +134,7 @@ public class Match {
         } else {
             this.targetUserAgentArray = new byte[0];
         }
-        
+
         // Null check to ensure no down stream problems.
         this.targetUserAgent = targetUserAgent == null ? "" : targetUserAgent;
 
@@ -395,113 +147,22 @@ public class Match {
     }
 
     /**
-     * The method used to obtain the match.
-     * @return method used to obtain match
-     */
-    public MatchMethods getMethod() {
-        return method;
-    }
-    public MatchMethods method;
-
-    /**
-     * The number of signatures read during the detection.
-     * @return integer representing number of signatures read during detection
-     */
-    public int getSignaturesRead() {
-        return signaturesRead;
-    }
-    int signaturesRead;
-
-    /**
-     * The number of signatures that were compared against the target user agent
-     * if the Closest match method was used.
-     * @return integer representing number of signatures compared against user 
-     * agent if closest match method was used
-     */
-    public int getSignaturesCompared() {
-        return signaturesCompared;
-    }
-    int signaturesCompared;
-
-    /**
-     * The number of root nodes checked against the target user agent.
-     * @return integer representing number of root node checked
-     */
-    public int getRootNodesEvaluated() {
-        return rootNodesEvaluated;
-    }
-    int rootNodesEvaluated;
-
-    /**
-     * The number of nodes checked.
-     * @return integer representing the number of nodes checked
-     */
-    public int getNodesEvaluated() {
-        return nodesEvaluated;
-    }
-    int nodesEvaluated;
-
-    /**
-     * The number of strings that were read from the data structure for the
-     * match.
-     * @return integer representing number of strings read for the match
-     */
-    public int getStringsRead() {
-        return stringsRead;
-    }
-    int stringsRead;
-
-    /**
-     * The number of closest signatures returned for evaluation.
-     * @return integer representing number of closest signatures returned for 
-     * evaluation
-     */
-    public int getClosestSignaturesCount() {
-        return closestSignaturesCount;
-    }
-    int closestSignaturesCount;
-
-    /**
      * The unique id of the Device.
      * @return string representing unique id of device
      * @throws IOException signals an I/O exception occurred
      */
     public String getDeviceId() throws IOException {
-        return signature != null ? signature.getDeviceId() : null;
+        return getSignature() != null ? getSignature().getDeviceId() : null;
     }
-
-    /**
-     * Array of profiles associated with the device that was found.
-     * @return array of profiles associated with the device that was found
-     * @throws IOException indicates an I/O exception occurred
-     */
-    public Profile[] getProfiles() throws IOException {
-        Profile[] localProfiles = profiles;
-        if (localProfiles == null && signature != null) {
-            synchronized (this) {
-                localProfiles = profiles;
-                if (localProfiles == null) {
-                    profiles = localProfiles = signature.getProfiles();
-                }
-            }
-        }
-        return localProfiles;
-    }
-    volatile Profile[] profiles;
 
     /**
      * The user agent of the matching device with irrelevant characters removed.
-     * @return the user agent of the matching device with irrelevant characters 
+     * @return the user agent of the matching device with irrelevant characters
      * removed
      */
     public String getUserAgent() {
-        return signature != null ? signature.toString() : null;
+        return getSignature() != null ? getSignature().toString() : null;
     }
-    /**
-     * The current lowest score for the target user agent. Initialised to the
-     * largest possible result.
-     */
-    public Integer lowestScore;
 
     /**
      * Reset the next character position index based on the length of the target
@@ -510,7 +171,7 @@ public class Match {
     void resetNextCharacterPositionIndex() {
         // Start checking on the far right of the user agent.
         nextCharacterPositionIndex = Math.min(
-                targetUserAgentArray.length - 1,
+                getTargetUserAgentArray().length - 1,
                 getDataSet().rootNodes.size() - 1);
     }
 
@@ -551,12 +212,12 @@ public class Match {
      */
     RankedSignatureIterator getClosestSignatures() throws IOException {
 
-        if (nodes.size() == 1) {
+        if (getNodes().size() == 1) {
             closestSignaturesCount =
-                    nodes.get(0).getRankedSignatureIndexes().length;
+                    getNodes().get(0).getRankedSignatureIndexes().length;
             return new RankedSignatureIterator() {
                 final int[] rankedSignatureIndexes =
-                        nodes.get(0).getRankedSignatureIndexes();
+                        getNodes().get(0).getRankedSignatureIndexes();
                 int index = 0;
 
                 @Override
@@ -581,7 +242,7 @@ public class Match {
 
             // Get an iterator for the nodes in ascending order of signature length.
             List<Node> orderedNodes = new ArrayList<Node>();
-            orderedNodes.addAll(nodes);
+            orderedNodes.addAll(getNodes());
             Collections.sort(orderedNodes, nodeComparator);
             Iterator<Node> nodeIterator = orderedNodes.iterator();
 
@@ -642,7 +303,7 @@ public class Match {
         // If there is point adding any new signature indexes set the
         // threshold reached indicator. New signatures won't be added
         // and ones with counts lower than maxcount will be removed.
-        boolean thresholdReached = nodes.size() - iteration < maxCount;
+        boolean thresholdReached = getNodes().size() - iteration < maxCount;
         PossibleSignature current = linkedList.first;
         int signatureIndex = 0;
         while (signatureIndex < signatureIndexList.length && current != null) {
@@ -653,8 +314,8 @@ public class Match {
                     linkedList.addBefore(
                             current,
                             new PossibleSignature(
-                            signatureIndexList[signatureIndex],
-                            1));
+                                    signatureIndexList[signatureIndex],
+                                    1));
                 }
                 signatureIndex++;
             } else if (current.rankedSignatureIndex < signatureIndexList[signatureIndex]) {
@@ -685,8 +346,8 @@ public class Match {
             while (signatureIndex < signatureIndexList.length) {
                 linkedList.add(
                         new PossibleSignature(
-                        signatureIndexList[signatureIndex],
-                        1));
+                                signatureIndexList[signatureIndex],
+                                1));
                 signatureIndex++;
             }
         }
@@ -701,18 +362,7 @@ public class Match {
         return linkedList;
     }
 
-    public List<Node> getNodes() {
-        return nodes;
-    }
-
-    public Integer getLowestScore() {
-        if (lowestScore == null) {
-            lowestScore = 0;
-        }
-        return lowestScore;
-    }
-
-    public void setLowestScore(Integer lowestScore) {
+    public void setLowestScore(int lowestScore) {
         this.lowestScore = lowestScore;
     }
 
@@ -722,57 +372,6 @@ public class Match {
 
     public void incrNodesEvaluated() {
         nodesEvaluated++;
-    }
-
-    Dataset getDataSet() {
-        return dataSet;
-    }
-
-    /**
-     * Gets the values associated with the property name using the profiles
-     * found by the match. If matched profiles don't contain a value then the
-     * default profiles for each of the components are also checked.
-     *
-     * @param property The property whose values are required
-     * @return Array of the values associated with the property, or null if the
-     * property does not exist
-     * @throws IOException indicates an I/O exception occurred
-     */
-    public Values getValues(Property property) throws IOException {
-        Values value = null;
-
-        if (property != null) {
-            // Get the property value from the profile returned
-            // from the match.
-            for (Profile profile : getProfiles()) {
-                if (profile.getComponent().getComponentId()
-                        == property.getComponent().getComponentId()) {
-                    value = profile.getValues(property);
-                    break;
-                }
-            }
-
-            // If the value has not been found use the default profile.
-            if (value == null) {
-                value = property.getComponent().getDefaultProfile().getValues(property);
-            }
-        }
-
-        return value;
-    }
-
-    /**
-     * Gets the values associated with the property name using the profiles
-     * found by the match. If matched profiles don't contain a value then the
-     * default profiles for each of the components are also checked.
-     *
-     * @param propertyName The property name whose values are required
-     * @return Array of the values associated with the property, or null if the
-     * property does not exist
-     * @throws IOException indicates an I/O exception occurred
-     */
-    public Values getValues(String propertyName) throws IOException {
-        return getValues(dataSet.get(propertyName));
     }
 
     public Map<String, String[]> getResults() throws IOException {
@@ -796,8 +395,8 @@ public class Match {
                                     }
                                 }
                                 newResults.put(
-                                    property.getName(),
-                                    strings.toArray(new String[strings.size()]));
+                                        property.getName(),
+                                        strings.toArray(new String[strings.size()]));
                             }
                         }
                     }
@@ -817,17 +416,16 @@ public class Match {
         }
         return localResults;
     }
-    protected volatile Map<String, String[]> results;
 
     /**
      * Replaces any characters in the target user agent which are outside the
      * range the dataset used when it was built with question marks.
      */
     public void cleanTargetUserAgentArray() {
-        for (int i = 0; i < targetUserAgentArray.length; i++) {
-            if (targetUserAgentArray[i] < dataSet.lowestCharacter
-                    || targetUserAgentArray[i] > dataSet.highestCharacter) {
-                targetUserAgentArray[i] = (byte) '?';
+        for (int i = 0; i < getTargetUserAgentArray().length; i++) {
+            if (getTargetUserAgentArray()[i] < dataSet.lowestCharacter
+                    || getTargetUserAgentArray()[i] > dataSet.highestCharacter) {
+                getTargetUserAgentArray()[i] = (byte) '?';
             }
         }
     }
@@ -845,8 +443,8 @@ public class Match {
         int finalIndex = characters.length - 1;
         for (int index = 0; index < getTargetUserAgentArray().length - characters.length; index++) {
             for (int nodeIndex = 0, targetIndex = index;
-                    nodeIndex < characters.length && targetIndex < getTargetUserAgentArray().length;
-                    nodeIndex++, targetIndex++) {
+                 nodeIndex < characters.length && targetIndex < getTargetUserAgentArray().length;
+                 nodeIndex++, targetIndex++) {
                 if (characters[nodeIndex] != getTargetUserAgentArray()[targetIndex]) {
                     break;
                 } else if (nodeIndex == finalIndex) {
@@ -889,10 +487,10 @@ public class Match {
      */
     @Override
     public String toString() {
-        if (nodes != null && nodes.size() > 0) {
+        if (getNodes() != null && getNodes().size() > 0) {
             try {
-                byte[] value = new byte[targetUserAgent.length()];
-                for (Node node : nodes) {
+                byte[] value = new byte[getTargetUserAgent().length()];
+                for (Node node : getNodes()) {
                     node.addCharacters(value);
                 }
                 for (int i = 0; i < value.length; i++) {
@@ -916,10 +514,167 @@ public class Match {
      * @return The index of the node inserted into the list
      */
     public int insertNode(Node node) {
-        int index = ~Collections.binarySearch(nodes, node);
+        int index = ~Collections.binarySearch(getNodes(), node);
 
-        nodes.add(index, node);
+        getNodes().add(index, node);
 
         return index;
+    }
+
+    /**
+     * Sets the match properties based on the state information provided.
+     *
+     * @param state of a previous match from the cache.
+     */
+    public
+    void setState(DetectionResult state) {
+        method = state.method;
+        nodesEvaluated = state.nodesEvaluated;
+        profiles = state.profiles;
+        rootNodesEvaluated = state.rootNodesEvaluated;
+        signature = state.signature;
+        signaturesCompared = state.signaturesCompared;
+        signaturesRead = state.signaturesRead;
+        stringsRead = state.stringsRead;
+        closestSignaturesCount = state.closestSignaturesCount;
+        lowestScore = state.lowestScore;
+        targetUserAgent = state.targetUserAgent;
+        targetUserAgentArray = state.targetUserAgentArray;
+        nodes.clear();
+        nodes.addAll(state.nodes);
+    }
+
+    void setSignature(Signature signature) {
+        this.signature = signature;
+    }
+    /**
+     * Comparator used to order the nodes by length with the shortest first.
+     */
+    private static final Comparator<Node> nodeComparator = new Comparator<Node>() {
+        @Override
+        public int compare(Node o1, Node o2) {
+            int l0 = o1.getRankedSignatureIndexes().length;
+            int l1 = o2.getRankedSignatureIndexes().length;
+            if (l0 < l1) {
+                return -1;
+            }
+            if (l0 > l1) {
+                return 1;
+            }
+            if (l0 == l1) {
+                /* If both have the same rank, sort by position. */
+                if (o1.position > o2.position) {
+                    return 1;
+                }
+                if (o1.position < o2.position) {
+                    return -1;
+                }
+            }
+            return 0;
+        }
+    };
+
+    public void setTargetuserAgent(String targetUserAgent) {
+        this.targetUserAgent = targetUserAgent;
+    }
+}
+
+
+
+/**
+ * A custom linked list used to identify the most frequently occurring
+ * signature indexes.
+ */
+class PossibleSignatures {
+
+    PossibleSignature first;
+    PossibleSignature last;
+    int size = 0;
+
+    void addBefore(PossibleSignature existing, PossibleSignature newItem) {
+        newItem.next = existing;
+        newItem.previous = existing.previous;
+        if (existing.previous != null) {
+            existing.previous.next = newItem;
+        }
+        existing.previous = newItem;
+        if (existing == first) {
+            first = newItem;
+        }
+        size++;
+    }
+
+    void addAfter(PossibleSignature existing, PossibleSignature newItem) {
+        newItem.next = existing.next;
+        newItem.previous = existing;
+        if (existing.next != null) {
+            existing.next.previous = newItem;
+        }
+        existing.next = newItem;
+        if (existing == last) {
+            last = newItem;
+        }
+        size++;
+    }
+
+    /**
+     * Adds the item to the end of the linked list.
+     */
+    void add(PossibleSignature newItem) {
+        if (last != null) {
+            addAfter(last, newItem);
+        } else {
+            first = newItem;
+            last = newItem;
+            size++;
+        }
+    }
+
+    /**
+     * Removes any reference to this element from the linked list.
+     */
+    void remove(PossibleSignature existing) {
+        if (first == existing) {
+            first = existing.next;
+        }
+        if (last == existing) {
+            last = existing.previous;
+        }
+        if (existing.previous != null) {
+            existing.previous.next = existing.next;
+        }
+        if (existing.next != null) {
+            existing.next.previous = existing.previous;
+        }
+        size--;
+    }
+}
+
+/**
+ * Used to represent a signature index and the number of times it occurs in
+ * the matched nodes.
+ */
+class PossibleSignature {
+
+    /**
+     * The ranked signature index.
+     */
+    public final int rankedSignatureIndex;
+    /**
+     * The number of times the signature index occurs.
+     */
+    public int frequency;
+    /**
+     * The next signature index in the linked list.
+     */
+    public PossibleSignature next;
+    /**
+     * The previous signature index in the linked list.
+     */
+    public PossibleSignature previous;
+
+    PossibleSignature(int rankedSignatureIndex, int frequency) {
+        this.rankedSignatureIndex = rankedSignatureIndex;
+        this.frequency = frequency;
     }
 }

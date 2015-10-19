@@ -203,7 +203,7 @@ public class Results {
                 Match match = provider.match(userAgent);
                 processor.process(match, results);
                 results.count.incrementAndGet();
-                results.methods.get(match.method).incrementAndGet();
+                results.methods.get(match.getMethod()).incrementAndGet();
                 return true;
             } catch (Throwable t) {
                 logger.error("Match failed with exception", t);
