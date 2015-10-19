@@ -129,7 +129,7 @@ public class DetectionConstants {
     /**
      * Number of cache entries for dataset strings.
      */
-    public static final int STRINGS_CACHE_SIZE = 3000;
+    public static final int STRINGS_CACHE_SIZE = 8000;
     /**
      * Number of cache entries for dataset values.
      */
@@ -137,7 +137,7 @@ public class DetectionConstants {
     /**
      * Number of cache entries for dataset profiles.
      */
-    public static final int PROFILE_CACHE_SIZE = 300;
+    public static final int PROFILE_CACHE_SIZE = 600;
     /**
      * Number of cache entries for dataset signatures.
      */
