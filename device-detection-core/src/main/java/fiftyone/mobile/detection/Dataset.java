@@ -1,6 +1,6 @@
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
- * Copyright © 2014 51Degrees Mobile Experts Limited, 5 Charlotte Close,
+ * Copyright © 2015 51Degrees Mobile Experts Limited, 5 Charlotte Close,
  * Caversham, Reading, Berkshire, United Kingdom RG4 7BY
  * 
  * This Source Code Form is the subject of the following patent 
@@ -123,7 +123,7 @@ public class Dataset implements Closeable {
      * List of unique HTTP Headers that the data set needs to consider to 
      * perform the most accurate matches.
      */
-    private volatile String[] httpHeaders;
+    volatile private String[] httpHeaders;
     /**
      * The number of bytes to allocate to a buffer returning JSON format data
      * for a match.
@@ -177,7 +177,7 @@ public class Dataset implements Closeable {
     /**
      * The mode of operation the data set is using.
      */
-    public Modes mode;
+    public final Modes mode;
     /**
      * The common name of the data set.
      */
@@ -292,7 +292,7 @@ public class Dataset implements Closeable {
      */
     public long getAge() {
         Date now = new Date();
-        Date was = new Date(age);
+        Date was = new Date((long)age);
         long difference = now.getTime() - was.getTime();
         long diffInSeconds = TimeUnit.MILLISECONDS.toSeconds(difference);
         return diffInSeconds;

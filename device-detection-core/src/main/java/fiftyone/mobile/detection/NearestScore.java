@@ -1,6 +1,6 @@
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
- * Copyright © 2014 51Degrees Mobile Experts Limited, 5 Charlotte Close,
+ * Copyright © 2015 51Degrees Mobile Experts Limited, 5 Charlotte Close,
  * Caversham, Reading, Berkshire, United Kingdom RG4 7BY
  * 
  * This Source Code Form is the subject of the following patent 
@@ -31,19 +31,21 @@ import fiftyone.mobile.detection.entities.Signature;
 class NearestScore extends BaseScore {
 
     @Override
-    protected int getInitialScore(Match match, Signature signature, int lastNodeCharacter) throws IOException {
+    protected int getInitialScore(Signature signature, int lastNodeCharacter) throws IOException {
         return 0;
     }
 
     /**
      * If the sub string is contained in the target but in a different position
      * return the difference between the two sub string positions.
-     *
+     * @param current working state of the matching process
+     * @param node
      * @returns -1 if a score can't be determined, or the difference in
      * positions
      */
-    protected int getScore(Match match, Node node) throws IOException {
-        int index = match.getIndexOf(node);
+    @Override
+    protected int getScore(MatchState state, Node node) throws IOException {
+        int index = state.getIndexOf(node);
         if (index >= 0) {
             return Math.abs(node.position + 1 - index);
         }

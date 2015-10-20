@@ -1,6 +1,6 @@
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
- * Copyright 2014 51Degrees Mobile Experts Limited, 5 Charlotte Close,
+ * Copyright © 2015 51Degrees Mobile Experts Limited, 5 Charlotte Close,
  * Caversham, Reading, Berkshire, United Kingdom RG4 7BY
  * 
  * This Source Code Form is the subject of the following patent 
@@ -20,6 +20,7 @@
  * ********************************************************************* */
 package fiftyone.mobile.detection.entities.stream;
 
+import fiftyone.mobile.detection.cache.ICacheSource;
 import fiftyone.mobile.detection.entities.BaseEntity;
 import fiftyone.mobile.detection.factories.BaseEntityFactory;
 import fiftyone.mobile.detection.readers.BinaryReader;
@@ -43,7 +44,9 @@ import java.io.IOException;
  * @param <T> The type of BaseEntity the list will contain
  */
 public abstract class StreamCacheList<T extends BaseEntity> 
-                            extends StreamBaseList<T> implements ICacheList {
+    extends StreamBaseList<T> 
+    implements ICacheSource<Integer, T>, ICacheList {
+    
     /**
      * Used to store previously accessed items to improve performance and
      * reduce memory consumption associated with creating new instances of 
@@ -63,28 +66,6 @@ public abstract class StreamCacheList<T extends BaseEntity>
                             BaseEntityFactory<T> entityFactory, int cacheSize) {
         super(dataSet, reader, entityFactory);
         this.cache = new Cache<T>(cacheSize);
-    }
-
-    /**
-     * Retrieves the entity at the offset or index requested.
-     * @param key Index or offset of the entity required.
-     * @return A new instance of the entity at the offset or index.
-     */
-    @Override
-    public T get(int key) {
-        T item = cache.active.get(key);
-        if (item == null) {
-            try {
-                item = super.get(key);
-                cache.active.put(key, item);
-                cache.incrementMissesByOne();
-            } catch (IOException ex) {
-                //TODO: handle exception.
-            }
-        }
-        cache.addRecent(key, item);
-        cache.incrementRequestsByOne();
-        return item;
     }
 
     /**
@@ -111,5 +92,27 @@ public abstract class StreamCacheList<T extends BaseEntity>
     @Override
     public void resetCache() {
         cache.resetCache();
+    }
+    
+    /**
+     * Retrieves the entity at the offset or index requested.
+     * @param key Index or offset of the entity required.
+     * @return A new instance of the entity at the offset or index.
+     */
+    @Override
+    public T get(int key) throws IOException {
+        return cache.get(key, this);
+    }
+    
+    /**
+     * Used to retrieve items from the underlying list. Called by Cache{T} when
+     * a cache miss occurs.
+     * @param key index or offset of the entity required
+     * @return he base lists item for the key provided
+     * @throws java.io.IOException
+     */
+    @Override
+    public T fetch(Integer key) throws IOException {
+        return super.get(key);
     }
 }

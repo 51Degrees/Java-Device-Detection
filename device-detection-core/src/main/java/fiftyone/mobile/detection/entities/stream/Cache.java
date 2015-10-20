@@ -1,6 +1,6 @@
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
- * Copyright 2014 51Degrees Mobile Experts Limited, 5 Charlotte Close,
+ * Copyright © 2015 51Degrees Mobile Experts Limited, 5 Charlotte Close,
  * Caversham, Reading, Berkshire, United Kingdom RG4 7BY
  * 
  * This Source Code Form is the subject of the following patent 
@@ -20,6 +20,7 @@
  * ********************************************************************* */
 package fiftyone.mobile.detection.entities.stream;
 
+import fiftyone.mobile.detection.cache.ICacheSource;
 import fiftyone.mobile.detection.entities.BaseEntity;
 
 /**
@@ -29,33 +30,13 @@ import fiftyone.mobile.detection.entities.BaseEntity;
  * @param <T> The type of BaseEntity the cache will contain.
  */
 public class Cache<T extends BaseEntity> 
-                        extends fiftyone.mobile.detection.Cache<Integer, T> {
+    extends fiftyone.mobile.detection.cache.Cache<Integer, T, ICacheSource<Integer, T> > {
 
     /**
      * Constructs a new instance of the cache.
-     * @param cacheSize number of items in cache.
+     * @param cacheSize number of items to store in the cache.
      */
     public Cache(int cacheSize) {
         super(cacheSize);
-    }
-
-    /**
-     * Adds a new item to cache.
-     * @param index index of the item.
-     * @param item item to add.
-     */
-    public void addRecent(int index, T item) {
-        super.addRecent(index, item);
-    }
-    
-    /**
-     * Resets the stats for the cache.
-     */
-    public void resetCache() {
-        super.clearActiveList();
-        super.clearBackgroundList();
-        super.clearMisses();
-        super.clearRequests();
-        super.clearSwitches();
     }
 }

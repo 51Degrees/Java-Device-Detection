@@ -1,6 +1,6 @@
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
- * Copyright 2014 51Degrees Mobile Experts Limited, 5 Charlotte Close,
+ * Copyright © 2015 51Degrees Mobile Experts Limited, 5 Charlotte Close,
  * Caversham, Reading, Berkshire, United Kingdom RG4 7BY
  * 
  * This Source Code Form is the subject of the following patent 
@@ -21,7 +21,11 @@
 package fiftyone.mobile.detection.entities.stream;
 
 import fiftyone.mobile.detection.entities.BaseEntity;
+import java.io.IOException;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * A general class that iterates over entities in StreamVariableLists. 
@@ -66,6 +70,7 @@ public class StreamVariableListIterator<T extends BaseEntity>
      * Gets if there are any more entities in the list.
      * @return true if there are more entities to iterate.
      */
+    @Override
     public boolean hasNext() {
         return index < size;
     }
@@ -80,8 +85,7 @@ public class StreamVariableListIterator<T extends BaseEntity>
             offset += varList.entityFactory.getLength(t);
             index++;
             return t;
-        }
-        catch(Exception ex) {
+        } catch (IOException ex) {
             return null;
         }
     }

@@ -1,6 +1,6 @@
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
- * Copyright © 2014 51Degrees Mobile Experts Limited, 5 Charlotte Close,
+ * Copyright © 2015 51Degrees Mobile Experts Limited, 5 Charlotte Close,
  * Caversham, Reading, Berkshire, United Kingdom RG4 7BY
  * 
  * This Source Code Form is the subject of the following patent 
@@ -29,42 +29,41 @@ abstract class BaseScore {
 
     /**
      * Gets the score for the specific node of the signature.
-     * @param match Information about the detection.
+     * @param state current working state of the matching process
      * @param node 
      * @return
      */
-    protected abstract int getScore(Match match, Node node) throws IOException;
+    protected abstract int getScore(MatchState state, Node node) throws IOException;
 
     /**
      * Sets any initial score before each node is evaluated.
-     * @param match Information about the detection.
      * @param signature Signature string.
      * @param lastNodeCharacter
      * @return
      */
-    protected abstract int getInitialScore(Match match, Signature signature, 
+    protected abstract int getInitialScore(Signature signature, 
                                     int lastNodeCharacter) throws IOException;
 
     /**
      * Checks all the signatures using the scoring method provided.
-     * @param match Information about the detection.
+     * @param state current working state of the matching process
      * @param closestSignatures Signature strings to evaluate.
      * @throws IOException 
      */
-    void evaluateSignatures(Match match,
+    void evaluateSignatures(MatchState state,
             RankedSignatureIterator closestSignatures) throws IOException {
         int count = 0, signatureIndex, rankedSignatureIndex;
         closestSignatures.reset();
-        match.setLowestScore(Integer.MAX_VALUE);
-        int lastNodeCharacter = match.getNodes().get(match.getNodes().size() - 1).getRoot().position;
+        state.setLowestScore(Integer.MAX_VALUE);
+        int lastNodeCharacter = state.getNodesList().get(state.getNodesList().size() - 1).getRoot().position;
         while (closestSignatures.hasNext()
-                && count < match.getDataSet().maxSignatures) {
+                && count < state.getDataSet().maxSignatures) {
             rankedSignatureIndex = closestSignatures.next();
-            signatureIndex = match.getDataSet().rankedSignatureIndexes.get(
+            signatureIndex = state.getDataSet().rankedSignatureIndexes.get(
                     rankedSignatureIndex).getValue();
             evaluateSignature(
-                    match,
-                    match.getDataSet().signatures.get(signatureIndex),
+                    state,
+                    state.getDataSet().signatures.get(signatureIndex),
                     lastNodeCharacter);
             count++;
         }
@@ -74,22 +73,22 @@ abstract class BaseScore {
      * Compares all the characters up to the max length between the signature 
      * and the target user agent updating the match information if this 
      * signature is better than any evaluated previously.
-     * @param match Information about the detection.
+     * @param state current working state of the matching process
      * @param signature Signature string.
      * @param lastNodeCharacter The signature to be evaluated.
      * @throws IOException 
      */
-    private void evaluateSignature(Match match, Signature signature, int lastNodeCharacter) throws IOException {
-        match.signaturesCompared++;
+    private void evaluateSignature(MatchState state, Signature signature, int lastNodeCharacter) throws IOException {
+        state.incrSignaturesCompared();
 
         // Get the score between the target and the signature stopping if it's
         // going to be larger than the lowest score already found.
-        int score = getScore(match, signature, lastNodeCharacter);
+        int score = getScore(state, signature, lastNodeCharacter);
 
         // If the score is lower than the current lowest then use this signature.
-        if (score < match.getLowestScore()) {
-            match.setLowestScore(score);
-            match.setSignature(signature);
+        if (score < state.getLowestScore()) {
+            state.setLowestScore(score);
+            state.setSignature(signature);
         }
     }
 
@@ -98,17 +97,18 @@ abstract class BaseScore {
      * contained in the matched nodes to determine a score between the signature
      * and the target user agent. If that score becomes greater or equal to the
      * lowest score determined so far then stop.
-     * @param match Information about the detection.
+     * @param state current working state of the matching process
      * @param signature Signature string.
      * @param lastNodeCharacter The position of the last character in the 
      * matched nodes.
      * @return
      * @throws IOException 
      */
-    private int getScore(Match match, Signature signature, int lastNodeCharacter) throws IOException {
+    private int getScore(MatchState state, Signature signature, 
+            int lastNodeCharacter) throws IOException {
         // Calculate the initial score based on the difference in length of 
         // the right most node and the target user agent.
-        int runningScore = getInitialScore(match, signature, lastNodeCharacter);
+        int runningScore = getInitialScore(signature, lastNodeCharacter);
 
         // We only need to check the nodes that are different. As the nodes
         // are in the same order we can simply look for those that are different.
@@ -116,14 +116,17 @@ abstract class BaseScore {
         int signatureNodeIndex = 0;
 
         while (signatureNodeIndex < signature.getNodeOffsets().length
-                && runningScore < match.getLowestScore()) {
-            int matchNodeOffset = matchNodeIndex >= match.getNodes().size() ? Integer.MAX_VALUE : match.getNodes().get(matchNodeIndex).getIndex();
+                && runningScore < state.getLowestScore()) {
+            int matchNodeOffset = matchNodeIndex >= state.getNodesList().size() ? 
+                    Integer.MAX_VALUE : 
+                    state.getNodesList().get(matchNodeIndex).getIndex();
             int signatureNodeOffset = signature.getNodeOffsets()[signatureNodeIndex];
             if (matchNodeOffset > signatureNodeOffset) {
                 // The matched node is either not available, or is higher than
                 // the current signature node. The signature node is not contained
                 // in the match so we must score it.
-                int score = getScore(match, match.getDataSet().nodes.get(signature.getNodeOffsets()[signatureNodeIndex]));
+                int score = getScore(state, state.getDataSet().nodes.get(
+                        signature.getNodeOffsets()[signatureNodeIndex]));
 
                 // If the score is less than zero then a score could not be 
                 // determined and the signature can't be compared to the target

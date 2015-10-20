@@ -1,6 +1,6 @@
 /*
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited.
- * Copyright © 2014 51Degrees Mobile Experts Limited, 5 Charlotte Close,
+ * Copyright © 2015 51Degrees Mobile Experts Limited, 5 Charlotte Close,
  * Caversham, Reading, Berkshire, United Kingdom RG4 7BY
  *
  * This Source Code Form is the subject of the following patent
@@ -68,6 +68,6 @@ public class MemoryFactoryTest extends DetectionTestSupport {
         Match match = provider.match(TEST_USER_AGENT);
         assertEquals("Match method should be exact", MatchMethods.EXACT, match.getMethod());
         assertEquals("Is a mobile device", true, match.getValues("IsMobile").toBool());
-        assertEquals("Screen width should be 1080", 1080.0, match.getValues("ScreenPixelsWidth").toDouble(),0);
+        assertEquals("Screen width should be 640", 640.0, match.getValues("ScreenPixelsWidth").toDouble(),0);
     }
 }
