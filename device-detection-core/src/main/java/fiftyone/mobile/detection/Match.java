@@ -73,13 +73,13 @@ public class Match {
      * Sets the result of the match explicitly.
      * @param value of the match result to set.
      */
-    void setResult(IMatchResult value) {
+    void setResult(MatchResult value) {
         matchResult = value;
     }
-    IMatchResult getResult() {
+    MatchResult getResult() {
         return matchResult;
     }
-    private IMatchResult matchResult;
+    private MatchResult matchResult;
     
     /**
      * @return dataset used to create the match.

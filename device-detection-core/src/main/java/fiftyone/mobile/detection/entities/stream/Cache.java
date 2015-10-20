@@ -20,7 +20,7 @@
  * ********************************************************************* */
 package fiftyone.mobile.detection.entities.stream;
 
-import fiftyone.mobile.detection.cache.ICacheSource;
+import fiftyone.mobile.detection.cache.ICacheLoader;
 import fiftyone.mobile.detection.entities.BaseEntity;
 
 /**
@@ -30,13 +30,14 @@ import fiftyone.mobile.detection.entities.BaseEntity;
  * @param <T> The type of BaseEntity the cache will contain.
  */
 public class Cache<T extends BaseEntity> 
-    extends fiftyone.mobile.detection.cache.Cache<Integer, T, ICacheSource<Integer, T> > {
+    extends fiftyone.mobile.detection.cache.Cache<Integer, T, ICacheLoader<Integer, T> > {
 
     /**
      * Constructs a new instance of the cache.
      * @param cacheSize number of items to store in the cache.
+     * @param loader used to fetch items not in the cache.
      */
-    public Cache(int cacheSize) {
-        super(cacheSize);
+    public Cache(int cacheSize, ICacheLoader<Integer, T> loader) {
+        super(cacheSize, loader);
     }
 }

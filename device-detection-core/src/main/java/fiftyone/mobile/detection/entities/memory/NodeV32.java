@@ -54,14 +54,10 @@ public class NodeV32 extends Node{
      * Loads all the ranked signature indexes for the node.
      */
     @Override
-    public void init() {
-        try {
-            super.init();
-            if (rankedSignatureIndexes == null) {
-                rankedSignatureIndexes = getRankedSignatureIndexesAsArray();
-            }
-        } catch (IOException ex) {
-            //TODO: handle exception.
+    public void init() throws IOException {
+        super.init();
+        if (rankedSignatureIndexes == null) {
+            rankedSignatureIndexes = getRankedSignatureIndexesAsArray();
         }
     }
     
@@ -121,19 +117,16 @@ public class NodeV32 extends Node{
      * Returns the ranked signature indexes. Init method is called if the array 
      * has not been initialised.
      * @return the ranked signature indexes.
+     * @throws java.io.IOException
      */
     @Override
-    public int[] getRankedSignatureIndexes() {
+    public int[] getRankedSignatureIndexes() throws IOException {
         int[] localRankedSignatureIndexes = rankedSignatureIndexes;
         if (localRankedSignatureIndexes == null) {
             synchronized(this) {
                 localRankedSignatureIndexes = rankedSignatureIndexes;
                 if (localRankedSignatureIndexes == null) {
-                    try {
-                        rankedSignatureIndexes = localRankedSignatureIndexes = getRankedSignatureIndexesAsArray();
-                    } catch (IOException ex) {
-                        //TODO: handle exception.
-                    }
+                    rankedSignatureIndexes = localRankedSignatureIndexes = getRankedSignatureIndexesAsArray();
                 }
             }
         }

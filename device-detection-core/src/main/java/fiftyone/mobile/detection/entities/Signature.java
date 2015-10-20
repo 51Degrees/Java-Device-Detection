@@ -29,6 +29,7 @@ import fiftyone.mobile.detection.Dataset;
 import fiftyone.mobile.detection.SortedList;
 import fiftyone.mobile.detection.readers.BinaryReader;
 import fiftyone.properties.DetectionConstants;
+
 /**
  * Signature of a user agent. <p> A signature contains those characters of a
  * user agent which are relevant for the purposes of device detection. For
@@ -464,8 +465,9 @@ public abstract class Signature extends BaseEntity implements Comparable<Signatu
      *
      * @param nodes list of nodes to compare to
      * @return Indication of relative value based on the node offsets
+     * @throws java.io.IOException
      */
-    public int compareTo(List<Node> nodes) {
+    public int compareTo(List<Node> nodes) throws IOException {
         int length = Math.min(getNodeOffsets().length, nodes.size());
 
         for (int i = 0; i < length; i++) {
@@ -494,22 +496,25 @@ public abstract class Signature extends BaseEntity implements Comparable<Signatu
      */
     @Override
     public int compareTo(Signature other) {
-        int length = Math.min(getNodeOffsets().length, other.getNodeOffsets().length);
-
-        for (int i = 0; i < length; i++) {
-            int difference = getNodeOffsets()[i] - other.getNodeOffsets()[i];
-            if (difference != 0) {
-                return difference;
+        try {
+            int length = Math.min(getNodeOffsets().length, other.getNodeOffsets().length);
+            
+            for (int i = 0; i < length; i++) {
+                int difference = getNodeOffsets()[i] - other.getNodeOffsets()[i];
+                if (difference != 0) {
+                    return difference;
+                }
             }
+            
+            if (getNodeOffsets().length < other.getNodeOffsets().length) {
+                return -1;
+            }
+            if (getNodeOffsets().length > other.getNodeOffsets().length) {
+                return 1;
+            }
+        } catch (IOException ex) {
+            // TODO - Add WrappedIOException
         }
-
-        if (getNodeOffsets().length < other.getNodeOffsets().length) {
-            return -1;
-        }
-        if (getNodeOffsets().length > other.getNodeOffsets().length) {
-            return 1;
-        }
-
         return 0;
     }
 
@@ -548,19 +553,22 @@ public abstract class Signature extends BaseEntity implements Comparable<Signatu
     /**
      * Array of node offsets associated with the signature.
      * @return Array of node offsets associated with the signature.
+     * @throws java.io.IOException
      */
-    public abstract int[] getNodeOffsets();
+    public abstract int[] getNodeOffsets() throws IOException;
     
     /**
      * The number of characters in the signature.
      * @return The number of characters in the signature.
+     * @throws java.io.IOException
      */
-    protected abstract int getSignatureLength();
+    protected abstract int getSignatureLength() throws IOException;
     
     /**
      * Gets the rank, where a lower number means the signature is more popular, 
      * of the signature compared to other signatures.
      * @return Rank of the signature.
+     * @throws java.io.IOException
      */
-    public abstract int getRank();
+    public abstract int getRank() throws IOException;
 }

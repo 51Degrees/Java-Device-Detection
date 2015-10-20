@@ -47,7 +47,7 @@ public abstract class Node extends fiftyone.mobile.detection.entities.Node {
      * @param reader Reader connected to the source data structure and 
      * positioned to start reading.
      */
-    public Node(Dataset dataSet, int offset, BinaryReader reader) {
+    public Node(Dataset dataSet, int offset, BinaryReader reader) throws IOException {
         super(dataSet, offset, reader);
         this.pool = dataSet.pool;
         this.numericChildrenPosition = reader.getPos();
@@ -57,25 +57,18 @@ public abstract class Node extends fiftyone.mobile.detection.entities.Node {
     /**
      * An array of all the numeric children.
      * @return array of all the numeric children.
+     * @throws java.io.IOException
      */
     @Override
-    public final NodeNumericIndex[] getNumericChildren() {
+    public final NodeNumericIndex[] getNumericChildren() throws IOException {
         if(super.numericChildren == null) {
             synchronized(this) {
                 if(super.numericChildren == null) {
-                    BinaryReader reader = null;
-                    try {
-                        reader = pool.getReader();
-                        reader.setPos(numericChildrenPosition);
-                        super.numericChildren = readNodeNumericIndexes(dataSet, 
-                                                reader, numericChildrenCount);
-                    } catch(IOException ex) {
-                        //TODO: handle exception.
-                    } finally {
-                        if (reader != null) {
-                            pool.release(reader);
-                        }
-                    }
+                    BinaryReader reader = pool.getReader();
+                    reader.setPos(numericChildrenPosition);
+                    super.numericChildren = readNodeNumericIndexes(dataSet, 
+                                            reader, numericChildrenCount);
+                    pool.release(reader);
                 }
             }
         }

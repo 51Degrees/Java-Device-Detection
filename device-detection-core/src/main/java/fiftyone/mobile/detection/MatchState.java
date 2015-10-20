@@ -20,7 +20,7 @@
  * ********************************************************************* */
 package fiftyone.mobile.detection;
 
-import fiftyone.mobile.detection.cache.ICacheSource;
+import fiftyone.mobile.detection.cache.ICacheLoader;
 import fiftyone.mobile.detection.entities.Node;
 import fiftyone.mobile.detection.entities.Profile;
 import fiftyone.mobile.detection.entities.Signature;
@@ -36,193 +36,143 @@ import java.util.Collections;
  * Used to persist the match results to the cache. Used with the SetState
  * method of the match class to retrieve the state.
  */
-public class MatchState implements IMatchResult, ICacheSource<String, MatchResult> {
+public class MatchState extends MatchResult 
+    implements ICacheLoader<String, MatchResult> {
 
     /**
-     * @return The elapsed time for the match.
+     * Sets the elapsed time for the match.
      */    
-    @Override
-    public long getElapsed() {
-        return elapsed;
-    }
     void setElapsed(long value) {
-        elapsed = value;
+        super.elapsed = value;
     }
-    private long elapsed;
 
     /**
-     * @return The method used to obtain the match. MatchMethods provides 
+     * Sets the method used to obtain the match. MatchMethods provides 
      * descriptions of the possible return values. When used with multi HTTP 
      * headers the worst method used for all the HTTP headers.
      */    
-    @Override
-    public MatchMethods getMethod() {
-        return method;
-    }
     void setMethod(MatchMethods value) {
-        method = value;
+        super.method = value;
     }
-    private MatchMethods method = MatchMethods.NONE;
 
     /**
-     * @return The number of nodes checked.
+     * Increments the number of nodes checked.
      */    
-    @Override
-    public int getNodesEvaluated() {
-        return nodesEvaluated;
-    }
     void incrNodesEvaluated(int value) {
-        nodesEvaluated += value;
+        super.nodesEvaluated += value;
     }
+    
     /**
      * Increments the nodes evaluated by one.
      */
     public void incrNodesEvaluated() {
-        nodesEvaluated++;
+        super.nodesEvaluated++;
     }    
-    private int nodesEvaluated;
 
     /**
-     * @return The number of root nodes checked against the target user agent.
+     * Increments the number of root nodes checked against the target 
+     * User-Agent.
      */    
-    @Override
-    public int getRootNodesEvaluated() {
-        return rootNodesEvaluated;
-    }
     void incrRootNodesEvaluated(int value) {
-        rootNodesEvaluated += value;
+        super.rootNodesEvaluated += value;
     }
+    
+    /**
+     * Increments the number of root nodes checked against the target 
+     * User-Agent by one.
+     */        
     void incrRootNodesEvaluated() {
-        rootNodesEvaluated++;
+        super.rootNodesEvaluated++;
     }        
-    private int rootNodesEvaluated;
 
     /**
-     * @return The signature with the closest match to the target User-Agent 
+     * Sets the signature with the closest match to the target User-Agent 
      * provided.
      */
-    @Override
-    public Signature getSignature() {
-        return signature;
-    }
     void setSignature(Signature value) {
-        signature = value;
+        super.signature = value;
     }
-    private Signature signature;
 
     /**
-     * @return The number of signatures that were compared against the target 
+     * Increments the number of signatures that were compared against the target 
      * User-Agent if the Closest match method was used.
      */    
-    @Override
-    public int getSignaturesCompared() {
-        return signaturesCompared;
-    }
     void incrSignaturesCompared(int value) {
-        signaturesCompared += value;
+        super.signaturesCompared += value;
     }
+    
+    /**
+     * Increments the number of signatures that were compared against the target 
+     * User-Agent if the Closest match method was used by one.
+     */        
     void incrSignaturesCompared() {
-        signaturesCompared++;
+        super.signaturesCompared++;
     }
-    private int signaturesCompared;
 
     /**
-     * @return The number of signatures read during the detection.
+     * Increments the number of signatures read during the detection.
      */    
-    @Override
-    public int getSignaturesRead() {
-        return signaturesRead;
-    }
     void incrSignaturesRead(int value) {
-        signaturesRead += value;
+        super.signaturesRead += value;
     }
-    void incrSignaturesRead() {
-        signaturesRead++;
-    }    
-    private int signaturesRead;
-
+    
     /**
-     * @return  The number of strings that were read from the data structure 
-     * for the match.
-     */    
-    @Override
-    public int getStringsRead() {
-        return stringsRead;
-    }
+     * Increments the number of signatures read during the detection by one.
+     */       
+    void incrSignaturesRead() {
+        super.signaturesRead++;
+    }    
+
     /**
      * Increments the strings read by one.
      */
     public void incrStringsRead() {
-        stringsRead++;
+        super.stringsRead++;
     }
-    private int stringsRead;
 
     /**
-     * @return The number of closest signatures returned for evaluation.
+     * Increments the number of closest signatures returned for evaluation.
      */    
-    @Override
-    public int getClosestSignaturesCount() {
-        return closestSignatures;
-    }
     void setClosestSignaturesCount(int value) {
-        closestSignatures = value;
+        super.closestSignaturesCount = value;
     }
-    private int closestSignatures;
 
     /**
-     * @return The lowest score recorded for the signature that was found.
+     * Increments the lowest score recorded for the signature that was found.
      */    
-    @Override
-    public int getLowestScore() {
-        return lowestScore;
-    }
     void incrLowestScore(int value) {
-        lowestScore += value;
+        super.lowestScore += value;
     }
+    
     /**
      * Sets the lowest score to the value provided.
      * @param value of new lowest score
      */
     public void setLowestScore(int value) {
-        lowestScore = value;
+        super.lowestScore = value;
     }
-    private int lowestScore;
 
     /**
-     * @return The target User-Agent string used for the detection where a 
+     * Sets the target User-Agent string used for the detection where a 
      * single User-Agent was provided. If multiple HTTP headers were provided 
      * then this value will be null.
      */    
-    @Override
-    public String getTargetUserAgent() {
-        return targetUserAgent;
-    }
     void setTargetUserAgent(String value) {
-        targetUserAgent = value;
+        super.targetUserAgent = value;
     }
-    private String targetUserAgent;
-
-    /**
-     * @return The target User-Agent represented as an array of bytes.
-     */    
-    @Override
-    public byte[] getTargetUserAgentArray() {
-        return targetUserAgentArray;
-    }
-    private byte[] targetUserAgentArray;
-
+   
     /**
      * @return An array of the nodes associated with the match result. Used for 
      * further analysis of the results and gaining a string representation of 
      * the match.
      */    
     @Override
-    public Node[] getNodes() {
+    Node[] getNodes() {
         Node[] result = new Node[nodes.size()];
         nodes.toArray(result);
         return result;
     }
-    ArrayList<Node> getNodesList() {
+    public ArrayList<Node> getNodesList() {
         return nodes;
     }
     final ArrayList<Node> nodes = new ArrayList<Node>();
@@ -268,6 +218,14 @@ public class MatchState implements IMatchResult, ICacheSource<String, MatchResul
         return result;
     }
     
+    /**
+     * @return The target User-Agent represented as an array of bytes.
+     */    
+    public byte[] getTargetUserAgentArray() {
+        return targetUserAgentArray;
+    }
+    private byte[] targetUserAgentArray;
+    
     int nextCharacterPositionIndex;
 
     final ArrayList<Signature> signatures = new ArrayList<Signature>();
@@ -284,6 +242,7 @@ public class MatchState implements IMatchResult, ICacheSource<String, MatchResul
      */
     MatchState(Match match) {
         this.match = match;
+        super.method = MatchMethods.NONE;
     }
 
     /**

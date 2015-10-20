@@ -58,7 +58,7 @@ public class V32EnterpriseApiTest extends ApiBase {
     }
 
     @AfterClass
-    public static void dispose() {
+    public static void dispose() throws IOException {
         if (dataset != null) dataset.close();
         dataset = null;
         provider = null;

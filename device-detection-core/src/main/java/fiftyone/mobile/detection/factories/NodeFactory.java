@@ -24,6 +24,7 @@ import fiftyone.mobile.detection.Dataset;
 import fiftyone.mobile.detection.entities.Node;
 import fiftyone.mobile.detection.readers.BinaryReader;
 import fiftyone.properties.DetectionConstants;
+import java.io.IOException;
 
 /**
  * Factory class used to create the new instances of Node object.
@@ -60,12 +61,12 @@ public abstract class NodeFactory extends BaseEntityFactory<Node> {
      * @return A new instance of a Node.
      */
     @Override
-    public Node create(Dataset dataSet, int index, BinaryReader reader) {
+    public Node create(Dataset dataSet, int index, BinaryReader reader) 
+            throws IOException {
         return construct(dataSet, index, reader);
     }
     
     /**
-     * Returns the basic length of a node for all supported versions.
      * @return the basic length of a node for all supported versions.
      */
     public int getBaseLength() {
@@ -73,7 +74,6 @@ public abstract class NodeFactory extends BaseEntityFactory<Node> {
     }
     
     /**
-     * Returns The length of a numeric node index.
      * @return The length of a numeric node index.
      */
     public int getNodeNumericIndexLength() {
@@ -88,6 +88,8 @@ public abstract class NodeFactory extends BaseEntityFactory<Node> {
      * structure.
      * @param reader Binary reader positioned at the start of the Node.
      * @return A new instance of a Node.
+     * @throws java.io.IOException
      */
-    protected abstract Node construct(Dataset dataSet, int index, BinaryReader reader);
+    protected abstract Node construct(Dataset dataSet, 
+            int index, BinaryReader reader) throws IOException;
 }

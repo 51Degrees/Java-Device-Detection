@@ -49,7 +49,7 @@ public class NodeV31 extends Node {
      * positioned to start reading.
      */
     public NodeV31(fiftyone.mobile.detection.entities.stream.Dataset dataSet, 
-            int offset, BinaryReader reader) {
+            int offset, BinaryReader reader) throws IOException {
         super(dataSet, offset, reader);
     }
 
@@ -72,32 +72,23 @@ public class NodeV31 extends Node {
     }
 
     /**
-     * Returns An array of the ranked signature indexes for the node.
      * @return An array of the ranked signature indexes for the node.
      */
     @Override
-    public int[] getRankedSignatureIndexes() {
+    public int[] getRankedSignatureIndexes() throws IOException {
         int[] localRankedSignatureIndexes = rankedSignatureIndexes;
         if (localRankedSignatureIndexes == null) {
             synchronized (this) {
                 localRankedSignatureIndexes = rankedSignatureIndexes;
                 if (localRankedSignatureIndexes == null) {
-                    BinaryReader reader = null;
-                    try {
-                        reader = pool.getReader();
-                        reader.setPos(numericChildrenPosition + 
-                            ((DetectionConstants.SIZE_OF_SHORT + 
-                              DetectionConstants.SIZE_OF_INT) * 
-                                    getNumericChildrenLength()));
-                        rankedSignatureIndexes = localRankedSignatureIndexes = 
-                                readIntegerArray(reader, rankedSignatureCount);
-                    } catch (IOException ex) {
-                        //TODO: handle exception.
-                    } finally {
-                        if (reader != null) {
-                            pool.release(reader);
-                        }
-                    }
+                    BinaryReader reader = pool.getReader();
+                    reader.setPos(numericChildrenPosition + 
+                        ((DetectionConstants.SIZE_OF_SHORT + 
+                          DetectionConstants.SIZE_OF_INT) * 
+                                getNumericChildrenLength()));
+                    rankedSignatureIndexes = localRankedSignatureIndexes = 
+                            readIntegerArray(reader, rankedSignatureCount);
+                    pool.release(reader);
                 }
             }
         }

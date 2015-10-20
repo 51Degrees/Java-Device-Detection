@@ -86,7 +86,7 @@ public class SignatureV32 extends Signature {
      * @throws java.io.IOException
      */
     @Override
-    public int[] getNodeOffsets() {
+    public int[] getNodeOffsets() throws IOException {
         int[] localNodeOffsets = this.nodeOffsets;
         if (localNodeOffsets == null) {
             synchronized(this) {
@@ -94,17 +94,12 @@ public class SignatureV32 extends Signature {
                 if (localNodeOffsets == null) {
                     int[] nodeOffsets = new int[nodeCount];
                     IClosableIterator<IntegerEntity> iterator = null;
-                    try {
-                        iterator = dataSet.signatureNodeOffsets.getRange(   
-                                   firstNodeOffsetIndex, nodeCount);
-                        for (int i = 0; i < nodeCount; i++) {
-                            nodeOffsets[i] = iterator.next().value;
-                        }
-                    } catch (IOException ex) {
-                        //TODO: handle exception.
-                    } finally {
-                        iterator.close();
+                    iterator = dataSet.signatureNodeOffsets.getRange(   
+                               firstNodeOffsetIndex, nodeCount);
+                    for (int i = 0; i < nodeCount; i++) {
+                        nodeOffsets[i] = iterator.next().value;
                     }
+                    iterator.close();
                     this.nodeOffsets = localNodeOffsets = nodeOffsets;
                 }
             }

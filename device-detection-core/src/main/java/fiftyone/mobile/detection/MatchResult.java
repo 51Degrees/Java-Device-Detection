@@ -29,149 +29,132 @@ import java.io.IOException;
 /**
  * Used to persist the results of a match for future use.
  */
-public class MatchResult implements IMatchResult {
+public class MatchResult {
 
     /**
      * @return The elapsed time for the match.
      */
-    @Override
     public long getElapsed() {
         return elapsed;
     }
-    private final long elapsed;
+    protected long elapsed;
 
     /**
      * @return The method used to obtain the match. MatchMethods provides 
      * descriptions of the possible return values. When used with multi HTTP 
      * headers the worst method used for all the HTTP headers.
      */    
-    @Override
     public MatchMethods getMethod() {
         return method;
     }
-    private final MatchMethods method;
+    protected MatchMethods method;
 
     /**
      * @return The number of nodes checked.
      */    
-    @Override
     public int getNodesEvaluated() {
         return nodesEvaluated;
     }
-    private final int nodesEvaluated;
+    protected int nodesEvaluated;
 
     /**
      * @return The number of root nodes checked against the target user agent.
      */
-    @Override
     public int getRootNodesEvaluated() {
         return rootNodesEvaluated;
     }
-    private final int rootNodesEvaluated;
+    protected int rootNodesEvaluated;
 
     /**
      * The signature with the closest match to the target User-Agent provided.
      * @return 
      */    
-    @Override
     public Signature getSignature() {
         return signature;
     }
-    private final Signature signature;
+    protected Signature signature;
 
     /**
      * @return The number of signatures that were compared against the target 
      * User-Agent if the Closest match method was used.
      */
-    @Override
     public int getSignaturesCompared() {
         return signaturesCompared;
     }
-    private final int signaturesCompared;
+    protected int signaturesCompared;
 
     /**
      * @return The number of signatures read during the detection.
      */    
-    @Override
     public int getSignaturesRead() {
         return signaturesRead;
     }
-    private final int signaturesRead;
+    protected int signaturesRead;
 
     /**
      * @return  The number of strings that were read from the data structure 
      * for the match.
      */    
-    @Override
     public int getStringsRead() {
         return stringsRead;
     }
-    private final int stringsRead;
+    protected int stringsRead;
 
     /**
      * @return The number of closest signatures returned for evaluation.
      */    
-    @Override
     public int getClosestSignaturesCount() {
         return closestSignaturesCount;
     }
-    private final int closestSignaturesCount;
+    protected int closestSignaturesCount;
 
     /**
      * @return The lowest score recorded for the signature that was found.
      */    
-    @Override
     public int getLowestScore() {
         return lowestScore;
     }
-    private final int lowestScore;
+    protected int lowestScore;
 
     /**
      * @return The target User-Agent string used for the detection where a 
      * single User-Agent was provided. If multiple HTTP headers were provided 
      * then this value will be null.
      */
-    @Override
     public String getTargetUserAgent() {
         return targetUserAgent;
     }
-    private final String targetUserAgent;
-
-    /**
-     * @return The target User-Agent represented as an array of bytes.
-     */    
-    @Override
-    public byte[] getTargetUserAgentArray() {
-        return targetUserAgentArray;
-    }
-    private final byte[] targetUserAgentArray;
+    protected String targetUserAgent;
 
     /**
      * @return An array of the nodes associated with the match result. Used for 
      * further analysis of the results and gaining a string representation of 
      * the match.
      */    
-    @Override
-    public Node[] getNodes() {
+    Node[] getNodes() {
         return nodes;
     }
-    private final Node[] nodes;
+    protected Node[] nodes;
 
     /**
      * @return Array of profiles associated with the device that was found.
+     * @throws java.io.IOException
      */    
-    @Override
-    public Profile[] getProfiles() {
+    public Profile[] getProfiles() throws IOException {
         return profiles;
     }
-    private final Profile[] profiles;
+    protected Profile[] profiles;
+
+    /**
+     * Creates a default instance of MatchState.
+     */
+    protected MatchResult() {}
     
     /**
-     * Creates a copy of the IMatchResult provided.
+     * Creates a copy of the MatchState provided.
      * @param source result of a previous match
-     * @return 
      */
-    MatchResult(IMatchResult source) throws IOException {
+    MatchResult(MatchState source) throws IOException {
         elapsed = source.getElapsed();
         method = source.getMethod();
         nodesEvaluated = source.getNodesEvaluated();
@@ -183,9 +166,7 @@ public class MatchResult implements IMatchResult {
         closestSignaturesCount = source.getClosestSignaturesCount();
         lowestScore = source.getLowestScore();
         targetUserAgent = source.getTargetUserAgent();
-        targetUserAgentArray = source.getTargetUserAgentArray();
-        profiles = new Profile[source.getProfiles().length];
-        System.arraycopy(source.getProfiles(), 0, profiles, 0, profiles.length);
+        profiles = source.getProfiles().clone();
         nodes = source.getNodes();
     } 
 }

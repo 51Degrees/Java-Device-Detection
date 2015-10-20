@@ -267,14 +267,12 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
     }
 
     /**
-     * Returns an array of the ranked signature indexes for the node.
      * @return An array of the ranked signature indexes for the node.
      */
-    public abstract int[] getRankedSignatureIndexes();
+    public abstract int[] getRankedSignatureIndexes() throws IOException;
 
     
     /**
-     * Returns number of elements in the children array.
      * @return number of elements in the children array.
      */
     public int getChildrenLength() {
@@ -282,7 +280,6 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
     }
 
     /**
-     * Returns number of element in the numericChildren array.
      * @return number of element in the numericChildren array.
      */
     public int getNumericChildrenLength() {
@@ -290,10 +287,10 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
     }
     
     /**
-     * Returns an array of all the numeric children.
      * @return an array of all the numeric children.
+     * @throws java.io.IOException
      */
-    public abstract NodeNumericIndex[] getNumericChildren();
+    public abstract NodeNumericIndex[] getNumericChildren() throws IOException;
 
     /**
      * Called after the entire data set has been loaded to ensure any further
@@ -508,7 +505,7 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
      * @throws IOException indicates an I/O exception occurred
      */
     public boolean getIsOverlap(MatchState state) throws IOException {
-        for (Node node : state.getNodes()) {
+        for (Node node : state.getNodesList()) {
             if (getIsOverlap(node)) {
                 return true;
             }

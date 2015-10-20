@@ -53,36 +53,33 @@ public class ComponentV31 extends Component {
      * detection where more headers than User-Agent are available. This data 
      * is used by methods that can HTTP Header collections.
      * @return List of HTTP headers as Strings.
+     * @throws java.io.IOException
      */
     @Override
-    public String[] getHttpheaders() {
+    public String[] getHttpheaders() throws IOException {
         String[] localHttpHeaders = httpHeaders;
         if (localHttpHeaders == null) {
             synchronized(this) {
                 localHttpHeaders = httpHeaders;
                 if (localHttpHeaders == null) {
-                    try {
-                        // Implemented as if else for 1.6 compatibility rasons.
-                        String cName = super.getName(); 
-                        if (cName.equals("HardwarePlatform")) {
-                            httpHeaders = localHttpHeaders =
-                                    DetectionConstants.DEVICE_USER_AGENT_HEADERS;
-                        } else if (cName.equals("SoftwarePlatform")) {
-                            httpHeaders = localHttpHeaders =
-                                    DetectionConstants.DEVICE_USER_AGENT_HEADERS;
-                        } else if (cName.equals("BrowserUA")) {
-                            httpHeaders = localHttpHeaders =
-                                    new String[] {
-                                        DetectionConstants.USER_AGENT_HEADER
-                                    };
-                        } else if (cName.equals("Crawler")) {
-                            httpHeaders = localHttpHeaders =
-                                    new String[] {
-                                        DetectionConstants.USER_AGENT_HEADER
-                                    };
-                        }
-                    } catch (IOException ex) {
-                        //TODO: handle exception.
+                    // Implemented as "if else" for 1.6 compatibility.
+                    String cName = super.getName(); 
+                    if (cName.equals("HardwarePlatform")) {
+                        httpHeaders = localHttpHeaders =
+                                DetectionConstants.DEVICE_USER_AGENT_HEADERS;
+                    } else if (cName.equals("SoftwarePlatform")) {
+                        httpHeaders = localHttpHeaders =
+                                DetectionConstants.DEVICE_USER_AGENT_HEADERS;
+                    } else if (cName.equals("BrowserUA")) {
+                        httpHeaders = localHttpHeaders =
+                                new String[] {
+                                    DetectionConstants.USER_AGENT_HEADER
+                                };
+                    } else if (cName.equals("Crawler")) {
+                        httpHeaders = localHttpHeaders =
+                                new String[] {
+                                    DetectionConstants.USER_AGENT_HEADER
+                                };
                     }
                 }
             }

@@ -92,9 +92,10 @@ public class Pool implements Closeable {
 
     /**
      * Disposes of the source ensuring all the readers are also closed.
+     * @throws java.io.IOException
      */
     @Override
-    public void close() {
+    public void close() throws IOException {
         readers.clear();
         source.close();
     }

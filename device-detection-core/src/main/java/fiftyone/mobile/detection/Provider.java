@@ -391,9 +391,9 @@ public class Provider {
      * device and it's components
      * @throws IOException indicates and I/O exception occurred
      */
-    private IMatchResult match(String targetUserAgent, MatchState state) 
+    private MatchResult match(String targetUserAgent, MatchState state) 
             throws IOException {
-        IMatchResult result;
+        MatchResult result;
         if (userAgentCache != null) {
             // Fetch the item using the cache.
             result = userAgentCache.get(targetUserAgent, state);

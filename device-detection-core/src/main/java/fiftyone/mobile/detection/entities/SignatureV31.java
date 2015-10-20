@@ -55,19 +55,16 @@ public class SignatureV31 extends Signature {
      * Gets the rank, where a lower number means the signature is more popular, 
      * of the signature compared to other signatures.
      * @return rank of signature expressed as integer.
+     * @throws java.io.IOException
      */
     @Override
-    public int getRank() {
+    public int getRank() throws IOException {
         Integer localRank = rank;
         if (localRank == null) {
             synchronized(this) {
                 localRank = rank;
                 if (localRank == null) {
-                    try {
-                        rank = localRank = getSignatureRank();
-                    } catch (IOException ex) {
-                        //TODO: handle exception.
-                    }
+                    rank = localRank = getSignatureRank();
                 }
             }
         }
@@ -88,16 +85,12 @@ public class SignatureV31 extends Signature {
     /**
      * The number of characters in the signature.
      * @return The number of characters in the signature.
+     * @throws java.io.IOException
      */
     @Override
-    protected int getSignatureLength() {
-        try {
-            Node lastNode = dataSet.nodes.get(nodeOffsets[nodeOffsets.length - 1]);
-            return lastNode.position + lastNode.getLength() + 1;
-        } catch (IOException ex) {
-            //TODO: handle exception.
-        }
-        return -1;
+    protected int getSignatureLength() throws IOException {
+        Node lastNode = dataSet.nodes.get(nodeOffsets[nodeOffsets.length - 1]);
+        return lastNode.position + lastNode.getLength() + 1;
     }
     
     /**

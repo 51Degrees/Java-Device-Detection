@@ -241,5 +241,5 @@ public abstract class Component extends BaseEntity
      * is used by methods that can HTTP Header collections.
      * @return 
      */
-    public abstract String[] getHttpheaders();
+    public abstract String[] getHttpheaders() throws IOException;
 }

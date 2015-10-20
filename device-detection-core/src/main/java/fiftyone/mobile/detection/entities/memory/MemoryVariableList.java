@@ -69,18 +69,15 @@ public class MemoryVariableList<T extends BaseEntity> extends
      * Reads the list into memory.
      * @param reader Reader connected to the source data structure and
      * positioned to start reading
+     * @throws java.io.IOException
      */
     @Override
-    public void read(BinaryReader reader) {
+    public void read(BinaryReader reader) throws IOException {
         int offset = 0;
-        try {
-            for (int index = 0; index < header.getCount(); index++) {
-                T entity = (T)entityFactory.create(dataSet, offset, reader);
-                super.array.add(entity);
-                offset += entityFactory.getLength(entity);
-            }
-        } catch (IOException ex) {
-            //TODO: handle exception.
+        for (int index = 0; index < header.getCount(); index++) {
+            T entity = (T)entityFactory.create(dataSet, offset, reader);
+            super.array.add(entity);
+            offset += entityFactory.getLength(entity);
         }
     }
 

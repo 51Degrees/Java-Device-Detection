@@ -59,9 +59,10 @@ public abstract class Base extends DetectionTestSupport {
     /**
      * Ensures the data set is disposed of correctly.
      * @throws Throwable 
+     * @throws java.io.IOException 
      */
     @Override
-    protected void finalize() throws Throwable {
+    protected void finalize() throws Throwable, IOException {
         disposing(false);
         super.finalize();
     }
@@ -69,8 +70,9 @@ public abstract class Base extends DetectionTestSupport {
     /**
      * Ensures resources used by the data set are closed and memory released.
      * @param disposing 
+     * @throws java.io.IOException 
      */
-    protected void disposing(boolean disposing) {
+    protected void disposing(boolean disposing) throws IOException {
         if (dataSet != null) {
             dataSet.close();
             dataSet = null;
