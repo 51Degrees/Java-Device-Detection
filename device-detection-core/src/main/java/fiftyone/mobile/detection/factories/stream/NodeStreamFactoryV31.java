@@ -1,6 +1,6 @@
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
- * Copyright 2014 51Degrees Mobile Experts Limited, 5 Charlotte Close,
+ * Copyright © 2015 51Degrees Mobile Experts Limited, 5 Charlotte Close,
  * Caversham, Reading, Berkshire, United Kingdom RG4 7BY
  * 
  * This Source Code Form is the subject of the following patent 
@@ -22,22 +22,18 @@ package fiftyone.mobile.detection.factories.stream;
 
 import fiftyone.mobile.detection.Dataset;
 import fiftyone.mobile.detection.entities.Node;
-import fiftyone.mobile.detection.entities.stream.Pool;
+import fiftyone.mobile.detection.factories.NodeFactory;
 import fiftyone.mobile.detection.readers.BinaryReader;
 
 /**
  * Factory used to create stream Entities.Node entities of version 3.1.
  */
-public class NodeStreamFactoryV31 extends NodeStreamFactory {
+public class NodeStreamFactoryV31 extends NodeFactory {
 
     /**
      * Constructs a new instance of NodeStreamFactoryV31.
-     * @param pool Pool from the data set to be used when creating 
-     * new Entities.Node entities.
      */
-    public NodeStreamFactoryV31(Pool pool) {
-        super(pool);
-    }
+    public NodeStreamFactoryV31() {}
 
     /**
      * Constructs a new Entities.Stream.NodeV31 entity from the offset provided.

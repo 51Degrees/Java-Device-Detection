@@ -1,6 +1,6 @@
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
- * Copyright 2014 51Degrees Mobile Experts Limited, 5 Charlotte Close,
+ * Copyright © 2015 51Degrees Mobile Experts Limited, 5 Charlotte Close,
  * Caversham, Reading, Berkshire, United Kingdom RG4 7BY
  * 
  * This Source Code Form is the subject of the following patent 
@@ -151,7 +151,7 @@ public final class StreamFactory {
                     DetectionConstants.VALUES_CACHE_SIZE);
             
             dataSet.profiles = new StreamVariableList<Profile>(
-                    dataSet, reader, new ProfileStreamFactory(dataSet.pool), 
+                    dataSet, reader, new ProfileStreamFactory(), 
                     DetectionConstants.PROFILE_CACHE_SIZE);
             
             switch (dataSet.versionEnum) {
@@ -179,13 +179,13 @@ public final class StreamFactory {
                 case PatternV31:
                     dataSet.nodes = new StreamVariableList<Node>(
                             dataSet, reader, 
-                            new NodeStreamFactoryV31(dataSet.pool), 
+                            new NodeStreamFactoryV31(), 
                             DetectionConstants.NODES_CACHE_SIZE);
                     break;
                 case PatternV32:
                     dataSet.nodes = new StreamVariableList<Node>(
                             dataSet, reader, 
-                            new NodeStreamFactoryV32(dataSet.pool), 
+                            new NodeStreamFactoryV32(), 
                             DetectionConstants.NODES_CACHE_SIZE);
                     break;
             }

@@ -1,6 +1,6 @@
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
- * Copyright 2014 51Degrees Mobile Experts Limited, 5 Charlotte Close,
+ * Copyright © 2015 51Degrees Mobile Experts Limited, 5 Charlotte Close,
  * Caversham, Reading, Berkshire, United Kingdom RG4 7BY
  * 
  * This Source Code Form is the subject of the following patent 
@@ -20,6 +20,7 @@
  * ********************************************************************* */
 package fiftyone.mobile.detection.entities.stream;
 
+import fiftyone.mobile.detection.cache.ICacheSource;
 import fiftyone.mobile.detection.entities.BaseEntity;
 import fiftyone.mobile.detection.factories.BaseEntityFactory;
 import fiftyone.mobile.detection.readers.BinaryReader;
@@ -51,7 +52,7 @@ import java.io.IOException;
  * @param <T> The type of BaseEntity the list will contain.
  */
 public class FixedCacheList<T extends BaseEntity> extends StreamFixedList<T> 
-                                                        implements ICacheList {
+                                  implements ICacheSource<Integer, T>, ICacheList {
 
     /**
      * Used to store previously accessed items to improve performance and
@@ -106,20 +107,19 @@ public class FixedCacheList<T extends BaseEntity> extends StreamFixedList<T>
      * @return A new instance of the entity at the offset or index.
      */
     @Override
-    public T get(int key) {
-        T item = null;
-        try {
-            item = cache.active.get(key);
-            if (item == null) {
-                item = super.get(key);
-                cache.active.put(key, item);
-                cache.incrementMissesByOne();
-            }
-            cache.addRecent(key, item);
-            cache.incrementRequestsByOne();
-        } catch (IOException ex) {
-            //TODO: handle exception.
-        }
-        return item;
+    public T get(int key) throws IOException {
+        return cache.get(key, this);
+    }
+    
+    /**
+     * Used to retrieve items from the underlying list. Called by Cache{T} when
+     * a cache miss occurs.
+     * @param key index or offset of the entity required
+     * @return he base lists item for the key provided
+     * @throws java.io.IOException
+     */
+    @Override
+    public T fetch(Integer key) throws IOException {
+        return super.get(key);
     }
 }

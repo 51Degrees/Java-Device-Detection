@@ -1,6 +1,6 @@
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
- * Copyright 2014 51Degrees Mobile Experts Limited, 5 Charlotte Close,
+ * Copyright © 2015 51Degrees Mobile Experts Limited, 5 Charlotte Close,
  * Caversham, Reading, Berkshire, United Kingdom RG4 7BY
  * 
  * This Source Code Form is the subject of the following patent 
@@ -20,11 +20,10 @@
  * ********************************************************************* */
 package fiftyone.mobile.detection;
 
+import fiftyone.mobile.detection.cache.Cache;
 import fiftyone.properties.MatchMethods;
-import fiftyone.mobile.detection.MatchState;
 import fiftyone.mobile.detection.entities.Component;
 import fiftyone.mobile.detection.entities.Profile;
-import fiftyone.properties.DetectionConstants;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -38,11 +37,15 @@ import java.util.concurrent.atomic.AtomicLong;
 public class Provider {
 
     /**
-     * A cache for user agents.
+     * A cache for user agents if required.
      */
-    private Cache<String, MatchState> userAgentCache = null;
+    private Cache<String, MatchResult, MatchState> userAgentCache = null;
 
-    private boolean recordDetectionTime = false;
+    /**
+     * True if the detection time should be recorded in the Elapsed property
+     * of the DetectionMatch object.      * 
+     */
+    private final boolean recordDetectionTime;
     
     /**
      * The total number of detections performed by the data set.
@@ -51,90 +54,47 @@ public class Provider {
     public long getDetectionCount() {
         return detectionCount.longValue();
     }
-    private AtomicLong detectionCount;
+    private final AtomicLong detectionCount = new AtomicLong(0);
+    
     /**
      * The number of detections performed using the method.
      */
     private final SortedList<MatchMethods, Long> methodCounts;
+    
     /**
      * The data set associated with the provider.
      */
     public final Dataset dataSet;
-    private Controller controller;
 
     /**
-     * Builds a new provider with the embedded data set.
-     *
-     * @throws IOException indicates an I/O exception occurred
-     * @deprecated since embedded data file was removed from package. Use the 
-     * provider constructor that requires a dataset created by the factory 
-     * instead.
-     */
-    @Deprecated
-    public Provider() throws IOException {
-        throw new UnsupportedOperationException("No longer supported. Please "
-            + "use the provider constructors with Factory created datasets.");
-    }
-
-    /**
-     * Builds a new provider with the embedded data set and a cache with the
-     * service internal specified.
-     *
-     * @param cacheServiceInterval cache service internal in seconds.
-     * @throws IOException indicates an I/O exception occurred
-     * @deprecated since embedded data was removed from package. Use the 
-     * provider constructor that requires a dataset created by the factory 
-     * instead.
-     */
-    @Deprecated
-    public Provider(int cacheServiceInterval) throws IOException {
-        throw new UnsupportedOperationException("No longer supported. Please "
-            + "use the provider constructors with Factory created datasets.");
-    }
-    
-    /**
-     * Reads the embedded data into a byte array to be used as a byte buffer in
-     * the factory.
-     *
-     * @return
-     * @throws IOException
-     * @deprecated since embedded data was removed from the package.
-     */
-    @Deprecated
-    private static byte[] getEmbeddedByteArray() throws IOException {
-        throw new UnsupportedOperationException("No longer supported.");
-    }
-
-    /**
-     * Constructs a new provided using the data set.
-     *
-     * @param dataSet Data set to use for device detection
+     * Constructs a new Provider using the data set without a cache.
+     * @param dataSet to use for device detection
      */
     public Provider(Dataset dataSet) {
-        this(dataSet, new Controller(), 0);
+        this(dataSet, 0);
     }
 
     /**
-     * Constructs a new provided using the data set.
-     *
-     * @param dataSet Data set to use for device detection
-     * @param cacheSize
+     * Constructs a new Provider using the data set, with a cache of the size 
+     * provided.
+     * @param dataSet to use for device detection
+     * @param cacheSize to be used with the provider, 0 for no cache
      */
     public Provider(Dataset dataSet, int cacheSize) {
-        this(dataSet, new Controller(), cacheSize);
+        this(dataSet, false, cacheSize);
     }
 
     /**
-     * Constructs a new provider with the dataset, controller and cache 
-     * specified.
-     * @param dataSet
-     * @param controller
-     * @param cacheSize
+     * Constructs a new Provider using the data set, with a cache of the size 
+     * provided, and recording detection time if flag set.
+     * @param dataSet to use for device detection
+     * @param recordDetectionTime true if the detection time should be recorded
+     * @param cacheSize to be used with the provider, 0 for no cache
      */
-    Provider(Dataset dataSet, Controller controller, int cacheSize) {
-        this.detectionCount = new AtomicLong();
+    Provider(Dataset dataSet, boolean recordDetectionTime, int cacheSize) {
+        this.recordDetectionTime = recordDetectionTime;
         this.dataSet = dataSet;
-        this.controller = controller;
+
         // Initialise HashMap with default size and a rirective to re-hash only
         // when capacity exceeds initial.
         int numberOfMethods = MatchMethods.values().length;
@@ -144,9 +104,14 @@ public class Provider {
         this.methodCounts.add(MatchMethods.NUMERIC, 0l);
         this.methodCounts.add(MatchMethods.EXACT, 0l);
         this.methodCounts.add(MatchMethods.NONE, 0l);
-        userAgentCache = cacheSize > 0 ? new Cache<String, MatchState>(cacheSize) : null;
+        
+        userAgentCache = cacheSize > 0 ? new Cache<String, MatchResult, MatchState>(cacheSize) : null;
     }
 
+    /**
+     * @return the percentage of requests for user agents which were not already
+     * contained in the cache.
+     */
     public double getPercentageCacheMisses() {
         if (userAgentCache != null) {
             return userAgentCache.getPercentageMisses();
@@ -156,7 +121,6 @@ public class Provider {
     }
     
     /**
-     * Returns the number of times the user agents cache was switched.
      * @return the number of times the user agents cache was switched.
      */
     public long getCacheSwitches() {
@@ -167,14 +131,20 @@ public class Provider {
         }
     }
     
+    /**
+     * @return number of requests to the cache.
+     */
     public double getCacheRequests() {
         if (userAgentCache != null) {
             return userAgentCache.getCacheRequests();
         } else {
-            return -1;
+            return 0;
         }
     }
     
+    /**
+     * @return number of cache misses.
+     */
     public long getCacheMisses() {
         if (userAgentCache != null) {
             return userAgentCache.getCacheMisses();
@@ -184,12 +154,11 @@ public class Provider {
     }
     
     /**
-     * Creates a new match object to be used for matching.
-     *
-     * @return a match object ready to be used with the Match methods 
+     * Creates a new match instance to be used for matching.
+     * @return a match instance ready to be used with the Match methods 
      */
     public Match createMatch() {
-        return new Match(dataSet);
+        return new Match(this);
     }
 
     /**
@@ -211,11 +180,12 @@ public class Provider {
      * @return a match for the target headers provided
      * @throws IOException indicates an I/O exception occurred
      */
-    public Match match(final Map<String, String> headers, Match match) throws IOException {
+    public Match match(final Map<String, String> headers, Match match) 
+            throws IOException {
         
         if (headers == null || headers.isEmpty()) {
             // Empty headers all default match result.
-            Controller.matchDefault(match);
+            Controller.matchDefault(match.state);
         } else {
             // Check if the headers passed to this function are also found 
             // in the headers list of the dataset.
@@ -236,109 +206,86 @@ public class Provider {
                 match(headers.get(importantHeaders.get(0)), match);
             } else {
                 // Create matches for each of the headers.
-                Map<String, Match> matches = matchForHeaders(match, headers, importantHeaders);
+                Map<String, MatchState> matches = matchForHeaders(match, headers, importantHeaders);
                 
-                // A list of new profiles to use with the match.
-                Profile[] newProfiles = new Profile[dataSet.components.size()];
-                int componentIndex = 0;
-                
+                // Set the profile for each component from the headers provided.
                 for(Component component : dataSet.components) {
-                    // See if any of the headers can be used for this
-                    // components profile. As soon as one matches then
-                    // stop and don't look at any more. They are ordered
-                    // in preferred sequence such that the first item is 
-                    // the most preferred.
+                    // Get the profile for the component.                    
+                    Profile profile = getMatchingHeaderProfile(match.state, matches, component);
                     
-                    for (String localHeader : component.getHttpheaders()) {
-                        Match headerMatch = matches.get(localHeader);
-                        if (headerMatch != null) {
-                            // Update the statistics about the matching process 
-                            // if this header isn't the match instance passed 
-                            // to the method.
-                            if (match != headerMatch) {
-                                match.signaturesCompared += headerMatch.signaturesCompared;
-                                match.signaturesRead += headerMatch.signaturesRead;
-                                match.stringsRead += headerMatch.stringsRead;
-                                match.rootNodesEvaluated += headerMatch.rootNodesEvaluated;
-                                match.nodesEvaluated += headerMatch.nodesEvaluated;
-                                match.elapsed += headerMatch.elapsed;
-                                match.setLowestScore(match.getLowestScore() + headerMatch.getDifference());
-                            }
-                            
-                            // If the header match used is worst than the 
-                            // current one then update the method used for the 
-                            // match returned.
-                            if (headerMatch.method.getMatchMethods() > match.method.getMatchMethods()) {
-                                match.method = headerMatch.method;
-                            }
-                            
-                            // Set the profile for this component.
-                            for (Profile profile : headerMatch.profiles) {
-                                if (profile.getComponent() == component) {
-                                    newProfiles[componentIndex] = profile;
-                                    break;
-                                }
-                            }
-                            break;
-                        }
-                    }
-                    // If no profile could be found for the component
-                    // then use the default profile.
-                    if (newProfiles[componentIndex] == null) {
-                        newProfiles[componentIndex] = component.getDefaultProfile();
-                    }
-                    
-                    // Move to the next array element.
-                    componentIndex++;
+                    // Add the profile found, or the default one if not found.
+                    match.state.getExplicitProfiles().add(profile == null ? 
+                            component.getDefaultProfile() : profile);
                 }
                 
                 // Reset any fields that relate to the profiles assigned
                 // to the match result or that can't contain a value when
                 // HTTP headers are used.
-                match.setSignature(null);
-                match.results = null;
-                match.setTargetuserAgent(null);
-                
-                // Replace the match profiles with the new ones.
-                match.profiles = newProfiles;
+                match.state.setSignature(null);
+                match.state.setTargetUserAgent(null);
             }
         }
         return match;
     }
 
     /**
-     * For each of the important HTTP headers provides a mapping to a 
-     * match result.
-     * @param match The single match instance passed into the match method.
-     * @param headers The HTTP headers available for matching.
-     * @param importantHeaders HTTP header names important to the match process.
-     * @return A map of HTTP headers and match instances containing results 
-     * for them.
+     * See if any of the headers can be used for this components profile. As
+     * soon as one matches then stop and don't look at any more. They are 
+     * ordered in preferred sequence such that the first item is the most 
+     * preferred.
+     * @param masterState current working state of the matching process
+     * @param matches map of HTTP header names and match states
+     * @param component component to be retrieved
+     * @return Profile for the component provided from the matches for each 
+     * header
+     */
+    private static Profile getMatchingHeaderProfile(MatchState masterState, 
+            Map<String, MatchState> matches, Component component) 
+            throws IOException {
+        Profile result = null;
+        for (String header : component.getHttpheaders())
+        {
+            MatchState headerState = matches.get(header);
+            if (headerState != null &&
+                headerState.getSignature() != null)
+            {
+                result = processMatchedHeaderProfile(
+                        masterState, headerState, component);
+            }
+        }
+        return result;
+    }
+    
+    /**
+     * Updates the masterState with the header masterState and returns the 
+     * profile for the component requested.
+     * @param masterState current working state of the matching process
+     * @param headerState state for the specific header
+     * @param component the profile returned should relate to
+     * @return profile related to the component from the header state
      * @throws IOException 
      */
-    private Map<String, Match> matchForHeaders(
-            Match match, Map<String, String> headers, ArrayList<String> importantHeaders)
+    private static Profile processMatchedHeaderProfile(MatchState masterState, 
+            MatchState headerState, Component component) 
             throws IOException {
-        // Relates HTTP header names to match resutls.
-        Map<String, Match> matches = new HashMap<String, Match>();
-        // Make the first match used the match passed into the method. 
-        // Subsequent matches will use a new instance.
-        Match currentMatch = match;
-        // Iterates through the important header names.
-        for (int i = 0; i < importantHeaders.size(); i++) {
-            matches.put(importantHeaders.get(i), currentMatch != null ? currentMatch : createMatch());
-            currentMatch = null;
-        }
         
-        // Using each of the match instances pass the value to the match method 
-        // and set the results.
-        for (Entry m : matches.entrySet()) {
-            // At this point we have a collection of the String => Match objects
-            // where Match objects are empty. Perform the Match for each String 
-            // hence making all matches correspond to the User Agents.
-            match(headers.get((String)m.getKey()), (Match)m.getValue());
-        }
-        return matches;
+        Profile result = null;
+        
+        // Merge the header state with the master state.
+        masterState.merge(headerState);
+
+        // Return the profile for this component.
+        int profileIndex = 0; 
+        Profile[] profiles = headerState.getSignature().getProfiles();
+        while (result == null &&
+               profileIndex < profiles.length) {
+            if (profiles[profileIndex].getComponent() == component) {
+                result = profiles[profileIndex];
+            }
+            profileIndex++;
+        }    
+        
+        return result;
     }
     
     /**
@@ -365,66 +312,96 @@ public class Provider {
      * @throws IOException indicates and I/O exception occurred
      */
     public Match match(String targetUserAgent, Match match) throws IOException {
-        MatchState state;
-
-        if (userAgentCache != null && targetUserAgent != null) {
-            //Increase cache requests.
-            userAgentCache.incrementRequestsByOne();
-            
-            state = userAgentCache.active.get(targetUserAgent);
-            if (state == null) {
-                // The user agent has not been checked previously. Therefore perform
-                // the match and store the results in the cache.
-                match = matchNoCache(targetUserAgent, match);
-
-                // Record the match state in the cache for next time.
-                state = new MatchState(match);
-                //userAgentCache.setActive(targetUserAgent, state);
-                userAgentCache.active.put(targetUserAgent, state);
-                
-                //Implement Atomic increase in misses.
-                userAgentCache.incrementMissesByOne();
-            } else {
-                // The state of a previous match exists so the match should
-                // be configured based on the results of the previous state.
-                match.setState(state);
-            }
-            userAgentCache.addRecent(targetUserAgent, state);
-        } else {
-            // The cache does not exist so call the non caching method.
-            matchNoCache(targetUserAgent, match);
-        }
+        match.setResult(match(targetUserAgent, match.state));
         return match;
     }
 
-    private Match matchNoCache(String targetUserAgent, Match match) throws IOException {
-        match.reset(targetUserAgent);
+    /**
+     * Sets the state to the result of the match for the target User-Agent.
+     * @param targetUserAgent User-Agent to be matched
+     * @param state current working state of the matching process
+     * @throws IOException 
+     */
+    void matchNoCache(String targetUserAgent, MatchState state) 
+            throws IOException {
+        
+        long startNanoseconds = 0;
+        
+        state.reset(targetUserAgent);
 
-        controller.match(match);
+        if (recordDetectionTime) {
+            startNanoseconds = System.nanoTime();
+        }
+        
+        Controller.match(state);
+        
+        if (recordDetectionTime) {
+            state.setElapsed(System.nanoTime() - startNanoseconds);
+        }
 
         // Update the counts for the provider.
         detectionCount.incrementAndGet();
         synchronized (methodCounts) {
-            MatchMethods method = match.getMethod();
+            MatchMethods method = state.getMethod();
             methodCounts.put(method, methodCounts.get(method) + 1);
         }
-
-        return match;
     }
     
     /**
-     * Used to check other header fields in case a device user agent is being used
-     * and returns the devices user agent string.
-     * @param headers Collection of HTTP headers associated with the request.
-     * @return the user agent string of the device.
+     * For each of the important HTTP headers provides a mapping to a 
+     * match result.
+     * @param match The single match instance passed into the match method.
+     * @param headers The HTTP headers available for matching.
+     * @param importantHeaders HTTP header names important to the match process.
+     * @return A map of HTTP headers and match instances containing results 
+     * for them.
+     * @throws IOException 
      */
-    private static String getDeviceUserAgent(Map<String, String> headers)
-    {
-        for(String current : DetectionConstants.DEVICE_USER_AGENT_HEADERS) {
-            if (headers.get(current.toLowerCase()) != null) {
-                return headers.get(current.toLowerCase());
-            }
+    private Map<String, MatchState> matchForHeaders(
+            Match match, Map<String, String> headers, ArrayList<String> importantHeaders)
+            throws IOException {
+        // Relates HTTP header names to match resutls.
+        Map<String, MatchState> matches = new HashMap<String, MatchState>();
+        
+        // Set the header name and match state for each
+        // important header.        
+        for(String headerName : importantHeaders) {
+            matches.put(headerName, new MatchState(
+                    match, headers.get(headerName)));
         }
-        return null;
+        
+        // Using each of the match instances pass the value to the match method 
+        // and set the results.
+        for (Entry<String, MatchState> m : matches.entrySet()) {
+            // At this point we have a collection of the String => Match objects
+            // where Match objects are empty. Perform the Match for each String 
+            // hence making all matches correspond to the User Agents.
+            match(headers.get(m.getKey()), m.getValue());
+        }
+        return matches;
     }
+
+    /**
+     * For a given user agent returns a match containing information about the
+     * capabilities of the device and it's components.
+     *
+     * @param targetUserAgent The user agent string to use as the target
+     * @param state information used to process the match
+     * @return a match containing information about the capabilities of the 
+     * device and it's components
+     * @throws IOException indicates and I/O exception occurred
+     */
+    private IMatchResult match(String targetUserAgent, MatchState state) 
+            throws IOException {
+        IMatchResult result;
+        if (userAgentCache != null) {
+            // Fetch the item using the cache.
+            result = userAgentCache.get(targetUserAgent, state);
+        } else {
+            // The cache does not exist so call the non caching method.
+            matchNoCache(targetUserAgent, state);
+            result = state;
+        }
+        return result;
+    }    
 }

@@ -1,6 +1,6 @@
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
- * Copyright 2014 51Degrees Mobile Experts Limited, 5 Charlotte Close,
+ * Copyright © 2015 51Degrees Mobile Experts Limited, 5 Charlotte Close,
  * Caversham, Reading, Berkshire, United Kingdom RG4 7BY
  * 
  * This Source Code Form is the subject of the following patent 
@@ -21,7 +21,7 @@
 package fiftyone.mobile.detection.entities;
 
 import fiftyone.mobile.detection.Dataset;
-import fiftyone.mobile.detection.Match;
+import fiftyone.mobile.detection.MatchState;
 import fiftyone.mobile.detection.readers.BinaryReader;
 import java.io.IOException;
 
@@ -315,38 +315,37 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
     /**
      * Gets a complete node, or if one isn't available exactly the closest 
      * numeric one to the target user agent at the current position.
-     * @param match Match results including the target user agent.
+     * @param state current working state of the matching process
      * @return a complete node, or if one isn't available exactly the closest 
      * numeric one.
      * @throws IOException 
      */
-    public Node getCompleteNumericNode(Match match) throws IOException {
+    public Node getCompleteNumericNode(MatchState state) throws IOException {
         Node node = null;
 
         // Check to see if there's a next node which matches
         // exactly.
-        Node nextNode = getNextNode(match);
+        Node nextNode = getNextNode(state);
         if (nextNode != null) {
-            node = nextNode.getCompleteNumericNode(match);
+            node = nextNode.getCompleteNumericNode(state);
         }
 
         if (node == null && numericChildren.length > 0) {
             // No. So try each of the numeric matches in ascending order of
             // difference.
-            Integer target = getCurrentPositionAsNumeric(match);
+            Integer target = getCurrentPositionAsNumeric(state);
             if (target != null) {
                 NodeNumericIndexIterator iterator = 
                                                 getNumericNodeIterator(target);
                 if (iterator != null) {
                     while (iterator.hasNext()) {
                         NodeNumericIndex current = iterator.next();
-                        node = current.getNode().getCompleteNumericNode(match);
+                        node = current.getNode().getCompleteNumericNode(state);
                         if (node != null) {
                             int difference = 
                                         Math.abs(target - current.getValue());
-                            match.setLowestScore(
-                                    match.getLowestScore() + difference
-                                    );
+                            state.setLowestScore(
+                                    state.getLowestScore() + difference);
                             break;
                         }
                     }
@@ -402,21 +401,21 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
     /**
      * Returns the node position as a number.
      *
-     * @param match results including the target user agent
+     * @param state current working state of the matching process
      * @return Null if there is no numeric characters, otherwise the characters
      * as an integer
      */
-    private Integer getCurrentPositionAsNumeric(Match match) {
+    private Integer getCurrentPositionAsNumeric(MatchState state) {
         // Find the left most numeric character from the current position.
         int i = position;
         while (i >= 0
-                && match.getTargetUserAgentArray()[i] >= (byte) '0'
-                && match.getTargetUserAgentArray()[i] <= (byte) '9') {
+                && state.getTargetUserAgentArray()[i] >= (byte) '0'
+                && state.getTargetUserAgentArray()[i] <= (byte) '9') {
             i--;
         }
         if (i < position) {
             return getNumber(
-                    match.getTargetUserAgentArray(),
+                    state.getTargetUserAgentArray(),
                     i + 1,
                     position - i);
         }
@@ -424,32 +423,17 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
     }
 
     /**
-     * TODO: get description.
-     * @param array
-     * @param startIndex
-     * @param length
-     * @return 
-     */
-    private boolean isNumeric(byte[] array, int startIndex, int length) {
-        for (int i = startIndex; i < (startIndex + length); i++) {
-            if (getIsNumeric(array[i]) == false)
-                return false;
-        }
-        return true;
-    }
-
-    /**
      * Returns a complete node for the match object provided.
      *
-     * @param match results including the target user agent
+     * @param state current working state of the matching process
      * @return The next child node, or null if there isn't one
      * @throws IOException indicates an I/O exception occurred
      */
-    public Node getCompleteNode(Match match) throws IOException {
+    public Node getCompleteNode(MatchState state) throws IOException {
         Node node = null;
-        Node nextNode = getNextNode(match);
+        Node nextNode = getNextNode(state);
         if (nextNode != null) {
-            node = nextNode.getCompleteNode(match);
+            node = nextNode.getCompleteNode(state);
         }
         if (node == null && isComplete()) {
             node = this;
@@ -461,10 +445,10 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
      * Returns the next node for the characters provided from the start index
      * for the number of characters specified.
      *
-     * @param match Match results including the target user agent
+     * @param state current working state of the matching process
      * @return The next child node, or null if there isn't one
      */
-    Node getNextNode(Match match) throws IOException {
+    Node getNextNode(MatchState state) throws IOException {
         int upper = children.length - 1;
 
         if (upper >= 0) {
@@ -479,14 +463,14 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
 
                 // Increase the number of strings checked.
                 if (children[middle].isString) {
-                    match.incrStringsRead();
+                    state.incrStringsRead();
                 }
 
                 // Increase the number of nodes checked.
-                match.incrNodesEvaluated();
+                state.incrNodesEvaluated();
 
                 int comparisonResult = children[middle].compareTo(
-                        match.getTargetUserAgentArray(), startIndex);
+                        state.getTargetUserAgentArray(), startIndex);
                 if (comparisonResult == 0) {
                     return children[middle].getNode();
                 } else if (comparisonResult > 0) {
@@ -518,13 +502,13 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
      * Returns true if any of the nodes in the match have overlapping characters
      * with this one.
      *
-     * @param match Match object to be checked for overlaps
+     * @param state current working state of the matching process
      * @return true if any of the nodes in the match have overlapping characters
      * with this one.
      * @throws IOException indicates an I/O exception occurred
      */
-    public boolean getIsOverlap(Match match) throws IOException {
-        for (Node node : match.getNodes()) {
+    public boolean getIsOverlap(MatchState state) throws IOException {
+        for (Node node : state.getNodes()) {
             if (getIsOverlap(node)) {
                 return true;
             }
@@ -581,10 +565,10 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
      */
     @Override
     public int compareTo(Node other) {
-        return getIndex() - other.getIndex();
+        return this.getIndex() - other.getIndex();
     }
-    
-    class NodeNumericIndexIterator {
+   
+    static class NodeNumericIndexIterator {
 
         private final NodeNumericIndex[] array;
         private final int target;
@@ -613,9 +597,9 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
 
             // Determine if the low and high indexes are in range.
             lowInRange = lowIndex >= 0 && lowIndex < array.length
-                    && range.inRange(array[lowIndex].getValue());
+                    && this.range.inRange(array[lowIndex].getValue());
             highInRange = highIndex < array.length && highIndex >= 0
-                    && range.inRange(array[highIndex].getValue());
+                    && this.range.inRange(array[highIndex].getValue());
         }
 
         boolean hasNext() {
@@ -623,7 +607,7 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
         }
 
         NodeNumericIndex next() {
-            int index = -1;
+            int index;
 
             if (lowInRange && highInRange) {
                 // Get the differences between the two values.

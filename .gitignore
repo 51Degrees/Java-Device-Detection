@@ -1,4 +1,4 @@
-/Netbeans/nbproject/private/  *
+/Netbeans
 *Enterprise*.dat
 *Premium*.dat
 *Enterprise*.trie
@@ -7,4 +7,4 @@
 *.pfk
 *.class
 */target/*
-
+nb-configuration.xml

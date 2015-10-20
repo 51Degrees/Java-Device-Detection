@@ -1,6 +1,6 @@
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
- * Copyright © 2014 51Degrees Mobile Experts Limited, 5 Charlotte Close,
+ * Copyright © 2015 51Degrees Mobile Experts Limited, 5 Charlotte Close,
  * Caversham, Reading, Berkshire, United Kingdom RG4 7BY
  * 
  * This Source Code Form is the subject of the following patent 
@@ -32,7 +32,7 @@ class ClosestScore extends BaseScore {
      * right most node and the target user agent.
      */
     @Override
-    protected int getInitialScore(Match match, Signature signature, int lastNodeCharacter) throws IOException {
+    protected int getInitialScore(Signature signature, int lastNodeCharacter) throws IOException {
         return Math.abs(lastNodeCharacter + 1 - signature.getLength());
     }
 
@@ -40,26 +40,26 @@ class ClosestScore extends BaseScore {
      * Returns the difference score between the node and the target user agent
      * working from right to left.
      *
-     * @param match
+     * @param state current working state of the matching process
      * @param node
      * @return
      * @throws IOException
      */
     @Override
-    protected int getScore(Match match, Node node) throws IOException {
+    protected int getScore(MatchState state, Node node) throws IOException {
         int score = 0;
         int nodeIndex = node.getCharacters().length - 1, targetIndex = node.position + node.getLength();
 
         // Adjust the score and indexes if the node is too long.
-        if (targetIndex >= match.getTargetUserAgentArray().length) {
-            score = targetIndex - match.getTargetUserAgentArray().length;
+        if (targetIndex >= state.getTargetUserAgentArray().length) {
+            score = targetIndex - state.getTargetUserAgentArray().length;
             nodeIndex -= score;
-            targetIndex = match.getTargetUserAgentArray().length - 1;
+            targetIndex = state.getTargetUserAgentArray().length - 1;
         }
 
-        while (nodeIndex >= 0 && score < match.getLowestScore()) {
+        while (nodeIndex >= 0 && score < state.getLowestScore()) {
             int difference = Math.abs(
-                    match.getTargetUserAgentArray()[targetIndex]
+                    state.getTargetUserAgentArray()[targetIndex]
                     - node.getCharacters()[nodeIndex]);
             if (difference != 0) {
                 int numericDifference = 0;
@@ -69,8 +69,8 @@ class ClosestScore extends BaseScore {
                 int newNodeIndex = nodeIndex + 1;
                 int newTargetIndex = targetIndex + 1;
                 while (newNodeIndex < node.getLength()
-                        && newTargetIndex < match.getTargetUserAgentArray().length
-                        && getIsNumeric(match.getTargetUserAgentArray()[newTargetIndex])
+                        && newTargetIndex < state.getTargetUserAgentArray().length
+                        && getIsNumeric(state.getTargetUserAgentArray()[newTargetIndex])
                         && getIsNumeric(node.getCharacters()[newNodeIndex])) {
                     newNodeIndex++;
                     newTargetIndex++;
@@ -81,7 +81,7 @@ class ClosestScore extends BaseScore {
                 // Find when the characters stop being numbers.
                 int characters = 0;
                 while (nodeIndex >= 0
-                        && getIsNumeric(match.getTargetUserAgentArray()[targetIndex])
+                        && getIsNumeric(state.getTargetUserAgentArray()[targetIndex])
                         && getIsNumeric(node.getCharacters()[nodeIndex])) {
                     nodeIndex--;
                     targetIndex--;
@@ -92,7 +92,7 @@ class ClosestScore extends BaseScore {
                 // compare the numeric values.
                 if (characters > 1) {
                     numericDifference = Math.abs(
-                            getNumber(match.getTargetUserAgentArray(), targetIndex + 1, characters)
+                            getNumber(state.getTargetUserAgentArray(), targetIndex + 1, characters)
                             - getNumber(node.getCharacters(), nodeIndex + 1, characters));
                 }
 

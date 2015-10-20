@@ -1,6 +1,6 @@
 /*
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited.
- * Copyright © 2014 51Degrees Mobile Experts Limited, 5 Charlotte Close,
+ * Copyright © 2015 51Degrees Mobile Experts Limited, 5 Charlotte Close,
  * Caversham, Reading, Berkshire, United Kingdom RG4 7BY
  *
  * This Source Code Form is the subject of the following patent
@@ -126,9 +126,9 @@ public abstract class Base extends DetectionTestSupport {
             provider.match(headers, match);
             assertTrue("Signature not equal null", match.getSignature() == null);
             assertTrue("Match difference not equal to zero", match.getDifference() == 0);
-            assertTrue("Match method not equal to Exact", match.method == MatchMethods.EXACT);
+            assertTrue("Match method not equal to Exact", match.getMethod() == MatchMethods.EXACT);
             validate(match, state);
-            results.methods.get(match.method).incrementAndGet();
+            results.methods.get(match.getMethod()).incrementAndGet();
         }
 
         return results;

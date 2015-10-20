@@ -1,12 +1,12 @@
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
- * Copyright 2014 51Degrees Mobile Experts Limited, 5 Charlotte Close,
+ * Copyright © 2014 51Degrees Mobile Experts Limited, 5 Charlotte Close,
  * Caversham, Reading, Berkshire, United Kingdom RG4 7BY
  * 
  * This Source Code Form is the subject of the following patent 
  * applications, owned by 51Degrees Mobile Experts Limited of 5 Charlotte
  * Close, Caversham, Reading, Berkshire, United Kingdom RG4 7BY: 
- * European Patent Application No. 13192291.6; and 
+ * European Patent Application No. 13192291.6; and
  * United States Patent Application Nos. 14/085,223 and 14/085,301.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -18,25 +18,21 @@
  * This Source Code Form is "Incompatible With Secondary Licenses", as
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
-package fiftyone.mobile.detection.factories.stream;
+package fiftyone.mobile.detection.cache;
 
-import fiftyone.mobile.detection.entities.stream.Pool;
+import java.io.IOException;
 
 /**
- * Factory used to create stream Node entities.
+ * Source of items for the cache if the key does not already exist.
+ * @param <K> Type of the cache key
+ * @param <V> Type of the cached value
  */
-public abstract class NodeStreamFactory 
-                    extends fiftyone.mobile.detection.factories.NodeFactory {
+public interface ICacheSource<K,V> {
     /**
-     * Pool for the corresponding data set used to get readers.
+     * Returns the value associated with the key from the source.
+     * @param key for the value required
+     * @return Value associated with the key
+     * @throws java.io.IOException
      */
-    protected final Pool pool;
-    
-    /**
-     * Constructs a new instance of NodeStreamFactory.
-     * @param pool Pool from the data set to be used when creating new entities.
-     */
-    public NodeStreamFactory(Pool pool) {
-        this.pool = pool;
-    }
+    abstract V fetch(K key) throws IOException;
 }

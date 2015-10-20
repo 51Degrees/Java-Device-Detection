@@ -1,6 +1,6 @@
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
- * copyright 2014 51Degrees Mobile Experts Limited, 5 Charlotte Close,
+ * Copyright © 2015 51Degrees Mobile Experts Limited, 5 Charlotte Close,
  * Caversham, Reading, Berkshire, United Kingdom RG4 7BY
  * 
  * This Source Code Form is the subject of the following patent 
@@ -23,8 +23,6 @@ package fiftyone.mobile.detection;
 import fiftyone.mobile.detection.entities.stream.TriePool;
 import fiftyone.properties.DetectionConstants;
 import java.io.FileNotFoundException;
-import java.nio.ByteBuffer;
-import java.util.Arrays;
 
 /**
  * Decision Trie data structure provider.

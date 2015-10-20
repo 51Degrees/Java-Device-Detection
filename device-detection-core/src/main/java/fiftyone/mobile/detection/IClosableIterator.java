@@ -1,6 +1,6 @@
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
- * Copyright © 2014 51Degrees Mobile Experts Limited, 5 Charlotte Close,
+ * Copyright © 2015 51Degrees Mobile Experts Limited, 5 Charlotte Close,
  * Caversham, Reading, Berkshire, United Kingdom RG4 7BY
  * 
  * This Source Code Form is the subject of the following patent 
@@ -25,9 +25,11 @@ import java.util.Iterator;
 /**
  * Should be used if at some point resources will have to be released. I.e. with 
  * lazy loading of the properties where the reader has to be released.
+ * @param <T> type of class to be closable
  */
 public interface IClosableIterator<T> extends Iterator<T> {
-
+   /**
+     * Releases all resources used by the class.
+     */
     public void close();
-    
 }

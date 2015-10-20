@@ -1,6 +1,6 @@
 /*
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited.
- * Copyright © 2014 51Degrees Mobile Experts Limited, 5 Charlotte Close,
+ * Copyright © 2015 51Degrees Mobile Experts Limited, 5 Charlotte Close,
  * Caversham, Reading, Berkshire, United Kingdom RG4 7BY
  *
  * This Source Code Form is the subject of the following patent
@@ -124,7 +124,7 @@ public abstract class ApiBase extends DetectionTestSupport {
     
     private void fetchAllProperties(Match match) throws IOException {
         long checksum = 0;
-        for (Property property : match.dataSet.getProperties()) {
+        for (Property property : match.getDataSet().getProperties()) {
             String propName = property.getName();
             logger.debug("Property {}: {}", propName, match.getValues(property));
             if (match.getValues(property) == null) {

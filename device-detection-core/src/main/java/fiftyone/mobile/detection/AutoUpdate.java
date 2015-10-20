@@ -1,6 +1,6 @@
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
- * Copyright © 2014 51Degrees Mobile Experts Limited, 5 Charlotte Close,
+ * Copyright © 2015 51Degrees Mobile Experts Limited, 5 Charlotte Close,
  * Caversham, Reading, Berkshire, United Kingdom RG4 7BY
  * 
  * This Source Code Form is the subject of the following patent 
@@ -39,13 +39,12 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 import java.util.UUID;
-import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.zip.DataFormatException;
 import java.util.zip.GZIPInputStream;
 import javax.net.ssl.HttpsURLConnection;
 
-/*
+/**
  * Used to fetch new device data from 51Degrees.com if a Premium or Enterprise 
  * licence has been installed.
  */
