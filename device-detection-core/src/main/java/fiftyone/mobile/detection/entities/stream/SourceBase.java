@@ -22,6 +22,7 @@ package fiftyone.mobile.detection.entities.stream;
 
 import fiftyone.mobile.detection.readers.BinaryReader;
 import java.io.Closeable;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +34,7 @@ import java.util.List;
  * Must be disposed to ensure that the readers are closed and any resources
  * free for other uses.
  */
-public abstract class SourceBase implements Closeable {
+abstract class SourceBase implements Closeable {
 
     /**
      * List of binary readers opened against the data source. 
@@ -44,7 +45,7 @@ public abstract class SourceBase implements Closeable {
      * Creates a new reader and stores a reference to it.
      * @return A reader open for read access to the stream
      */
-    public BinaryReader createReader() {
+    BinaryReader createReader() throws IOException {
         BinaryReader reader = new BinaryReader(createStream());
         synchronized(this) {
             readers.add(reader);
@@ -54,12 +55,13 @@ public abstract class SourceBase implements Closeable {
     
     /**
      * Releases the reference to memory and forces garbage collection.
+     * @throws java.io.IOException
      */
     @Override
-    public void close() {
+    public void close() throws IOException {
         synchronized(readers) {
-            for (BinaryReader br : readers) {
-                br.close();
+            for (BinaryReader reader : readers) {
+                reader.close();
             }
             readers.clear();
         }
@@ -69,5 +71,5 @@ public abstract class SourceBase implements Closeable {
      * Creates a new stream from the data source.
      * @return A freshly opened stream to the data source.
      */
-    public abstract ByteBuffer createStream();
+    abstract ByteBuffer createStream() throws IOException;
 }

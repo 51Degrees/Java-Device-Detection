@@ -37,7 +37,7 @@ import fiftyone.mobile.detection.readers.BinaryReader;
 public class BaseEntity {
 
     /**
-     * TODO: get description.
+     * List if powers used to determine numeric differences.
      */
     private final static int[] POWERS = new int[] { 1, 10, 100, 1000, 10000 };
     

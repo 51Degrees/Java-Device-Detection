@@ -23,9 +23,6 @@ package fiftyone.mobile.detection.entities.stream;
 import fiftyone.mobile.detection.entities.BaseEntity;
 import java.io.IOException;
 import java.util.Iterator;
-import java.util.NoSuchElementException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * A general class that iterates over entities in StreamVariableLists. 
@@ -79,6 +76,7 @@ public class StreamVariableListIterator<T extends BaseEntity>
      * Gets the next entity for retrieval and increments the iteration.
      * @return the next entity in the list.
      */
+    @Override
     public T next() {
         try {
             T t = varList.get(offset);
@@ -86,7 +84,8 @@ public class StreamVariableListIterator<T extends BaseEntity>
             index++;
             return t;
         } catch (IOException ex) {
-            return null;
+            // TODO - Add WrappedIOException
+            throw new RuntimeException("TODO");
         }
     }
 

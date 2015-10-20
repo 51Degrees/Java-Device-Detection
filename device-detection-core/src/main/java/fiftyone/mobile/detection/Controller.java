@@ -73,22 +73,26 @@ class Controller {
     private static final Comparator<Node> nodeComparator = new Comparator<Node>() {
         @Override
         public int compare(Node o1, Node o2) {
-            int l0 = o1.getRankedSignatureIndexes().length;
-            int l1 = o2.getRankedSignatureIndexes().length;
-            if (l0 < l1) {
-                return -1;
-            }
-            if (l0 > l1) {
-                return 1;
-            }
-            if (l0 == l1) {
-                /* If both have the same rank, sort by position. */
-                if (o1.position > o2.position) {
-                    return 1;
-                }
-                if (o1.position < o2.position) {
+            try {
+                int l0 = o1.getRankedSignatureIndexes().length;
+                int l1 = o2.getRankedSignatureIndexes().length;
+                if (l0 < l1) {
                     return -1;
                 }
+                if (l0 > l1) {
+                    return 1;
+                }
+                if (l0 == l1) {
+                    /* If both have the same rank, sort by position. */
+                    if (o1.position > o2.position) {
+                        return 1;
+                    }
+                    if (o1.position < o2.position) {
+                        return -1;
+                    }
+                }
+            } catch (IOException ex) {
+                // TODO - Add WrappedIOException
             }
             return 0;
         }

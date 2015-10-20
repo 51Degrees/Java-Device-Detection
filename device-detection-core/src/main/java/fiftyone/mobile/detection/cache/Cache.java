@@ -45,7 +45,12 @@ import java.util.concurrent.atomic.AtomicLong;
  * @param <V> Value for the cache items.
  * @param <S> Source used to fetch items not in the cache.
  */
-public class Cache<K, V, S extends ICacheSource<K, V>> {
+public class Cache<K, V, S extends ICacheLoader<K, V>> {
+    
+    /**
+     * Loader used to fetch items not in the cache.
+     */
+    private final S loader;
     /**
      * The second hashmap of cached items.
      */
@@ -81,9 +86,19 @@ public class Cache<K, V, S extends ICacheSource<K, V>> {
      * @param cacheSize The number of items to store in the cache.
      */
     public Cache(int cacheSize) {
+        this(cacheSize, null);
+    }
+    
+    /**
+     * Constructs a new instance of the cache.
+     * @param cacheSize The number of items to store in the cache.
+     * @param loader used to fetch items not in the cache.
+     */    
+    public Cache(int cacheSize, S loader) {
         cacheServiceSize = (cacheSize / 2);
         front = new ConcurrentHashMap<K, V>(cacheSize);
         back = new ConcurrentHashMap<K, V>(cacheSize);
+        this.loader = loader;
     }
 
     /**
@@ -117,20 +132,31 @@ public class Cache<K, V, S extends ICacheSource<K, V>> {
     
     /**
      * Retrieves the value for key requested. If the key does not exist
-     * in the cache then the Fetch method is used to retrieve the value
-     * from another source.
+     * in the cache then the Fetch method of the cache's loader is used to
+     * retrieve the value.
      * @param key or the item required
-     * @param source to fetch the items from
+     * @return An instance of the value associated with the key
+     * @throws java.io.IOException
+     */    
+    public V get(K key) throws IOException {
+        return get(key, loader);
+    }
+    
+    /**
+     * Retrieves the value for key requested. If the key does not exist
+     * in the cache then the Fetch method is used to retrieve the value
+     * from another loader.
+     * @param key or the item required
+     * @param loader to fetch the items from
      * @return An instance of the value associated with the key
      * @throws java.io.IOException
      */
-    public V get(K key, S source) throws IOException {
+    public V get(K key, S loader) throws IOException {
         V value = front.get(key);
-        if (value == null)
-        {
+        if (value == null) {
             value = back.get(key);
             if (value == null) {
-                value = source.fetch(key);
+                value = loader.fetch(key);
                 back.putIfAbsent(key, value);
                 this.misses.incrementAndGet();
             }

@@ -64,9 +64,10 @@ public class ComponentV32 extends Component {
      * detection where more headers than User-Agent are available. This data 
      * is used by methods that can HTTP Header collections.
      * @return List of HTTP headers as Strings.
+     * @throws java.io.IOException
      */
     @Override
-    public String[] getHttpheaders() {
+    public String[] getHttpheaders() throws IOException {
         String[] localHttpHeaders = httpHeaders;
         if (localHttpHeaders == null) {
             synchronized(this) {
@@ -74,11 +75,7 @@ public class ComponentV32 extends Component {
                 if (localHttpHeaders == null) {
                     List<String> tempList = new ArrayList<String>();
                     for (int element : httpHeaderOffsets) {
-                        try {
-                            tempList.add(dataSet.strings.get(element).toString());
-                        } catch (IOException ex) {
-                            //TODO: handle exception.
-                        }
+                        tempList.add(dataSet.strings.get(element).toString());
                     }
                     httpHeaders = localHttpHeaders = tempList.toArray(new String[tempList.size()]);
                     tempList.clear();

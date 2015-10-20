@@ -49,7 +49,7 @@ public class NodeV32 extends Node {
      * positioned to start reading.
      */
     public NodeV32(fiftyone.mobile.detection.entities.stream.Dataset dataSet, 
-                    int offset, BinaryReader reader) {
+                    int offset, BinaryReader reader) throws IOException {
         super(dataSet, offset, reader);
     }
 
@@ -83,22 +83,18 @@ public class NodeV32 extends Node {
     }
 
     /**
-     * Returns a list of all the signature indexes that relate to this node.
      * @return a list of all the signature indexes that relate to this node.
+     * @throws java.io.IOException
      */
     @Override
-    public int[] getRankedSignatureIndexes() {
+    public int[] getRankedSignatureIndexes() throws IOException {
         int[] localRankedSignatureIndexes = rankedSignatureIndexes;
         if (localRankedSignatureIndexes == null) {
             synchronized (this) {
                 localRankedSignatureIndexes = rankedSignatureIndexes;
                 if (localRankedSignatureIndexes == null) {
-                    try {
-                        rankedSignatureIndexes = localRankedSignatureIndexes =
-                                getRankedSignatureIndexesAsArray();
-                    } catch (IOException ex) {
-                        //TODO: handle exception.
-                    }
+                    rankedSignatureIndexes = localRankedSignatureIndexes =
+                            getRankedSignatureIndexesAsArray();
                 }
             }
         }

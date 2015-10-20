@@ -52,7 +52,7 @@ public class V32LiteMemoryFileTest extends MemoryBase {
     }
 
     @AfterClass
-    public static void tearDown() {
+    public static void tearDown() throws IOException {
         if (dataset != null) dataset.close();
         dataset = null;
     }

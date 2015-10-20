@@ -25,6 +25,7 @@ import fiftyone.mobile.detection.factories.NodeFactory;
 import fiftyone.mobile.detection.factories.NodeFactoryShared;
 import fiftyone.mobile.detection.readers.BinaryReader;
 import fiftyone.properties.DetectionConstants;
+import java.io.IOException;
 
 /**
  * Factory class used to create the new instances of Node V3.1. object.
@@ -50,11 +51,10 @@ public class NodeMemoryFactoryV31 extends NodeFactory {
      * Returns the length of the NodeV31 entity provided.
      * @param entity An entity of type Node who length is required.
      * @return The number of bytes used to store the node.
+     * @throws java.io.IOException
      */
     @Override
-    public int getLength(fiftyone.mobile.detection.entities.Node entity) {
+    public int getLength(fiftyone.mobile.detection.entities.Node entity) throws IOException {
         return getBaseLength() + DetectionConstants.SIZE_OF_INT + (entity.getChildrenLength() * NodeFactoryShared.getNodeIndexLengthV31()) + (entity.getNumericChildrenLength() * getNodeNumericIndexLength()) + (entity.getRankedSignatureIndexes().length * DetectionConstants.SIZE_OF_INT);
-                
     }
-    
 }

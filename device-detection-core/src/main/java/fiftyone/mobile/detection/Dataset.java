@@ -590,8 +590,9 @@ public class Dataset implements Closeable {
     /**
      * Creates a list of HTTP headers if one does not already exist.
      * @return list of HTTP headers as Strings.
+     * @throws java.io.IOException
      */
-    public String[] getHttpHeaders() {
+    public String[] getHttpHeaders() throws IOException {
         String[] localHttpHeaders = httpHeaders;
         if (localHttpHeaders == null) {
             synchronized(this) {
@@ -795,9 +796,10 @@ public class Dataset implements Closeable {
 
     /**
      * Disposes of the data set.
+     * @throws java.io.IOException
      */
     @Override
-    public void close() {
+    public void close() throws IOException {
         disposed = true;
     }
     

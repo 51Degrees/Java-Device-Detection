@@ -191,21 +191,7 @@ public abstract class Profile extends BaseEntity implements Comparable<Profile> 
      * @throws IOException indicates an I/O exception occurred
      */
     public Values getValues(String propertyName) throws IOException {
-        Values localValues = null;
-        localValues = getPropertyNameToValues().get(propertyName);
-        if (localValues == null) {
-            synchronized (this) {
-                getPropertyNameToValues().get(propertyName);
-                if (localValues == null) {
-                    Property property = dataSet.get(propertyName);
-                    if (property != null) {
-                        localValues = this.getValues(property);
-                        getPropertyNameToValues().add(propertyName, localValues);
-                    }
-                }
-            }
-        }
-        return localValues;
+        return getValues(dataSet.properties.get(propertyName));
     }
     
     /**
@@ -223,40 +209,12 @@ public abstract class Profile extends BaseEntity implements Comparable<Profile> 
             synchronized (this) {
                 localValues = getPropertyIndexToValues().get(property.getIndex());
                 if (localValues == null) {
-                    Value[] v = getPropertyValues(property);
-                    localValues = new Values(property, v);
+                    localValues = getPropertyValues(property);
                     getPropertyIndexToValues().add(property.getIndex(), localValues);
                 }
             }
         }
         return localValues;
-        /*
-        synchronized (nameToValues) {
-
-            Values result = nameToValues.get(property.getName());
-            if (result != null) {
-                return result;
-            }
-
-            // Create the list of values.
-            List<Value> vals = new ArrayList<Value>();
-            for (Value value : getValues()) {
-                if (value.getProperty() == property) {
-                    vals.add(value);
-                }
-            }
-            result = new Values(property, vals);
-
-            if (result.size() == 0) {
-                result = null;
-            }
-
-            // Store for future reference.
-            nameToValues.add(property.getName(), result);
-
-            return result;
-        }
-        */
     }
     
     /**
@@ -264,7 +222,7 @@ public abstract class Profile extends BaseEntity implements Comparable<Profile> 
      * @param property Property to be returned.
      * @return Array of values associated with the property and profile.
      */
-    private Value[] getPropertyValues(Property property) throws IOException {
+    private Values getPropertyValues(Property property) throws IOException {
         // Work out the start and end index in the values associated
         // with the profile that relate to this property.
         Value[] result;
@@ -310,7 +268,7 @@ public abstract class Profile extends BaseEntity implements Comparable<Profile> 
         }
         // Create the array and populate it with the values for the profile
         // and property.
-        return result;
+        return new Values(property, result);
     }
     
     /**
@@ -373,30 +331,6 @@ public abstract class Profile extends BaseEntity implements Comparable<Profile> 
     }
     
     /**
-     * 
-     * @param valueIndex
-     * @param lower
-     * @return 
-     */
-    private int getValuesIndex(int valueIndex, int lower) {
-        //int upper = valueIndexes.length - 1;
-        int upper = getValueIndexes().length - 1;
-        int middle = 0;
-        
-        while(lower <= upper) {
-            middle = lower + (upper - lower) / 2;
-            if (getValueIndexes()[middle] == 0) {
-                return middle;
-            } else if(getValueIndexes()[middle] == 0) {
-                upper = middle - 1;
-            } else {
-                lower = middle + 1;
-            }
-        }
-        return ~middle;
-    }
-    
-    /**
      * Called after the entire data set has been loaded to ensure 
      * any further initialisation steps that require other items in
      * the data set can be completed.
@@ -412,28 +346,13 @@ public abstract class Profile extends BaseEntity implements Comparable<Profile> 
             signatures = doGetSignatures();
         if (component == null)
             component = getDataSet().getComponents().get(componentIndex);
-    }
-    
-    /**
-     * A hash map relating the name of a property to the values returned by 
-     * the profile. Used to speed up subsequent data processing.
-     * @return a hash map with values mapped to specific property.
-     */
-    private SortedList<String, Values> getPropertyNameToValues() {
-        SortedList<String, Values> localPropertyNameToValues = propertyNameToValues;
-        if (localPropertyNameToValues == null) {
-            synchronized (this) {
-                localPropertyNameToValues = propertyNameToValues;
-                if (localPropertyNameToValues == null) {
-                    propertyNameToValues = localPropertyNameToValues = 
-                            new SortedList<String, Values>();
-                }
-            }
+        for(Property property : properties) {
+            getPropertyIndexToValues().add(
+                    property.getIndex(),
+                    getPropertyValues(property));
         }
-        return localPropertyNameToValues;
     }
-    private volatile SortedList<String, Values> propertyNameToValues;
-    
+   
     /**
      * A hash map relating the index of a property to the values returned 
      * by the profile. Used to speed up subsequent data processing.
@@ -524,12 +443,14 @@ public abstract class Profile extends BaseEntity implements Comparable<Profile> 
      * A array of the indexes of the values associated with the profile in order
      * of value index in the data set values list.
      * @return A array of the indexes of the values associated with the profile.
+     * @throws java.io.IOException
      */
-    public abstract int[] getValueIndexes();
+    public abstract int[] getValueIndexes() throws IOException;
     
     /**
      * An array of the signature indexes associated with the profile.
      * @return An array of the signature indexes associated with the profile.
+     * @throws java.io.IOException
      */
-    public abstract int[] getSignatureIndexes();
+    public abstract int[] getSignatureIndexes() throws IOException;
 }

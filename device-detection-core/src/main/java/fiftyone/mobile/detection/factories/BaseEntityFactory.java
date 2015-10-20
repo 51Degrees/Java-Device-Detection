@@ -31,8 +31,9 @@ public abstract class BaseEntityFactory<T> {
     /**
      * @param entity whose size is required.
      * @return the size of the entity provided.
+     * @throws java.io.IOException
      */
-    public int getLength(T entity) {
+    public int getLength(T entity) throws IOException {
         throw new UnsupportedOperationException("Can not retrieve the size of "
                 + "the provided entity from an abstract class BaseEntity. This "
                 + "method must be implemented in an extending class");
@@ -40,8 +41,9 @@ public abstract class BaseEntityFactory<T> {
 
     /**
      * @return returns the size of a fixed length entity type.
+     * @throws java.io.IOException
      */
-    public int getLength() {
+    public int getLength() throws IOException {
         throw new UnsupportedOperationException("Can not retrieve the size of "
                 + "the fixed length entity from an abstract class BaseEntity. "
                 + "This method must be implemented in an extending class");

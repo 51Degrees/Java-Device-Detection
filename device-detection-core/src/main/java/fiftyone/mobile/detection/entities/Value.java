@@ -363,20 +363,16 @@ public class Value extends BaseEntity implements Comparable<Value> {
      * @return If the value can not convert to an integer and the value is not 
      * equal to the null value then the null value for the property will be 
      * used. If no conversion is possible 0 is returned.
+     * @throws java.io.IOException
      */
-    public int toInt() {
+    public int toInt() throws IOException {
         Integer localAsInt = asInt;
         if (localAsInt == null) {
             synchronized (this) {
                 localAsInt = asInt;
                 if (localAsInt == null) {
-                    Double d;
-                    try {
-                        d = toDouble();
-                        asInt = localAsInt = d.intValue();
-                    } catch (IOException ex) {
-                        //TODO: handle exception.
-                    }
+                    Double d = toDouble();
+                    asInt = localAsInt = d.intValue();
                 }
             }
         }

@@ -114,16 +114,11 @@ public abstract class TrieProvider implements Closeable {
      */
     protected final List<String> _propertyNames = new ArrayList<String>();
     /**
-     * The number of properties available in total.
-     * TODO: remove
-     */
-    //private int _propertyCount = 0;
-    /**
-     * List of Http headers for each property index.
+     * List of HTTP headers for each property index.
      */
     protected final List<String[]> propertyHttpHeaders = new ArrayList<String[]>();
     /**
-     * A list of Http headers that the provider can use for device detection.
+     * A list of HTTP headers that the provider can use for device detection.
      */
     private volatile List<String> httpHeaders;
     /**

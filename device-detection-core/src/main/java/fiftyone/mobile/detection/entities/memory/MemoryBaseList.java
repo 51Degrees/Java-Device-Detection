@@ -27,6 +27,7 @@ import fiftyone.mobile.detection.entities.headers.Header;
 import fiftyone.mobile.detection.factories.BaseEntityFactory;
 import fiftyone.mobile.detection.readers.BinaryReader;
 import java.io.Closeable;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -117,6 +118,7 @@ public abstract class MemoryBaseList<T extends BaseEntity> implements
      * Reads all the records to be added to the list.
      * @param reader Reader connected to the source data structure and 
      * positioned to start reading.
+     * @throws java.io.IOException
      */
-    public abstract void read(BinaryReader reader);
+    public abstract void read(BinaryReader reader) throws IOException;
 }

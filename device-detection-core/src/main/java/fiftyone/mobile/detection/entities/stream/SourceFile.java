@@ -20,6 +20,7 @@
  * ********************************************************************* */
 package fiftyone.mobile.detection.entities.stream;
 
+import fiftyone.mobile.detection.readers.BinaryReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -90,35 +91,27 @@ public class SourceFile extends SourceFileBase {
     /**
      * Creates a new ByteBuffer from the file located on the hard drive.
      * @return ByteBuffer ready to read data from the data file on hard drive.
+     * @throws java.io.IOException
      */
     @Override
-    public ByteBuffer createStream() {
-        ByteBuffer byteBuffer = null;
-        try {
-            FileHandle handle = new FileHandle(super.getFile());
-            handles.add(handle);
-            byteBuffer = handle.byteBuffer;
-        } catch (IOException ex) {
-            //TODO: handle exception.
-        }
-        return byteBuffer;
+    public ByteBuffer createStream() throws IOException {
+        FileHandle handle = new FileHandle(super.getFile());
+        handles.add(handle);
+        return handle.byteBuffer;
     }
     
     /**
      * Close any file references, release resources and then try to 
      * delete the file.
+     * @throws java.io.IOException
      */
     @Override
-    public void close() {
+    public void close() throws IOException {
         // Dispose of all the binary readers created from the byte buffers.
         super.close();
-        // Dispose of all the file hanldes.
+        // Dispose of all the file handles.
         for(FileHandle handle : handles) {
-            try {
-                handle.dispose();
-            } catch (IOException ex) {
-                //TODO: handle exception.
-            }
+            handle.dispose();
         }
         // Delete the file if it's temporary.
         super.deleteFile();

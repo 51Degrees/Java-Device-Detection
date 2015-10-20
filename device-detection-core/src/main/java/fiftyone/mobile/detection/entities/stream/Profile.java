@@ -42,25 +42,17 @@ public class Profile extends fiftyone.mobile.detection.entities.Profile {
     }
     
     @Override
-    public int[] getValueIndexes() {
+    public int[] getValueIndexes() throws IOException {
         int[] localValueIndexes = valueIndexes;
         if(localValueIndexes == null) {
             synchronized(this) {
                 localValueIndexes = valueIndexes;
                 if(localValueIndexes == null) {
-                    BinaryReader reader = null;
-                    try {
-                        reader = pool.getReader();
-                        reader.setPos(position);
-                        valueIndexes = localValueIndexes = 
-                                BaseEntity.readIntegerArray(reader, valueIndexesCount);
-                    } catch (IOException ex) {
-                        //TODO: handle exception.
-                    } finally {
-                        if (reader != null) {
-                            pool.release(reader);
-                        }
-                    }
+                    BinaryReader reader = pool.getReader();
+                    reader.setPos(position);
+                    valueIndexes = localValueIndexes = 
+                            BaseEntity.readIntegerArray(reader, valueIndexesCount);
+                    pool.release(reader);
                 }
             }
         }
@@ -68,25 +60,18 @@ public class Profile extends fiftyone.mobile.detection.entities.Profile {
     }
     
     @Override
-    public int[] getSignatureIndexes() {
+    public int[] getSignatureIndexes() throws IOException {
         int[] localSignatureIndexes = signatureIndexes;
         if(localSignatureIndexes == null) {
             synchronized(this) {
                 localSignatureIndexes = signatureIndexes;
                 if (localSignatureIndexes == null) {
-                    BinaryReader reader = null;
-                    try {
-                        reader = pool.getReader();
-                        int offset = valueIndexesCount * (Integer.SIZE / Byte.SIZE);
-                        reader.setPos(position + offset);
-                        signatureIndexes = localSignatureIndexes = 
-                                BaseEntity.readIntegerArray(reader, signatureIndexesCount);
-                    } catch (IOException ex) {
-                        //TODO: handle exception.
-                    } finally {
-                        if (reader != null)
-                            pool.release(reader);
-                    }
+                    BinaryReader reader = pool.getReader();
+                    int offset = valueIndexesCount * (Integer.SIZE / Byte.SIZE);
+                    reader.setPos(position + offset);
+                    signatureIndexes = localSignatureIndexes = 
+                            BaseEntity.readIntegerArray(reader, signatureIndexesCount);
+                    pool.release(reader);
                 }
             }
         }

@@ -23,6 +23,7 @@ package fiftyone.mobile.detection.factories;
 import fiftyone.mobile.detection.Dataset;
 import fiftyone.mobile.detection.entities.Profile;
 import fiftyone.mobile.detection.readers.BinaryReader;
+import java.io.IOException;
 
 public abstract class ProfileFactory extends BaseEntityFactory<Profile> {
 
@@ -50,9 +51,10 @@ public abstract class ProfileFactory extends BaseEntityFactory<Profile> {
      * Returns the length of the Profile entity.
      * @param entity Entity of type.
      * @return Length in bytes of the Profile.
+     * @throws java.io.IOException
      */
     @Override
-    public int getLength(Profile entity) {
+    public int getLength(Profile entity) throws IOException {
         return MIN_LENGTH + 
             (entity.getValueIndexes().length * 4) + 
             (entity.getSignatureIndexes().length * 4);

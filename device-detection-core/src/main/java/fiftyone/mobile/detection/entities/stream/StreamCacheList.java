@@ -20,7 +20,7 @@
  * ********************************************************************* */
 package fiftyone.mobile.detection.entities.stream;
 
-import fiftyone.mobile.detection.cache.ICacheSource;
+import fiftyone.mobile.detection.cache.ICacheLoader;
 import fiftyone.mobile.detection.entities.BaseEntity;
 import fiftyone.mobile.detection.factories.BaseEntityFactory;
 import fiftyone.mobile.detection.readers.BinaryReader;
@@ -45,7 +45,7 @@ import java.io.IOException;
  */
 public abstract class StreamCacheList<T extends BaseEntity> 
     extends StreamBaseList<T> 
-    implements ICacheSource<Integer, T>, ICacheList {
+    implements ICacheLoader<Integer, T>, ICacheList {
     
     /**
      * Used to store previously accessed items to improve performance and
@@ -65,7 +65,7 @@ public abstract class StreamCacheList<T extends BaseEntity>
     public StreamCacheList(Dataset dataSet, BinaryReader reader, 
                             BaseEntityFactory<T> entityFactory, int cacheSize) {
         super(dataSet, reader, entityFactory);
-        this.cache = new Cache<T>(cacheSize);
+        this.cache = new Cache<T>(cacheSize, this);
     }
 
     /**
@@ -98,10 +98,11 @@ public abstract class StreamCacheList<T extends BaseEntity>
      * Retrieves the entity at the offset or index requested.
      * @param key Index or offset of the entity required.
      * @return A new instance of the entity at the offset or index.
+     * @throws java.io.IOException
      */
     @Override
     public T get(int key) throws IOException {
-        return cache.get(key, this);
+        return cache.get(key);
     }
     
     /**

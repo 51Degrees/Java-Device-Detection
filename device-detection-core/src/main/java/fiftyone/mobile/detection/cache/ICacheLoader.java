@@ -27,7 +27,7 @@ import java.io.IOException;
  * @param <K> Type of the cache key
  * @param <V> Type of the cached value
  */
-public interface ICacheSource<K,V> {
+public interface ICacheLoader<K,V> {
     /**
      * Returns the value associated with the key from the source.
      * @param key for the value required

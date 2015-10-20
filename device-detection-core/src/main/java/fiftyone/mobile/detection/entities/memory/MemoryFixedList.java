@@ -65,15 +65,12 @@ public class MemoryFixedList<T extends BaseEntity> extends MemoryBaseList<T>
      * Reads the list into memory
      * @param reader Reader connected to the source data structure and
      * positioned to start reading
+     * @throws java.io.IOException
      */
     @Override
-    public void read(BinaryReader reader) {
-        try {
-            for (int index = 0; index < header.getCount(); index++) {
-                array.add(entityFactory.create(dataSet, index, reader));
-            }
-        } catch (IOException ex) {
-            //TODO: handle exception.
+    public void read(BinaryReader reader) throws IOException {
+        for (int index = 0; index < header.getCount(); index++) {
+            array.add(entityFactory.create(dataSet, index, reader));
         }
     }
 
