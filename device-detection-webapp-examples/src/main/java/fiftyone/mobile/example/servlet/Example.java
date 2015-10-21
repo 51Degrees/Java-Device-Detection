@@ -20,6 +20,7 @@
  * ********************************************************************* */
 package fiftyone.mobile.example.servlet;
 
+import fiftyone.mobile.detection.Match;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Arrays;
@@ -36,6 +37,7 @@ import fiftyone.mobile.detection.entities.Component;
 import fiftyone.mobile.detection.entities.Property;
 import fiftyone.mobile.detection.entities.Property.PropertyValueType;
 import fiftyone.mobile.detection.webapp.BaseServlet;
+import java.util.ArrayList;
 import java.util.Map;
 
 /**
@@ -47,6 +49,20 @@ import java.util.Map;
 @WebServlet(name = "Example", urlPatterns = {"/Example"})
 public class Example extends BaseServlet {
     
+    /**
+     * A pre-defined list of properties to display in the results list.
+     */
+    private final static String[] properties = {"BrowserName", 
+                                                "BrowserVendor",
+                                                "BrowserVersion", 
+                                                "DeviceType", 
+                                                "HardwareVendor", 
+                                                "IsTablet", 
+                                                "IsMobile", 
+                                                "IsCrawler", 
+                                                "ScreenInchesDiagonal",
+                                                "ScreenPixelsWidth"};
+
 	/**
 	 * Orders the properties before display.
 	 */
@@ -149,7 +165,7 @@ public class Example extends BaseServlet {
     private void printComponentProperties(
             final PrintWriter out, 
             final HttpServletRequest request, 
-            final Component component) throws ServletException, IOException {
+            final Component component) throws ServletException, IOException, Exception {
 
         final Map<String, String[]> result = super.getResult(request);
         final boolean isMobile = "True".equals(super.getProperty(request, "IsMobile"));
@@ -205,7 +221,7 @@ public class Example extends BaseServlet {
      * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+            throws ServletException, IOException, Exception {
         response.setContentType("text/html;charset=UTF-8");
 
         PrintWriter out = response.getWriter();
@@ -215,39 +231,26 @@ public class Example extends BaseServlet {
         out.println("<head>");
         out.println("<meta name=\"viewport\" content=\"width=device-width, initial-scale=1, maximum-scale=1\">");
         out.println("<title>51Degrees Example Servlet</title>");
-        out.println("<style type=\"text/css\">");
-        out.println("body {font-size: 12pt; font-family: Arial;}");
-        out.println(".list {width:400px;}");
-        out.println(".heading {font-weight: bold;}");
-        out.println(".item {margin: 1em 0; color: #777777; text-decoration: none;}");
-        out.println(".property {font-weight: bold;}");
-        out.println(".value {font-weight: normal; color: #333333;}");
-        out.println(".image .value {text-align: center;}");
-        out.println(".image {display: inline-block; margin: 1em;}");
-        out.println(".title {text-align: center;}");
-        out.println("</style>");
+        out.println("<link rel=\"stylesheet\" type=\"text/css\" href=\"https://51degrees.com/Demos/examples.css\" class=\"inline\"/>");
         
         out.println("</head>");
         out.println("<body>");
+        out.println("<div class=\"content\">");
 
-        // Display the name and published date of the dataset being used.
-        String dataInfo = String.format(
-            "<h4 class=\"heading\">'%s' data of version '%s' published on '%tc' containing '%d' properties</h4>",
-            super.getProvider(request).dataSet.getName(),
-            super.getProvider(request).dataSet.version,
-            super.getProvider(request).dataSet.published,
-            super.getProvider(request).dataSet.getProperties().size()
-            );
+        out.println("<img src=\"https://51degrees.com/DesktopModules/FiftyOne"
+                + "/Distributor/Logo.ashx?utm_source=&utm_medium=repository"
+                + "&utm_content=website-example-logo&utm_campaign=java-open"
+                + "-source\">");
+        out.println("<h1>Java Pattern - Device Detection Example</h1>");
         
-        // Display all the properties available.
-        out.println("<table class=\"list\">");
-        for(Component component : super.getProvider(request).dataSet.components) {
-        	printComponentProperties(out, request, component);
-        }
-        out.println("</table>");
+        printDatasetInformation(out, request);
+        
+        printHeadersTable(out, request, null);
+        
+        printProperties(out, request);
         
         // Display the name and published date of the dataset being used.
-        out.println(dataInfo);
+        out.println("</div>");
         
         // For each of the components display the available properties.
         out.close();
@@ -267,7 +270,11 @@ public class Example extends BaseServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        processRequest(request, response);
+            try {
+                processRequest(request, response);
+            } catch (Exception ex) {
+                
+            }
     }
 
     /**
@@ -282,7 +289,235 @@ public class Example extends BaseServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+            try {
+                processRequest(request, response);
+            } catch (Exception ex) {
+               
+            }
+    }
+    
+    private void printMatchResults(Match match) {
+        //match.
+    }
+    
+    /**
+     * 
+     * @param out
+     * @param request
+     * @param specificHeaders
+     * @throws Exception 
+     */
+    private void printHeadersTable( final PrintWriter out, 
+                                    final HttpServletRequest request, 
+                                    String[] specificHeaders) 
+                                    throws Exception {
+        out.println("<table>");
+        out.println("<tbody>");
+        // Print all available headers.
+        if (specificHeaders == null || specificHeaders.length == 0) {
+            for (String header : super.getProvider(request).dataSet.getHttpHeaders()) {
+                out.println("<tr>");
+                out.println("<td>"+header+"</td>");
+                if (request.getHeader(header) != null) {
+                    out.println("<td>"+request.getHeader(header)+"</td>");
+                } else {
+                    out.println("<td>header not set</td>");
+                }
+                out.println("</tr>");
+            }
+        } else {
+            // Filter out the supplied headers list and only use the 
+            // relevant ones.
+            String[] filteredHeaders = filterRelevantHeaders(
+                    super.getProvider(request).dataSet.getHttpHeaders(), 
+                    specificHeaders);
+            for (int i = 0; i < filteredHeaders.length; i++) {
+                out.println("<tr>");
+                out.println("<td>"+filteredHeaders[i]+"</td>");
+                if (request.getHeader(filteredHeaders[i]) != null) {
+                    out.println("<td>"+request.getHeader(filteredHeaders[i])+"</td>");
+                } else {
+                    out.println("<td>header not set</td>");
+                }
+                out.println("</tr>");
+            }
+        }
+        out.println("<tbody>");
+        out.println("<table>");
+    }
+    
+    
+    private void printProperties(   final PrintWriter out, 
+                                    final HttpServletRequest request) 
+                                    throws IOException {
+        out.println("<table>");
+        out.println("<tbody>");
+        
+        //Print the Match Metrics block.
+        out.println("<tr>");
+        out.println("<th colspan=\"3\">Match Metrics</th>");
+        out.println("<th rowspan=\"5\">");
+        out.println("<a class=\"button\" target=\"_blank\" "
+                + "href=\"https://51degrees.com/support/documentation/pattern?"
+                + "utm_source=&"
+                + "utm_medium=repository&"
+                + "utm_content=example-pattern-about-metrics&"
+                + "utm_campaign=java-open-source\">About Metrics</a>");
+        out.println("</th>");
+        out.println("</tr>");
+        
+        out.println("<tr>");
+        out.println("<td>Id</td>");
+        out.println("<td colspan=\"2\"> 12345-6789-1011-1213");
+        //super.get
+        out.println("</td>");
+        out.println("</tr>");
+        
+        out.println("<tr>");
+        out.println("<td>Method</td>");
+        out.println("<td colspan=\"2\"> Exact");
+        //super.get
+        out.println("</td>");
+        out.println("</tr>");
+        
+        out.println("<tr>");
+        out.println("<td>Difference</td>");
+        out.println("<td colspan=\"2\"> 0");
+        //super.get
+        out.println("</td>");
+        out.println("</tr>");
+        
+        out.println("<tr>");
+        out.println("<td>Rank</td>");
+        out.println("<td colspan=\"2\"> 12345");
+        //super.get
+        out.println("</td>");
+        out.println("</tr>");
+        /**/
+        
+        // Device Properties
+        out.println("<tr>");
+        out.println("<th colspan=\"3\">Device Properties</th>");
+        out.println("<th rowspan=\""+(properties.length + 1)+"\">");
+        out.println("<a class=\"button\" target=\"_blank\""
+                + " href=\"https://51degrees.com/resources/property-"
+                + "dictionary?utm_source=&utm_medium=repository&utm_content"
+                + "=example-pattern-more-properties&utm_campaign=java-"
+                + "open-source\">More Properties</a>");
+        out.println("</th>");
+        out.println("</tr>");
+        for (String property : properties) {
+            out.println("<tr>");
+            out.println("<td>");
+            out.println("<a href=\"https://51degrees.com/resources/"
+                    + "property-dictionary#"+property+"\">"+property+"</a>");
+            out.println("</td>");
+            Property pr = super.getProvider(request).dataSet.get(property);
+            if (pr != null) {
+                if (pr.valueType != PropertyValueType.JAVASCRIPT) {
+                    if (super.getResult(request).containsKey(pr.getName())) {
+                        String[] values = super.getResult(request).get(pr.getName());
+                        int current = 0;
+                        out.println("<td>");
+                        for (String value : values) {
+                            out.println(value);
+                            if (current < values.length - 1) {
+                                out.println(", ");
+                            }
+                            current++;
+                        }
+                        out.println("</td>");
+                    }
+                }
+                out.println("<td>"+pr.valueType+"</td>");
+            } else {
+                out.println("<td>Switch Data Set</td><td>NULL</td>");
+            }
+            out.println("</tr>");
+        }
+        
+        out.println("</tbody>");
+        out.println("</table>");
+    }
+    
+    private String[] filterRelevantHeaders(String[] importantHeaders, String[] headersToFilter) {
+        int importantHeadersLength = importantHeaders.length;
+        int resultLength = headersToFilter.length;
+        ArrayList<String> headers = new ArrayList<String>();
+        // If no headers in to check, return empty list.
+        if (resultLength <= 0) {
+            return new String[0];
+        }
+        for (int i = 0; i < resultLength; i++) {
+            for (int j = 0; j < importantHeadersLength; j++) {
+                if (headersToFilter[i].equals(importantHeaders[j])) {
+                    headers.add(importantHeaders[j]);
+                    break;
+                }
+            }
+        }
+        return headers.toArray(new String[headers.size()]);
+    }
+    
+    /**
+     * Method prints information about the data set such as the published date 
+     * and the next update date.
+     * 
+     * @param out
+     * @param request servlet request.
+     * @throws Exception 
+     */
+    private void printDatasetInformation(   final PrintWriter out, 
+                                            final HttpServletRequest request) 
+                                            throws Exception {
+        out.println("<table>");
+        out.println("<tbody>");
+        out.println("<tr><th colspan=\"3\">Data Set Information</th></tr>");
+        
+        out.println("<tr>");
+        out.println("<td>Dataset Initialisation Status: </td>");
+        if (super.getProvider(request) != null) {
+            out.println("<td>SUCCESS</td>");
+        } else {
+            out.println("<td>FAILED</td>");
+        }
+        // Compare Data Options button.
+        out.println("<td rowspan=\"6\">");
+        out.println("<a class=\"button\" "
+                + "href=\"https://51degrees.com/compare-data-options?utm_source"
+                + "=&utm_medium=repository&utm_content=example-dataset-information"
+                + "&utm_campaign=java-open-source\" target=\"_blank\">"
+                + "Compare Data Options</a>");
+        out.println("</td>");
+        out.println("</tr>");
+        
+        out.println("<tr>");
+        out.println("<td>Dataset published: </td>");
+        out.println("<td>"+super.getProvider(request).dataSet.published+"</td>");
+        out.println("</tr>");
+        
+        out.println("<tr>");
+        out.println("<td>Dataset next update: </td>");
+        out.println("<td>"+super.getProvider(request).dataSet.nextUpdate+"</td>");
+        out.println("</tr>");
+        
+        out.println("<tr>");
+        out.println("<td>Dataset version: </td>");
+        out.println("<td>"+super.getProvider(request).dataSet.version+"</td>");
+        out.println("</tr>");
+        
+        out.println("<tr>");
+        out.println("<td>Dataset name: </td>");
+        out.println("<td>"+super.getProvider(request).dataSet.getName()+"</td>");
+        out.println("</tr>");
+        
+        out.println("<tr>");
+        out.println("<td>Dataset device combinations: </td>");
+        out.println("<td>"+super.getProvider(request).dataSet.deviceCombinations+"</td>");
+        out.println("</tr>");
+        
+        out.println("</tbody>");
+        out.println("</table>");
     }
 
     /**
