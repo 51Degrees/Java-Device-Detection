@@ -21,6 +21,7 @@
 package fiftyone.mobile.detection.webapp;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Date;
 import java.util.TimerTask;
 
@@ -41,10 +42,14 @@ public class FileUpdate extends TimerTask {
     @Override
     public void run() {
         final Date fileDate = getDataFileDate();
-        if (lastModifiedDate == null && fileDate != null) {
+         try {
+            if (lastModifiedDate == null && fileDate != null) {
             WebProvider.refresh();
-        } else if (lastModifiedDate != null && fileDate != null && fileDate.after(lastModifiedDate)) {
-            WebProvider.refresh();
+            } else if (lastModifiedDate != null && fileDate != null && fileDate.after(lastModifiedDate)) {
+                WebProvider.refresh();
+            }
+        } catch (IOException ex) {
+            //TODO: log this exception.
         }
     }
 
