@@ -22,6 +22,7 @@ package fiftyone.mobile.detection.entities;
 
 import fiftyone.mobile.detection.Dataset;
 import fiftyone.mobile.detection.IClosableIterator;
+import fiftyone.mobile.detection.WrappedIOException;
 import fiftyone.mobile.detection.readers.BinaryReader;
 import java.io.IOException;
 
@@ -118,9 +119,8 @@ public class SignatureV32 extends Signature {
                             .get(nodeCount + firstNodeOffsetIndex - 1).value);
             return lastNode.position + lastNode.getLength() + 1;
         } catch (IOException ex) {
-            //TODO: handle exception.
+            return -1;
         }
-        return -1;
     }
     
 }

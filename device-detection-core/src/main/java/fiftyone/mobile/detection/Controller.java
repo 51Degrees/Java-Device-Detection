@@ -92,7 +92,7 @@ class Controller {
                     }
                 }
             } catch (IOException ex) {
-                // TODO - Add WrappedIOException
+                throw new WrappedIOException(ex.getMessage());
             }
             return 0;
         }

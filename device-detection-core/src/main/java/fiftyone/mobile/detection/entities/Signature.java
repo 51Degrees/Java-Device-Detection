@@ -513,7 +513,7 @@ public abstract class Signature extends BaseEntity implements Comparable<Signatu
                 return 1;
             }
         } catch (IOException ex) {
-            // TODO - Add WrappedIOException
+            throw new WrappedIOException(ex.getMessage());
         }
         return 0;
     }
@@ -541,8 +541,8 @@ public abstract class Signature extends BaseEntity implements Comparable<Signatu
                             }
                         }
                         stringValue = localStringValue = new String(buffer, "US-ASCII");
-                    } catch (IOException e) {
-                        return e.getMessage();
+                    } catch (IOException ex) {
+                        throw new WrappedIOException(ex.getMessage());
                     }
                 }
             }

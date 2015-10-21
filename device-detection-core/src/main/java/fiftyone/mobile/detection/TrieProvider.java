@@ -274,7 +274,7 @@ public abstract class TrieProvider implements Closeable {
             try {
                 indexes.put("User-Agent", getDeviceIndex(null));
             } catch (Exception ex) {
-                
+                throw new WrappedIOException(ex.getMessage());
             }
         }
         return indexes;
@@ -433,7 +433,7 @@ public abstract class TrieProvider implements Closeable {
             int index = lookupOffset + value - lowest + 2;
             return _lookupList[index];
         } catch (ArrayIndexOutOfBoundsException ex) {
-            throw ex;
+            throw new WrappedIOException(ex.getMessage());
         }
     }
 

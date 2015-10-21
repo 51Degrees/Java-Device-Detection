@@ -20,6 +20,7 @@
  * ********************************************************************* */
 package fiftyone.mobile.detection.entities.stream;
 
+import fiftyone.mobile.detection.WrappedIOException;
 import fiftyone.mobile.detection.readers.TrieReader;
 import java.io.Closeable;
 import java.io.FileInputStream;
@@ -45,7 +46,7 @@ public class TrieSource implements Closeable {
         try {
             fileInputStream.close();
         } catch (IOException ex) {
-            // Nothing we can do at this point. Ignore.
+            throw new WrappedIOException(ex.getMessage());
         }
     }
 
