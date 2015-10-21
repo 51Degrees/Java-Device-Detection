@@ -27,6 +27,7 @@ import java.util.List;
 
 import fiftyone.mobile.detection.Dataset;
 import fiftyone.mobile.detection.SortedList;
+import fiftyone.mobile.detection.WrappedIOException;
 import fiftyone.mobile.detection.readers.BinaryReader;
 import fiftyone.properties.DetectionConstants;
 
@@ -230,38 +231,6 @@ public abstract class Signature extends BaseEntity implements Comparable<Signatu
             }
         }
         return localValues;
-
-        /*
-        // Do the values already exist for the property?
-        synchronized (nameToValues) {
-            Values result = nameToValues.get(propertyName);
-            if (result != null) {
-                return result;
-            }
-
-            // Does not exist already so get the property.
-            Property prop = dataSet.get(propertyName);
-            if (prop != null) {
-                // Create the list of values.
-                List<Value> vals = new ArrayList<Value>();
-                for (Value v : getValues()) {
-                    if (prop.getIndex() == v.getProperty().getIndex()) {
-                        vals.add(v);
-                    }
-                }
-                result = new Values(prop, vals);
-
-                if (result.size() == 0) {
-                    result = null;
-                }
-            }
-
-            // Store for future reference.
-            nameToValues.add(propertyName, result);
-
-            return result;
-        }
-        */
     }
     
     /**

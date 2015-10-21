@@ -368,6 +368,7 @@ public class Property extends BaseEntity implements Comparable<Property> {
      * @param other The property to be compared against
      * @return Indication of relative value
      */
+    @Override
     public int compareTo(Property other) {
         if (getDataSet() == other.getDataSet()) {
             return getIndex() - other.getIndex();

@@ -31,9 +31,4 @@ public class MapFactory extends BaseEntityFactory<Map> {
             BinaryReader reader) {
         return new Map(dataSet, index, reader);
     }
-    /*
-     @Override
-     public int getLength() {
-     return Value.RECORD_LENGTH;
-     }*/
 }
