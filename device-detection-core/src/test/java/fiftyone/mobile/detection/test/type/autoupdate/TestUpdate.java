@@ -141,7 +141,7 @@ public class TestUpdate {
     
     @Test
     @Category(TestType.DataSetLite.class)
-    public void allHeaders() throws AutoUpdateException, FileNotFoundException, NoSuchAlgorithmException, IOException {
+    public void testUpdate() throws AutoUpdateException, FileNotFoundException, NoSuchAlgorithmException, IOException {
         /**
          * If true is returned then all is good. Anything else is not good.
          */
