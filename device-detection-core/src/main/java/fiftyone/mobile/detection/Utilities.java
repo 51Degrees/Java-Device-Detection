@@ -21,7 +21,7 @@
 package fiftyone.mobile.detection;
 
 /**
- * Utility methods shared across 51Degrees packages.
+ *
  */
 public class Utilities {
     
@@ -43,4 +43,5 @@ public class Utilities {
         }
         return sb.toString();
     }
+    
 }
