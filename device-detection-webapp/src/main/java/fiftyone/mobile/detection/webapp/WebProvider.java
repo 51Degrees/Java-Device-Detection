@@ -75,17 +75,6 @@ public class WebProvider extends Provider implements Closeable {
      * was used to create the provider.
      */
     private String sourceDataFile = null;
-    
-    /**
-     * Constructor is now deprecated as there is no more embedded data.
-     * Constructs a new instance of the web provider using the embedded data.
-     * @throws IOException
-     */
-    @Deprecated
-    public WebProvider() throws IOException {
-        //super(Constants.CACHE_SERVICE_INTERVAL);
-        throw new Error("No embedded data as of version 3.2.");
-    }
 
     /**
      * Constructs a new instance of the web provider connected to the dataset
@@ -110,7 +99,7 @@ public class WebProvider extends Provider implements Closeable {
      * Disposes of the data set created by the WebProvider.
      */
     @Override
-    public void close() {
+    public void close() throws IOException {
         // Dispose of the data set if it exists.
         if (super.dataSet != null) {
             super.dataSet.close();
@@ -490,7 +479,7 @@ public class WebProvider extends Provider implements Closeable {
      * Forces a new active provider to be created by setting the current one to
      * null.
      */
-    public static void refresh() {
+    public static void refresh() throws IOException {
         if (activeProvider != null) {
             synchronized (lock) {
                 if (activeProvider != null) {
