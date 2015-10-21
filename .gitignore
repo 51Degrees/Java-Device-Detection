@@ -8,3 +8,4 @@
 *.class
 */target/*
 nb-configuration.xml
+*.lic
