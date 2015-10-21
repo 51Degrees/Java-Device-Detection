@@ -66,8 +66,7 @@ public class SourceFile extends SourceFileBase {
          * Closes the underlying resources.
          * @throws IOException 
          */
-        private void dispose() throws IOException {
-            channel.close();
+        private void close() throws IOException {
             fileInputStream.close();
         }
     }

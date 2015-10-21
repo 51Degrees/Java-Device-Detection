@@ -21,6 +21,7 @@
 package fiftyone.mobile.detection.entities.stream;
 
 import fiftyone.mobile.detection.IClosableIterator;
+import fiftyone.mobile.detection.WrappedIOException;
 import fiftyone.mobile.detection.factories.BaseEntityFactory;
 import fiftyone.mobile.detection.readers.BinaryReader;
 import java.io.IOException;
@@ -103,7 +104,7 @@ public class StreamFixedListRangeIterator<T> implements IClosableIterator<T> {
             item = (T)entityFactory.create(dataSet, currentIndex, reader);
             currentIndex++;
         } catch (IOException ex) {
-            //TODO - Add WrapperIOException
+            throw new WrappedIOException(ex.getMessage());
         }
         return item;
     }

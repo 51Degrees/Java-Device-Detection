@@ -84,8 +84,7 @@ public class StreamVariableListIterator<T extends BaseEntity>
             index++;
             return t;
         } catch (IOException ex) {
-            // TODO - Add WrappedIOException
-            throw new RuntimeException("TODO");
+            throw new RuntimeException(ex.getMessage());
         }
     }
 
