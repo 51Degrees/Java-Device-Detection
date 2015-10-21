@@ -224,7 +224,8 @@ public class Match {
             for (int i = 0; i < profileIds.length; i++) {
                 profileIds[i] = Integer.toString(getProfiles()[i].profileId);
             }
-            result = String.join(DetectionConstants.PROFILE_SEPARATOR, profileIds);
+            result = Utilities.joinString(DetectionConstants.PROFILE_SEPARATOR, 
+                                          profileIds);
         }
         return result;
     }
