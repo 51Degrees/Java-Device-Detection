@@ -22,7 +22,6 @@ package fiftyone.mobile.detection;
 
 /**
  *
- * @author mike
  */
 public class Utilities {
     
