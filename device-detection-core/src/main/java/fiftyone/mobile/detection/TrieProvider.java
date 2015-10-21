@@ -271,7 +271,11 @@ public abstract class TrieProvider implements Closeable {
                 }
             }
         } else {
-            indexes.put("User-Agent", getDeviceIndex(null));
+            try {
+                indexes.put("User-Agent", getDeviceIndex(null));
+            } catch (Exception ex) {
+                throw new WrappedIOException(ex.getMessage());
+            }
         }
         return indexes;
     }
