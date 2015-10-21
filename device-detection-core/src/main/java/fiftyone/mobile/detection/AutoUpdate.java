@@ -42,8 +42,6 @@ import java.util.List;
 import java.util.TimeZone;
 import java.util.UUID;
 import java.util.concurrent.Semaphore;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.zip.DataFormatException;
 import java.util.zip.GZIPInputStream;
