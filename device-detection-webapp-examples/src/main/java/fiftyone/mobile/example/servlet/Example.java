@@ -403,10 +403,10 @@ public class Example extends BaseServlet {
      */
     private String getURL(String purpose) {
         String url = "https://51degrees.com";
-        String utm_source = "Github";
-        String utm_medium = "repository";
-        String utm_content = "example-pattern";
-        String utm_campaign = "java-open-source";
+        String utm_source = "utm_source=github";
+        String utm_medium = "utm_medium=repository";
+        String utm_content = "utm_content=example-pattern";
+        String utm_campaign = "utm_campaign=java-open-source";
         
         if (purpose.equals("image")) {
             // 51Degrees logo.
