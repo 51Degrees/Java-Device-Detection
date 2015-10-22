@@ -24,8 +24,6 @@ import fiftyone.mobile.detection.readers.BinaryReader;
 import java.io.Closeable;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Providers the base for a data source containing the uncompressed data 
@@ -35,38 +33,15 @@ import java.util.List;
  * free for other uses.
  */
 abstract class SourceBase implements Closeable {
-
-    /**
-     * List of binary readers opened against the data source. 
-     */
-    private final List<BinaryReader> readers = new ArrayList<BinaryReader>();
     
     /**
      * Creates a new reader and stores a reference to it.
      * @return A reader open for read access to the stream
      */
     BinaryReader createReader() throws IOException {
-        BinaryReader reader = new BinaryReader(createStream());
-        synchronized(this) {
-            readers.add(reader);
-        }
-        return reader;
+        return new BinaryReader(createStream());
     }
-    
-    /**
-     * Releases the reference to memory and forces garbage collection.
-     * @throws java.io.IOException
-     */
-    @Override
-    public void close() throws IOException {
-        synchronized(readers) {
-            for (BinaryReader reader : readers) {
-                reader.close();
-            }
-            readers.clear();
-        }
-    }
-    
+   
     /**
      * Creates a new stream from the data source.
      * @return A freshly opened stream to the data source.

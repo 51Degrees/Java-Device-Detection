@@ -20,6 +20,7 @@
  * ********************************************************************* */
 package fiftyone.mobile.detection.entities.stream;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
@@ -27,7 +28,7 @@ import java.nio.ByteOrder;
  * Encapsulates a byte array containing the uncompressed data structures 
  * used by the data set.
  */
-public class SourceMemory extends SourceBase {
+class SourceMemory extends SourceBase {
     /**
      * The buffer containing the source data.
      */
@@ -36,7 +37,7 @@ public class SourceMemory extends SourceBase {
      * Creates the source from the byte array provided.
      * @param buffer Byte array source of the data.
      */
-    public SourceMemory(byte[] buffer) {
+    SourceMemory(byte[] buffer) {
         this.buffer = buffer;
     }
     /**
@@ -44,9 +45,14 @@ public class SourceMemory extends SourceBase {
      * @return new ByteBuffer from the bytes array.
      */
     @Override
-    public ByteBuffer createStream() {
+    ByteBuffer createStream() {
         ByteBuffer byteBuffer = ByteBuffer.wrap(buffer);
         byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
         return byteBuffer;
+    }
+
+    @Override
+    public void close() throws IOException {
+        // Nothing to do.
     }
 }
