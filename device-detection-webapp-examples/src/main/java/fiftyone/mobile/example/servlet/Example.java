@@ -20,30 +20,24 @@
  * ********************************************************************* */
 package fiftyone.mobile.example.servlet;
 
-import fiftyone.mobile.detection.Match;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import fiftyone.mobile.detection.entities.Component;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import fiftyone.mobile.detection.entities.Property;
 import fiftyone.mobile.detection.entities.Property.PropertyValueType;
 import fiftyone.mobile.detection.webapp.BaseServlet;
 import java.util.ArrayList;
-import java.util.Map;
 
 /**
- *
  * A simple Servlet example, using 51Degrees to detect incoming devices.
- *
  */
 @SuppressWarnings("serial")
 @WebServlet(name = "Example", urlPatterns = {"/Example"})
@@ -52,7 +46,7 @@ public class Example extends BaseServlet {
     /**
      * A pre-defined list of properties to display in the results list.
      */
-    private final static String[] properties = {"BrowserName", 
+    private final static String[] PROPERTIES = {"BrowserName", 
                                                 "BrowserVendor",
                                                 "BrowserVersion", 
                                                 "DeviceType", 
@@ -62,153 +56,14 @@ public class Example extends BaseServlet {
                                                 "IsCrawler", 
                                                 "ScreenInchesDiagonal",
                                                 "ScreenPixelsWidth"};
-
-	/**
-	 * Orders the properties before display.
-	 */
-	private static final Comparator<Property> _propertyComparer = new Comparator<Property>() {
-		@Override
-		public int compare(Property arg0, Property arg1) {
-			int difference = 0;
-			try {
-				String c0 = arg0.getCategory();
-				String c1 = arg1.getCategory();
-				difference = (c0 == null ? "" : c0).compareTo(c1 == null ? "" : c1);
-				if (difference == 0)
-					difference = arg0.getName().compareTo(arg1.getName());
-			} catch (IOException e) {
-				// Do nothing.
-			}
-			return difference;
-		}
-	};
-	
     /**
-     * Joins the array of strings separated by the separator provided.
-     * @param seperator
-     * @param values
-     * @return 
+     * Location of the CSS.
      */
-    private static String stringJoin(String seperator, String[] values) {
-        String value;
-        StringBuilder stringBuilder = new StringBuilder();
-        for (int i = 0; i < values.length; i++) {
-            stringBuilder.append(values[i]);
-            if (i < values.length - 1) {
-                stringBuilder.append(seperator);
-            }
-        }
-        value = stringBuilder.toString();
-        return value;
-    }        
-        
+    private static final String CSS_INCLUDE = "https://51degrees.com/Demos/examples.css";
     /**
-     * Returns a list item string in HTML.
-     * 
-     * @param property property the values relate to.
-     * @param values the values to be displayed.
-     * @param title true if a balloon title should be displayed.
-     * @throws IOException 
+     * Logger to log exceptions.
      */
-    private String calculateItem(Property property, String[] values, boolean title) throws IOException {
-        if (title == true) {
-            // Display the final property and values.
-            return String.format(
-                "<tr class=\"item\"><td class=\"property\" title=\"%s\"><a href=\"http://51degrees.com/Resources/Property-Dictionary#%s\">%s</a></td><td>%s</td></tr>",
-                property.getDescription(),
-                property.getName(),
-                property.getName(),
-                stringJoin(", ", values));
-            
-        } else {
-            return String.format(
-                "<tr class=\"item\"><td class=\"property\">%s:</td><td class=\"value\">%s</td></tr>",
-                property.getName(),
-                stringJoin(", ", values));
-        }
-    }
-    
-    /**
-     * If there are images of the device displays them in in order with 
-     * captions. It's neat feature of 51Degrees.mobi Premium.
-     * @param propertyName name of the property containing images.
-     * @param values list of image values.
-     * @return HTML string for display.
-     */
-    private String calculateImages(String propertyName, String[] values) {
-        StringBuilder builder = new StringBuilder();
-        builder.append("<tr class=\"item\">");
-        builder.append(String.format(
-            "<td class=\"property\">%s</td><td>",
-            propertyName));
-        for(String value : values) {
-            String[] elements = value.split("\t");
-            if (elements.length == 2) {
-            builder.append(String.format(
-                "<div class=\"image\"><img src=\"%s\"></img><div class=\"value\">%s</div></div>",
-                elements[1],
-                elements[0]));
-            }
-        }
-        builder.append("</td></tr>");
-        return builder.toString();
-    }
-    
-    /**
-     * Prints all the properties associated with the component provided.
-     * 
-     * @param out the output writer
-     * @param r the result containing the property to be printed
-     * @param component the type of component to print properties for
-     * @throws IOException 
-     */
-    private void printComponentProperties(
-            final PrintWriter out, 
-            final HttpServletRequest request, 
-            final Component component) throws ServletException, IOException, Exception {
-
-        final Map<String, String[]> result = super.getResult(request);
-        final boolean isMobile = "True".equals(super.getProperty(request, "IsMobile"));
-
-        List<Property> properties = Arrays.asList(component.getProperties());
-        Collections.sort(properties, _propertyComparer);
-        String lastCategory = null;        
-        
-        if (properties.size() > 0) {
-    		out.println(String.format(
-    				"<tr><th colspan=\"2\">%s</th></tr>",
-                    component.getName()));
-	        for(Property property : properties) {
-	        	if (property.valueType != PropertyValueType.JAVASCRIPT) {
-		        	if (lastCategory != property.getCategory()) {
-		        		lastCategory = property.getCategory();
-		        		out.println(String.format(
-		                        "<tr><td>%s</td></tr>",
-		                        lastCategory));
-		        	}
-		        	String snippet = null;
-		            if ("HardwareImages".equals(property.getName())) {
-		            	snippet = calculateImages(
-		                        property.getName(), 
-		                        result.get(property.getName()));
-		            } else {
-		                final String[] values = result.get(
-		                        property.getName());
-		                if (values != null) {
-		                	snippet = calculateItem(
-		                            property, 
-		                            values,
-		                            isMobile == false);
-		                }
-		            }
-		            
-		            if (snippet != null) {
-		            	out.println(snippet);
-		            }
-	        	}
-	        }
-        }
-    }
+    private final static Logger logger = LoggerFactory.getLogger(Example.class);
     
     /**
      * Processes requests for both HTTP
@@ -220,8 +75,9 @@ public class Example extends BaseServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException, Exception {
+    protected void processRequest(  HttpServletRequest request, 
+                                    HttpServletResponse response)
+                                    throws ServletException, IOException, Exception {
         response.setContentType("text/html;charset=UTF-8");
 
         PrintWriter out = response.getWriter();
@@ -230,29 +86,29 @@ public class Example extends BaseServlet {
         out.println("<html>");
         out.println("<head>");
         out.println("<meta name=\"viewport\" content=\"width=device-width, initial-scale=1, maximum-scale=1\">");
-        out.println("<title>51Degrees Example Servlet</title>");
-        out.println("<link rel=\"stylesheet\" type=\"text/css\" href=\"https://51degrees.com/Demos/examples.css\" class=\"inline\"/>");
+        out.println("<title>51Degrees Pattern Example Servlet</title>");
+        out.println("<link rel=\"stylesheet\" type=\"text/css\" "
+                + "href=\""+CSS_INCLUDE+"\" class=\"inline\"/>");
         
         out.println("</head>");
         out.println("<body>");
         out.println("<div class=\"content\">");
 
-        out.println("<img src=\"https://51degrees.com/DesktopModules/FiftyOne"
-                + "/Distributor/Logo.ashx?utm_source=&utm_medium=repository"
-                + "&utm_content=website-example-logo&utm_campaign=java-open"
-                + "-source\">");
+        out.println("<img src=\""
+                + getURL("image")
+                + "\" alt=\"51Degrees logo\">");
+        
         out.println("<h1>Java Pattern - Device Detection Example</h1>");
-        
+        // Print dataset information like published date or device combinations.
         printDatasetInformation(out, request);
-        
+        // Print a table of HTTP headers and values.
         printHeadersTable(out, request, null);
-        
+        // Print a table with match metrics and a list of properties.
         printProperties(out, request);
         
-        // Display the name and published date of the dataset being used.
         out.println("</div>");
-        
-        // For each of the components display the available properties.
+        out.println("</body>");
+        out.println("</html>");
         out.close();
     }
 
@@ -287,25 +143,29 @@ public class Example extends BaseServlet {
      * @throws IOException if an I/O error occurs
      */
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-            try {
-                processRequest(request, response);
-            } catch (Exception ex) {
-               
-            }
-    }
-    
-    private void printMatchResults(Match match) {
-        //match.
+    protected void doPost(  HttpServletRequest request, 
+                            HttpServletResponse response)
+                            throws ServletException, IOException {
+        try {
+            processRequest(request, response);
+        } catch (Exception ex) {
+            logger.debug(ex.getMessage());
+        }
+
     }
     
     /**
+     * Method prints HTML table with the list of HTTP headers that are 
+     * important for device detection and values for HTTP headers that had a 
+     * value set for the current request.
      * 
-     * @param out
-     * @param request
-     * @param specificHeaders
-     * @throws Exception 
+     * @param out PrintWriter object to use for printing the output.
+     * @param request HttpServletRequest to get HTTP headers from.
+     * @param specificHeaders if not null will limit the output only to HTTP 
+     * header names provided in this array. Only the relevant HTTP headers will 
+     * be considered.
+     * @throws Exception can occur when accessing the Provider object of the 
+     * request.
      */
     private void printHeadersTable( final PrintWriter out, 
                                     final HttpServletRequest request, 
@@ -313,9 +173,13 @@ public class Example extends BaseServlet {
                                     throws Exception {
         out.println("<table>");
         out.println("<tbody>");
+        out.println("<th colspan=\"2\">");
+        out.println("Relevant HTTP Headers Received");
+        out.println("</th>");
         // Print all available headers.
         if (specificHeaders == null || specificHeaders.length == 0) {
-            for (String header : super.getProvider(request).dataSet.getHttpHeaders()) {
+            for (String header : super.getProvider(request)
+                    .dataSet.getHttpHeaders()) {
                 out.println("<tr>");
                 out.println("<td>"+header+"</td>");
                 if (request.getHeader(header) != null) {
@@ -346,7 +210,14 @@ public class Example extends BaseServlet {
         out.println("<table>");
     }
     
-    
+    /**
+     * Prints the table that contains Match Metrics and Device Properties.
+     * 
+     * @param out PrintWriter to use for outputting data.
+     * @param request HttpServletRequest to print properties for.
+     * @throws IOException could be thrown when accessing the provider object 
+     * for the request.
+     */
     private void printProperties(   final PrintWriter out, 
                                     final HttpServletRequest request) 
                                     throws IOException {
@@ -357,56 +228,52 @@ public class Example extends BaseServlet {
         out.println("<tr>");
         out.println("<th colspan=\"3\">Match Metrics</th>");
         out.println("<th rowspan=\"5\">");
-        out.println("<a class=\"button\" target=\"_blank\" "
-                + "href=\"https://51degrees.com/support/documentation/pattern?"
-                + "utm_source=&"
-                + "utm_medium=repository&"
-                + "utm_content=example-pattern-about-metrics&"
-                + "utm_campaign=java-open-source\">About Metrics</a>");
+        out.println("<a class=\"button\" target=\"_blank\" href=\""
+                + getURL("metrics")
+                + "\">About Metrics</a>");
         out.println("</th>");
         out.println("</tr>");
         
         out.println("<tr>");
         out.println("<td>Id</td>");
-        out.println("<td colspan=\"2\"> 12345-6789-1011-1213");
-        //super.get
+        
+        out.println("<td colspan=\"2\">");
+        out.println(super.getProvider(request).match(request).getDeviceId());
         out.println("</td>");
         out.println("</tr>");
         
         out.println("<tr>");
         out.println("<td>Method</td>");
-        out.println("<td colspan=\"2\"> Exact");
-        //super.get
+        out.println("<td colspan=\"2\">");
+        out.println(super.getProvider(request).match(request).getMethod());
         out.println("</td>");
         out.println("</tr>");
         
         out.println("<tr>");
         out.println("<td>Difference</td>");
-        out.println("<td colspan=\"2\"> 0");
-        //super.get
+        out.println("<td colspan=\"2\">");
+        out.println(super.getProvider(request).match(request).getDifference());
         out.println("</td>");
         out.println("</tr>");
         
         out.println("<tr>");
         out.println("<td>Rank</td>");
-        out.println("<td colspan=\"2\"> 12345");
-        //super.get
+        out.println("<td colspan=\"2\">");
+        out.println(super.getProvider(request).match(request)
+                .getSignature().getRank());
         out.println("</td>");
         out.println("</tr>");
-        /**/
-        
+       
         // Device Properties
         out.println("<tr>");
         out.println("<th colspan=\"3\">Device Properties</th>");
-        out.println("<th rowspan=\""+(properties.length + 1)+"\">");
-        out.println("<a class=\"button\" target=\"_blank\""
-                + " href=\"https://51degrees.com/resources/property-"
-                + "dictionary?utm_source=&utm_medium=repository&utm_content"
-                + "=example-pattern-more-properties&utm_campaign=java-"
-                + "open-source\">More Properties</a>");
+        out.println("<th rowspan=\""+(PROPERTIES.length + 1)+"\">");
+        out.println("<a class=\"button\" target=\"_blank\" href=\""
+                + getURL("properties")
+                + "\">More Properties</a>");
         out.println("</th>");
         out.println("</tr>");
-        for (String property : properties) {
+        for (String property : PROPERTIES) {
             out.println("<tr>");
             out.println("<td>");
             out.println("<a href=\"https://51degrees.com/resources/"
@@ -435,12 +302,23 @@ public class Example extends BaseServlet {
             }
             out.println("</tr>");
         }
-        
         out.println("</tbody>");
         out.println("</table>");
     }
     
-    private String[] filterRelevantHeaders(String[] importantHeaders, String[] headersToFilter) {
+    /**
+     * Method goes through the provided list of headers and the list of 
+     * 51Degrees important HTTP headers and returns intersection of both lists.
+     * 
+     * Used primarily to prevent the display of any HTTP headers that are not 
+     * relevant to device detection.
+     * 
+     * @param importantHeaders array of 51Degrees HTTP header strings.
+     * @param headersToFilter array of HTTP header strings to filter.
+     * @return 
+     */
+    private String[] filterRelevantHeaders( String[] importantHeaders, 
+                                            String[] headersToFilter    ) {
         int importantHeadersLength = importantHeaders.length;
         int resultLength = headersToFilter.length;
         ArrayList<String> headers = new ArrayList<String>();
@@ -483,11 +361,9 @@ public class Example extends BaseServlet {
         }
         // Compare Data Options button.
         out.println("<td rowspan=\"6\">");
-        out.println("<a class=\"button\" "
-                + "href=\"https://51degrees.com/compare-data-options?utm_source"
-                + "=&utm_medium=repository&utm_content=example-dataset-information"
-                + "&utm_campaign=java-open-source\" target=\"_blank\">"
-                + "Compare Data Options</a>");
+        out.println("<a class=\"button\" href=\""
+                + getURL("compare")
+                +"\" target=\"_blank\">Compare Data Options</a>");
         out.println("</td>");
         out.println("</tr>");
         
@@ -520,6 +396,45 @@ public class Example extends BaseServlet {
         out.println("</table>");
     }
 
+    /**
+     * Method generates a URL string based on the purpose of this URL.
+     * @param purpose String indicating where the URL should point to.
+     * @return A URL represented as string.
+     */
+    private String getURL(String purpose) {
+        String url = "https://51degrees.com";
+        String utm_source = "Github";
+        String utm_medium = "repository";
+        String utm_content = "example-pattern";
+        String utm_campaign = "java-open-source";
+        
+        if (purpose.equals("image")) {
+            // 51Degrees logo.
+            url = "https://51degrees.com/DesktopModules/FiftyOne/Distributor/Logo.ashx";
+        } else if (purpose.equals("metrics")) {
+            // 'About Metrics' button links.
+            url = "https://51degrees.com/support/documentation/pattern";
+        } else if (purpose.equals("compare")) {
+            // 'Compare Data Options' link in the Data Set Information section.
+            url = "https://51degrees.com/compare-data-options";
+        } else if (purpose.equals("properties")) {
+            // 'More properties' button links.
+            url = "https://51degrees.com/resources/property-dictionary";
+        }
+        // Build the URL
+        StringBuilder sb = new StringBuilder();
+        sb.append(url);
+        sb.append("?");
+        sb.append(utm_source);
+        sb.append("&");
+        sb.append(utm_medium);
+        sb.append("&");
+        sb.append(utm_content);
+        sb.append("&");
+        sb.append(utm_campaign);
+        return sb.toString();
+    }
+    
     /**
      * Returns a short description of the servlet.
      *
