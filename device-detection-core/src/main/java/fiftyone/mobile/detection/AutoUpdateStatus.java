@@ -21,24 +21,16 @@
 package fiftyone.mobile.detection;
 
 public enum AutoUpdateStatus {
-    /* Update completed successfully. */
+    /* Update completed successfully. *//* Update completed successfully. */
     AUTO_UPDATE_SUCCESS,
      /* HTTPS connection could not be established. */
     AUTO_UPDATE_HTTPS_ERR,
-    /* The licence key is invalid. */
-    AUTO_UPDATE_INVALID_KEY,
-    /* Failed to write to data file. */
-    AUTO_UPDATE_WRITE_DATA_FILE_ERROR,
-    /* Something else went wrong. */
-    AUTO_UPDATE_GENERIC_FAILURE,
-    /* The stream does not contain valid data. */
-    AUTO_UPDATE_DATA_INVALID,
     /* No need to perform update. */
     AUTO_UPDATE_NOT_NEEDED,
     /* Update currently under way. */
     AUTO_UPDATE_IN_PROGRESS,
     /* Path to master file is directory not file*/
-    AUTO_UPDATE_MASTER_FILE_IS_DIR,
+    AUTO_UPDATE_MASTER_FILE_CANT_RENAME,
     /* 51Degrees server responded with 429: too many attempts. */
     AUTO_UPDATE_ERR_429_TOO_MANY_ATTEMPTS,
     /* 51Degrees server responded with 403 meaning key is blacklisted. */
@@ -47,6 +39,6 @@ public enum AutoUpdateStatus {
     AUTO_UPDATE_ERR_READING_STREAM,
     /* MD5 validation failed */
     AUTO_UPDATE_ERR_MD5_VALIDATION_FAILED,
-    /* When file rename fails. */
-    AUTO_UPDATE_ERR_FILE_RENAME_FAILED
+    /* The new data file can't be renamed to replace the previous one. */
+    AUTO_UPDATE_NEW_FILE_CANT_RENAME
 }

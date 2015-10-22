@@ -36,6 +36,11 @@ public class Dataset extends fiftyone.mobile.detection.Dataset {
     public final Pool pool;
     
     /**
+     * Data source to be used with the pool.
+     */
+    private final SourceBase source;
+    
+    /**
      * @return The number of readers that have been created in the pool
      * that connects the data set to the data source.
      */
@@ -64,7 +69,8 @@ public class Dataset extends fiftyone.mobile.detection.Dataset {
      */
     public Dataset(String fileName, Date lastModified, Modes mode, boolean isTempFile) throws IOException {
         super(lastModified, mode);
-        this.pool = new Pool(new SourceFile(fileName, false));
+        source = new SourceFile(fileName, false);
+        this.pool = new Pool(source);
     }
     
     /**
@@ -77,15 +83,18 @@ public class Dataset extends fiftyone.mobile.detection.Dataset {
      */
     public Dataset(byte[] data, Modes mode) throws IOException {
         super(new Date(Long.MIN_VALUE), mode);
-        this.pool = new Pool(new SourceMemory(data));
+        source = new SourceMemory(data);
+        this.pool = new Pool(source);
     }
     
     /**
      * Dispose of the dataset and the pool of readers.
+     * @throws java.io.IOException
      */
     @Override
     public void close() throws IOException {
         pool.close();
+        source.close();
         super.close();
     }
     

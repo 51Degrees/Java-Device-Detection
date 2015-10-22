@@ -20,21 +20,22 @@
  * ********************************************************************* */
 package fiftyone.mobile.detection.entities.stream;
 
-import fiftyone.mobile.detection.readers.BinaryReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedList;
+import java.util.Queue;
+
 /**
  * Encapsulates either a file containing the uncompressed data structures 
  * used by the data set.
  */
-public class SourceFile extends SourceFileBase {
+class SourceFile extends SourceFileBase {
     
     /**
      * Encapsulates all the instances that need to be tracked for a mapped
@@ -42,8 +43,19 @@ public class SourceFile extends SourceFileBase {
      */
     private class FileHandle {
         final FileInputStream fileInputStream;
-        final FileChannel channel;
-        final ByteBuffer byteBuffer;
+        
+        /**
+         * A memory mapped buffer to the underlying file. 
+         * 
+         * Java does not provide a method to explicitly unmap the buffer from 
+         * the underlying file. The implementation of memory mapped files varies
+         * across operating systems. As such there is no reliable way of 
+         * guaranteeing the lock on the underlying file is released. For this
+         * reason System.gc() is called when the SourceFile class is closed
+         * to attempt to free the underlying file. The alternative would be to
+         * not use memory mapped files which removes a performance advantage.
+         */
+        MappedByteBuffer byteBuffer;
         
         /**
          * Constructs a new instance of FileHandle connected to the file
@@ -54,7 +66,7 @@ public class SourceFile extends SourceFileBase {
          */
         FileHandle(File file) throws FileNotFoundException, IOException {
             fileInputStream = new FileInputStream(file);
-            channel = fileInputStream.getChannel();
+            FileChannel channel = fileInputStream.getChannel();
             byteBuffer = channel.map(
                     FileChannel.MapMode.READ_ONLY,
                     0,
@@ -75,7 +87,7 @@ public class SourceFile extends SourceFileBase {
      * List of file handles creates by the class. Used to ensure they're all
      * disposed of correctly.
      */
-    private final List<FileHandle> handles = new ArrayList<FileHandle>();
+    private final Queue<FileHandle> handles = new LinkedList<FileHandle>();
     
     /**
      * Creates the source from the file provided.
@@ -83,7 +95,7 @@ public class SourceFile extends SourceFileBase {
      * @param isTempFile True if the file should be deleted when the source 
      * is disposed.
      */
-    public SourceFile(String fileName, boolean isTempFile) {
+    SourceFile(String fileName, boolean isTempFile) {
         super(fileName, isTempFile);
     }
 
@@ -93,25 +105,31 @@ public class SourceFile extends SourceFileBase {
      * @throws java.io.IOException
      */
     @Override
-    public ByteBuffer createStream() throws IOException {
+    ByteBuffer createStream() throws IOException {
         FileHandle handle = new FileHandle(super.getFile());
-        handles.add(handle);
+        synchronized(handles) {
+            handles.add(handle);
+        }
         return handle.byteBuffer;
     }
     
     /**
      * Close any file references, release resources and then try to 
-     * delete the file.
+     * delete the underlying file if 
      * @throws java.io.IOException
      */
     @Override
     public void close() throws IOException {
-        // Dispose of all the binary readers created from the byte buffers.
-        super.close();
         // Dispose of all the file handles.
-        for(FileHandle handle : handles) {
-            handle.dispose();
+        synchronized(handles) {
+            for(FileHandle handle : handles) {
+                handle.close();
+            }
+            // See docs for FileHandle.byteBuffer for explanation as to why
+            // garbage collector is called explicitly.
+            System.gc();
         }
+        
         // Delete the file if it's temporary.
         super.deleteFile();
     }

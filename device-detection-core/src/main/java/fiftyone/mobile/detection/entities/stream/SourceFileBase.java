@@ -25,7 +25,7 @@ import java.io.File;
 /**
  * Base class for file sources.
  */
-public abstract class SourceFileBase extends SourceBase {
+abstract class SourceFileBase extends SourceBase {
 
     /**
      * The file containing the source data.
@@ -44,26 +44,20 @@ public abstract class SourceFileBase extends SourceBase {
      * @param isTempFile True if the file should be deleted when the 
      * source is disposed.
      */
-    public SourceFileBase(String fileName, boolean isTempFile) {
+    SourceFileBase(String fileName, boolean isTempFile) {
         this.fileInfo = new File(fileName);
-        /*
-        if (this.fileInfo.setReadOnly() == false) {
-            System.err.println("Source file base: failed to set file as "
-                    + "read-only.");
-        }
-        */
         this.isTempFile = isTempFile;
     }
     
     /**
      * Delete the file if it's a temporary file and it still exists.
      */
-    public void deleteFile() {
+    protected void deleteFile() {
         if (this.isTempFile) {
             boolean deleted = this.fileInfo.delete();
-            if (!deleted) {
+            if (deleted == false) {
                 throw new RuntimeException("Failed to delete data file used "
-                        + "to construt Stream dataSet. This file was marked "
+                        + "to construct Stream dataSet. This file was marked "
                         + "as temporary when the dataSet object was created.");
             }
         }
@@ -73,7 +67,7 @@ public abstract class SourceFileBase extends SourceBase {
      * Returns the file used to construct this Source.
      * @return  the file used to construct this Source.
      */
-    public File getFile() {
+    protected File getFile() {
         return fileInfo;
     }
 }

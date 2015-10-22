@@ -181,7 +181,7 @@ public class Dataset implements Closeable {
     /**
      * The common name of the data set.
      */
-    public volatile String name;
+    private volatile String name;
     /**
      * The offset for the common name of the data set.
      */

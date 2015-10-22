@@ -30,7 +30,7 @@ public class DetectionConstants {
 
     public enum FORMAT_VERSIONS {
         /**
-         * First released in May 2014 for version 3 device deteciton.
+         * First released in May 2014 for version 3 device detection.
          */
         PatternV31,
         /**
