@@ -22,7 +22,6 @@ package fiftyone.mobile.detection.entities;
 
 import fiftyone.mobile.detection.Dataset;
 import fiftyone.mobile.detection.IClosableIterator;
-import fiftyone.mobile.detection.WrappedIOException;
 import fiftyone.mobile.detection.readers.BinaryReader;
 import java.io.IOException;
 
