@@ -18,14 +18,14 @@
  * This Source Code Form is ?Incompatible With Secondary Licenses?, as
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
-package fiftyone.mobile.detection.entities.stream;
+package fiftyone.mobile.detection.readers;
 
 import java.io.File;
 
 /**
  * Base class for file sources.
  */
-abstract class SourceFileBase extends SourceBase {
+public abstract class SourceFileBase extends SourceBase {
 
     /**
      * The file containing the source data.
@@ -41,7 +41,7 @@ abstract class SourceFileBase extends SourceBase {
     /**
      * Construct a new source from file on disk.
      * @param fileName File source of the data.
-     * @param isTempFile True if the file should be deleted when the 
+     * @param isTempFile True if the file will be deleted when the 
      * source is disposed.
      */
     SourceFileBase(String fileName, boolean isTempFile) {
@@ -51,14 +51,19 @@ abstract class SourceFileBase extends SourceBase {
     
     /**
      * Delete the file if it's a temporary file and it still exists.
+     * 
+     * If the file is not deleted the first time then retry forcing garbage 
+     * collection. If the file was used as a memory mapped buffer it may take
+     * time for the buffer to be released after the file handle.
      */
     protected void deleteFile() {
         if (this.isTempFile) {
-            boolean deleted = this.fileInfo.delete();
-            if (deleted == false) {
-                throw new RuntimeException("Failed to delete data file used "
-                        + "to construct Stream dataSet. This file was marked "
-                        + "as temporary when the dataSet object was created.");
+            int iterations = 0;
+            while (getFile().exists() && iterations < 10) {
+                if (getFile().delete() == false) {
+                    System.gc();
+                    iterations++;
+                }
             }
         }
     }

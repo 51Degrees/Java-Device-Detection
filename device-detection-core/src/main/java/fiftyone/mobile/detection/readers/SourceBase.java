@@ -15,44 +15,36 @@
  * If a copy of the MPL was not distributed with this file, You can obtain
  * one at http://mozilla.org/MPL/2.0/.
  * 
- * This Source Code Form is ?Incompatible With Secondary Licenses?, as
+ * This Source Code Form is "Incompatible With Secondary Licenses", as
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
-package fiftyone.mobile.detection.entities.stream;
+package fiftyone.mobile.detection.readers;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 
 /**
- * Encapsulates a byte array containing the uncompressed data structures 
- * used by the data set.
+ * Providers the base for a data source containing the uncompressed data 
+ * structures used by the data set.
+ * 
+ * Must be disposed to ensure that the readers are closed and any resources
+ * free for other uses.
  */
-class SourceMemory extends SourceBase {
+public abstract class SourceBase implements Closeable {
+    
     /**
-     * The buffer containing the source data.
+     * Creates a new reader and stores a reference to it.
+     * @return A reader open for read access to the stream
+     * @throws java.io.IOException
      */
-    private final byte[] buffer;
+    public BinaryReader createReader() throws IOException {
+        return new BinaryReader(createStream());
+    }
+   
     /**
-     * Creates the source from the byte array provided.
-     * @param buffer Byte array source of the data.
+     * Creates a new stream from the data source.
+     * @return A freshly opened stream to the data source.
      */
-    SourceMemory(byte[] buffer) {
-        this.buffer = buffer;
-    }
-    /**
-     * Creates a new ByteBuffer from the bytes array.
-     * @return new ByteBuffer from the bytes array.
-     */
-    @Override
-    ByteBuffer createStream() {
-        ByteBuffer byteBuffer = ByteBuffer.wrap(buffer);
-        byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
-        return byteBuffer;
-    }
-
-    @Override
-    public void close() throws IOException {
-        // Nothing to do.
-    }
+    abstract ByteBuffer createStream() throws IOException;
 }

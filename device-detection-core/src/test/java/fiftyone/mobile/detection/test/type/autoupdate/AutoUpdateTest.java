@@ -24,7 +24,7 @@ import fiftyone.mobile.detection.AutoUpdate;
 import fiftyone.mobile.detection.AutoUpdateStatus;
 import static fiftyone.mobile.detection.AutoUpdateStatus.AUTO_UPDATE_SUCCESS;
 import fiftyone.mobile.detection.Dataset;
-import fiftyone.mobile.detection.factories.StreamFactory;
+import fiftyone.mobile.detection.factories.MemoryFactory;
 import fiftyone.mobile.detection.test.TestType;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -41,7 +41,7 @@ import org.junit.experimental.categories.Category;
  * Tests an upgrade an an existing Lite data file.
  */
 @Category(TestType.DataSetPremium.class)
-public class AutoUpdateUpgrade extends AutoUpdateBase {
+public class AutoUpdateTest extends AutoUpdateBase {
     
     @Before
     public void setUp() throws IOException {
@@ -76,7 +76,7 @@ public class AutoUpdateUpgrade extends AutoUpdateBase {
             logger.debug("Status code was: " + result.toString());
             fail("Data file update process failed.");
         }
-        Dataset dataSet = StreamFactory.create(super.getTestDataFile(), false);
+        Dataset dataSet = MemoryFactory.create(super.getTestDataFile());
         try {
             if (dataSet.getName().equals("Lite"))
             {
