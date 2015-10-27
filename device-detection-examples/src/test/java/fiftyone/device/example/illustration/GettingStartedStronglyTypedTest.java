@@ -29,7 +29,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
- *
+ * Tests the example program prior to release. See illustration class for 
+ * documentation and guidance.
  */
 public class GettingStartedStronglyTypedTest {
     

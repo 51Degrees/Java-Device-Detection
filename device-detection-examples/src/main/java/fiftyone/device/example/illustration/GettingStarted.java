@@ -47,8 +47,8 @@ public class GettingStarted implements Closeable {
             + "Version/7.0 Mobile/11D167 Safari/9537.53";
     
     // User-Agent string of Firefox Web browser of version 41 used on desktop.
-    protected final String desktopUserAgent = "Mozilla/5.0 (Windows NT 6.3; " +
-            "WOW64; rv:41.0) Gecko/20100101 Firefox/41.0";
+    protected final String desktopUserAgent = "Mozilla/5.0 (Windows NT 6.3; "
+            + "WOW64; rv:41.0) Gecko/20100101 Firefox/41.0";
     
     // User-Agent string of a MediaHub device.
     protected final String mediaHubUserAgent = "Mozilla/5.0 (Linux; Android 4.4"
@@ -103,12 +103,12 @@ public class GettingStarted implements Closeable {
         System.out.println("Starting GettingStarted example.");
         GettingStarted gs = new GettingStarted();
         try {
-            System.out.println("User-Agent: "+gs.mobileUserAgent);
-            System.out.println("IsMobile: "+gs.detect(gs.mobileUserAgent));
-            System.out.println("User-Agent: "+gs.desktopUserAgent);
-            System.out.println("IsMobile: "+gs.detect(gs.desktopUserAgent));
-            System.out.println("User-Agent: "+gs.mediaHubUserAgent);
-            System.out.println("IsMobile: "+gs.detect(gs.mediaHubUserAgent));
+            System.out.println("Mobile User-Agent: " + gs.mobileUserAgent);
+            System.out.println("IsMobile: " + gs.detect(gs.mobileUserAgent));
+            System.out.println("Desktop User-Agent: " + gs.desktopUserAgent);
+            System.out.println("IsMobile: " + gs.detect(gs.desktopUserAgent));
+            System.out.println("MediaHub User-Agent: " + gs.mediaHubUserAgent);
+            System.out.println("IsMobile: " + gs.detect(gs.mediaHubUserAgent));
         } finally {
             gs.close();
         }
