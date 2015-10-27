@@ -21,11 +21,8 @@
 
 package fiftyone.mobile.detection.test.type.httpheader;
 
-import fiftyone.mobile.detection.test.TestType;
 import java.io.IOException;
-import org.junit.experimental.categories.Category;
 
-@Category(TestType.TypeHttpHeader.class)
 public class Combinations extends Base {
 
     public Combinations(String dataFile) {

@@ -28,7 +28,7 @@ import java.io.IOException;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-@Category({TestType.DataSetLite.class, TestType.TypePerformance.class})
+@Category(TestType.DataSetLite.class)
 public class V31LitePerformanceFileTest extends FileBase {
     public V31LitePerformanceFileTest() {
         super(Filename.LITE_PATTERN_V31);
@@ -40,7 +40,7 @@ public class V31LitePerformanceFileTest extends FileBase {
     }
     
     @Test
-    @Category({TestType.DataSetLite.class, TestType.TypePerformance.class})
+    @Category(TestType.DataSetLite.class)
     @Override
     public void initializeTime()
     {

@@ -64,7 +64,7 @@ class ProfileOverride {
      * @param request
      * @return 
      */
-    static String getJavascript(HttpServletRequest request) throws IOException, Exception {
+    static String getJavascript(HttpServletRequest request) throws IOException {
         Map<String, String[]> results = WebProvider.getResult(request);
         if (results != null) {
             String[] javascript = results.get("JavascriptHardwareProfile");
@@ -91,8 +91,7 @@ class ProfileOverride {
                 }
                 catch(NumberFormatException ex) {
                     logger.debug(String.format(
-                            Constants.VERSION +
-                            " '%s' cookie contained invalid values '%s'",
+                            "'%s' cookie contained invalid values '%s'",
                             COOKIE_NAME,
                             cookieValue),
                             ex);

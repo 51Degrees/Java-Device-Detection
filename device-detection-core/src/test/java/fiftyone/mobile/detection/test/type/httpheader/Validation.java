@@ -23,13 +23,10 @@ package fiftyone.mobile.detection.test.type.httpheader;
 
 import fiftyone.mobile.detection.Dataset;
 import fiftyone.mobile.detection.entities.Property;
-import fiftyone.mobile.detection.test.TestType;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.regex.Pattern;
-import org.junit.experimental.categories.Category;
 
-@Category(TestType.TypeHttpHeader.class)
 public class Validation extends HashMap<Property, Pattern> {
     
     private final Dataset dataSet;

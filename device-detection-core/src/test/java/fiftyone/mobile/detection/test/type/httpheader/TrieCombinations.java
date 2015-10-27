@@ -21,11 +21,8 @@
 
 package fiftyone.mobile.detection.test.type.httpheader;
 
-import fiftyone.mobile.detection.test.TestType;
 import java.io.IOException;
-import org.junit.experimental.categories.Category;
 
-@Category(TestType.TypeHttpHeader.class)
 public class TrieCombinations extends TrieBase {
     
     public TrieCombinations(String dataFile) {

@@ -28,7 +28,7 @@ import java.io.IOException;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-@Category({TestType.DataSetPremium.class, TestType.TypePerformance.class})
+@Category(TestType.DataSetPremium.class)
 public class V32PremiumPerformanceMemoryTest extends MemoryBase {
     public V32PremiumPerformanceMemoryTest() {
         super(Filename.PREMIUM_PATTERN_V32);
@@ -40,7 +40,7 @@ public class V32PremiumPerformanceMemoryTest extends MemoryBase {
     }
     
     @Test
-    @Category({TestType.DataSetPremium.class, TestType.TypePerformance.class})
+    @Category(TestType.DataSetPremium.class)
     @Override
     public void initializeTime()
     {

@@ -27,14 +27,11 @@ import fiftyone.mobile.detection.test.common.UserAgentGenerator;
 import fiftyone.properties.MatchMethods;
 import fiftyone.mobile.detection.entities.Property;
 import fiftyone.mobile.detection.factories.StreamFactory;
-import fiftyone.mobile.detection.test.TestType;
 import java.io.IOException;
 import java.util.Calendar;
 import static org.junit.Assert.fail;
 import org.junit.Before;
-import org.junit.experimental.categories.Category;
 
-@Category(TestType.TypePerformance.class)
 public abstract class ArrayBase extends Base {
 
     public ArrayBase(String dataFile) {
@@ -45,7 +42,6 @@ public abstract class ArrayBase extends Base {
      * Creates the data set to be used for the tests.
      */
     @Before
-    @Override
     public void setUp() {
         assertFileExists(super.dataFile);
         long startTime = Calendar.getInstance().getTimeInMillis();

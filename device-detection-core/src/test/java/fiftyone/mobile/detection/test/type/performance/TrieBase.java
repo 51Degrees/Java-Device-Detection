@@ -24,12 +24,9 @@ package fiftyone.mobile.detection.test.type.performance;
 import fiftyone.mobile.detection.DetectionTestSupport;
 import fiftyone.mobile.detection.test.common.Results;
 import fiftyone.mobile.detection.TrieProvider;
-import fiftyone.mobile.detection.test.TestType;
 import org.junit.After;
 import static org.junit.Assert.assertTrue;
-import org.junit.experimental.categories.Category;
 
-@Category(TestType.TypePerformance.class)
 public abstract class TrieBase extends DetectionTestSupport {
     
     protected TrieProvider provider;

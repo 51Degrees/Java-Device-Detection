@@ -24,9 +24,7 @@ import fiftyone.mobile.detection.AutoUpdateException;
 import fiftyone.mobile.detection.Dataset;
 import fiftyone.mobile.detection.factories.StreamFactory;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -61,8 +59,7 @@ public class AutoUpdate extends TimerTask {
                     Date fileDate = new Date(masterFile.lastModified());
                     String dateStr = dateFormat.format(fileDate);
                     logger.info(String.format(
-                            Constants.VERSION +
-                            " Automatically updated binary data file '%s' with "
+                            "Automatically updated binary data file '%s' with "
                             + " version published on the '%s'.",
                             masterFile,
                             dateStr));
@@ -70,22 +67,14 @@ public class AutoUpdate extends TimerTask {
                 }
             } catch (AutoUpdateException ex) {
                 logger.warn(String.format(
-                        Constants.VERSION +
-                        " Exception auto updating file '%s'",
+                        "Exception auto updating file '%s'",
                         masterFilePath),
                         ex);
-            } catch (FileNotFoundException ex) {
+            } catch (Exception ex) {
                 logger.warn(String.format(
-                        Constants.VERSION +
-                        " Exception auto updating file '%s'",
+                        "Exception auto updating file '%s'",
                         masterFilePath),
                         ex);                
-            } catch (NoSuchAlgorithmException ex) {
-                logger.warn(String.format(
-                        Constants.VERSION +
-                        " Exception auto updating file '%s'",
-                        masterFilePath),
-                        ex);
             }
         }
     }

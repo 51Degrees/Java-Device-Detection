@@ -21,14 +21,12 @@
 
 package fiftyone.mobile.detection.test.type.performance;
 
-import fiftyone.mobile.detection.test.TestType;
 import fiftyone.mobile.detection.test.type.performance.enterprise.V31EnterprisePerformanceArrayTest;
 import fiftyone.mobile.detection.test.type.performance.enterprise.V31EnterprisePerformanceFileTest;
 import fiftyone.mobile.detection.test.type.performance.enterprise.V31EnterprisePerformanceMemoryTest;
 import fiftyone.mobile.detection.test.type.performance.enterprise.V32EnterprisePerformanceArrayTest;
 import fiftyone.mobile.detection.test.type.performance.enterprise.V32EnterprisePerformanceFileTest;
 import fiftyone.mobile.detection.test.type.performance.enterprise.V32EnterprisePerformanceMemoryTest;
-import org.junit.experimental.categories.Categories;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
@@ -52,6 +50,5 @@ import org.junit.runners.Suite;
     V32EnterprisePerformanceArrayTest.class,
     V31EnterprisePerformanceMemoryTest.class,
     V32EnterprisePerformanceMemoryTest.class})
-@Categories.IncludeCategory(TestType.TypePerformance.class)
 public class PerformanceSuite {
 }

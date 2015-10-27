@@ -21,14 +21,12 @@
 
 package fiftyone.mobile.detection.test.type.httpheader;
 
-import fiftyone.mobile.detection.test.TestType;
 import fiftyone.mobile.detection.test.type.httpheader.enterprise.V31EnterpriseHttpHeaderArrayTest;
 import fiftyone.mobile.detection.test.type.httpheader.enterprise.V32EnterpriseHttpHeaderArrayTest;
 import fiftyone.mobile.detection.test.type.httpheader.enterprise.V32EnterpriseHttpHeaderTrieFileTest;
 import fiftyone.mobile.detection.test.type.httpheader.premium.V31HttpHeaderArrayTest;
 import fiftyone.mobile.detection.test.type.httpheader.premium.V32HttpHeaderArrayTest;
 import fiftyone.mobile.detection.test.type.httpheader.premium.V32HttpHeaderTrieFileTest;
-import org.junit.experimental.categories.Categories;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
@@ -41,6 +39,5 @@ import org.junit.runners.Suite;
     V32EnterpriseHttpHeaderArrayTest.class,
     V32EnterpriseHttpHeaderTrieFileTest.class
 })
-@Categories.IncludeCategory(TestType.TypeHttpHeader.class)
 public class HttpHeaderSuite {
 }

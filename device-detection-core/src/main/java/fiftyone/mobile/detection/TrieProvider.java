@@ -403,16 +403,11 @@ public abstract class TrieProvider implements Closeable {
     private static byte[] getUserAgentByteArray(String userAgent) {
         byte[] result = new byte[userAgent != null ? userAgent.length() + 1 : 0];
         if (result.length > 0) {
-            assert userAgent != null;
             for (int i = 0; i < userAgent.length(); i++) {
                 result[i] = userAgent.charAt(i) <= 0x7F ? (byte) userAgent.charAt(i) : (byte) ' ';
             }
-            
-        }
-        if (result.length > 0) {
             result[result.length - 1] = 0;
         }
-        
         return result;
     }
 

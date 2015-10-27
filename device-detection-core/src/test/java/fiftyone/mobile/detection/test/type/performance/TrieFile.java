@@ -22,15 +22,12 @@
 package fiftyone.mobile.detection.test.type.performance;
 
 import fiftyone.mobile.detection.factories.TrieFactory;
-import fiftyone.mobile.detection.test.TestType;
 import java.io.IOException;
 import java.util.Calendar;
 import static org.junit.Assert.fail;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 
-@Category(TestType.TypePerformance.class)
 public abstract class TrieFile extends TrieBase {
 
     public TrieFile(String dataSet) {
@@ -40,7 +37,6 @@ public abstract class TrieFile extends TrieBase {
     /* Actual tests */
     
     @Test
-    @Category(TestType.TypePerformance.class)
     public void randomUserAgentMulti() {
         userAgentMulti(fiftyone.mobile.detection.test.common.UserAgentGenerator.getRandomUserAgents());
     }

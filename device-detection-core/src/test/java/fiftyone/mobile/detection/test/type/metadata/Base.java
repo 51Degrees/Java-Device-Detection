@@ -27,13 +27,10 @@ import fiftyone.mobile.detection.entities.Component;
 import fiftyone.mobile.detection.entities.Profile;
 import fiftyone.mobile.detection.entities.Property;
 import fiftyone.mobile.detection.entities.Value;
-import fiftyone.mobile.detection.test.TestType;
 import java.io.IOException;
 import org.junit.After;
 import static org.junit.Assert.*;
-import org.junit.experimental.categories.Category;
 
-@Category(TestType.TypeMetadata.class)
 public abstract class Base extends DetectionTestSupport {
     
     /**

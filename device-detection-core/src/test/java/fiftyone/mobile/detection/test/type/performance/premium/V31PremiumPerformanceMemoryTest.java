@@ -28,14 +28,14 @@ import java.io.IOException;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-@Category({TestType.DataSetPremium.class, TestType.TypePerformance.class})
+@Category(TestType.DataSetPremium.class)
 public class V31PremiumPerformanceMemoryTest extends MemoryBase {
     public V31PremiumPerformanceMemoryTest() {
         super(Filename.PREMIUM_PATTERN_V31);
     }
     
     @Override
-    @Category({TestType.DataSetPremium.class, TestType.TypePerformance.class})
+    @Category(TestType.DataSetPremium.class)
     protected int getMaxSetupTime() {
         return 10000;
     }

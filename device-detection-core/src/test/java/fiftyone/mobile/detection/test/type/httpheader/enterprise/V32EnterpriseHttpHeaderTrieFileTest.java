@@ -45,7 +45,6 @@ public class V32EnterpriseHttpHeaderTrieFileTest extends TrieCombinations {
     }
     
     @Test
-    @Category(TestType.TypeHttpHeader.class)
     public void operaMiniSamsung() throws IOException, Exception
     {
         super.OperaMini_Samsung();

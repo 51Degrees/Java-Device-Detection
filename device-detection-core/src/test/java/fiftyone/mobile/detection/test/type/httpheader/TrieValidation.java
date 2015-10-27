@@ -22,13 +22,10 @@
 package fiftyone.mobile.detection.test.type.httpheader;
 
 import fiftyone.mobile.detection.TrieProvider;
-import fiftyone.mobile.detection.test.TestType;
 
 import java.util.HashMap;
 import java.util.regex.Pattern;
-import org.junit.experimental.categories.Category;
 
-@Category(TestType.TypeHttpHeader.class)
 public class TrieValidation extends HashMap<String, Pattern> {
     
     protected final TrieProvider provider;

@@ -25,7 +25,6 @@ import fiftyone.mobile.detection.DetectionTestSupport;
 import fiftyone.mobile.detection.test.common.Results;
 import fiftyone.mobile.detection.test.common.UserAgentGenerator;
 import fiftyone.mobile.detection.TrieProvider;
-import fiftyone.mobile.detection.test.TestType;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -36,9 +35,8 @@ import java.util.Random;
 import java.util.regex.Pattern;
 import org.junit.After;
 import static org.junit.Assert.assertTrue;
-import org.junit.experimental.categories.Category;
+import static org.junit.Assert.fail;
 
-@Category(TestType.TypeHttpHeader.class)
 public class TrieBase extends DetectionTestSupport {
 
     protected String dataFile;

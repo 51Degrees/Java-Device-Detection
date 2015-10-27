@@ -36,8 +36,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import fiftyone.mobile.detection.webapp.BaseServlet;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -60,7 +58,7 @@ public class Gallery extends BaseServlet {
      * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException, Exception {
+            throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
 
         PrintWriter out = response.getWriter();
@@ -151,11 +149,7 @@ public class Gallery extends BaseServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        try {
-            processRequest(request, response);
-        } catch (Exception ex) {
-            
-        }
+        processRequest(request, response);
     }
 
     /**
@@ -170,11 +164,7 @@ public class Gallery extends BaseServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        try {
-            processRequest(request, response);
-        } catch (Exception ex) {
-            
-        }
+        processRequest(request, response);
     }
 
     /**
