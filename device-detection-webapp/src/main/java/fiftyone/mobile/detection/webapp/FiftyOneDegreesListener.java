@@ -50,7 +50,9 @@ public class FiftyOneDegreesListener implements ServletContextListener {
 
     @Override
     public void contextInitialized(ServletContextEvent contextEvent) {
-        logger.debug("Starting 51Degrees Listener Initialisation");
+        logger.debug(
+                Constants.VERSION +
+                " Starting 51Degrees Listener Initialisation");
         File binaryFile = WebProvider.getBinaryFilePath(
                 contextEvent.getServletContext());
         if (binaryFile != null) {
@@ -74,7 +76,9 @@ public class FiftyOneDegreesListener implements ServletContextListener {
                     Constants.FILE_CHECK_DELAYED_START * 1000,
                     Constants.FILE_CHECK_WAIT * 1000);
         }
-        logger.debug("Finished 51Degrees Listener Initialisation");
+        logger.debug(
+                Constants.VERSION +
+                " Finished 51Degrees Listener Initialisation");
     }
 
     /**
@@ -108,13 +112,17 @@ public class FiftyOneDegreesListener implements ServletContextListener {
      */
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
-        logger.debug("Destroying 51Degrees Listener");
+        logger.debug(
+                Constants.VERSION +
+                " Destroying 51Degrees Listener");
         if (autoUpdateTimer != null) {
             autoUpdateTimer.cancel();
         }
         if (fileUpdateTimer != null) {
             fileUpdateTimer.cancel();
         }
-        logger.debug("Destroyed 51Degrees Listener");
+        logger.debug(
+                Constants.VERSION +
+                " Destroyed 51Degrees Listener");
     }
 }

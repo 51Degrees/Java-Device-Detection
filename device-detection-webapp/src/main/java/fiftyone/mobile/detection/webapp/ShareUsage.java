@@ -105,12 +105,16 @@ class ShareUsage implements Runnable {
      * terminates the Thread.
      */
     public void destroy() {
-        logger.trace("Destroying 51Degrees.mobi ShareUsage");
+        logger.trace(
+                Constants.VERSION + 
+                " Destroying 51Degrees.mobi ShareUsage");
         stop = true;
         synchronized (wait) {
             wait.notifyAll();
         }
-        logger.trace("Destroyed 51Degrees.mobi ShareUsage");
+        logger.trace(
+                Constants.VERSION +
+                " Destroyed 51Degrees.mobi ShareUsage");
     }
 
     /**

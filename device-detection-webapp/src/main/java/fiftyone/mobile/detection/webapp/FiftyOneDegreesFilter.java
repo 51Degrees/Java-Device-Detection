@@ -31,9 +31,14 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class FiftyOneDegreesFilter implements Filter {
 
+    final private static Logger logger = LoggerFactory
+            .getLogger(FiftyOneDegreesFilter.class);
+    
     public FiftyOneDegreesFilter() {
     }
 
@@ -46,21 +51,27 @@ public class FiftyOneDegreesFilter implements Filter {
             FilterChain chain) throws IOException, ServletException {
         
         HttpServletRequest httpRequest = (HttpServletRequest)request;
-        if (Bandwidth.getJavascript(httpRequest) != null) {
-            HttpSession session = httpRequest.getSession();
-            Cookie[] cookies = httpRequest.getCookies();
-            String ServletPath = httpRequest.getServletPath();
-            
-            if(!ServletPath.equals("/51D")) {
-                if (cookies != null && session != null) {
-                    Bandwidth.process(
-                            (HttpServletRequest)request, 
-                            (HttpServletResponse)response,
-                            session,
-                            cookies);
+        try {
+            if (Bandwidth.getJavascript(httpRequest) != null) {
+                HttpSession session = httpRequest.getSession();
+                Cookie[] cookies = httpRequest.getCookies();
+                String ServletPath = httpRequest.getServletPath();
+                
+                if(!ServletPath.equals("/51D")) {
+                    if (cookies != null && session != null) {
+                        Bandwidth.process(
+                                (HttpServletRequest)request,
+                                (HttpServletResponse)response,
+                                session,
+                                cookies);
+                    }
                 }
             }
-        }    
+        } catch (Exception ex) {    
+            logger.debug(
+                    Constants.VERSION  + 
+                    ex.getMessage());
+        }
         chain.doFilter(request, response);
     }
 

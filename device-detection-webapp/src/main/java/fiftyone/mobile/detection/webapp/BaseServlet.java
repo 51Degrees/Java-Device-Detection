@@ -45,7 +45,7 @@ public class BaseServlet extends HttpServlet {
      * @throws IOException
      */
     protected Map<String, String[]> getResult(final HttpServletRequest request) 
-            throws IOException {
+            throws IOException, Exception {
         return WebProvider.getResult(request);
     }
     
@@ -54,7 +54,7 @@ public class BaseServlet extends HttpServlet {
      * @param request
      * @return the active provider for the system.
      */
-    protected WebProvider getProvider(final HttpServletRequest request) {
+    protected WebProvider getProvider(final HttpServletRequest request) throws Exception {
         return WebProvider.getActiveProvider(request.getServletContext());
     }
 
@@ -68,7 +68,7 @@ public class BaseServlet extends HttpServlet {
      */
     protected String getProperty(
             final HttpServletRequest request,
-            final String propertyName) throws ServletException, IOException {
+            final String propertyName) throws ServletException, IOException, Exception {
         final Map<String, String[]> result = getResult(request);
         if (result != null) {
             String[] values = result.get(propertyName);

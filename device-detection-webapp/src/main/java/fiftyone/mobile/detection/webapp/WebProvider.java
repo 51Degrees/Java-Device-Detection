@@ -111,7 +111,8 @@ public class WebProvider extends Provider implements Closeable {
             if (tempFile.exists()) {
                 tempFile.delete();
                 logger.debug(String.format(
-                        "Deleted temporary data file '%s'",
+                        Constants.VERSION +
+                        " Deleted temporary data file '%s'",
                         this.sourceDataFile));
             }
         }
@@ -127,7 +128,7 @@ public class WebProvider extends Provider implements Closeable {
      * @param sc Servlet context for the request.
      * @return a reference to the active provider.
      */
-    public static WebProvider getActiveProvider(ServletContext sc) {
+    public static WebProvider getActiveProvider(ServletContext sc) throws Exception {
         if (activeProvider == null) {
             synchronized (lock) {
                 if (activeProvider == null) {
@@ -162,20 +163,23 @@ public class WebProvider extends Provider implements Closeable {
                 try {
                     if (file.delete() == false) {
                         logger.debug(String.format(
-                                "Could not delete temporary file '%s'. It may be "
+                                Constants.VERSION +
+                                " Could not delete temporary file '%s'. It may be "
                                 + "in user by another provider.",
                                 file));
                     }
                 } catch (SecurityException ex) {
                     logger.debug(String.format(
-                            "Exception deleting temporary file '%s'",
+                            Constants.VERSION +
+                            " Exception deleting temporary file '%s'",
                             file),
                             ex);
                 }
             }
         } catch (Exception ex) {
             logger.warn(
-                    "Exception cleaning temporary files",
+                    Constants.VERSION +
+                    " Exception cleaning temporary files",
                     ex);
         }
     }
@@ -253,7 +257,9 @@ public class WebProvider extends Provider implements Closeable {
                         Date tempDate = getDataFileDate(filePath);
                         if (tempDate.equals(masterDate))
                         {
-                            logger.info("Using existing temp data file with published data %s - \"%s\"",
+                            logger.info(
+                                    Constants.VERSION +
+                                    " Using existing temp data file with published data %s - \"%s\"",
                                     tempDate.toString(),
                                     filePath);
                             return fileName;
@@ -261,7 +267,9 @@ public class WebProvider extends Provider implements Closeable {
                     }
                     catch (Exception ex) // Exception may occur if file is not a 51Degrees file, no action is needed.
                     {
-                        logger.info("Error while reading temporary data file \"%s\": %s",
+                        logger.info(
+                                Constants.VERSION +
+                                " Error while reading temporary data file \"%s\": %s",
                                 filePath,
                                 ex.getMessage());
                     }
@@ -275,7 +283,9 @@ public class WebProvider extends Provider implements Closeable {
 
             // Copy the file to enable other processes to update it.
             copyFile(binaryFile, tempFilePath);
-            logger.info("Created temp data file - \"%s\"", tempFilePath);
+            logger.info(
+                    Constants.VERSION +
+                    " Created temp data file - \"%s\"", tempFilePath);
 
         }
         return tempFilePath;
@@ -287,7 +297,7 @@ public class WebProvider extends Provider implements Closeable {
      * @param sc
      * @return
      */
-    private static WebProvider create(ServletContext sc) {
+    private static WebProvider create(ServletContext sc) throws Exception {
         WebProvider provider = null;
 
         // Use the web-inf folder as the temporary folder.
@@ -333,7 +343,9 @@ public class WebProvider extends Provider implements Closeable {
                 if (binaryFile.exists()) {
                     if (memoryMode) {
                         logger.info(String.format(
-                                "Creating memory provider from binary data file '%s'.",
+                                Constants.VERSION +
+                                " Creating memory provider from binary data "
+                                + "file '%s' from file version.",
                                 binaryFile.getAbsolutePath()));
                         provider = new WebProvider(MemoryFactory.create(
                                 binaryFile.getAbsolutePath()));
@@ -342,20 +354,23 @@ public class WebProvider extends Provider implements Closeable {
                                 tempDirectory,
                                 binaryFile);
                         logger.info(String.format(
-                                "Creating stream provider from binary data file '%s'.",
+                                Constants.VERSION +
+                                " Creating stream provider from binary data file '%s'.",
                                 tempFile));
                         provider = new WebProvider(StreamFactory.create(tempFile, false));
                         
                         provider.sourceDataFile = tempFile;
                     }
                     logger.info(String.format(
-                            "Created provider from binary data file '%s'.",
+                            Constants.VERSION +
+                            " Created provider from binary data file '%s'.",
                             binaryFile.getAbsolutePath()));
                 }
             } catch (Exception ex) {
                 // Record the exception in the log file.
                 logger.error(String.format(
-                        "Exception processing device data from binary file '%s'. "
+                        Constants.VERSION +
+                        " Exception processing device data from binary file '%s'. "
                         + "Enable debug level logging and try again to help identify"
                         + " cause.",
                         binaryFile),
@@ -370,9 +385,14 @@ public class WebProvider extends Provider implements Closeable {
         if (provider == null || provider.dataSet == null) {
             // No, throw error as 
             logger.error(String.format(
-            "Failed to create a Web Provider. The path to 51Degrees device "
-                    + "data file is not set in the Constants."));
-            throw new Error("Could not create a Web Provider. Path to "
+                    Constants.VERSION +
+                    " WebProvider could not be created. Please verify that "
+                    + "path to the data file is configured in web.xml and the "
+                    + "application has read access to the data file. Also make "
+                    + "sure you are using the Pattern data file (has a .dat "
+                    + "file extension) and not the Trie data file. Finally "
+                    + "please verify the data file is uncompressed."));
+            throw new Exception("Could not create a Web Provider. Path to "
                     + "51Degrees data file was not set in the Constants.");
         }
 
@@ -441,7 +461,7 @@ public class WebProvider extends Provider implements Closeable {
      * @throws IOException
      */
     public static Map<String, String[]> getResult(final HttpServletRequest request)
-            throws IOException {
+            throws IOException, Exception {
         boolean hasOverrides = ProfileOverride.hasOverrides(request);
         Map<String, String[]> results = (Map<String, String[]>) request.getAttribute(RESULT_ATTIBUTE);
         //HttpSession session = request.getSession();

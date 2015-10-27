@@ -28,7 +28,7 @@ import java.io.IOException;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-@Category(TestType.DataSetLite.class)
+@Category({TestType.DataSetLite.class, TestType.TypePerformance.class})
 public class V32LitePerformanceMemoryTest extends MemoryBase {
     public V32LitePerformanceMemoryTest() {
         super(Filename.LITE_PATTERN_V32);
@@ -40,7 +40,7 @@ public class V32LitePerformanceMemoryTest extends MemoryBase {
     }
     
     @Test
-    @Category(TestType.DataSetLite.class)
+    @Category({TestType.DataSetLite.class, TestType.TypePerformance.class})
     @Override
     public void initializeTime()
     {
