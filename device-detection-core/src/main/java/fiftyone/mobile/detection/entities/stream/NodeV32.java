@@ -145,9 +145,7 @@ public class NodeV32 extends Node {
                             currentIndex++;
                         }
                     } finally {
-                        if (range != null) {
-                            range.close();
-                        }
+                        range.close();
                     }
                 }
             } finally {

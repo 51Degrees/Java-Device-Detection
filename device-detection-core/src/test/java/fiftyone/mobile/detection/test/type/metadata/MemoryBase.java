@@ -22,13 +22,10 @@
 package fiftyone.mobile.detection.test.type.metadata;
 
 import fiftyone.mobile.detection.factories.MemoryFactory;
-import fiftyone.mobile.detection.test.TestType;
 import java.io.IOException;
 import static org.junit.Assert.fail;
 import org.junit.Before;
-import org.junit.experimental.categories.Category;
 
-@Category(TestType.TypeMetadata.class)
 public abstract class MemoryBase extends Base {
 
     public MemoryBase(String dataFile) {

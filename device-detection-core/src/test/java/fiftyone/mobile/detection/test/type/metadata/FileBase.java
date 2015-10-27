@@ -22,13 +22,10 @@
 package fiftyone.mobile.detection.test.type.metadata;
 
 import fiftyone.mobile.detection.factories.StreamFactory;
-import fiftyone.mobile.detection.test.TestType;
 import java.io.IOException;
 import static org.junit.Assert.fail;
 import org.junit.Before;
-import org.junit.experimental.categories.Category;
 
-@Category(TestType.TypeMetadata.class)
 public abstract class FileBase extends Base {
 
     public FileBase(String dataFile) {

@@ -45,7 +45,6 @@ public class V31HttpHeaderArrayTest extends Combinations {
     }
 
     @Test
-    @Category(TestType.TypeHttpHeader.class)
     public void operaMiniSamsung() throws IOException
     {
         super.OperaMini_Samsung();

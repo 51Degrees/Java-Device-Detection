@@ -29,15 +29,12 @@ import fiftyone.mobile.detection.test.common.RetrievePropertiesProcessor;
 import fiftyone.properties.MatchMethods;
 import fiftyone.mobile.detection.Provider;
 import fiftyone.mobile.detection.entities.Property;
-import fiftyone.mobile.detection.test.TestType;
 import java.io.IOException;
 import org.junit.After;
 import static org.junit.Assert.*;
 import org.junit.Rule;
-import org.junit.experimental.categories.Category;
 import org.junit.rules.TestName;
 
-@Category(TestType.TypePerformance.class)
 public abstract class Base extends DetectionTestSupport {
     
     @Rule 

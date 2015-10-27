@@ -35,7 +35,7 @@ public class V31EnterpriseMetadataFileTest extends FileBase {
     }
     
     @Test
-    @Category({TestType.DataSetEnterprise.class, TestType.TypeMetadata.class})
+    @Category(TestType.DataSetEnterprise.class)
     @Override
     public void retrieveComponents() throws IOException {
         super.retrieveComponents(); 

@@ -28,7 +28,6 @@ import fiftyone.mobile.detection.Dataset;
 import fiftyone.mobile.detection.Match;
 import fiftyone.mobile.detection.Provider;
 import fiftyone.mobile.detection.entities.Property;
-import fiftyone.mobile.detection.test.TestType;
 import fiftyone.mobile.detection.test.common.MemoryMeasurementProcessor;
 import fiftyone.properties.MatchMethods;
 import java.io.IOException;
@@ -39,9 +38,7 @@ import java.util.Random;
 import java.util.regex.Pattern;
 import org.junit.After;
 import static org.junit.Assert.*;
-import org.junit.experimental.categories.Category;
 
-@Category(TestType.TypeHttpHeader.class)
 public abstract class Base extends DetectionTestSupport {
     
     /**

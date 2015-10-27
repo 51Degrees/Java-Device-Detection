@@ -35,7 +35,6 @@ public class V32LiteMetadataMemoryTest extends MemoryBase {
     }
     
     @Test
-    @Category({TestType.DataSetPremium.class, TestType.TypeMetadata.class})
     @Override
     public void retrieveComponents() throws IOException { 
         super.retrieveComponents(); 

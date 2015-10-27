@@ -20,7 +20,7 @@
  * ********************************************************************* */
 package fiftyone.device.example.batch;
 
-import fiftyone.mobile.detection.DetectionResult;
+import fiftyone.mobile.detection.Match;
 import fiftyone.mobile.detection.Provider;
 
 import java.io.BufferedReader;
@@ -45,11 +45,13 @@ import java.util.concurrent.*;
 public class FutureUaProcessor extends UaProcessor.Base {
 
     private class Result {
-        DetectionResult result;
+        String userAgent;
+        Match match;
         long time;
 
-        Result(long time, DetectionResult result) {
-            this.result = result;
+        Result(String userAgent, long time, Match match) {
+            this.userAgent = userAgent;
+            this.match = match;
             this.time = time;
         }
     }
@@ -83,9 +85,8 @@ public class FutureUaProcessor extends UaProcessor.Base {
             // keep track of how many futures we have processed
             // in this implementation we don't actually process any results before the end
             int taken = 0;
-
             // record the wall-clock time now
-            testStart = System.currentTimeMillis();
+            start = System.currentTimeMillis();
 
             // submit all test HTTP User-Agent strings for detection
             while (count < limit && useragents.ready()) {
@@ -96,9 +97,9 @@ public class FutureUaProcessor extends UaProcessor.Base {
                                         // measure the cpu time for detection
                                         long start = getCpuTime();
                                         // do the detection
-                                        DetectionResult result = provider.detect(nextUserAgent);
+                                        Match match = provider.match(nextUserAgent);
                                         long time = getCpuTime() - start;
-                                        return new Result(time, result);
+                                        return new Result(nextUserAgent, time, match);
                                     }
                                 }
                 );
@@ -127,7 +128,7 @@ public class FutureUaProcessor extends UaProcessor.Base {
             @Override
             public int compare(Result o1, Result o2) {
                 int diff = (int) (o1.time / 1000 - o2.time / 1000);
-                return diff != 0 ? diff : o1.result.getTargetUserAgent().compareTo(o2.result.getTargetUserAgent());
+                return diff != 0 ? diff : o1.userAgent.compareTo(o2.userAgent);
             }
         });
 
@@ -135,12 +136,13 @@ public class FutureUaProcessor extends UaProcessor.Base {
         for (Result result : results) {
             totalTime += result.time;
         }
-        long elapsedMillis = stop - testStart;
+        long elapsedMillis = stop - start;
         output.printf("%,d Detections%n", results.size());
-        output.printf("Total cpu time %,d millis, %,d detections/sec, %,d micros average%n", totalTime/1000/1000, ((long)results.size()*1000*1000*1000/totalTime), totalTime/results.size()/1000);
-        output.printf("Elapsed clock time %,d millis, %,d detections/sec, %,d micros average on %d threads%n", elapsedMillis, results.size()*1000/elapsedMillis, elapsedMillis*1000/results.size(), numberOfThreads);
-        output.printf("Fastest cpu was %,d micros %s%n", results.get(0).time/1000, results.get(0).result.getTargetUserAgent());
-        output.printf("Slowest cpu was %,d micros %s%n", results.get(results.size() - 1).time / 1000, results.get(results.size() - 1).result.getTargetUserAgent());
+        output.printf("Elapsed clock time %,d millis on %d threads, %,d detections/sec, %,d micros average%n", elapsedMillis, numberOfThreads, results.size()*1000/elapsedMillis, elapsedMillis*1000/results.size());
+        output.printf("Total cpu time %,d millis%n", totalTime/1000/1000);
+        output.printf("Average cpu was %,d micros%n", totalTime/results.size()/1000);
+        output.printf("Fastest cpu was %,d micros %s%n", results.get(0).time/1000, results.get(0).userAgent);
+        output.printf("Slowest cpu was %,d micros %s%n", results.get(results.size() - 1).time / 1000, results.get(results.size() - 1).userAgent);
         super.printStats(output);
     }
 
@@ -148,7 +150,7 @@ public class FutureUaProcessor extends UaProcessor.Base {
     public void writeResults(BufferedWriter writer) throws IOException {
         writeHeaders(writer);
         for (Result result: results) {
-            writeResult(writer, result.result.getTargetUserAgent(), result.time / 1000, result.result);
+            writeMatch(writer, result.userAgent, result.time/1000, result.match);
         }
     }
 }

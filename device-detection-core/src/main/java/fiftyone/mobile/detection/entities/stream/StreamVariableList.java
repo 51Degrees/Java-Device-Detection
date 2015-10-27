@@ -52,7 +52,7 @@ import java.util.Iterator;
  *
  * @param <T> The type of BaseEntity the list will contain
  */
-public class StreamVariableList<T extends BaseEntity> extends StreamCacheList<T>
+public class StreamVariableList<T extends BaseEntity> extends StreamCacheList<T> 
                                             implements IReadonlyList<T> {
 
     /**

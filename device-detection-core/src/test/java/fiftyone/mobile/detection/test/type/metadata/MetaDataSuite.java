@@ -21,7 +21,6 @@
 
 package fiftyone.mobile.detection.test.type.metadata;
 
-import fiftyone.mobile.detection.test.TestType;
 import fiftyone.mobile.detection.test.type.metadata.enterprise.V31EnterpriseMetadataFileTest;
 import fiftyone.mobile.detection.test.type.metadata.enterprise.V31EnterpriseMetadataMemoryTest;
 import fiftyone.mobile.detection.test.type.metadata.enterprise.V32EnterpriseMetadataFileTest;
@@ -30,7 +29,6 @@ import fiftyone.mobile.detection.test.type.metadata.lite.V31LiteMetadataFileTest
 import fiftyone.mobile.detection.test.type.metadata.lite.V31LiteMetadataMemoryTest;
 import fiftyone.mobile.detection.test.type.metadata.lite.V32LiteMetadataFileTest;
 import fiftyone.mobile.detection.test.type.metadata.lite.V32LiteMetadataMemoryTest;
-import org.junit.experimental.categories.Categories;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
@@ -48,6 +46,5 @@ import org.junit.runners.Suite;
     V32EnterpriseMetadataFileTest.class,
     V31EnterpriseMetadataMemoryTest.class,
     V32EnterpriseMetadataMemoryTest.class})
-@Categories.IncludeCategory(TestType.TypeMetadata.class)
 public class MetaDataSuite {
 }
