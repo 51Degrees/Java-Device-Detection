@@ -68,7 +68,7 @@ class JavascriptProvider {
     }
     
     static void sendCoreJavaScript(HttpServletRequest request, HttpServletResponse response)
-            throws IOException {
+            throws IOException, Exception {
 
         StringBuilder javascript = new StringBuilder(
                 "// Copyright 51 Degrees Mobile Experts Limited\r\n");
@@ -102,7 +102,7 @@ class JavascriptProvider {
      * @throws IOException 
      */
     static void sendFeatureJavaScript(HttpServletRequest request, HttpServletResponse response) 
-            throws IOException {
+            throws IOException, Exception {
         
         StringBuilder javascript = new StringBuilder(
                 "// Copyright 51 Degrees Mobile Experts Limited\r\n");

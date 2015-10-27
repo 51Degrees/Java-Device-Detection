@@ -24,6 +24,7 @@ package fiftyone.mobile.detection.test.type.memory;
 import fiftyone.mobile.detection.Dataset;
 import fiftyone.mobile.detection.Provider;
 import fiftyone.mobile.detection.DetectionTestSupport;
+import fiftyone.mobile.detection.test.TestType;
 import fiftyone.mobile.detection.test.common.MemoryMeasurementProcessor;
 import fiftyone.mobile.detection.test.common.Results;
 import org.junit.After;
@@ -32,7 +33,9 @@ import org.junit.Before;
 import java.io.IOException;
 
 import static org.junit.Assert.assertTrue;
+import org.junit.experimental.categories.Category;
 
+@Category(TestType.TypeMemory.class)
 public abstract class MemoryBase extends DetectionTestSupport {
 
     protected abstract Dataset getDataset();

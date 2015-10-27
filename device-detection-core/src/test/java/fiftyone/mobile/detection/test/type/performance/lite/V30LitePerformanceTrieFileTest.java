@@ -26,7 +26,7 @@ import fiftyone.mobile.detection.test.type.performance.TrieFile;
 import fiftyone.mobile.detection.Filename;
 import org.junit.experimental.categories.Category;
 
-@Category(TestType.DataSetLite.class)
+@Category({TestType.DataSetLite.class, TestType.TypePerformance.class})
 public class V30LitePerformanceTrieFileTest extends TrieFile {
 
     public V30LitePerformanceTrieFileTest() {

@@ -21,6 +21,7 @@
 
 package fiftyone.mobile.detection.test.type.memory;
 
+import fiftyone.mobile.detection.test.TestType;
 import fiftyone.mobile.detection.test.type.memory.enterprise.V31EnterpriseMemoryArrayTest;
 import fiftyone.mobile.detection.test.type.memory.enterprise.V31EnterpriseMemoryFileTest;
 import fiftyone.mobile.detection.test.type.memory.enterprise.V31EnterpriseMemoryMemoryTest;
@@ -29,7 +30,7 @@ import fiftyone.mobile.detection.test.type.memory.enterprise.V32EnterpriseMemory
 import fiftyone.mobile.detection.test.type.memory.enterprise.V32EnterpriseMemoryMemoryTest;
 import fiftyone.mobile.detection.test.type.memory.lite.*;
 import fiftyone.mobile.detection.test.type.memory.premium.*;
-import org.junit.Ignore;
+import org.junit.experimental.categories.Categories;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
@@ -53,5 +54,6 @@ import org.junit.runners.Suite;
     V32EnterpriseMemoryArrayTest.class,
     V31EnterpriseMemoryMemoryTest.class,
     V32EnterpriseMemoryMemoryTest.class})
+@Categories.IncludeCategory(TestType.TypeMemory.class)
 public class MemorySuite {
 }

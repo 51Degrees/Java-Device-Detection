@@ -26,11 +26,14 @@ import fiftyone.mobile.detection.test.common.UserAgentGenerator;
 import fiftyone.properties.MatchMethods;
 import fiftyone.mobile.detection.entities.Property;
 import fiftyone.mobile.detection.factories.MemoryFactory;
+import fiftyone.mobile.detection.test.TestType;
 import java.io.IOException;
 import java.util.Calendar;
 import static org.junit.Assert.fail;
 import org.junit.Before;
+import org.junit.experimental.categories.Category;
 
+@Category(TestType.TypePerformance.class)
 public abstract class MemoryBase extends Base {
 
     public MemoryBase(String dataFile) {
