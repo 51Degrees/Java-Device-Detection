@@ -21,6 +21,9 @@
 package fiftyone.mobile.detection.entities.stream;
 
 import fiftyone.mobile.detection.entities.Modes;
+import fiftyone.mobile.detection.readers.SourceBase;
+import fiftyone.mobile.detection.readers.SourceFile;
+import fiftyone.mobile.detection.readers.SourceMemory;
 import java.io.IOException;
 import java.util.Date;
 
@@ -93,7 +96,6 @@ public class Dataset extends fiftyone.mobile.detection.Dataset {
      */
     @Override
     public void close() throws IOException {
-        pool.close();
         source.close();
         super.close();
     }

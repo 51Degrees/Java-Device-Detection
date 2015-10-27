@@ -21,7 +21,7 @@
 package fiftyone.mobile.detection.entities.stream;
 
 import fiftyone.mobile.detection.readers.BinaryReader;
-import java.io.Closeable;
+import fiftyone.mobile.detection.readers.SourceBase;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.Queue;
@@ -36,18 +36,18 @@ import java.util.concurrent.atomic.AtomicInteger;
  * The Dataset must be disposed of to ensure the readers in the pool 
  * are closed.
  */
-public class Pool implements Closeable {
+public class Pool {
 
     /**
-     * List of readers available to be used.
+     * List of readers available for use.
      */
     private final Queue<BinaryReader> readers = new LinkedList<BinaryReader>();
     
     /**
-     * A pool of file readers to use to read data from the file.
+     * A source of file readers to use to read data from the file.
      */
-    
     private final SourceBase source;
+    
     /**
      * The number of readers that have been created. May not be the same as 
      * the readers in the queue as some may be in use.
@@ -91,30 +91,14 @@ public class Pool implements Closeable {
             readers.add(reader);
         }
     }
-
-    /**
-     * Disposes of the source ensuring all the readers are also closed.
-     * @throws java.io.IOException
-     */
-    @Override
-    public void close() throws IOException {
-        synchronized(readers) {
-            for (BinaryReader reader : readers) {
-                reader.close();
-            }
-            readers.clear();
-        }
-    }
-    
+   
     /**
      * The number of readers that have been created. May not be the same as 
      * the readers in the queue as some may be in use.
      * @return The number of readers that have been created.
      */
     public int getReadersCreated() {
-        synchronized(readers) {
-            return readerCount.intValue();
-        }
+        return readerCount.get();
     }
     
     /**

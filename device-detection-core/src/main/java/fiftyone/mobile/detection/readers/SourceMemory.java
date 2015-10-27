@@ -15,36 +15,47 @@
  * If a copy of the MPL was not distributed with this file, You can obtain
  * one at http://mozilla.org/MPL/2.0/.
  * 
- * This Source Code Form is "Incompatible With Secondary Licenses", as
+ * This Source Code Form is ?Incompatible With Secondary Licenses?, as
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
-package fiftyone.mobile.detection.entities.stream;
+package fiftyone.mobile.detection.readers;
 
-import fiftyone.mobile.detection.readers.BinaryReader;
-import java.io.Closeable;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 
 /**
- * Providers the base for a data source containing the uncompressed data 
- * structures used by the data set.
- * 
- * Must be disposed to ensure that the readers are closed and any resources
- * free for other uses.
+ * Encapsulates a byte array containing the uncompressed data structures 
+ * used by the data set.
  */
-abstract class SourceBase implements Closeable {
+public class SourceMemory extends SourceBase {
     
     /**
-     * Creates a new reader and stores a reference to it.
-     * @return A reader open for read access to the stream
+     * The buffer containing the source data.
      */
-    BinaryReader createReader() throws IOException {
-        return new BinaryReader(createStream());
-    }
-   
+    private final byte[] buffer;
+    
     /**
-     * Creates a new stream from the data source.
-     * @return A freshly opened stream to the data source.
+     * Creates the source from the byte array provided.
+     * @param buffer Byte array source of the data.
      */
-    abstract ByteBuffer createStream() throws IOException;
+    public SourceMemory(byte[] buffer) {
+        this.buffer = buffer;
+    }
+    
+    /**
+     * Creates a new ByteBuffer from the bytes array.
+     * @return new ByteBuffer from the bytes array.
+     */
+    @Override
+    ByteBuffer createStream() {
+        ByteBuffer byteBuffer = ByteBuffer.wrap(buffer);
+        byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
+        return byteBuffer;
+    }
+
+    @Override
+    public void close() throws IOException {
+        // Nothing to do.
+    }
 }

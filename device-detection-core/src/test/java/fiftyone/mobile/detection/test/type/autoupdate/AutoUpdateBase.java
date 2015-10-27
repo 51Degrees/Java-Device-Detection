@@ -42,11 +42,12 @@ public class AutoUpdateBase extends DetectionTestSupport{
     /**
      * The name of the data file to use during testing.
      */
-    private static final String TEST_DATA_FILE = "\\51Degrees.dat";    
+    private static final String TEST_DATA_FILE = "51Degrees.dat";    
     
     /**
      * Make sure the data file gets replaced with a Lite one to emulate an
      * existing Lite data file.
+     * @throws java.io.IOException
      */
     protected void setLiteDataFile() throws IOException {
         String templateFile = System.getProperty("user.dir") 
@@ -62,11 +63,12 @@ public class AutoUpdateBase extends DetectionTestSupport{
      */
     protected String getTestDataFile() {
         File userDir = new File(System.getProperty("user.dir"));
-        return userDir.getAbsolutePath() + TEST_DATA_FILE;
+        return userDir.getAbsolutePath() + "\\" + TEST_DATA_FILE;
     }
     
     /**
-     * Removes all test files from the test directory.
+     * Removes all test files from the test directory. Some of the files may
+     * have just been released
      */
     protected void cleanFiles() {
         File dir = new File(System.getProperty("user.dir"));
@@ -76,7 +78,14 @@ public class AutoUpdateBase extends DetectionTestSupport{
                         { return filename.startsWith(TEST_DATA_FILE); }
     	} );        
         for (final File file : files) {
-            file.delete();
+            int iterations = 0;
+            while (file.exists() &&
+                   iterations < 10) {
+                if (file.delete() == false) {
+                    System.gc();
+                    iterations++;
+                }
+            }
         }
     }
     

@@ -37,11 +37,9 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.TimeZone;
 import java.util.UUID;
 import java.util.concurrent.Semaphore;
 import java.util.regex.Matcher;
@@ -61,9 +59,6 @@ public class AutoUpdate {
      * data should be used to replace the current data file. Using this class
      * avoids the need for two Stream generated data sets to be held at
      * the same time reducing memory consumption.
-     * 
-     * TODO - In future versions the data set could be modified to expose the
-     * property counts without requiring the entire data set to be initialised.
      */
     private static class DataSetAttributes {
         /**
