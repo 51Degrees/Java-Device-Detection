@@ -32,7 +32,8 @@ import java.io.IOException;
 import static org.junit.Assert.*;
 
 /**
- * Basic sanity check that this Example compiles and runs
+ * Tests the example program prior to release. See illustration class for 
+ * documentation and guidance.
  */
 public class OfflineProcessingExampleTest {
 

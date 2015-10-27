@@ -28,7 +28,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
- *
+ * Tests the example program prior to release. See illustration class for 
+ * documentation and guidance.
  */
 public class GettingStartedTest {
     
@@ -46,16 +47,25 @@ public class GettingStartedTest {
     
     @Test
     public void testLiteGettingStartedMobileUA() throws IOException {
-        assertTrue(gs.detect(gs.mobileUserAgent).equals("True"));
+        String result = gs.detect(gs.mobileUserAgent);
+        System.out.println("Mobile User-Agent: " + gs.mobileUserAgent);
+        System.out.println("IsMobile: " + result);
+        assertTrue(result.equals("True"));
     }
     
     @Test
     public void testLiteGettingStartedDesktopUA() throws IOException {
-        assertTrue(gs.detect(gs.desktopUserAgent).equals("False"));
+        String result = gs.detect(gs.desktopUserAgent);
+        System.out.println("Desktop User-Agent: " + gs.desktopUserAgent);
+        System.out.println("IsMobile: " + result);        
+        assertTrue(result.equals("False"));
     }
     
     @Test
     public void testLiteGettingStartedMediahubUA() throws IOException {
-        assertTrue(gs.detect(gs.mediaHubUserAgent).equals("False"));
+        String result = gs.detect(gs.mediaHubUserAgent);
+        System.out.println("MediaHub User-Agent: " + gs.mediaHubUserAgent);
+        System.out.println("IsMobile: " + result);        
+        assertTrue(result.equals("False"));
     }
 }

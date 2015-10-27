@@ -27,13 +27,13 @@ import static fiftyone.properties.MatchMethods.NEAREST;
 import static fiftyone.properties.MatchMethods.NUMERIC;
 import java.io.IOException;
 import org.junit.AfterClass;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
- *
+ * Tests the example program prior to release. See illustration class for 
+ * documentation and guidance.
  */
 public class GettingStartedMatchMetricsTest {
     

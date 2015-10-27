@@ -24,25 +24,26 @@ package fiftyone.device.example;
 import java.io.File;
 
 /**
- * Contains various constants used in the examples and convenience methods for accessing example data files
- * which accommodate the styles of various IDEs in starting programs with the module as the working directory or the
- * root of the project as working directory.
+ * Contains various constants used in the examples and convenience methods for 
+ * accessing example data files which accommodate the styles of various IDEs in 
+ * starting programs with the module as the working directory or the root of the 
+ * project as working directory.
  */
 public class Shared {
     /**
      * A small collection of actual HTTP User-Agent header values for testing
      */
     public static final String[] USERAGENTS = new String[]{
-            // Internet explorer
-            "Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; rv:11.0) like Gecko",
-            // A set top box running Android, not a mobile device.
-            "Mozilla/5.0 (Linux; U; Android 4.1.1; nl-nl; Rikomagic MK802IIIS Build/JRO03H) AppleWebKit/534.30 (KHTML, like Gecko) Version/4.0 Safari/534.30",
-            // Galaxy Note from Samsung.
-            "Mozilla/5.0 (Linux; U; Android 4.1.2; de-de; GT-N8020 Build/JZO54K) AppleWebKit/534.30 (KHTML, like Gecko) Version/4.0 Safari/534.30",
-            // A possible future version of the Galaxy Note to show how numeric fallback handling works.
-            "Mozilla/5.0 (Linux; U; Android 4.1.2; de-de; GT-N8420 Build/JZO54K) AppleWebKit/534.30 (KHTML, like Gecko) Version/4.0 Safari/534.30",
-            // A Chrome HTTP User-Agent.
-            "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1700.107 Safari/537.36"
+        // Internet explorer
+        "Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; rv:11.0) like Gecko",
+        // A set top box running Android, not a mobile device.
+        "Mozilla/5.0 (Linux; U; Android 4.1.1; nl-nl; Rikomagic MK802IIIS Build/JRO03H) AppleWebKit/534.30 (KHTML, like Gecko) Version/4.0 Safari/534.30",
+        // Galaxy Note from Samsung.
+        "Mozilla/5.0 (Linux; U; Android 4.1.2; de-de; GT-N8020 Build/JZO54K) AppleWebKit/534.30 (KHTML, like Gecko) Version/4.0 Safari/534.30",
+        // A possible future version of the Galaxy Note to show how numeric fallback handling works.
+        "Mozilla/5.0 (Linux; U; Android 4.1.2; de-de; GT-N8420 Build/JZO54K) AppleWebKit/534.30 (KHTML, like Gecko) Version/4.0 Safari/534.30",
+        // A Chrome HTTP User-Agent.
+        "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1700.107 Safari/537.36"
     };
 
     public static String GOOD_USER_AGENTS_FILE = "20000 User Agents.csv";
