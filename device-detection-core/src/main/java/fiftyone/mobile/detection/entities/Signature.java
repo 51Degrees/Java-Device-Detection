@@ -44,7 +44,7 @@ import fiftyone.properties.DetectionConstants;
  * signature matching a target user agent. <p> Signatures relate to device
  * properties via profiles. Each signature relates to one profile for each
  * component type. <p> For more information about signature see
- * http://51degrees.com/Support/Documentation/Java <p> Unlike other entities
+ * https://51degrees.com/Support/Documentation/Java <p> Unlike other entities
  * the signature may have a varying number of nodes and profiles associated with
  * it depending on the data set. All signatures within a data set will have the
  * same number of profiles and nodes associated with them all. As these can
@@ -61,14 +61,16 @@ public abstract class Signature extends BaseEntity implements Comparable<Signatu
     /**
      * Offsets to profiles associated with the signature.
      */
-    private int[] profileOffsets;
+    private final int[] profileOffsets;
     /**
      * List of the profiles the signature relates to.
      */
+    @SuppressWarnings("VolatileArrayField")
     private volatile Profile[] profiles;
     /**
      * An array of nodes associated with the signature.
      */
+    @SuppressWarnings("VolatileArrayField")
     private volatile Node[] nodes;
     /**
      * The unique Device Id for the signature.
@@ -82,22 +84,7 @@ public abstract class Signature extends BaseEntity implements Comparable<Signatu
      * The signature as a string.
      */
     private volatile String stringValue;
-    /**
-     * Values associated with the property names.
-     */
-    private volatile SortedList<String, Values> nameToValues;
-    /**
-     * Returned when the property has no values in the provide.
-     */
-    private Value[] emptyValues = new Value[0];
-    /**
-     * A dictionary relating the index of a property to the values returned by 
-     * the signature.
-     */
-    private volatile SortedList<Integer, Values> propertyIndexToValues;
     
-    private volatile SortedList<String, Values> propertyNameToValues;
-
     /**
      * Constructs a new instance of Signature
      *
@@ -109,9 +96,6 @@ public abstract class Signature extends BaseEntity implements Comparable<Signatu
     public Signature(Dataset dataSet, int index, BinaryReader reader) {
         super(dataSet, index);
         profileOffsets = readOffsets(dataSet, reader, dataSet.signatureProfilesCount);
-        this.nodes = null;
-        this.profiles = null;
-        this.nameToValues = null;
     }
     
     /**
@@ -120,6 +104,7 @@ public abstract class Signature extends BaseEntity implements Comparable<Signatu
      * @return dictionary relating the index of a property to the values returned 
      * by the signature.
      */
+    @SuppressWarnings("DoubleCheckedLocking")
     private SortedList<Integer, Values> getPropertyIndexToValues() {
         SortedList<Integer, Values> localPropertyIndexToValues = propertyIndexToValues;
         if (localPropertyIndexToValues == null) {
@@ -133,12 +118,14 @@ public abstract class Signature extends BaseEntity implements Comparable<Signatu
         }
         return localPropertyIndexToValues;
     }
+    private volatile SortedList<Integer, Values> propertyIndexToValues;
     
     /**
      * A hash map relating the name of a property to the values returned by 
      * the signature. Used to speed up subsequent data processing.
      * @return a hash map with values mapped to specific property.
      */
+    @SuppressWarnings("DoubleCheckedLocking")
     private SortedList<String, Values> getPropertyNameToValues() {
         SortedList<String, Values> localPropertyNameToValues = propertyNameToValues;
         if (localPropertyNameToValues == null) {
@@ -152,12 +139,14 @@ public abstract class Signature extends BaseEntity implements Comparable<Signatu
         }
         return localPropertyNameToValues;
     }
+    private volatile SortedList<String, Values> propertyNameToValues;
     
     /**
      * List of the profiles the signature relates to.
      * @return List of the profiles the signature relates to
      * @throws IOException indicates an I/O exception occurred
      */
+    @SuppressWarnings("DoubleCheckedLocking")
     public Profile[] getProfiles() throws IOException {
         Profile[] localProfiles = profiles;
         if (localProfiles == null) {
@@ -176,6 +165,7 @@ public abstract class Signature extends BaseEntity implements Comparable<Signatu
      * @return unique Device Id for the signature
      * @throws IOException indicates an I/O exception occurred
      */
+    @SuppressWarnings("DoubleCheckedLocking")
     public String getDeviceId() throws IOException {
         String localDeviceId = deviceId;
         if (localDeviceId == null) {
@@ -194,7 +184,9 @@ public abstract class Signature extends BaseEntity implements Comparable<Signatu
      * @param property The property whose values are required
      * @return Value(s) associated with the property, or null if the property 
      * does not exist
+     * @throws java.io.IOException
      */
+    @SuppressWarnings("DoubleCheckedLocking")
     public Values getValues(Property property) throws IOException {
         Values localValues = propertyIndexToValues.get(property.index);
         if (localValues == null) {
@@ -216,6 +208,7 @@ public abstract class Signature extends BaseEntity implements Comparable<Signatu
      * does not exist.
      * @throws java.io.IOException
      */
+    @SuppressWarnings("DoubleCheckedLocking")
     public Values getValues(String propertyName) throws IOException {
         Values localValues = getPropertyNameToValues().get(propertyName);
         if (localValues == null) {
@@ -258,6 +251,7 @@ public abstract class Signature extends BaseEntity implements Comparable<Signatu
      * @return an array of values associated with the signature.
      * @throws IOException 
      */
+    @SuppressWarnings("DoubleCheckedLocking")
     public Value[] getValues() throws IOException {
         Value[] localValues = values;
         if (localValues == null) {
@@ -270,6 +264,7 @@ public abstract class Signature extends BaseEntity implements Comparable<Signatu
         }
         return localValues;
     }
+    @SuppressWarnings("VolatileArrayField")
     private volatile Value[] values;
     
     /**
@@ -307,7 +302,9 @@ public abstract class Signature extends BaseEntity implements Comparable<Signatu
     /**
      * An array of nodes associated with the signature.
      * @return  An array of nodes associated with the signature.
+     * @throws java.io.IOException
      */
+    @SuppressWarnings("DoubleCheckedLocking")
     public Node[] getNodes() throws IOException {
         Node[] localNodes = nodes;
         if (localNodes == null) {
@@ -331,7 +328,10 @@ public abstract class Signature extends BaseEntity implements Comparable<Signatu
      * @param length The number of offsets to read in
      * @return An array of the offsets as integers read from the reader
      */
-    protected int[] readOffsets(Dataset dataSet, BinaryReader reader, int length) {
+    protected static int[] readOffsets(
+            Dataset dataSet, 
+            BinaryReader reader, 
+            int length) {
         reader.list.clear();
         for (int i = 0; i < length; i++) {
             int profileIndex = reader.readInt32();
@@ -423,8 +423,8 @@ public abstract class Signature extends BaseEntity implements Comparable<Signatu
     private Profile[] getProfiles(int[] profileIndexes) throws IOException {
         List<Profile> prof = new ArrayList<Profile>();
 
-        for (int index : profileIndexes) {
-            prof.add(getDataSet().getProfiles().get(index));
+        for (int profileIndex : profileIndexes) {
+            prof.add(getDataSet().getProfiles().get(profileIndex));
         }
         return prof.toArray(new Profile[prof.size()]);
     }
@@ -493,6 +493,7 @@ public abstract class Signature extends BaseEntity implements Comparable<Signatu
      * @return The signature as a string
      */
     @Override
+    @SuppressWarnings("DoubleCheckedLocking")
     public String toString() {
         String localStringValue = stringValue;
         if (localStringValue == null) {
