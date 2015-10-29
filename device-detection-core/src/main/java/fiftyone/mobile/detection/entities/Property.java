@@ -83,6 +83,7 @@ public class Property extends BaseEntity implements Comparable<Property> {
      * @return an array of maps associated with the property.
      * @throws java.io.IOException
      */
+    @SuppressWarnings("DoubleCheckedLocking")
     public String[] getMaps() throws IOException {
         String[] localMaps = maps;
         if (localMaps == null) {
@@ -99,6 +100,7 @@ public class Property extends BaseEntity implements Comparable<Property> {
         }
         return localMaps;
     }
+    @SuppressWarnings("VolatileArrayField")
     private volatile String[] maps;
     private final int mapCount;
     private final int firstMapIndex;
@@ -134,6 +136,7 @@ public class Property extends BaseEntity implements Comparable<Property> {
      * @return name of the property
      * @throws java.io.IOException indicates an I/O exception occurred
      */
+    @SuppressWarnings("DoubleCheckedLocking")
     public String getName() throws IOException {
         String localName = name;
         if (localName == null) {
@@ -159,6 +162,7 @@ public class Property extends BaseEntity implements Comparable<Property> {
      * @return value the property returns if a strongly type value is not available
      * @throws java.io.IOException indicates an I/O exception occurred
      */
+    @SuppressWarnings("DoubleCheckedLocking")
     public Value getDefaultValue() throws IOException {
         Value localDefaultValue = defaultValue;
         if (localDefaultValue == null &&
@@ -180,6 +184,7 @@ public class Property extends BaseEntity implements Comparable<Property> {
      * @return component the property relates to
      * @throws java.io.IOException indicates an I/O exception occurred
      */
+    @SuppressWarnings("DoubleCheckedLocking")
     public Component getComponent() throws IOException {
         Component localComponent = component;
         if (localComponent == null) {
@@ -201,6 +206,7 @@ public class Property extends BaseEntity implements Comparable<Property> {
      * @return array of values the property has available
      * @throws IOException indicates an I/O exception occurred
      */
+    @SuppressWarnings("DoubleCheckedLocking")
     public Values getValues() throws IOException {
         Values localValues = values;
         if (localValues == null) {
@@ -223,6 +229,7 @@ public class Property extends BaseEntity implements Comparable<Property> {
      * via a user interface.
      * @throws IOException indicates an I/O exception occurred
      */
+    @SuppressWarnings("DoubleCheckedLocking")
     public String getDescription() throws IOException {
         String localDescription = description;
         if (localDescription == null && descriptionOffset >= 0) {
@@ -245,6 +252,7 @@ public class Property extends BaseEntity implements Comparable<Property> {
      * @return category the property relates to within the data set
      * @throws IOException indicates an I/O exception occurred
      */
+    @SuppressWarnings("DoubleCheckedLocking")
     public String getCategory() throws IOException {
         String localCategory = category;
         if (localCategory == null && categoryOffset >= 0) {
@@ -267,6 +275,7 @@ public class Property extends BaseEntity implements Comparable<Property> {
      * @return URL to more information about the property
      * @throws IOException indicates an I/O exception occurred
      */
+    @SuppressWarnings("DoubleCheckedLocking")
     public URL getUrl() throws IOException {
         URL localUrl = url;
         if (localUrl == null && urlOffset >= 0) {

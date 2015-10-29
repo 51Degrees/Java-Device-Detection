@@ -47,30 +47,38 @@ public abstract class Component extends BaseEntity
      * The default profile that should be returned for the component.
      */
     private volatile Profile defaultProfile;
+    
     /**
      * Offset for the default profile that should be returned for the component.
      */
     private final int defaultProfileOffset;
+    
     /**
      * The unique name of the component.
      */
     private volatile String name;
+    
     /**
      * Offset for the unique name of the component.
      */
     private final int nameOffset;
+    
     /**
      * An array of profiles associated with the component.
      */
+    @SuppressWarnings("VolatileArrayField")
     private volatile Profile[] profiles;
+    
     /**
      * The unique Id of the component. Does not change between different data
      * sets.
      */
     private final int componentId;
+    
     /**
      * Array of properties associated with the component.
      */
+    @SuppressWarnings("VolatileArrayField")
     private volatile Property[] properties;
 
     /**
@@ -104,6 +112,7 @@ public abstract class Component extends BaseEntity
      * @return default profile that should be returned for the component
      * @throws java.io.IOException indicates an I/O exception occurred
      */
+    @SuppressWarnings("DoubleCheckedLocking")
     public Profile getDefaultProfile() throws IOException {
         Profile localDefaultProfile = defaultProfile;
         if (localDefaultProfile == null) {
@@ -123,6 +132,7 @@ public abstract class Component extends BaseEntity
      * @return an array of the profiles.
      * @throws java.io.IOException indicates an I/O exception occurred
      */
+    @SuppressWarnings("DoubleCheckedLocking")
     public Profile[] getProfiles() throws IOException {
         Profile[] localProfiles = profiles;
         if (localProfiles == null) {
@@ -142,6 +152,7 @@ public abstract class Component extends BaseEntity
      * @return array of properties the component relates to.
      * @throws IOException indicates an I/O exception occurred
      */
+    @SuppressWarnings("DoubleCheckedLocking")
     public Property[] getProperties() throws IOException {
         Property[] localProperties = properties;
         if (localProperties == null) {
@@ -173,6 +184,7 @@ public abstract class Component extends BaseEntity
      * @return unique name of the component
      * @throws java.io.IOException indicates an I/O exception occurred 
      */
+    @SuppressWarnings("DoubleCheckedLocking")
     public String getName() throws IOException {
         String localName = name;
         if (localName == null) {

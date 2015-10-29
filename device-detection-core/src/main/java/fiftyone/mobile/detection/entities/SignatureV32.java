@@ -29,24 +29,31 @@ import java.io.IOException;
  * Signature of a user agent in version 3.2 data format.
  */
 public class SignatureV32 extends Signature {
+    
     /**
      * List of the node offsets the signature relates to ordered by 
      * offset of the node.
      */
+    @SuppressWarnings("VolatileArrayField")
     private volatile int[] nodeOffsets;
+    
     /**
      * The rank of the signature.
      */
     private final int rank;
+    
     /**
      * The index in the "DataSet.SignatureNodeOffsets list of the first
      * node associated with this signature.
      */
     private final int firstNodeOffsetIndex;
+    
     /**
      * Flags used to provide extra details about the signature.
+     * Will be used in a future version of the API.
      */
     private final byte flags;
+    
     /**
      * The number of nodes associated with the signature.
      */

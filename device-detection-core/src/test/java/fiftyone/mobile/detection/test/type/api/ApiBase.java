@@ -26,6 +26,7 @@ import fiftyone.mobile.detection.Match;
 import fiftyone.mobile.detection.Provider;
 import fiftyone.mobile.detection.entities.Property;
 import fiftyone.mobile.detection.DetectionTestSupport;
+import fiftyone.mobile.detection.entities.Values;
 import fiftyone.mobile.detection.test.TestType;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -35,6 +36,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static fiftyone.mobile.detection.test.common.UserAgentGenerator.getRandomUserAgent;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 /**
@@ -126,11 +128,12 @@ public abstract class ApiBase extends DetectionTestSupport {
         long checksum = 0;
         for (Property property : match.getDataSet().getProperties()) {
             String propName = property.getName();
-            logger.debug("Property {}: {}", propName, match.getValues(property));
+            Values values = match.getValues(property);
+            logger.debug("Property {}: {}", propName, values);
             if (match.getValues(property) == null) {
                 fail("Null value found for property " + propName );
             } else {
-                checksum += match.getValues(propName).hashCode();
+                checksum += values.hashCode();
             }
         }
         logger.debug("Checksum: {}", checksum);

@@ -58,28 +58,34 @@ import fiftyone.properties.DetectionConstants;
  * rapid comparison with a target user agent.
  */
 public abstract class Signature extends BaseEntity implements Comparable<Signature> {
+    
     /**
      * Offsets to profiles associated with the signature.
      */
     private final int[] profileOffsets;
+    
     /**
      * List of the profiles the signature relates to.
      */
     @SuppressWarnings("VolatileArrayField")
     private volatile Profile[] profiles;
+    
     /**
      * An array of nodes associated with the signature.
      */
     @SuppressWarnings("VolatileArrayField")
     private volatile Node[] nodes;
+    
     /**
      * The unique Device Id for the signature.
      */
     private volatile String deviceId;
+    
     /**
      * The length in bytes of the signature.
      */
     private volatile int _length;
+    
     /**
      * The signature as a string.
      */

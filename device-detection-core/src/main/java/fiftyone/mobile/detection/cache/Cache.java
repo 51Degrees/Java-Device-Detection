@@ -21,6 +21,7 @@
 package fiftyone.mobile.detection.cache;
 
 import java.io.IOException;
+import java.util.LinkedList;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -43,43 +44,44 @@ import java.util.concurrent.atomic.AtomicLong;
  *
  * @param <K> Key for the cache items.
  * @param <V> Value for the cache items.
- * @param <S> Source used to fetch items not in the cache.
  */
-public class Cache<K, V, S extends ICacheLoader<K, V>> {
+public class Cache<K, V> {
+    
+    /**
+     * Used to synchronise access to the the dictionary and linked list in the
+     * function of the cache.
+     */
+    private final Object writeLock = new Object();
     
     /**
      * Loader used to fetch items not in the cache.
      */
-    private final S loader;
+    private final ICacheLoader<K, V> loader;
+
     /**
-     * The second hashmap of cached items.
+     * Hash map of keys to item values.
      */
-    volatile private ConcurrentHashMap<K, V> back;
+    private final ConcurrentHashMap<K, V> hashMap;
+
     /**
-     * The first hashmap of cached items.
+     * Linked list of keys in the cache. 
      */
-    volatile private ConcurrentHashMap<K, V> front;
+    private final LinkedList<K> linkedList;
+    
     /**
-     * When this number of items are in the front hashmap the cache should be 
-     * switched.
+     * The number of items the cache lists should have capacity for.
      */
-    private final int cacheServiceSize;
+    private final int cacheSize;
+    
     /**
      * The number of requests made to the cache.
      */
     private final AtomicLong requests = new AtomicLong(0);
+    
     /**
      * The number of times an item was not available.
      */
     private final AtomicLong misses = new AtomicLong(0);
-    /**
-     * The number of times the cache was switched.
-     */
-    private final AtomicLong switches = new AtomicLong(0);
-    /**
-     * Indicates a switch operation is in progress.
-     */
-    volatile private boolean switching = false;
 
     /**
      * Constructs a new instance of the cache.
@@ -94,11 +96,11 @@ public class Cache<K, V, S extends ICacheLoader<K, V>> {
      * @param cacheSize The number of items to store in the cache.
      * @param loader used to fetch items not in the cache.
      */    
-    public Cache(int cacheSize, S loader) {
-        cacheServiceSize = (cacheSize / 2);
-        front = new ConcurrentHashMap<K, V>(cacheSize);
-        back = new ConcurrentHashMap<K, V>(cacheSize);
+    public Cache(int cacheSize, ICacheLoader<K,V> loader) {
+        this.cacheSize = cacheSize;
         this.loader = loader;
+        this.hashMap = new ConcurrentHashMap<K,V>(cacheSize);
+        this.linkedList = new LinkedList<K>();
     }
 
     /**
@@ -123,14 +125,6 @@ public class Cache<K, V, S extends ICacheLoader<K, V>> {
     }
     
     /**
-     * Returns the number of times active and inactive lists had to be swapped.
-     * @return the number of times active and inactive lists had to be swapped.
-     */
-    public int getCacheSwitches() {
-        return this.switches.intValue();
-    }
-    
-    /**
      * Retrieves the value for key requested. If the key does not exist
      * in the cache then the Fetch method of the cache's loader is used to
      * retrieve the value.
@@ -151,69 +145,57 @@ public class Cache<K, V, S extends ICacheLoader<K, V>> {
      * @return An instance of the value associated with the key
      * @throws java.io.IOException
      */
-    public V get(K key, S loader) throws IOException {
-        V value = front.get(key);
-        if (value == null) {
-            value = back.get(key);
-            if (value == null) {
-                value = loader.fetch(key);
-                back.putIfAbsent(key, value);
-                this.misses.incrementAndGet();
+    public V get(K key, ICacheLoader<K,V> loader) throws IOException {
+        requests.incrementAndGet();
+        V item = hashMap.get(key);
+        if (item == null) {
+            // Get the item fresh from the loader before trying
+            // to write the item to the cache.
+            misses.incrementAndGet();
+            V newItem = loader.fetch(key);
+
+            synchronized(writeLock) {
+                // If the node has already been added to the dictionary
+                // then get it, otherise add the one just fetched.
+                item = hashMap.putIfAbsent(key, newItem);
+
+                // If the node got from the dictionary is the new one
+                // just feteched then it needs to be added to the linked
+                // list. The value just added to the hash map needs to set
+                // as the returned item.
+                if (item == null)
+                {
+                    item = newItem;
+                    linkedList.add(key);
+
+                    // Check to see if the cache has grown and if so remove
+                    // the last element.
+                    removeLeastRecent();
+                }
             }
-            front.putIfAbsent(key, value);
-            checkForService();
         }
-        this.requests.incrementAndGet();
-        return value;
+        return item;
     }
     
+    /**
+     * Removes the last item in the cache if the cache size is reached.
+     */
+    private void removeLeastRecent() {
+        if (linkedList.size() > cacheSize) {
+            hashMap.remove(linkedList.removeLast());
+            assert linkedList.size() == cacheSize;
+            assert hashMap.size() == cacheSize;
+        }
+    }
+
     /**
      * Resets the stats for the cache.
      */
     public void resetCache()
     {
-        this.back.clear();
-        this.front.clear();
+        this.hashMap.clear();
+        this.linkedList.clear();
         misses.set(0);
         requests.set(0);
-        switches.set(0);
-    }
-
-    /// <summary>
-    /// Check to see if the Front and Back dictionaries should be switched
-    /// over.
-    /// </summary>
-    private void checkForService()
-    {
-        if (front.size() > cacheServiceSize &&
-            switching == false)
-        {
-            synchronized(this)
-            {
-                if (front.size() > cacheServiceSize &&
-                    switching == false)
-                {
-                    service();
-                }
-            }
-        }
-    }
-
-    /**
-     * Service the cache by switching the lists if the next service time has
-     * passed.
-     */
-    private void service() {
-        // Switch the cache dictionaries over.
-        ConcurrentHashMap<K, V> temp = front;
-        front = back;
-        back = temp;
-
-        // Clear the back cache before continuing.
-        front.clear();
-        switches.incrementAndGet();
-        
-        // Make sure future service will be able to access this block of code.
-        switching = false;
     }
 }
