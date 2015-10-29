@@ -21,7 +21,6 @@
 package fiftyone.mobile.detection.cache;
 
 import java.io.IOException;
-import java.util.LinkedList;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -46,7 +45,102 @@ import java.util.concurrent.atomic.AtomicLong;
  * @param <V> Value for the cache items.
  */
 public class Cache<K, V> {
+   
+    /**
+     * A key value pair for cached items.
+     */
+    class KeyValuePair {
+        final K key;
+        final V value;
+        public KeyValuePair(K key, V value) {
+            this.key = key;
+            this.value = value;
+        }
+    }
+
+    class Node {
+        final KeyValuePair item;
+        Node next;
+        Node previous;
+        DoublyLinkedList list;
+
+        public DoublyLinkedList getList() {
+            return list;
+        }
+
+        public Node(KeyValuePair item) {
+            this.item = item;
+        }
+    }
     
+    class DoublyLinkedList<KeyValuePair> {
+
+        Node first = null;
+        Node last = null;
+
+        void clear() {
+            first = null;
+            last = null;
+        }
+        
+        void addFirst(Node newNode) {
+            newNode.list = linkedList;
+            if (first == null) {
+                newNode.next = null;
+                newNode.previous = null;
+                first = newNode;
+                last = newNode;
+            } else {
+                first.previous = newNode;
+                newNode.next = first;
+                newNode.previous = null;
+                first = newNode;
+            }
+        }
+
+        void remove(Node node) {
+            if (node.previous != null) {
+                node.previous.next = node.next;
+            }
+            if (node.next != null) {
+                node.next.previous = node.previous;
+            }
+            if (node == first) {
+                first = first.next;
+            }
+            if (node == last) {
+                last = last.previous;
+            }
+            node.list = null;
+        }
+        
+        Node removeFirst() {
+            Node result = first;
+            if (first.next == null) {
+                first = null;
+                last = null;
+            } else {
+                first = first.next;
+                first.previous = null;
+            }
+            result.list = null;
+            return first;
+        }
+
+        Node removeLast() {
+            Node result = last;
+            if (first.next == null) {
+                first = null;
+                last = null;
+            } else {
+                last = last.previous;
+                last.next = null;
+            }
+            result.list = null;
+            return result;
+        }
+    }    
+
     /**
      * Used to synchronise access to the the dictionary and linked list in the
      * function of the cache.
@@ -61,12 +155,13 @@ public class Cache<K, V> {
     /**
      * Hash map of keys to item values.
      */
-    private final ConcurrentHashMap<K, V> hashMap;
+    private final ConcurrentHashMap<K, Node> hashMap;
 
     /**
-     * Linked list of keys in the cache. 
+     * A doubly linked list of nodes. Not marked private so that the unit
+     * test can check the elements.
      */
-    private final LinkedList<K> linkedList;
+    final DoublyLinkedList linkedList;
     
     /**
      * The number of items the cache lists should have capacity for.
@@ -99,8 +194,8 @@ public class Cache<K, V> {
     public Cache(int cacheSize, ICacheLoader<K,V> loader) {
         this.cacheSize = cacheSize;
         this.loader = loader;
-        this.hashMap = new ConcurrentHashMap<K,V>(cacheSize);
-        this.linkedList = new LinkedList<K>();
+        this.hashMap = new ConcurrentHashMap<K,Node>(cacheSize);
+        this.linkedList = new DoublyLinkedList();
     }
 
     /**
@@ -146,27 +241,32 @@ public class Cache<K, V> {
      * @throws java.io.IOException
      */
     public V get(K key, ICacheLoader<K,V> loader) throws IOException {
+        boolean added = false;
         requests.incrementAndGet();
-        V item = hashMap.get(key);
-        if (item == null) {
+        Node node = hashMap.get(key);
+        if (node == null) {
             // Get the item fresh from the loader before trying
             // to write the item to the cache.
             misses.incrementAndGet();
-            V newItem = loader.fetch(key);
+            V value = loader.fetch(key);
 
             synchronized(writeLock) {
                 // If the node has already been added to the dictionary
                 // then get it, otherise add the one just fetched.
-                item = hashMap.putIfAbsent(key, newItem);
+                Node newItem = new Node(new KeyValuePair(key, value));
+                node = hashMap.putIfAbsent(key, newItem);
 
                 // If the node got from the dictionary is the new one
                 // just feteched then it needs to be added to the linked
                 // list. The value just added to the hash map needs to set
                 // as the returned item.
-                if (item == null)
+                if (node == null)
                 {
-                    item = newItem;
-                    linkedList.add(key);
+                    added = true;
+                    node = newItem;
+                    
+                    // Add the key to the head of the linked list.
+                    linkedList.addFirst(node);
 
                     // Check to see if the cache has grown and if so remove
                     // the last element.
@@ -174,16 +274,26 @@ public class Cache<K, V> {
                 }
             }
         }
-        return item;
+        if (added == false) {
+            // The item is in the dictionary. Check it's still in the list
+            // and if so them move the key to the head of the list.            
+            synchronized(writeLock) {
+                if (node.list != null) {
+                    linkedList.remove(node);
+                    linkedList.addFirst(node);
+                }
+            }
+        }
+        return node.item.value;
     }
     
     /**
      * Removes the last item in the cache if the cache size is reached.
      */
     private void removeLeastRecent() {
-        if (linkedList.size() > cacheSize) {
-            hashMap.remove(linkedList.removeLast());
-            assert linkedList.size() == cacheSize;
+        if (hashMap.size() > cacheSize) {
+            Node removedNode = linkedList.removeLast();
+            assert hashMap.remove(removedNode.item.key) != null;
             assert hashMap.size() == cacheSize;
         }
     }
