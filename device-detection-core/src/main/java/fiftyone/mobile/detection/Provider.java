@@ -39,7 +39,7 @@ public class Provider {
     /**
      * A cache for user agents if required.
      */
-    private Cache<String, MatchResult, MatchState> userAgentCache = null;
+    private Cache<String, MatchResult> userAgentCache = null;
 
     /**
      * True if the detection time should be recorded in the Elapsed property
@@ -105,7 +105,7 @@ public class Provider {
         this.methodCounts.add(MatchMethods.EXACT, 0l);
         this.methodCounts.add(MatchMethods.NONE, 0l);
         
-        userAgentCache = cacheSize > 0 ? new Cache<String, MatchResult, MatchState>(cacheSize) : null;
+        userAgentCache = cacheSize > 0 ? new Cache<String, MatchResult>(cacheSize) : null;
     }
 
     /**
@@ -122,13 +122,12 @@ public class Provider {
     
     /**
      * @return the number of times the user agents cache was switched.
+     * 
+     * Caching switching is no longer used.
      */
+    @Deprecated
     public long getCacheSwitches() {
-        if (userAgentCache != null) {
-            return userAgentCache.getCacheSwitches();
-        } else {
-            return 0;
-        }
+        return 0;
     }
     
     /**

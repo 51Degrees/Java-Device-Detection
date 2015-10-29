@@ -69,23 +69,26 @@ public class AutoUpdateTest extends AutoUpdateBase {
     }
     
     private void update() throws NoSuchAlgorithmException, IllegalArgumentException, Exception {
-        AutoUpdateStatus result = AutoUpdate.update(
-                super.getLicenceKeys(), 
-                super.getTestDataFile());
-        if (result != AUTO_UPDATE_SUCCESS) {
-            logger.debug("Status code was: " + result.toString());
-            fail("Data file update process failed.");
-        }
-        Dataset dataSet = MemoryFactory.create(super.getTestDataFile());
-        try {
-            if (dataSet.getName().equals("Lite"))
-            {
-                logger.debug("Data set name was: " + dataSet.getName());
-                fail("Data set name was 'Lite'.");
+        String[] licenceKeys = super.getLicenceKeys();
+        if (licenceKeys.length > 0) {
+            AutoUpdateStatus result = AutoUpdate.update(
+                    licenceKeys, 
+                    super.getTestDataFile());
+            if (result != AUTO_UPDATE_SUCCESS) {
+                logger.debug("Status code was: " + result.toString());
+                fail("Data file update process failed.");
             }
+            Dataset dataSet = MemoryFactory.create(super.getTestDataFile());
+            try {
+                if (dataSet.getName().equals("Lite"))
+                {
+                    logger.debug("Data set name was: " + dataSet.getName());
+                    fail("Data set name was 'Lite'.");
+                }
+            }
+            finally {
+                dataSet.close();
+            }        
         }
-        finally {
-            dataSet.close();
-        }        
     }
 }

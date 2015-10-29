@@ -144,7 +144,7 @@ public class AutoUpdateBase extends DetectionTestSupport{
         // Check that there are licence keys. Without these no update test can
         // run.
         if (licenceKeys.isEmpty()) {
-            fail("No licence keys were available in folder '" + 
+            logger.warn("SKIPPED: No licence keys were available in folder '" + 
                 System.getProperty("user.dir") + "'. See " +
                 "https://51degrees.com/compare-data-options to acquire valid " +
                 "licence keys.");

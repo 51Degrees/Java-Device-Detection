@@ -60,6 +60,7 @@ public class Value extends BaseEntity implements Comparable<Value> {
      * @return The name of the value.
      * @throws IOException indicates an I/O exception occurred
      */
+    @SuppressWarnings("DoubleCheckedLocking")
     public String getName() throws IOException {
         String localName = name;
         if (localName == null) {
@@ -79,6 +80,7 @@ public class Value extends BaseEntity implements Comparable<Value> {
      * @return Array containing the signatures that the value is associated with.
      * @throws IOException indicates an I/O exception occurred
      */
+    @SuppressWarnings("DoubleCheckedLocking")
     public Signature[] getSignatures() throws IOException {
         Signature[] localSignatures = signatures;
         if (localSignatures == null) {
@@ -91,12 +93,14 @@ public class Value extends BaseEntity implements Comparable<Value> {
         }
         return localSignatures;
     }
+    @SuppressWarnings("VolatileArrayField")
     private volatile Signature[] signatures;
 
     /**
      * @return Array containing the profiles the value is associated with.
      * @throws IOException indicates an I/O exception occurred
      */
+    @SuppressWarnings("DoubleCheckedLocking")
     public Profile[] getProfiles() throws IOException {
         Profile[] localProfiles = profiles;
         if (localProfiles == null) {
@@ -109,12 +113,14 @@ public class Value extends BaseEntity implements Comparable<Value> {
         }
         return localProfiles;
     }
+    @SuppressWarnings("VolatileArrayField")
     private volatile Profile[] profiles;
 
     /**
      * @return The property the value relates to.
      * @throws IOException indicates an I/O exception occurred
      */
+    @SuppressWarnings("DoubleCheckedLocking")
     public Property getProperty() throws IOException {
         Property localProperty = property;
         if (localProperty == null) {
@@ -143,6 +149,7 @@ public class Value extends BaseEntity implements Comparable<Value> {
      * via a user interface.
      * @throws IOException indicates an I/O exception occurred
      */
+    @SuppressWarnings("DoubleCheckedLocking")
     public String getDescription() throws IOException {
         String localDescription = description;
         if (descriptionIndex >= 0 && localDescription == null) {
@@ -163,6 +170,7 @@ public class Value extends BaseEntity implements Comparable<Value> {
      * @return A URL to more information about the value if present.
      * @throws IOException indicates an I/O exception occurred
      */
+    @SuppressWarnings("DoubleCheckedLocking")
     public URL getUrl() throws IOException {
         URL localUrl = url;
         if (urlIndex >= 0 && localUrl == null) {
@@ -301,6 +309,7 @@ public class Value extends BaseEntity implements Comparable<Value> {
      * @return Returns the value as a number.
      * @throws IOException indicates an I/O exception occurred
      */
+    @SuppressWarnings("DoubleCheckedLocking")
     public double toDouble() throws IOException {
         Double localAsNumber = asNumber;
         if (localAsNumber == null) {
@@ -327,6 +336,7 @@ public class Value extends BaseEntity implements Comparable<Value> {
      * @return Returns the value as a boolean.
      * @throws IOException indicates an I/O exception occurred
      */
+    @SuppressWarnings("DoubleCheckedLocking")
     public boolean toBool() throws IOException {
         Boolean localAsBool = asBool;
         if (localAsBool == null) {
@@ -364,6 +374,7 @@ public class Value extends BaseEntity implements Comparable<Value> {
      * used. If no conversion is possible 0 is returned.
      * @throws java.io.IOException
      */
+    @SuppressWarnings("DoubleCheckedLocking")
     public int toInt() throws IOException {
         Integer localAsInt = asInt;
         if (localAsInt == null) {

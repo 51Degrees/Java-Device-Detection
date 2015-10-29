@@ -40,7 +40,7 @@ import java.io.IOException;
 @Category(TestType.DataSetLite.class)
 public class V31LiteApiTest extends ApiBase {
 
-    private static String filename= Filename.LITE_PATTERN_V31;
+    private static final String filename= Filename.LITE_PATTERN_V31;
     private static Dataset dataset;
     private static Provider provider;
 

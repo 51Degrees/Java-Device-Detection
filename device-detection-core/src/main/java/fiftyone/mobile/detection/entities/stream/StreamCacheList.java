@@ -82,8 +82,9 @@ public abstract class StreamCacheList<T extends BaseEntity>
      * @return The number of times the cache has been switched.
      */
     @Override
+    @Deprecated
     public long getSwitches() {
-        return (cache != null ? cache.getCacheSwitches() : 0);
+        return 0;
     }
 
     /**

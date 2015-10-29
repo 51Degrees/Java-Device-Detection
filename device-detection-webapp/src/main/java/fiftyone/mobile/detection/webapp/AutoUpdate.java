@@ -20,7 +20,6 @@
  * ********************************************************************* */
 package fiftyone.mobile.detection.webapp;
 
-import fiftyone.mobile.detection.AutoUpdateException;
 import fiftyone.mobile.detection.Dataset;
 import fiftyone.mobile.detection.factories.StreamFactory;
 import java.io.File;

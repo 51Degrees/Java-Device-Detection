@@ -39,6 +39,7 @@ public class NodeV31 extends Node {
     /**
      * An array of the ranked signature indexes for the node.
      */
+    @SuppressWarnings("VolatileArrayField")
     private volatile int[] rankedSignatureIndexes;
     
     /**
@@ -47,6 +48,7 @@ public class NodeV31 extends Node {
      * @param offset The offset in the data structure to the node.
      * @param reader Reader connected to the source data structure and 
      * positioned to start reading.
+     * @throws java.io.IOException
      */
     public NodeV31(fiftyone.mobile.detection.entities.stream.Dataset dataSet, 
             int offset, BinaryReader reader) throws IOException {
@@ -73,8 +75,10 @@ public class NodeV31 extends Node {
 
     /**
      * @return An array of the ranked signature indexes for the node.
+     * @throws java.io.IOException
      */
     @Override
+    @SuppressWarnings("DoubleCheckedLocking")
     public int[] getRankedSignatureIndexes() throws IOException {
         int[] localRankedSignatureIndexes = rankedSignatureIndexes;
         if (localRankedSignatureIndexes == null) {
