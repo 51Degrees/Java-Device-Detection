@@ -48,7 +48,7 @@ public class SignatureV31 extends Signature {
      */
     public SignatureV31(Dataset ds, int index, BinaryReader reader) {
         super(ds, index, reader);
-        nodeOffsets = readOffsets(ds, reader, ds.signatureNodesCount);
+        nodeOffsets = Signature.readOffsets(ds, reader, ds.signatureNodesCount);
     }
 
     /**

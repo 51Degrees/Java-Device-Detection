@@ -40,7 +40,7 @@ import java.io.IOException;
 @Category(TestType.DataSetLite.class)
 public class V32LiteApiTest extends ApiBase {
 
-    private static String filename = Filename.LITE_PATTERN_V32;
+    private static final String filename = Filename.LITE_PATTERN_V32;
     private static Dataset dataset;
     private static Provider provider;
 
@@ -59,7 +59,9 @@ public class V32LiteApiTest extends ApiBase {
 
     @AfterClass
     public static void dispose() throws IOException {
-        if (dataset != null) dataset.close();
+        if (dataset != null) {
+            dataset.close();
+        }
         dataset = null;
         provider = null;
     }

@@ -43,43 +43,140 @@ import java.util.concurrent.atomic.AtomicLong;
  *
  * @param <K> Key for the cache items.
  * @param <V> Value for the cache items.
- * @param <S> Source used to fetch items not in the cache.
  */
-public class Cache<K, V, S extends ICacheLoader<K, V>> {
+public class Cache<K, V> {
+   
+    /**
+     * A key value pair for cached items.
+     */
+    class KeyValuePair {
+        final K key;
+        final V value;
+        public KeyValuePair(K key, V value) {
+            this.key = key;
+            this.value = value;
+        }
+    }
+
+    class Node {
+        final KeyValuePair item;
+        Node next;
+        Node previous;
+        DoublyLinkedList list;
+
+        public DoublyLinkedList getList() {
+            return list;
+        }
+
+        public Node(KeyValuePair item) {
+            this.item = item;
+        }
+    }
+    
+    class DoublyLinkedList<KeyValuePair> {
+
+        Node first = null;
+        Node last = null;
+
+        void clear() {
+            first = null;
+            last = null;
+        }
+        
+        void addFirst(Node newNode) {
+            newNode.list = linkedList;
+            if (first == null) {
+                newNode.next = null;
+                newNode.previous = null;
+                first = newNode;
+                last = newNode;
+            } else {
+                first.previous = newNode;
+                newNode.next = first;
+                newNode.previous = null;
+                first = newNode;
+            }
+        }
+
+        void remove(Node node) {
+            if (node.previous != null) {
+                node.previous.next = node.next;
+            }
+            if (node.next != null) {
+                node.next.previous = node.previous;
+            }
+            if (node == first) {
+                first = first.next;
+            }
+            if (node == last) {
+                last = last.previous;
+            }
+            node.list = null;
+        }
+        
+        Node removeFirst() {
+            Node result = first;
+            if (first.next == null) {
+                first = null;
+                last = null;
+            } else {
+                first = first.next;
+                first.previous = null;
+            }
+            result.list = null;
+            return first;
+        }
+
+        Node removeLast() {
+            Node result = last;
+            if (first.next == null) {
+                first = null;
+                last = null;
+            } else {
+                last = last.previous;
+                last.next = null;
+            }
+            result.list = null;
+            return result;
+        }
+    }    
+
+    /**
+     * Used to synchronise access to the the dictionary and linked list in the
+     * function of the cache.
+     */
+    private final Object writeLock = new Object();
     
     /**
      * Loader used to fetch items not in the cache.
      */
-    private final S loader;
+    private final ICacheLoader<K, V> loader;
+
     /**
-     * The second hashmap of cached items.
+     * Hash map of keys to item values.
      */
-    volatile private ConcurrentHashMap<K, V> back;
+    private final ConcurrentHashMap<K, Node> hashMap;
+
     /**
-     * The first hashmap of cached items.
+     * A doubly linked list of nodes. Not marked private so that the unit
+     * test can check the elements.
      */
-    volatile private ConcurrentHashMap<K, V> front;
+    final DoublyLinkedList linkedList;
+    
     /**
-     * When this number of items are in the front hashmap the cache should be 
-     * switched.
+     * The number of items the cache lists should have capacity for.
      */
-    private final int cacheServiceSize;
+    private final int cacheSize;
+    
     /**
      * The number of requests made to the cache.
      */
     private final AtomicLong requests = new AtomicLong(0);
+    
     /**
      * The number of times an item was not available.
      */
     private final AtomicLong misses = new AtomicLong(0);
-    /**
-     * The number of times the cache was switched.
-     */
-    private final AtomicLong switches = new AtomicLong(0);
-    /**
-     * Indicates a switch operation is in progress.
-     */
-    volatile private boolean switching = false;
 
     /**
      * Constructs a new instance of the cache.
@@ -94,11 +191,11 @@ public class Cache<K, V, S extends ICacheLoader<K, V>> {
      * @param cacheSize The number of items to store in the cache.
      * @param loader used to fetch items not in the cache.
      */    
-    public Cache(int cacheSize, S loader) {
-        cacheServiceSize = (cacheSize / 2);
-        front = new ConcurrentHashMap<K, V>(cacheSize);
-        back = new ConcurrentHashMap<K, V>(cacheSize);
+    public Cache(int cacheSize, ICacheLoader<K,V> loader) {
+        this.cacheSize = cacheSize;
         this.loader = loader;
+        this.hashMap = new ConcurrentHashMap<K,Node>(cacheSize);
+        this.linkedList = new DoublyLinkedList();
     }
 
     /**
@@ -123,14 +220,6 @@ public class Cache<K, V, S extends ICacheLoader<K, V>> {
     }
     
     /**
-     * Returns the number of times active and inactive lists had to be swapped.
-     * @return the number of times active and inactive lists had to be swapped.
-     */
-    public int getCacheSwitches() {
-        return this.switches.intValue();
-    }
-    
-    /**
      * Retrieves the value for key requested. If the key does not exist
      * in the cache then the Fetch method of the cache's loader is used to
      * retrieve the value.
@@ -151,69 +240,72 @@ public class Cache<K, V, S extends ICacheLoader<K, V>> {
      * @return An instance of the value associated with the key
      * @throws java.io.IOException
      */
-    public V get(K key, S loader) throws IOException {
-        V value = front.get(key);
-        if (value == null) {
-            value = back.get(key);
-            if (value == null) {
-                value = loader.fetch(key);
-                back.putIfAbsent(key, value);
-                this.misses.incrementAndGet();
+    public V get(K key, ICacheLoader<K,V> loader) throws IOException {
+        boolean added = false;
+        requests.incrementAndGet();
+        Node node = hashMap.get(key);
+        if (node == null) {
+            // Get the item fresh from the loader before trying
+            // to write the item to the cache.
+            misses.incrementAndGet();
+            V value = loader.fetch(key);
+
+            synchronized(writeLock) {
+                // If the node has already been added to the dictionary
+                // then get it, otherise add the one just fetched.
+                Node newItem = new Node(new KeyValuePair(key, value));
+                node = hashMap.putIfAbsent(key, newItem);
+
+                // If the node got from the dictionary is the new one
+                // just feteched then it needs to be added to the linked
+                // list. The value just added to the hash map needs to set
+                // as the returned item.
+                if (node == null)
+                {
+                    added = true;
+                    node = newItem;
+                    
+                    // Add the key to the head of the linked list.
+                    linkedList.addFirst(node);
+
+                    // Check to see if the cache has grown and if so remove
+                    // the last element.
+                    removeLeastRecent();
+                }
             }
-            front.putIfAbsent(key, value);
-            checkForService();
         }
-        this.requests.incrementAndGet();
-        return value;
+        if (added == false) {
+            // The item is in the dictionary. Check it's still in the list
+            // and if so them move the key to the head of the list.            
+            synchronized(writeLock) {
+                if (node.list != null) {
+                    linkedList.remove(node);
+                    linkedList.addFirst(node);
+                }
+            }
+        }
+        return node.item.value;
     }
     
+    /**
+     * Removes the last item in the cache if the cache size is reached.
+     */
+    private void removeLeastRecent() {
+        if (hashMap.size() > cacheSize) {
+            Node removedNode = linkedList.removeLast();
+            assert hashMap.remove(removedNode.item.key) != null;
+            assert hashMap.size() == cacheSize;
+        }
+    }
+
     /**
      * Resets the stats for the cache.
      */
     public void resetCache()
     {
-        this.back.clear();
-        this.front.clear();
+        this.hashMap.clear();
+        this.linkedList.clear();
         misses.set(0);
         requests.set(0);
-        switches.set(0);
-    }
-
-    /// <summary>
-    /// Check to see if the Front and Back dictionaries should be switched
-    /// over.
-    /// </summary>
-    private void checkForService()
-    {
-        if (front.size() > cacheServiceSize &&
-            switching == false)
-        {
-            synchronized(this)
-            {
-                if (front.size() > cacheServiceSize &&
-                    switching == false)
-                {
-                    service();
-                }
-            }
-        }
-    }
-
-    /**
-     * Service the cache by switching the lists if the next service time has
-     * passed.
-     */
-    private void service() {
-        // Switch the cache dictionaries over.
-        ConcurrentHashMap<K, V> temp = front;
-        front = back;
-        back = temp;
-
-        // Clear the back cache before continuing.
-        front.clear();
-        switches.incrementAndGet();
-        
-        // Make sure future service will be able to access this block of code.
-        switching = false;
     }
 }

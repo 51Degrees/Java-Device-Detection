@@ -30,7 +30,7 @@ import fiftyone.mobile.detection.entities.BaseEntity;
  * @param <T> The type of BaseEntity the cache will contain.
  */
 public class Cache<T extends BaseEntity> 
-    extends fiftyone.mobile.detection.cache.Cache<Integer, T, ICacheLoader<Integer, T> > {
+    extends fiftyone.mobile.detection.cache.Cache<Integer, T> {
 
     /**
      * Constructs a new instance of the cache.

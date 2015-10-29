@@ -31,6 +31,7 @@ public abstract class Node extends fiftyone.mobile.detection.entities.Node {
     /**
      * An array of all the numeric children.
      */
+    @SuppressWarnings("VolatileArrayField")
     private NodeNumericIndex[] numericChildren;
     
     public Node(Dataset dataSet, int offset, BinaryReader reader) {

@@ -36,6 +36,7 @@ public class Map extends BaseEntity implements Comparable<Map> {
      * @return name of the map.
      * @throws java.io.IOException indicates an I/O exception occurred
      */
+    @SuppressWarnings("DoubleCheckedLocking")
     public String getName() throws IOException {
         String localName = name;
         if (localName == null) {

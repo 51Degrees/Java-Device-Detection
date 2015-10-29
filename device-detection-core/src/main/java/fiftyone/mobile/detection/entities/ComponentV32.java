@@ -36,7 +36,9 @@ public class ComponentV32 extends Component {
      * List of HTTP headers that should be checked in order to perform a 
      * detection where more headers than User-Agent are available.
      */
+    @SuppressWarnings("VolatileArrayField")
     private volatile String[] httpHeaders;
+    
     /**
      * Offsets of the HTTP headers in the data file.
      */

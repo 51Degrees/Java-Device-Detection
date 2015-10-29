@@ -63,6 +63,7 @@ public class NodeIndex extends BaseEntity implements Comparable<NodeIndex> {
         }
         return localCharacters;
     }
+    @SuppressWarnings("VolatileArrayField")
     private volatile byte[] characters;
 
     /**
@@ -78,6 +79,7 @@ public class NodeIndex extends BaseEntity implements Comparable<NodeIndex> {
      * memory would be used as the garbage collector would not recognise that 
      * it could be freed.
      */
+    @SuppressWarnings("DoubleCheckedLocking")
     Node getNode() throws IOException {
         Node result = node;
         if (result != null) {

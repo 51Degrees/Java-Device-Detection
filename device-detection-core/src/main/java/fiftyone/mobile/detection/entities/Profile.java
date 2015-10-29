@@ -39,60 +39,79 @@ import java.util.TreeSet;
  * each component.
  */
 public abstract class Profile extends BaseEntity implements Comparable<Profile> {
+    
     /**
      * The component the profile belongs to.
      */
     private volatile Component component;
+    
     /**
      * Index of the component the profile belongs to.
      */
     private final int componentIndex;
+    
     /**
      * List of Values associated with the property name.
      */
     private volatile SortedList<String, Values> nameToValues;
+    
     /**
      * Array of Properties associated with the profile.
      */
+    @SuppressWarnings("VolatileArrayField")
     private volatile Property[] properties;
+    
     /**
      * List of Property indexes wit the corresponding list of values.
      */
     private volatile SortedList<Integer, Values> propertyIndexToValues;
+    
     /**
      * The release date of the profile if it's a hardware profile.
      */
     private Date releaseDate;
+    
     /**
      * Release date checked.
      */
     private boolean releaseDateChecked;
+    
     /**
      * Array of signatures associated with the profile.
      */
+    @SuppressWarnings("VolatileArrayField")
     private volatile Signature[] signatures;
+    
     /**
      * An array of the signature indexes associated with the profile.
      * @abstract
      */
+    @SuppressWarnings("VolatileArrayField")
     protected volatile int[] signatureIndexes;
+    
     /**
      * A string representation of the profile.
      */
     private volatile String stringValue;
+    
     /**
      * An array of values associated with the profile.
      */
+    @SuppressWarnings("VolatileArrayField")
     private volatile Value[] values;
+
     /**
      * Unique Id of the profile. Does not change between different data sets.
      */
     public final int profileId;
+    
     /**
      * A list of the indexes of the values associated with the profile.
      * @abstract
      */
+    @SuppressWarnings("VolatileArrayField")
     protected volatile int[] valueIndexes;
+    
     /**
      * Returned when the property has no values in the provide.
      */
@@ -127,6 +146,7 @@ public abstract class Profile extends BaseEntity implements Comparable<Profile> 
      * @return The component the profile belongs to
      * @throws java.io.IOException
      */
+    @SuppressWarnings("DoubleCheckedLocking")
     public Component getComponent() throws IOException {
         Component localComponent = component;
         if (localComponent == null) {
@@ -145,6 +165,7 @@ public abstract class Profile extends BaseEntity implements Comparable<Profile> 
      * @return An array of properties associated with the profile.
      * @throws java.io.IOException indicates an I/O exception occurred
      */
+    @SuppressWarnings("DoubleCheckedLocking")
     public Property[] getProperties() throws IOException {
         Property[] localProperties = properties;
         if (localProperties == null) {
@@ -202,6 +223,7 @@ public abstract class Profile extends BaseEntity implements Comparable<Profile> 
      * property does not exist
      * @throws java.io.IOException indicates an I/O exception occurred
      */
+    @SuppressWarnings("DoubleCheckedLocking")
     public Values getValues(Property property) throws IOException {
         Values localValues = null;
         localValues = getPropertyIndexToValues().get(property.getIndex());
@@ -276,6 +298,7 @@ public abstract class Profile extends BaseEntity implements Comparable<Profile> 
      * @return Array of signatures associated with the profile.
      * @throws java.io.IOException indicates an I/O exception occurred
      */
+    @SuppressWarnings("DoubleCheckedLocking")
     public Signature[] getSignatures() throws IOException {
         Signature[] localSignatures = signatures;
         if (localSignatures == null) {
@@ -306,6 +329,7 @@ public abstract class Profile extends BaseEntity implements Comparable<Profile> 
      * @return An array of values associated with the profile.
      * @throws java.io.IOException indicates an I/O exception occurred
      */
+    @SuppressWarnings("DoubleCheckedLocking")
     public Value[] getValues() throws IOException {
         Value[] localValues = values;
         if (localValues == null) {
@@ -378,6 +402,7 @@ public abstract class Profile extends BaseEntity implements Comparable<Profile> 
      * @return the profile as a string
      */
     @Override
+    @SuppressWarnings("DoubleCheckedLocking")
     public String toString() {
         String localStringValue = stringValue;
         if (localStringValue == null) {
