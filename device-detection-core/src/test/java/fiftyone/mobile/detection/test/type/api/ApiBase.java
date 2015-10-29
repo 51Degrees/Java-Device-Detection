@@ -36,7 +36,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static fiftyone.mobile.detection.test.common.UserAgentGenerator.getRandomUserAgent;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 /**
