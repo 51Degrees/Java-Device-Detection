@@ -89,8 +89,9 @@ public class FixedCacheList<T extends BaseEntity> extends StreamFixedList<T>
      * @return The number of times the cache has been switched.
      */
     @Override
+    @Deprecated
     public long getSwitches() {
-        return cache != null ? cache.getCacheSwitches() : 0;
+        return 0;
     }
 
     /**

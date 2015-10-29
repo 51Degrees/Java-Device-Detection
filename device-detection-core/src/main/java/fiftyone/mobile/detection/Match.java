@@ -178,6 +178,7 @@ public class Match {
      * @return profiles set specifically for this match.
      * @throws IOException 
      */
+    @SuppressWarnings("DoubleCheckedLocking")
     Profile[] getOverriddenProfiles() throws IOException {
         Profile[] result = overriddenProfiles;
         if (result == null && getSignature() != null) {
@@ -194,7 +195,8 @@ public class Match {
         }
         return result;
     }
-    volatile private Profile[] overriddenProfiles;       
+    @SuppressWarnings("VolatileArrayField")
+    private volatile Profile[] overriddenProfiles;       
         
     /**
      * The numeric difference between the target user agent and the 

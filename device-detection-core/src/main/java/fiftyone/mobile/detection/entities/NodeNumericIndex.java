@@ -46,6 +46,7 @@ public class NodeNumericIndex extends BaseEntity {
      * @return The node the numeric index relates to.
      * @throws IOException
      */
+    @SuppressWarnings("DoubleCheckedLocking")
     Node getNode() throws IOException {
         Node localNode = _node;
         if (localNode == null) {

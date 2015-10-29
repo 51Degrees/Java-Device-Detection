@@ -123,7 +123,8 @@ public class Dataset implements Closeable {
      * List of unique HTTP Headers that the data set needs to consider to 
      * perform the most accurate matches.
      */
-    volatile private String[] httpHeaders;
+    @SuppressWarnings("VolatileArrayField")
+    private volatile String[] httpHeaders;
     /**
      * The number of bytes to allocate to a buffer returning JSON format data
      * for a match.
@@ -380,6 +381,7 @@ public class Dataset implements Closeable {
      * @return hardware component for the hardware platform
      * @throws IOException signals an I/O exception occurred
      */
+    @SuppressWarnings("DoubleCheckedLocking")
     public Component getHardware() throws IOException {
         Component localHardware = hardware;
         if (localHardware == null) {
@@ -399,6 +401,7 @@ public class Dataset implements Closeable {
      * @return software component for the software platform
      * @throws IOException signals an I/O exception occurred
      */
+    @SuppressWarnings("DoubleCheckedLocking")
     public Component getSoftware() throws IOException {
         Component localSoftware = software;
         if (localSoftware == null) {
@@ -418,6 +421,7 @@ public class Dataset implements Closeable {
      * @return browser component for browser
      * @throws IOException signals an I/O exception occurred
      */
+    @SuppressWarnings("DoubleCheckedLocking")
     public Component getBrowsers() throws IOException {
         Component localBrowsers = browsers;
         if (localBrowsers == null) {
@@ -436,6 +440,7 @@ public class Dataset implements Closeable {
      * @return crawler component
      * @throws IOException signals an I/O exception has occurred
      */
+    @SuppressWarnings("DoubleCheckedLocking")
     public Component getCrawlers() throws IOException {
         Component localCrawlers = crawlers;
         if (localCrawlers == null) {
@@ -454,6 +459,7 @@ public class Dataset implements Closeable {
      * @return string of text representing copyright notice for the data set
      * @throws IOException signals an I/O exception occurred
      */
+    @SuppressWarnings("DoubleCheckedLocking")
     public String getCopyright() throws IOException {
         String localCopyright = copyright;
         if (localCopyright == null) {
@@ -472,6 +478,7 @@ public class Dataset implements Closeable {
      * @return name of the data set
      * @throws IOException signals an I/O exception occurred
      */
+    @SuppressWarnings("DoubleCheckedLocking")
     public String getName() throws IOException {
         String localName = name;
         if (localName == null) {
@@ -490,6 +497,7 @@ public class Dataset implements Closeable {
      * @return name of the property map used to create dataset
      * @throws IOException signals an I/O exception occurred
      */
+    @SuppressWarnings("DoubleCheckedLocking")
     public String getFormat() throws IOException {
         String localFormat = format;
         if (localFormat == null) {

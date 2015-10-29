@@ -39,6 +39,7 @@ public class NodeV32 extends Node {
     /**
      * A list of all the signature indexes that relate to this node.
      */
+    @SuppressWarnings("VolatileArrayField")
     private volatile int[] rankedSignatureIndexes;
     
     /**
@@ -87,6 +88,7 @@ public class NodeV32 extends Node {
      * @throws java.io.IOException
      */
     @Override
+    @SuppressWarnings("DoubleCheckedLocking")
     public int[] getRankedSignatureIndexes() throws IOException {
         int[] localRankedSignatureIndexes = rankedSignatureIndexes;
         if (localRankedSignatureIndexes == null) {

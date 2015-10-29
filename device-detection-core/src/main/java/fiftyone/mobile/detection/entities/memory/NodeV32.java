@@ -32,6 +32,10 @@ import java.io.IOException;
  */
 public class NodeV32 extends Node{
 
+    /**
+     * Array of ranked signature indexes for the node.
+     */
+    @SuppressWarnings("VolatileArrayField")
     private volatile int[] rankedSignatureIndexes;
     
     private int nodeRankedSignatureValue;

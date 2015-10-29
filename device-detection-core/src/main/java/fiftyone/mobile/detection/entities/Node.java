@@ -61,14 +61,17 @@ import java.io.IOException;
  * For more information see https://51degrees.com/Support/Documentation/Java
  */
 public abstract class Node extends BaseEntity implements Comparable<Node> {
+    
     /**
      * The length of a node index.
      */
     public static final int NODE_INDEX_LENGTH = 9;
+    
     /**
      * The length of a numeric node index.
      */
     public static final int NODE_NUMERIC_INDEX_LENGTH = 6;
+    
     /**
      * The minimum length of a node assuming no node indexes or signatures.
      */
@@ -79,27 +82,34 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
         new Range((short) 100, (short) 999),
         new Range((short) 1000, Short.MAX_VALUE)
     };
+    
     /**
      * The characters that make up the node if it's a complete node or null 
      * if it's incomplete.
      */
+    @SuppressWarnings("VolatileArrayField")
     private volatile byte[] characters;
+    
     /**
      * Number of numeric children associated with the node.
      */
     protected short numericChildrenCount;
+    
     /**
      * A list of all the child node indexes.
      */
     private final NodeIndex[] children;
+    
     /**
      * An array of all the numeric children.
      */
     protected NodeNumericIndex[] numericChildren;
+    
     /**
      * The parent index for this node.
      */
     final int parentOffset;
+    
     /**
      * The offset in the strings data structure to the string that contains all
      * the characters of the node. Or -1 if the node is not complete and no
@@ -156,6 +166,7 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
      * @return root node for this node
      * @throws java.io.IOException indicates an I/O exception occurred
      */
+    @SuppressWarnings("DoubleCheckedLocking")
     public Node getRoot() throws IOException {
         Node localRoot = root;
         if (localRoot == null) {
@@ -173,10 +184,12 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
      * Returns the parent node for this node.
      * @reurn the parent node for this node.
      */
+    @SuppressWarnings("DoubleCheckedLocking")
     Node getParent() throws IOException {
         Node localParent = parent;
         if (parentOffset >= 0 && localParent == null) {
-            synchronized (this) {
+            
+            {
                 localParent = parent;
                 if (localParent == null) {
                     parent = localParent = getDataSet().getNodes().get(parentOffset);
@@ -232,6 +245,7 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
      * @return array containing all the characters of the node
      * @throws java.io.IOException indicates an I/O exception occurred
      */
+    @SuppressWarnings("DoubleCheckedLocking")
     public byte[] getCharacters() throws IOException {
         byte[] localCharacters = characters;
         if (localCharacters == null && characterStringOffset >= 0) {

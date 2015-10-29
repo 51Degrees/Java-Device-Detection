@@ -75,6 +75,7 @@ public class AsciiString extends BaseEntity {
      * @return ASCII string as a native string.
      */
     @Override
+    @SuppressWarnings("DoubleCheckedLocking")
     public String toString() {
         String localStringValue = stringValue;
         if (localStringValue == null) {
