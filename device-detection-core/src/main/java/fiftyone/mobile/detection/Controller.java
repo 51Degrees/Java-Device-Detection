@@ -140,7 +140,8 @@ class Controller {
             evaluate(state);
 
             /// Can a precise match be found based on the nodes?
-            int signatureIndex = getExactSignatureIndex(state);
+            int signatureIndex = state.match.getDataSet().getSignatureSearch().
+                    binarySearch(state.nodes);
 
             if (signatureIndex >= 0) {
                 // Yes a precise match was found.
@@ -153,7 +154,8 @@ class Controller {
                 evaluateNumeric(state);
 
                 // Can a precise match be found based on the nodes?
-                signatureIndex = getExactSignatureIndex(state);
+                signatureIndex = state.match.getDataSet().getSignatureSearch().
+                    binarySearch(state.nodes);
 
                 if (signatureIndex >= 0) {
                     // Yes a precise match was found.
@@ -271,33 +273,6 @@ class Controller {
                 state.nextCharacterPositionIndex--;
             }
         }
-    }
-
-    /**
-     * @return if the nodes of the match correspond exactly to a signature then
-     * return the index of the signature. Otherwise -1.
-     * @param state current working state of the matching process
-     * @throws IOException
-     */
-    private static int getExactSignatureIndex(MatchState state) throws IOException {
-        int lower = 0;
-        int upper = state.getDataSet().getSignatures().size() - 1;
-
-        while (lower <= upper) {
-            state.incrSignaturesRead();
-            int middle = lower + (upper - lower) / 2;
-            int comparisonResult = state.getDataSet().getSignatures().get(middle).compareTo(
-                    state.getNodesList());
-            if (comparisonResult == 0) {
-                return middle;
-            } else if (comparisonResult > 0) {
-                upper = middle - 1;
-            } else {
-                lower = middle + 1;
-            }
-        }
-
-        return -1;
     }
 
     /**

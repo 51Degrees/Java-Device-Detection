@@ -26,6 +26,7 @@ import fiftyone.mobile.detection.Match;
 import fiftyone.mobile.detection.Provider;
 import fiftyone.mobile.detection.entities.Property;
 import fiftyone.mobile.detection.DetectionTestSupport;
+import fiftyone.mobile.detection.entities.Profile;
 import fiftyone.mobile.detection.entities.Values;
 import fiftyone.mobile.detection.test.TestType;
 import org.junit.Test;
@@ -36,6 +37,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static fiftyone.mobile.detection.test.common.UserAgentGenerator.getRandomUserAgent;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 /**
@@ -104,7 +106,7 @@ public abstract class ApiBase extends DetectionTestSupport {
     }
     
     @Test
-    public void LongUserAgent() throws IOException {
+    public void longUserAgent() throws IOException {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < 10; i++) {
             sb.append(getRandomUserAgent(10));
@@ -118,9 +120,55 @@ public abstract class ApiBase extends DetectionTestSupport {
         fetchAllProperties(getProvider().match((Map<String, String>) null));
     }
     
+    /**
+     * Validates that the detection system can handle null User-Agent inputs.
+     * @throws IOException 
+     */
     @Test
     public void nullUserAgent() throws IOException {
         fetchAllProperties(getProvider().match((String) null));
+    }
+    
+    /**
+     * Validates that all profiles can be retrieved from the profile Id with
+     * the findProfile method of the data set.
+     * @throws IOException 
+     */
+    @Test 
+    public void fetchProfiles() throws IOException {
+        int lastProfileId = getHighestProfileId();
+        for (int i = 0; i <= lastProfileId; i++) {
+            Profile profile = getProvider().dataSet.findProfile(i);
+            if (profile != null) {
+                assertTrue(profile.profileId == i);
+                fetchAllProperties(profile);
+            }
+        }
+    }
+    
+    private int getHighestProfileId() {
+        int lastProfileId = 0;
+        for (Profile profile : getProvider().dataSet.profiles) {
+            if (profile.profileId > lastProfileId) {
+                lastProfileId = profile.profileId;
+            }
+        }
+        return lastProfileId;
+    }
+    
+    private void fetchAllProperties(Profile profile) throws IOException {
+        long checksum = 0;
+        for (Property property : profile.getProperties()) {
+            String propName = property.getName();
+            Values values = profile.getValues(property);
+            logger.debug("Property {}: {}", propName, values);
+            if (values == null) {
+                fail("Null value found for property " + propName );
+            } else {
+                checksum += values.hashCode();
+            }                    
+        }      
+        logger.debug("Checksum: {}", checksum);
     }
     
     private void fetchAllProperties(Match match) throws IOException {
@@ -129,7 +177,7 @@ public abstract class ApiBase extends DetectionTestSupport {
             String propName = property.getName();
             Values values = match.getValues(property);
             logger.debug("Property {}: {}", propName, values);
-            if (match.getValues(property) == null) {
+            if (values == null) {
                 fail("Null value found for property " + propName );
             } else {
                 checksum += values.hashCode();
