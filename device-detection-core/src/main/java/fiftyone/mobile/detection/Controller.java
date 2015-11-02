@@ -338,227 +338,30 @@ class Controller {
                 }
             };
         } else {
-            int maxCount = 1, iteration = 2;
-
-            // Get an iterator for the nodes in ascending order of signature length.
-            List<Node> orderedNodes = new ArrayList<Node>();
-            orderedNodes.addAll(state.getNodesList());
-            Collections.sort(orderedNodes, nodeComparator);
-            Iterator<Node> nodeIterator = orderedNodes.iterator();
-
-            // Get the first node and add all the signature indexes.
-            Node node = nodeIterator.next();
-            final PossibleSignatures linkedList = buildInitialList(
-                    node.getRankedSignatureIndexes());
-
-            // Count the number of times each signature index occurs.
-            while (nodeIterator.hasNext()) {
-                node = nodeIterator.next();
-                maxCount = getClosestSignaturesForNode(
-                        state,
-                        node.getRankedSignatureIndexes(),
-                        linkedList,
-                        maxCount,
-                        iteration);
-                iteration++;
-            }
-
-            PossibleSignature current = linkedList.first;
-            while (current != null) {
-                if (current.frequency < maxCount) {
-                    linkedList.remove(current);
-                }
-                current = current.next;
-            }
-
-            state.setClosestSignaturesCount(linkedList.size);
-
+            final MostFrequentFilter filter = 
+                    new MostFrequentFilter(state.getNodesList());
+            state.setClosestSignaturesCount(filter.size());            
             return new RankedSignatureIterator() {
-                PossibleSignature first = linkedList.first;
-                PossibleSignature current = null;
+                final List<Integer> rankedSignatureIndexes = filter;
+                int index = 0;
 
                 @Override
                 public boolean hasNext() {
-                    return current != null;
+                    return index < rankedSignatureIndexes.size();
                 }
 
                 @Override
                 public int next() {
-                    int value = current.rankedSignatureIndex;
-                    current = current.next;
+                    int value = rankedSignatureIndexes.get(index);
+                    index++;
                     return value;
                 }
 
                 @Override
                 public void reset() {
-                    current = first;
+                    index = 0;
                 }
             };
         }
-    }
-
-    private static int getClosestSignaturesForNode(
-            MatchState state,
-            int[] signatureIndexList,
-            PossibleSignatures linkedList,
-            int maxCount, int iteration) {
-        // If there is point adding any new signature indexes set the
-        // threshold reached indicator. New signatures won't be added
-        // and ones with counts lower than maxcount will be removed.
-        boolean thresholdReached = state.getNodesList().size() - iteration < maxCount;
-        PossibleSignature current = linkedList.first;
-        int signatureIndex = 0;
-        while (signatureIndex < signatureIndexList.length && current != null) {
-            if (current.rankedSignatureIndex > signatureIndexList[signatureIndex]) {
-                // The base list is higher than the target list. Add the element
-                // from the target list and move to the next element in each.
-                if (thresholdReached == false) {
-                    linkedList.addBefore(
-                            current,
-                            new PossibleSignature(
-                            signatureIndexList[signatureIndex],
-                            1));
-                }
-                signatureIndex++;
-            } else if (current.rankedSignatureIndex < signatureIndexList[signatureIndex]) {
-                if (thresholdReached) {
-                    // Threshold reached so we can removed this item
-                    // from the list as it's not relevant.
-                    PossibleSignature nextItem = current.next;
-                    if (current.frequency < maxCount) {
-                        linkedList.remove(current);
-                    }
-                    current = nextItem;
-                } else {
-                    current = current.next;
-                }
-            } else {
-                // They're the same so increase the frequency and move to the next
-                // element in each.
-                current.frequency++;
-                if (current.frequency > maxCount) {
-                    maxCount = current.frequency;
-                }
-                signatureIndex++;
-                current = current.next;
-            }
-        }
-        if (thresholdReached == false) {
-            // Add any signature indexes higher than the base list to the base list.
-            while (signatureIndex < signatureIndexList.length) {
-                linkedList.add(
-                        new PossibleSignature(
-                        signatureIndexList[signatureIndex],
-                        1));
-                signatureIndex++;
-            }
-        }
-        return maxCount;
-    }
-
-    private static PossibleSignatures buildInitialList(int[] list) {
-        PossibleSignatures linkedList = new PossibleSignatures();
-        for (int index : list) {
-            linkedList.add(new PossibleSignature(index, 1));
-        }
-        return linkedList;
-    }
-}
-
-/**
- * A custom linked list used to identify the most frequently occurring
- * signature indexes.
- */
-class PossibleSignatures {
-
-    PossibleSignature first;
-    PossibleSignature last;
-    int size = 0;
-
-    void addBefore(PossibleSignature existing, PossibleSignature newItem) {
-        newItem.next = existing;
-        newItem.previous = existing.previous;
-        if (existing.previous != null) {
-            existing.previous.next = newItem;
-        }
-        existing.previous = newItem;
-        if (existing == first) {
-            first = newItem;
-        }
-        size++;
-    }
-
-    void addAfter(PossibleSignature existing, PossibleSignature newItem) {
-        newItem.next = existing.next;
-        newItem.previous = existing;
-        if (existing.next != null) {
-            existing.next.previous = newItem;
-        }
-        existing.next = newItem;
-        if (existing == last) {
-            last = newItem;
-        }
-        size++;
-    }
-
-    /**
-     * Adds the item to the end of the linked list.
-     */
-    void add(PossibleSignature newItem) {
-        if (last != null) {
-            addAfter(last, newItem);
-        } else {
-            first = newItem;
-            last = newItem;
-            size++;
-        }
-    }
-
-    /**
-     * Removes any reference to this element from the linked list.
-     */
-    void remove(PossibleSignature existing) {
-        if (first == existing) {
-            first = existing.next;
-        }
-        if (last == existing) {
-            last = existing.previous;
-        }
-        if (existing.previous != null) {
-            existing.previous.next = existing.next;
-        }
-        if (existing.next != null) {
-            existing.next.previous = existing.previous;
-        }
-        size--;
-    }
-}
-
-/**
- * Used to represent a signature index and the number of times it occurs in
- * the matched nodes.
- */
-class PossibleSignature {
-
-    /**
-     * The ranked signature index.
-     */
-    public final int rankedSignatureIndex;
-    /**
-     * The number of times the signature index occurs.
-     */
-    public int frequency;
-    /**
-     * The next signature index in the linked list.
-     */
-    public PossibleSignature next;
-    /**
-     * The previous signature index in the linked list.
-     */
-    public PossibleSignature previous;
-
-    PossibleSignature(int rankedSignatureIndex, int frequency) {
-        this.rankedSignatureIndex = rankedSignatureIndex;
-        this.frequency = frequency;
     }
 }
