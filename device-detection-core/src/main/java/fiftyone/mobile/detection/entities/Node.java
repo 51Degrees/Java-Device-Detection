@@ -23,6 +23,7 @@ package fiftyone.mobile.detection.entities;
 import fiftyone.mobile.detection.Dataset;
 import fiftyone.mobile.detection.MatchState;
 import fiftyone.mobile.detection.readers.BinaryReader;
+import fiftyone.mobile.detection.search.SearchArrays;
 import java.io.IOException;
 
 /**
@@ -62,6 +63,15 @@ import java.io.IOException;
  */
 public abstract class Node extends BaseEntity implements Comparable<Node> {
     
+    private static class SearchNodeNumericIndex 
+        extends SearchArrays<NodeNumericIndex, Integer> {
+        
+        @Override
+        public int compareTo(NodeNumericIndex item, Integer key) {
+            return item.compareTo(key);
+        }
+    } 
+    
     /**
      * The length of a node index.
      */
@@ -71,6 +81,12 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
      * The length of a numeric node index.
      */
     public static final int NODE_NUMERIC_INDEX_LENGTH = 6;
+    
+    /**
+     * Used to find matching numeric nodes.
+     */
+    private static final SearchNodeNumericIndex numericChildrenSearch = 
+            new SearchNodeNumericIndex();
     
     /**
      * The minimum length of a node assuming no node indexes or signatures.
@@ -207,6 +223,19 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
         return nextCharacterPosition != Short.MIN_VALUE;
     }
 
+    /**
+     * Compares one node to another for the purposes of determining the
+     * signature the node relates to.
+     *
+     * @param other node to be compared
+     * @return -1 if this node is lower than the other, 1 if higher or 0 if
+     * equal.
+     */
+    @Override
+    public int compareTo(Node other) {
+        return super.compareTo(other);
+    }    
+    
     /**
      * Returns the number of characters in the node tree.
      * @return number of characters in the node tree
@@ -377,12 +406,14 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
      * @return an iterator configured to provide numeric children in ascending
      * order of difference
      */
-    private NodeNumericIndexIterator getNumericNodeIterator(int target) {
+    private NodeNumericIndexIterator getNumericNodeIterator(int target) 
+            throws IOException {
 
         if (target >= 0 && target <= Short.MAX_VALUE) {
             Range range = getRange(target);
 
-            int startIndex = super.binarySearch(numericChildren, target);
+            int startIndex = numericChildrenSearch.binarySearch(
+                    numericChildren, target);
             if (startIndex < 0) {
                 startIndex = ~startIndex - 1;
             }
@@ -566,19 +597,6 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
         }
     }
 
-    /**
-     * Compares one node to another for the purposes of determining the
-     * signature the node relates to.
-     *
-     * @param other node to be compared
-     * @return -1 if this node is lower than the other, 1 if higher or 0 if
-     * equal.
-     */
-    @Override
-    public int compareTo(Node other) {
-        return this.getIndex() - other.getIndex();
-    }
-   
     static class NodeNumericIndexIterator {
 
         private final NodeNumericIndex[] array;

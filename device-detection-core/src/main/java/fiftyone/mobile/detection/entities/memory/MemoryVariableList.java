@@ -24,7 +24,9 @@ import fiftyone.mobile.detection.Dataset;
 import fiftyone.mobile.detection.entities.BaseEntity;
 import fiftyone.mobile.detection.factories.BaseEntityFactory;
 import fiftyone.mobile.detection.readers.BinaryReader;
+import fiftyone.mobile.detection.search.SearchBase;
 import java.io.IOException;
+import java.util.List;
 
 /**
  * A readonly list of variable length entity types held in memory. 
@@ -51,6 +53,33 @@ import java.io.IOException;
 public class MemoryVariableList<T extends BaseEntity> extends 
         MemoryBaseList<T> {
 
+    /**
+     * Used to search the list using the offset key for the items.
+     */
+    private class SearchVariableList extends SearchBase<T, Integer, List<T>> {
+
+        @Override
+        protected int getCount(List<T> list) {
+            return list.size();
+        }
+
+        @Override
+        protected T getValue(List<T> list, int index) throws IOException {
+            return list.get(index);
+        }        
+        
+        @Override
+        protected int compareTo(T item, Integer key) throws IOException {
+            return item.compareTo(key);
+        }
+        
+        int binarySearch(Integer offset) throws IOException {
+            return super.binarySearch(array, offset);
+        }
+    }
+    
+    private final SearchVariableList search = new SearchVariableList();
+    
     /**
      * Constructs a new instance of VariableList of type T
      *
@@ -89,40 +118,13 @@ public class MemoryVariableList<T extends BaseEntity> extends
      * @param offset The offset position in the data structure to the entity to
      * be returned from the list
      * @return Entity at the offset requested
+     * @throws java.io.IOException
      */
     @Override
-    public T get(int offset) {
-        int index = binarySearch(offset);
+    public T get(int offset) throws IOException {
+        int index = search.binarySearch(offset);
         if (index >= 0)
             return array.get(index);
         return null;
     }
-
-    /**
-     * Uses a divide and conquer method to search the ordered list of entities
-     * that are held in memory.
-     *
-     * @param offset The offset position in the data structure to the entity to
-     * be returned from the list
-     * @return Entity at the offset requested
-     */
-    private int binarySearch(int offset) {
-        int lower = 0;
-        int upper = size() - 1;
-
-        while (lower <= upper) {
-            int middle = lower + (upper - lower) / 2;
-            int comparisonResult = array.get(middle).getIndex() - offset;
-            if (comparisonResult == 0) {
-                return middle;
-            } else if (comparisonResult > 0) {
-                upper = middle - 1;
-            } else {
-                lower = middle + 1;
-            }
-        }
-
-        return -1;
-    }
-
 }

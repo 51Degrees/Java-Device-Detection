@@ -27,7 +27,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import fiftyone.mobile.detection.Dataset;
+import fiftyone.mobile.detection.WrappedIOException;
 import fiftyone.mobile.detection.readers.BinaryReader;
+import fiftyone.mobile.detection.search.SearchArrays;
+import java.util.Collections;
 
 /**
  * A value associated with a property and component within the dataset. <p>
@@ -43,8 +46,15 @@ import fiftyone.mobile.detection.readers.BinaryReader;
 /**
  * A value associated with a property and component within the dataset.
  */
-public class Value extends BaseEntity implements Comparable<Value> {
+public class Value extends BaseEntity {
 
+    private static class SearchValues extends SearchArrays<Value, Integer> {
+        @Override
+        public int compareTo(Value item, Integer key) {
+            return item.compareTo(key);
+        }
+    }
+    
     /**
      * The value as an integer. Integer instead of int because of the nullable 
      * requirement.
@@ -56,6 +66,11 @@ public class Value extends BaseEntity implements Comparable<Value> {
      */
     public static final int RECORD_LENGTH = (4 * 3) + 2;
 
+    /**
+     * Used to find profiles with values that include this one.
+     */
+    private static final SearchValues valuesIndexSearch = new SearchValues();
+    
     /**
      * @return The name of the value.
      * @throws IOException indicates an I/O exception occurred
@@ -239,7 +254,9 @@ public class Value extends BaseEntity implements Comparable<Value> {
         List<Profile> list = new ArrayList<Profile>();
 
         for (Profile profile : getComponent().getProfiles()) {
-            if (binarySearch(profile.getValues(), getIndex()) >= 0) {
+            if (valuesIndexSearch.binarySearch(
+                    profile.getValues(), 
+                    getIndex()) >= 0) {
                 list.add(profile);
             }
         }
@@ -258,9 +275,9 @@ public class Value extends BaseEntity implements Comparable<Value> {
         List<Integer> list = new ArrayList<Integer>();
         for (Profile profile : getProfiles()) {
             for (Integer signatureIndex : profile.getSignatureIndexes()) {
-                int index = java.util.Collections.binarySearch(list, signatureIndex);
-                if (index < 0) {
-                    list.add(~index, signatureIndex);
+                int localIndex = Collections.binarySearch(list, signatureIndex);
+                if (localIndex < 0) {
+                    list.add(~localIndex, signatureIndex);
                 }
             }
         }
@@ -272,6 +289,14 @@ public class Value extends BaseEntity implements Comparable<Value> {
         return result;
     }
 
+    public int compareTo(String value) {
+        try {
+            return getName().compareTo(value);
+        } catch (IOException ex) {
+            throw new WrappedIOException(ex.getMessage());
+        }
+    }
+    
     /**
      * Compares this value to another using the index field if they're in the
      * same list other wise the name value.
@@ -279,15 +304,14 @@ public class Value extends BaseEntity implements Comparable<Value> {
      * @param other The value to be compared against
      * @return Indication of relative value based on index field
      */
-    @Override
     public int compareTo(Value other) {
         if (getDataSet() == other.getDataSet()) {
             return getIndex() - other.getIndex();
         }
         try {
             return getName().compareTo(other.getName());
-        } catch (IOException e) {
-            return 0;
+        } catch (IOException ex) {
+            throw new WrappedIOException(ex.getMessage());
         }
     }
 

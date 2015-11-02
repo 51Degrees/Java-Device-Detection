@@ -43,6 +43,7 @@ import fiftyone.mobile.detection.entities.Version;
 import fiftyone.mobile.detection.entities.memory.MemoryFixedList;
 import fiftyone.mobile.detection.entities.memory.PropertiesList;
 import fiftyone.mobile.detection.entities.stream.ICacheList;
+import fiftyone.mobile.detection.search.SearchBase;
 import fiftyone.properties.DetectionConstants;
 import java.io.Closeable;
 
@@ -62,6 +63,78 @@ import java.io.Closeable;
  * For more information see https://51degrees.com/Support/Documentation/Java
  */
 public class Dataset implements Closeable {
+    
+    /**
+     * Used to search for a signature from a list of nodes.
+     */
+    static class SearchSignatureByNodes 
+        extends SearchBase<Signature, List<Node>, IReadonlyList<Signature>> {
+
+        private final IReadonlyList<Signature> signatures;
+        
+        SearchSignatureByNodes(IReadonlyList<Signature> signatures) {
+            this.signatures = signatures;
+        }
+        
+        @Override
+        protected int getCount(IReadonlyList<Signature> list) {
+            return list.size();
+        }
+
+        @Override
+        protected Signature getValue(IReadonlyList<Signature> list, int index) 
+                throws IOException {
+            return list.get(index);
+        }
+
+        @Override
+        protected int compareTo(Signature item, List<Node> nodes) 
+                throws IOException {
+            return item.compareTo(nodes);
+        }
+        
+        int binarySearch(List<Node> nodes) throws IOException {
+            return super.binarySearch(signatures, nodes);
+        }
+    }
+    
+    /**
+     * Used to search for a profile offset from a profile id.
+     */
+    private static class SearchProfileOffsetByProfileId 
+        extends SearchBase<ProfileOffset, Integer, IReadonlyList<ProfileOffset>> {
+
+        private final IReadonlyList<ProfileOffset> profileOffsets;
+        
+        SearchProfileOffsetByProfileId(
+                IReadonlyList<ProfileOffset> profileOffsets) {
+            this.profileOffsets = profileOffsets;
+        }
+        
+        @Override
+        protected int getCount(IReadonlyList<ProfileOffset> list) {
+            return list.size();
+        }
+
+        @Override
+        protected ProfileOffset getValue(
+                IReadonlyList<ProfileOffset> list, 
+                int index) 
+                throws IOException {
+            return list.get(index);
+        }
+
+        @Override
+        protected int compareTo(ProfileOffset item, Integer profileId) 
+                throws IOException {
+            return item.getProfileId() - profileId;
+        }
+        
+        int binarySearch(Integer profileId) throws IOException {
+            return super.binarySearch(profileOffsets, profileId);
+        }
+    }
+    
     /**
      * Age of the data in months when exported.
      */
@@ -510,8 +583,47 @@ public class Dataset implements Closeable {
         }
         return localFormat;
     }
+    
+    /**
+     * Used to search for a signature from a list of nodes.
+     * @return search instance connected to the list of signatures
+     */
+    @SuppressWarnings("DoubleCheckedLocking")
+    SearchSignatureByNodes getSignatureSearch() {
+        SearchSignatureByNodes result = sigantureSearch;
+        if (result == null) {
+            synchronized (this) {
+                result = sigantureSearch;
+                if (result == null) {
+                    sigantureSearch = result = new SearchSignatureByNodes(
+                        signatures);
+                }
+            }
+        }
+        return result;
+    }
+    private volatile SearchSignatureByNodes sigantureSearch;
 
-
+    /**
+     *
+     * @return an instance of the profile offset search.
+     */
+    @SuppressWarnings("DoubleCheckedLocking")
+    private SearchProfileOffsetByProfileId getProfileOffsetSearch() {
+        SearchProfileOffsetByProfileId result = profileOffsetSearch;
+        if (result == null) {
+            synchronized (this) {
+                result = profileOffsetSearch;
+                if (result == null) {
+                    profileOffsetSearch = result = 
+                            new SearchProfileOffsetByProfileId(profileOffsets);
+                }
+            }
+        }
+        return result;
+    }
+    private volatile SearchProfileOffsetByProfileId profileOffsetSearch;
+    
     /**
      * A list of all the components the data set contains.
      * @return a read-only list of all components contained in data set
@@ -600,6 +712,7 @@ public class Dataset implements Closeable {
      * @return list of HTTP headers as Strings.
      * @throws java.io.IOException
      */
+    @SuppressWarnings("DoubleCheckedLocking")
     public String[] getHttpHeaders() throws IOException {
         String[] localHttpHeaders = httpHeaders;
         if (localHttpHeaders == null) {
@@ -614,8 +727,9 @@ public class Dataset implements Closeable {
                            }
                        }
                     }
-                    httpHeaders = localHttpHeaders = new String[tempList.size()];
+                    localHttpHeaders = new String[tempList.size()];
                     tempList.toArray(localHttpHeaders);
+                    httpHeaders = localHttpHeaders;
                 }
             }
         }
@@ -784,22 +898,9 @@ public class Dataset implements Closeable {
      * @throws IOException signals an I/O exception occurred
      */
     public Profile findProfile(int profileId) throws IOException {
-        int lower = 0;
-        int upper = profileOffsets.size() - 1;
-
-        while (lower <= upper) {
-            int middle = lower + (upper - lower) / 2;
-            int comparisonResult = profileOffsets.get(middle).getProfileId() - profileId;
-            if (comparisonResult == 0) {
-                return profiles.get(profileOffsets.get(middle).getOffset());
-            } else if (comparisonResult > 0) {
-                upper = middle - 1;
-            } else {
-                lower = middle + 1;
-            }
-        }
-
-        return null;
+        int index = getProfileOffsetSearch().binarySearch(profileId);
+        return index < 0 ? null : profiles.get(
+                profileOffsets.get(index).getOffset());
     }
 
     /**
