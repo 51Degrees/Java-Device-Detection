@@ -31,10 +31,12 @@ import java.io.IOException;
  * data source when requested.
  */
 public abstract class Node extends fiftyone.mobile.detection.entities.Node {
+    
     /**
      * The position in the data set where the NumericChildren start.
      */
-    protected final int numericChildrenPosition;
+    protected int numericChildrenPosition;
+    
     /**
      * Pool used to load NumericChildren and RankedSignatureIndexes.
      */
@@ -46,12 +48,11 @@ public abstract class Node extends fiftyone.mobile.detection.entities.Node {
      * @param offset The offset in the data structure to the node.
      * @param reader Reader connected to the source data structure and 
      * positioned to start reading.
+     * @throws java.io.IOException
      */
     public Node(Dataset dataSet, int offset, BinaryReader reader) throws IOException {
         super(dataSet, offset, reader);
         this.pool = dataSet.pool;
-        this.numericChildrenPosition = reader.getPos();
-        getNumericChildren();
     }
     
     /**
@@ -60,18 +61,23 @@ public abstract class Node extends fiftyone.mobile.detection.entities.Node {
      * @throws java.io.IOException
      */
     @Override
+    @SuppressWarnings("DoubleCheckedLocking")
     public final NodeNumericIndex[] getNumericChildren() throws IOException {
-        if(super.numericChildren == null) {
+        NodeNumericIndex[] result = numericChildren;
+        if(result == null) {
             synchronized(this) {
-                if(super.numericChildren == null) {
+                result = numericChildren;
+                if(result == null) {
                     BinaryReader reader = pool.getReader();
                     reader.setPos(numericChildrenPosition);
-                    super.numericChildren = readNodeNumericIndexes(dataSet, 
-                                            reader, numericChildrenCount);
+                    result = numericChildren = readNodeNumericIndexes(
+                            dataSet, reader, numericChildrenCount);
                     pool.release(reader);
                 }
             }
         }
-        return numericChildren;
+        return result;
     }
+    @SuppressWarnings("VolatileArrayField")
+    protected volatile NodeNumericIndex[] numericChildren;
 }
