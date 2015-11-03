@@ -22,7 +22,6 @@ package fiftyone.mobile.detection.entities.memory;
 
 import fiftyone.mobile.detection.Dataset;
 import fiftyone.mobile.detection.entities.BaseEntity;
-import fiftyone.mobile.detection.entities.NodeIndex;
 import fiftyone.mobile.detection.factories.NodeFactoryShared;
 import fiftyone.mobile.detection.readers.BinaryReader;
 
@@ -44,7 +43,17 @@ public class NodeV31 extends Node{
      */
     public NodeV31(Dataset dataSet, int offset, BinaryReader reader) {
         super(dataSet, offset, reader);
-        rankedSignatureIndexes = BaseEntity.readIntegerArray(reader, rankedSignatureCount);
+        super.rankedSignatureCount = reader.readInt32();
+        super.children = NodeFactoryShared.readNodeIndexesV31(
+                dataSet, 
+                reader, 
+                (int)(offset + reader.getPos() - nodeStartStreamPosition), 
+                childrenCount);
+        super.numericChildren = readNodeNumericIndexes(
+                dataSet, reader, numericChildrenCount);
+        rankedSignatureIndexes = BaseEntity.readIntegerArray(
+                reader, 
+                rankedSignatureCount);
     }
     
     /**
@@ -54,34 +63,5 @@ public class NodeV31 extends Node{
     @Override
     public int[] getRankedSignatureIndexes() {
         return rankedSignatureIndexes;
-    }
-    
-    /**
-     * Reads the ranked signature count from a 4 byte integer.
-     * @param reader Reader connected to the source data structure and 
-     * positioned to start reading.
-     * @return The count of ranked signatures associated with the node.
-     */
-    @Override
-    public int readerRankedSignatureCount(BinaryReader reader) {
-        return reader.readInt32();
-    }
-    
-    /**
-     * Used by the constructor to read the variable length list of child
-     * node indexes associated with the node. Returns node indexes from V32
-     * data format.
-     * @param dataSet The data set the node is contained within.
-     * @param reader Reader connected to the source data structure and 
-     * positioned to start reading.
-     * @param offset The offset in the data structure to the node.
-     * @param count  The number of node indexes that need to be read.
-     * @return An array of child node indexes for the node.
-     */
-    @Override
-    public NodeIndex[] readNodeIndexes(Dataset dataSet, BinaryReader reader, 
-            int offset, int count) {
-        return NodeFactoryShared.readNodeIndexesV31(
-                dataSet, reader, offset, count);
     }
 }
