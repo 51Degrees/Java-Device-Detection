@@ -21,7 +21,6 @@
 package fiftyone.mobile.detection.entities;
 
 import fiftyone.mobile.detection.Dataset;
-import fiftyone.mobile.detection.entities.memory.MemoryBaseList;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
@@ -29,17 +28,14 @@ import java.nio.ByteBuffer;
  * A node index contains the characters and related child nodes of the current
  * node should any of the characters match at the position.
  */
-public class NodeIndex extends BaseEntity implements Comparable<NodeIndex> {
+public class NodeIndex extends NodeIndexBase implements Comparable<NodeIndex> {
 
-    /**
-     * The node index for the sequence of characters.
-     */
-    private final int relatedNodeOffset;
     /**
      * True if the value is an index to a sub string. False if the value is 1 to
      * 4 consecutive characters.
      */
-    public final boolean isString;
+    final boolean isString;
+    
     /**
      * The value of the node index. Interpretation depends on IsSubString. If
      * IsSubString is true the 4 bytes represent an offset in the strings data
@@ -51,13 +47,15 @@ public class NodeIndex extends BaseEntity implements Comparable<NodeIndex> {
     /**
      * Returns the characters related to this node index.
      */
+    @SuppressWarnings("DoubleCheckedLocking")
     byte[] getCharacters() throws IOException {
         byte[] localCharacters = characters;
         if (localCharacters == null) {
             synchronized(this) {
                 localCharacters = characters;
                 if (localCharacters == null) {
-                    characters = localCharacters = getCharacters(getDataSet(), isString, value);
+                    characters = localCharacters = getCharacters(
+                            getDataSet(), isString, value);
                 }
             }
         }
@@ -65,41 +63,6 @@ public class NodeIndex extends BaseEntity implements Comparable<NodeIndex> {
     }
     @SuppressWarnings("VolatileArrayField")
     private volatile byte[] characters;
-
-    /**
-     * The node this index relates to.
-     * 
-     * If the data set is operating in memory mode then there will only ever
-     * be one instance of the associated node. Therefore double checked locking
-     * can be used to retrieve this single instance and store a reference to it.
-     * 
-     * When stream mode is being used we wish to ensure that instances of unused
-     * objects are freed by the garbage collector quickly. If the reference to 
-     * the cached instance were retained by the NodeIndex instance then more 
-     * memory would be used as the garbage collector would not recognise that 
-     * it could be freed.
-     */
-    @SuppressWarnings("DoubleCheckedLocking")
-    Node getNode() throws IOException {
-        Node result = node;
-        if (result != null) {
-            return result;
-        } else if (getDataSet().nodes instanceof MemoryBaseList) {
-            if (result == null) {
-                synchronized (this) {
-                    result = node;
-                    if (result == null) {
-                        node = result = getDataSet().getNodes().get(
-                                relatedNodeOffset);
-                    }
-                }
-            }
-        } else {
-            node = result = getDataSet().getNodes().get(relatedNodeOffset);
-        }
-        return result;
-    }
-    private volatile Node node;
 
     /**
      * Constructs a new instance of NodeIndex
@@ -115,9 +78,8 @@ public class NodeIndex extends BaseEntity implements Comparable<NodeIndex> {
      */
     public NodeIndex(Dataset dataSet, int index, boolean isString,
             byte[] value, int relatedNodeOffset) {
-        super(dataSet, index);
+        super(dataSet, index, relatedNodeOffset);
         this.isString = isString;
-        this.relatedNodeOffset = relatedNodeOffset;
         this.value = value;
     }
 
@@ -126,12 +88,11 @@ public class NodeIndex extends BaseEntity implements Comparable<NodeIndex> {
      * initialisation steps that require other items in the data set can be
      * completed.
      */
+    @Override
     void init() throws IOException {
+        super.init();
         if (characters == null) {
             characters = getCharacters(getDataSet(), isString, value);
-        }
-        if (node == null) {
-            node = getDataSet().getNodes().get(relatedNodeOffset);
         }
     }
 
