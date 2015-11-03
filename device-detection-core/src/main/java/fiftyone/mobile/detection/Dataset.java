@@ -919,51 +919,67 @@ public class Dataset implements Closeable {
      * @return The percentage of requests for ranked signatures which were 
      * not already contained in the cache.
      */
+    @Deprecated
     public double getPercentageRankedSignatureCacheMisses() {
         return getPercentageMisses(rankedSignatureIndexes);
     }
     
     /**
      * Number of times the signature cache was switched.
+     * Note: The LRU does not require switching and this method has been 
+     * deprecated.
      * A value is only returned when operating in Stream mode.
      * @return Number of times the signature cache was switched.
      */
+    @Deprecated
     public long getSignatureCacheSwitches() {
         return getSwitches(signatures);
     }
     
     /**
      * Number of times the node cache was switched.
+     * Note: The LRU does not require switching and this method has been 
+     * deprecated.
      * A value is only returned when operating in Stream mode.
      * @return Number of times the node cache was switched.
      */
+    @Deprecated
     public long getNodeCacheSwitches() {
         return getSwitches(nodes);
     }
     
     /**
      * Number of times the strings cache was switched.
+     * Note: The LRU does not require switching and this method has been 
+     * deprecated.
      * A value is only returned when operating in Stream mode.
      * @return Number of times the strings cache was switched.
      */
+    @Deprecated
     public long getStringsCacheSwitches() {
         return getSwitches(strings);
     }
     
     /**
      * Number of times the profiles cache was switched.
+     * Note: The LRU does not require switching and this method has been 
+     * deprecated.
      * A value is only returned when operating in Stream mode.
      * @return Number of times the profiles cache was switched.
      */
+    @Deprecated
     public long getProfilesCacheSwitches() {
         return getSwitches(profiles);
     }
     
     /**
      * Number of times the values cache was switched.
+     * Note: The LRU does not require switching and this method has been 
+     * deprecated.
      * A value is only returned when operating in Stream mode.
      * @return Number of times the values cache was switched.
      */
+    @Deprecated
     public long getValuesCacheSwitches() {
         return getSwitches(values);
     }
@@ -1000,9 +1016,12 @@ public class Dataset implements Closeable {
     
     /**
      * Returns the number of times the cache lists were switched.
+     * Note: The LRU does not require switching and this method has been 
+     * deprecated.
      * @param list a Cache object to get percentage from.
      * @return 0 if object is not Cache, percentage otherwise.
      */
+    @Deprecated
     private static long getSwitches(Object list) {
         if (list instanceof ICacheList) {
             ICacheList c = (ICacheList)list;

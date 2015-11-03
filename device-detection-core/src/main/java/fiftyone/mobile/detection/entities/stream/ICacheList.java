@@ -34,8 +34,11 @@ public interface ICacheList {
     
     /**
      * The number of times the lists have been switched.
+     * Note: The LRU does not require switching and this method has been 
+     * deprecated.
      * @return The number of times the lists have been switched.
      */
+    @Deprecated
     long getSwitches();
     
     /**
