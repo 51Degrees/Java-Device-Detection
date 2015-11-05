@@ -30,11 +30,6 @@ import fiftyone.properties.DetectionConstants;
 public class LicenceKey {
 
     /**
-     * String to hold the licence key.
-     */
-    private static String key = null;
-    
-    /**
      * Assigns the given license key to the License key object if it is a valid
      * key.
      *
@@ -59,6 +54,7 @@ public class LicenceKey {
     public static String getKey() {
         return key;
     }
+    private static String key = null;
 
     /**
      *

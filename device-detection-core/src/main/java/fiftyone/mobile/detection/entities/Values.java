@@ -40,7 +40,7 @@ public class Values {
     /**
      * An array of values to expose.
      */
-    private Value[] values;
+    private final Value[] values;
 
     /**
      * Constructs a new instance of the values list.
@@ -143,10 +143,23 @@ public class Values {
         return values;
     }
     
+    /**
+     * Retrieve Value object at index.
+     * 
+     * @param index of the value to be returned.
+     * @return Value object at provided index.
+     */
     public Value get(int index) {
         return values[index];
     }
     
+    /**
+     * Performs a check of weather a provided Value is present in the Values 
+     * array.
+     * @param item check if this item is present in the internal array of Value 
+     * objects.
+     * @return True if provided item is in the array, False otherwise.
+     */
     public boolean contains(Value item) {
         for (Value v : values) {
             if (v.equals(item)) {
@@ -156,6 +169,12 @@ public class Values {
         return false;
     }
     
+    /**
+     * Copy Value objects to provided array starting at provided index.
+     * 
+     * @param array copy values to this array.
+     * @param arrayIndex start copying values from this index.
+     */
     public void copyTo(Value[] array, int arrayIndex) {
         int current = arrayIndex;
         int i = 0;
@@ -166,9 +185,10 @@ public class Values {
         }
     }
     
+    /**
+     * @return number of Value objects in the list.
+     */
     public int count() {
         return values.length;
     }
-    
-    
 }

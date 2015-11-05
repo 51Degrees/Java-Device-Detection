@@ -31,10 +31,7 @@ import java.io.IOException;
  * data source when requested.
  */
 public abstract class Node extends fiftyone.mobile.detection.entities.Node {
-    /**
-     * The position in the data set where the NumericChildren start.
-     */
-    protected final int numericChildrenPosition;
+    
     /**
      * Pool used to load NumericChildren and RankedSignatureIndexes.
      */
@@ -46,8 +43,11 @@ public abstract class Node extends fiftyone.mobile.detection.entities.Node {
      * @param offset The offset in the data structure to the node.
      * @param reader Reader connected to the source data structure and 
      * positioned to start reading.
+     * @throws java.io.IOException if there was a problem reading from the data 
+     * file.
      */
-    public Node(Dataset dataSet, int offset, BinaryReader reader) throws IOException {
+    public Node(Dataset dataSet, int offset, BinaryReader reader) 
+                                                            throws IOException {
         super(dataSet, offset, reader);
         this.pool = dataSet.pool;
         this.numericChildrenPosition = reader.getPos();
@@ -60,6 +60,7 @@ public abstract class Node extends fiftyone.mobile.detection.entities.Node {
      * @throws java.io.IOException
      */
     @Override
+    @SuppressWarnings("DoubleCheckedLocking")
     public final NodeNumericIndex[] getNumericChildren() throws IOException {
         if(super.numericChildren == null) {
             synchronized(this) {
@@ -74,4 +75,5 @@ public abstract class Node extends fiftyone.mobile.detection.entities.Node {
         }
         return numericChildren;
     }
+    protected final int numericChildrenPosition;
 }

@@ -37,12 +37,6 @@ import java.io.IOException;
 public class NodeV31 extends Node {
 
     /**
-     * An array of the ranked signature indexes for the node.
-     */
-    @SuppressWarnings("VolatileArrayField")
-    private volatile int[] rankedSignatureIndexes;
-    
-    /**
      * Constructs a new instance of NodeV31.
      * @param dataSet The data set the node is contained within.
      * @param offset The offset in the data structure to the node.
@@ -66,6 +60,14 @@ public class NodeV31 extends Node {
         return reader.readInt32();
     }
 
+    /**
+     * 
+     * @param dataSet
+     * @param reader
+     * @param offset
+     * @param count
+     * @return 
+     */
     @Override
     protected NodeIndex[] readNodeIndexes(Dataset dataSet, BinaryReader reader, 
             int offset, int count) {
@@ -75,7 +77,8 @@ public class NodeV31 extends Node {
 
     /**
      * @return An array of the ranked signature indexes for the node.
-     * @throws java.io.IOException
+     * @throws java.io.IOException if there was a problem reading from the data 
+     * file.
      */
     @Override
     @SuppressWarnings("DoubleCheckedLocking")
@@ -98,4 +101,6 @@ public class NodeV31 extends Node {
         }
         return localRankedSignatureIndexes;
     }
+    @SuppressWarnings("VolatileArrayField")
+    private volatile int[] rankedSignatureIndexes;
 }

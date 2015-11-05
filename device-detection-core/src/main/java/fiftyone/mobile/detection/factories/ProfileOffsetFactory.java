@@ -40,6 +40,9 @@ public class ProfileOffsetFactory extends BaseEntityFactory<ProfileOffset> {
         return new ProfileOffset(dataSet, index, reader);
     }
     
+    /**
+     * @return length of the Profile record.
+     */
     @Override
     public int getLength() {
         return ProfileOffset.RECORD_LENGTH;

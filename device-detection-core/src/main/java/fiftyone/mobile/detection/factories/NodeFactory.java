@@ -59,10 +59,11 @@ public abstract class NodeFactory extends BaseEntityFactory<Node> {
      * structure.
      * @param reader Binary reader positioned at the start of the Node.
      * @return A new instance of a Node.
+     * @throws java.io.IOException if there was a problem reading the data file.
      */
     @Override
     public Node create(Dataset dataSet, int index, BinaryReader reader) 
-            throws IOException {
+                                                            throws IOException {
         return construct(dataSet, index, reader);
     }
     

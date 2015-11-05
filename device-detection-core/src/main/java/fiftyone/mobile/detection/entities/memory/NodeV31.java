@@ -30,10 +30,6 @@ import fiftyone.mobile.detection.readers.BinaryReader;
  * All data is loaded into memory when the entity is constructed.
  */
 public class NodeV31 extends Node{
-    /**
-     * An array of the ranked signature indexes for the node.
-     */
-    private final int[] rankedSignatureIndexes;
     
     /**
      * Constructs a new instance of NodeV31.
@@ -44,7 +40,8 @@ public class NodeV31 extends Node{
      */
     public NodeV31(Dataset dataSet, int offset, BinaryReader reader) {
         super(dataSet, offset, reader);
-        rankedSignatureIndexes = BaseEntity.readIntegerArray(reader, rankedSignatureCount);
+        rankedSignatureIndexes = BaseEntity.readIntegerArray(
+                                            reader, rankedSignatureCount);
     }
     
     /**
@@ -55,6 +52,7 @@ public class NodeV31 extends Node{
     public int[] getRankedSignatureIndexes() {
         return rankedSignatureIndexes;
     }
+    private final int[] rankedSignatureIndexes;
     
     /**
      * Reads the ranked signature count from a 4 byte integer.

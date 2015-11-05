@@ -32,6 +32,9 @@ public class ValueFactory extends BaseEntityFactory<Value> {
         return new Value(dataSet, index, reader);
     }
 
+    /**
+     * @return length of the Value record.
+     */
     @Override
     public int getLength() {
         return Value.RECORD_LENGTH;

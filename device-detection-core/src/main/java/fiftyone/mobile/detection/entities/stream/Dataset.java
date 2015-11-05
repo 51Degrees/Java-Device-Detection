@@ -44,23 +44,6 @@ public class Dataset extends fiftyone.mobile.detection.Dataset {
     private final SourceBase source;
     
     /**
-     * @return The number of readers that have been created in the pool
-     * that connects the data set to the data source.
-     */
-    public int getReadersCreated()
-    {
-        return pool.getReadersCreated();
-    }
-
-    /**
-     * @return The number of readers in the queue ready to be used.
-     */
-    public int getReadersQueued()
-    {
-        return pool.getReadersQueued();
-    }
-    
-    /**
      * Creates a dataset object with a pool of readers used to retrieve data 
      * from the data file. Only useful in stram mode.
      * @param lastModified Date and time the source data was last modified.
@@ -112,5 +95,22 @@ public class Dataset extends fiftyone.mobile.detection.Dataset {
         ((ICacheList)super.profiles).resetCache();
         ((ICacheList)super.values).resetCache();
         ((ICacheList)super.rankedSignatureIndexes).resetCache();
+    }
+    
+    /**
+     * @return The number of readers that have been created in the pool
+     * that connects the data set to the data source.
+     */
+    public int getReadersCreated()
+    {
+        return pool.getReadersCreated();
+    }
+
+    /**
+     * @return The number of readers in the queue ready to be used.
+     */
+    public int getReadersQueued()
+    {
+        return pool.getReadersQueued();
     }
 }

@@ -35,12 +35,6 @@ import java.io.IOException;
  * constructed, they're only loaded from the data source when requested.
  */
 public class NodeV32 extends Node {
-
-    /**
-     * A list of all the signature indexes that relate to this node.
-     */
-    @SuppressWarnings("VolatileArrayField")
-    private volatile int[] rankedSignatureIndexes;
     
     /**
      * Constructs a new instance of NodeV32.
@@ -48,6 +42,8 @@ public class NodeV32 extends Node {
      * @param offset The offset in the data structure to the node.
      * @param reader Reader connected to the source data structure and 
      * positioned to start reading.
+     * @throws java.io.IOException if there was a problem reading from the data 
+     * file.
      */
     public NodeV32(fiftyone.mobile.detection.entities.stream.Dataset dataSet, 
                     int offset, BinaryReader reader) throws IOException {
@@ -55,7 +51,7 @@ public class NodeV32 extends Node {
     }
 
     /**
-     * Reads the ranked signature count from a 2 byte ushort.
+     * Reads the ranked signature count from a 2 byte "ushort".
      * @param reader Reader connected to the source data structure and 
      * positioned to start reading.
      * @return The count of ranked signatures associated with the node.
@@ -85,7 +81,8 @@ public class NodeV32 extends Node {
 
     /**
      * @return a list of all the signature indexes that relate to this node.
-     * @throws java.io.IOException
+     * @throws java.io.IOException if there was a problem reading from the data 
+     * file.
      */
     @Override
     @SuppressWarnings("DoubleCheckedLocking")
@@ -102,6 +99,8 @@ public class NodeV32 extends Node {
         }
         return localRankedSignatureIndexes;
     }
+    @SuppressWarnings("VolatileArrayField")
+    private volatile int[] rankedSignatureIndexes;
     
     /**
      * Gets the ranked signature indexes array for the node.
@@ -124,13 +123,13 @@ public class NodeV32 extends Node {
                         getNumericChildrenLength()));
                 
                 // Read the index.
-                int index = reader.readInt32();
+                int tempIndex = reader.readInt32();
                 
                 if (rankedSignatureCount == 1) {
                     // If the count is one then the value is the 
                     // ranked signature index.
                     rsi = new int[rankedSignatureCount];
-                    rsi[0] = index;
+                    rsi[0] = tempIndex;
                 } else {
                     // If the count is greater than one then the value is the 
                     // index of the first ranked signature index in the merged 
@@ -138,7 +137,7 @@ public class NodeV32 extends Node {
                     IClosableIterator<IntegerEntity> range = null;
                     try {
                         range = dataSet.getNodeRankedSignatureIndexes()
-                                .getRange(index, rankedSignatureCount);
+                                .getRange(tempIndex, rankedSignatureCount);
                         // Fill the array with values.
                         int currentIndex = 0;
                         rsi = new int[rankedSignatureCount];
@@ -147,7 +146,9 @@ public class NodeV32 extends Node {
                             currentIndex++;
                         }
                     } finally {
-                        range.close();
+                        if (range != null) {
+                            range.close();
+                        }
                     }
                 }
             } finally {

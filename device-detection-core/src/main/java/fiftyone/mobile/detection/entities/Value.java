@@ -44,18 +44,29 @@ import fiftyone.mobile.detection.readers.BinaryReader;
  * A value associated with a property and component within the dataset.
  */
 public class Value extends BaseEntity implements Comparable<Value> {
-
-    /**
-     * The value as an integer. Integer instead of int because of the nullable 
-     * requirement.
-     */
-    private volatile Integer asInt;
-    
+ 
     /**
      * The length in bytes of the value record in the data file.
      */
     public static final int RECORD_LENGTH = (4 * 3) + 2;
 
+    /**
+     * Constructs a new instance of Value
+     *
+     * @param dataSet The data set the value is contained within
+     * @param index The index in the data structure to the value
+     * @param reader Reader connected to the source data structure and
+     * positioned to start reading
+     */
+    public Value(Dataset dataSet, int index, BinaryReader reader) {
+        super(dataSet, index);
+
+        this.propertyIndex = reader.readInt16();
+        this.nameIndex = reader.readInt32();
+        this.descriptionIndex = reader.readInt32();
+        this.urlIndex = reader.readInt32();
+    }
+    
     /**
      * @return The name of the value.
      * @throws IOException indicates an I/O exception occurred
@@ -188,23 +199,6 @@ public class Value extends BaseEntity implements Comparable<Value> {
     private final int urlIndex;
 
     /**
-     * Constructs a new instance of Value
-     *
-     * @param dataSet The data set the value is contained within
-     * @param index The index in the data structure to the value
-     * @param reader Reader connected to the source data structure and
-     * positioned to start reading
-     */
-    public Value(Dataset dataSet, int index, BinaryReader reader) {
-        super(dataSet, index);
-
-        this.propertyIndex = reader.readInt16();
-        this.nameIndex = reader.readInt32();
-        this.descriptionIndex = reader.readInt32();
-        this.urlIndex = reader.readInt32();
-    }
-
-    /**
      * Called after the entire data set has been loaded to ensure any further
      * initialisation steps that require other items in the data set can be
      * completed. The Profiles and Signatures are not initialised as they are
@@ -258,9 +252,10 @@ public class Value extends BaseEntity implements Comparable<Value> {
         List<Integer> list = new ArrayList<Integer>();
         for (Profile profile : getProfiles()) {
             for (Integer signatureIndex : profile.getSignatureIndexes()) {
-                int index = java.util.Collections.binarySearch(list, signatureIndex);
-                if (index < 0) {
-                    list.add(~index, signatureIndex);
+                int tempIndex = java.util.Collections.binarySearch(
+                                                        list, signatureIndex);
+                if (tempIndex < 0) {
+                    list.add(~tempIndex, signatureIndex);
                 }
             }
         }
@@ -388,4 +383,5 @@ public class Value extends BaseEntity implements Comparable<Value> {
         }
         return localAsInt;
     }
+    private volatile Integer asInt;
 }

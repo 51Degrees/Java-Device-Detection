@@ -89,12 +89,14 @@ public class TrieFactory {
         return create(file, false);
     }
     
-    public static TrieProvider create(String file, boolean isTempFile) throws IOException {
+    public static TrieProvider create(String file, boolean isTempFile) 
+                                                            throws IOException {
         File f = new File(file);
         if (f.exists() && f.isFile()) {
             return create(new TriePool(new TrieSource(file, isTempFile)));
         }
-        throw new IOException("Selected filename is either a directory or does not exist: " + file);
+        throw new IOException("Selected filename is either a directory or does "
+                + "not exist: " + file);
     }
 
     private static short[] readLookupList(TrieReader reader) throws IOException {

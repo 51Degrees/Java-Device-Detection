@@ -32,12 +32,6 @@ import java.io.IOException;
  */
 public class NodeV32 extends Node{
 
-    /**
-     * Array of ranked signature indexes for the node.
-     */
-    @SuppressWarnings("VolatileArrayField")
-    private volatile int[] rankedSignatureIndexes;
-    
     private int nodeRankedSignatureValue;
     
     /**
@@ -56,6 +50,8 @@ public class NodeV32 extends Node{
     
     /**
      * Loads all the ranked signature indexes for the node.
+     * @throws java.io.IOException if there was a problem reading from the data 
+     * file.
      */
     @Override
     public void init() throws IOException {
@@ -124,6 +120,7 @@ public class NodeV32 extends Node{
      * @throws java.io.IOException
      */
     @Override
+    @SuppressWarnings("DoubleCheckedLocking")
     public int[] getRankedSignatureIndexes() throws IOException {
         int[] localRankedSignatureIndexes = rankedSignatureIndexes;
         if (localRankedSignatureIndexes == null) {
@@ -136,5 +133,6 @@ public class NodeV32 extends Node{
         }
         return localRankedSignatureIndexes;
     }
-    
+    @SuppressWarnings("VolatileArrayField")
+    private volatile int[] rankedSignatureIndexes;
 }
