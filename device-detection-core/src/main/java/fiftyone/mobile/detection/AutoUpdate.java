@@ -288,7 +288,8 @@ public class AutoUpdate {
         AutoUpdateStatus status = AUTO_UPDATE_IN_PROGRESS;
         final String serverHash = client.getHeaderField("Content-MD5");
         final String downloadHash = getMd5Hash(compressedTempFile);
-        if (serverHash.equals(downloadHash) == false) {
+        if (serverHash != null ||
+            downloadHash.equals(serverHash) == false) {
             status = AUTO_UPDATE_ERR_MD5_VALIDATION_FAILED;
         }
         return status;
@@ -314,7 +315,7 @@ public class AutoUpdate {
                 GZIPInputStream gzis = new GZIPInputStream(fis);
                 try {
                     byte[] buffer = new byte[INPUT_BUFFER];
-                    int len;
+                    int len = 0;
                     while ((len = gzis.read(buffer)) > 0) {
                         fos.write(buffer, 0, len);
                     }
