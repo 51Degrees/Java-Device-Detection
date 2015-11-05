@@ -203,12 +203,12 @@ public abstract class ApiBase extends DetectionTestSupport {
         assertTrue(matchDeviceId.getDeviceId().equals(deviceIdString));
         assertTrue(matchDeviceIdString.getDeviceId().equals(deviceIdString));
         assertTrue(matchDeviceIdArray.getDeviceId().equals(deviceIdString));
-        assertTrue(Arrays.equals(   matchDeviceId.getDeviceIdAsByteArray(), 
-                                    deviceIdByteArray));
-        assertTrue(Arrays.equals(   matchDeviceIdString.getDeviceIdAsByteArray(), 
-                                    deviceIdByteArray));
-        assertTrue(Arrays.equals(   matchDeviceIdArray.getDeviceIdAsByteArray(),
-                                    deviceIdByteArray));
+        assertTrue(Arrays.equals(matchDeviceId.getDeviceIdAsByteArray(), 
+                                 deviceIdByteArray));
+        assertTrue(Arrays.equals(matchDeviceIdString.getDeviceIdAsByteArray(), 
+                                 deviceIdByteArray));
+        assertTrue(Arrays.equals(matchDeviceIdArray.getDeviceIdAsByteArray(),
+                                 deviceIdByteArray));
     }
     
     private int getHighestProfileId() {
