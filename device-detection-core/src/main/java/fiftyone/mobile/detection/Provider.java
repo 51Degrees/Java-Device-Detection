@@ -228,66 +228,6 @@ public class Provider {
         }
         return match;
     }
-
-    /**
-     * See if any of the headers can be used for this components profile. As
-     * soon as one matches then stop and don't look at any more. They are 
-     * ordered in preferred sequence such that the first item is the most 
-     * preferred.
-     * @param masterState current working state of the matching process
-     * @param matches map of HTTP header names and match states
-     * @param component component to be retrieved
-     * @return Profile for the component provided from the matches for each 
-     * header
-     */
-    private static Profile getMatchingHeaderProfile(MatchState masterState, 
-            Map<String, MatchState> matches, Component component) 
-            throws IOException {
-        Profile result = null;
-        for (String header : component.getHttpheaders())
-        {
-            MatchState headerState = matches.get(header);
-            if (headerState != null &&
-                headerState.getSignature() != null)
-            {
-                result = processMatchedHeaderProfile(
-                        masterState, headerState, component);
-            }
-        }
-        return result;
-    }
-    
-    /**
-     * Updates the masterState with the header masterState and returns the 
-     * profile for the component requested.
-     * @param masterState current working state of the matching process
-     * @param headerState state for the specific header
-     * @param component the profile returned should relate to
-     * @return profile related to the component from the header state
-     * @throws IOException 
-     */
-    private static Profile processMatchedHeaderProfile(MatchState masterState, 
-            MatchState headerState, Component component) 
-            throws IOException {
-        
-        Profile result = null;
-        
-        // Merge the header state with the master state.
-        masterState.merge(headerState);
-
-        // Return the profile for this component.
-        int profileIndex = 0; 
-        Profile[] profiles = headerState.getSignature().getProfiles();
-        while (result == null &&
-               profileIndex < profiles.length) {
-            if (profiles[profileIndex].getComponent() == component) {
-                result = profiles[profileIndex];
-            }
-            profileIndex++;
-        }    
-        
-        return result;
-    }
     
     /**
      * For a given user agent returns a match containing information about the
@@ -316,96 +256,7 @@ public class Provider {
         match.setResult(match(targetUserAgent, match.state));
         return match;
     }
-
-    /**
-     * Sets the state to the result of the match for the target User-Agent.
-     * @param targetUserAgent User-Agent to be matched
-     * @param state current working state of the matching process
-     * @throws IOException 
-     */
-    void matchNoCache(String targetUserAgent, MatchState state) 
-            throws IOException {
         
-        long startNanoseconds = 0;
-        
-        state.reset(targetUserAgent);
-
-        if (recordDetectionTime) {
-            startNanoseconds = System.nanoTime();
-        }
-        
-        Controller.match(state);
-        
-        if (recordDetectionTime) {
-            state.setElapsed(System.nanoTime() - startNanoseconds);
-        }
-
-        // Update the counts for the provider.
-        detectionCount.incrementAndGet();
-        synchronized (methodCounts) {
-            MatchMethods method = state.getMethod();
-            methodCounts.put(method, methodCounts.get(method) + 1);
-        }
-    }
-    
-    /**
-     * For each of the important HTTP headers provides a mapping to a 
-     * match result.
-     * @param match The single match instance passed into the match method.
-     * @param headers The HTTP headers available for matching.
-     * @param importantHeaders HTTP header names important to the match process.
-     * @return A map of HTTP headers and match instances containing results 
-     * for them.
-     * @throws IOException 
-     */
-    private Map<String, MatchState> matchForHeaders(
-            Match match, Map<String, String> headers, ArrayList<String> importantHeaders)
-            throws IOException {
-        // Relates HTTP header names to match resutls.
-        Map<String, MatchState> matches = new HashMap<String, MatchState>();
-        
-        // Set the header name and match state for each
-        // important header.        
-        for(String headerName : importantHeaders) {
-            matches.put(headerName, new MatchState(
-                    match, headers.get(headerName)));
-        }
-        
-        // Using each of the match instances pass the value to the match method 
-        // and set the results.
-        for (Entry<String, MatchState> m : matches.entrySet()) {
-            // At this point we have a collection of the String => Match objects
-            // where Match objects are empty. Perform the Match for each String 
-            // hence making all matches correspond to the User Agents.
-            match(headers.get(m.getKey()), m.getValue());
-        }
-        return matches;
-    }
-
-    /**
-     * For a given user agent returns a match containing information about the
-     * capabilities of the device and it's components.
-     *
-     * @param targetUserAgent The user agent string to use as the target
-     * @param state information used to process the match
-     * @return a match containing information about the capabilities of the 
-     * device and it's components
-     * @throws IOException indicates and I/O exception occurred
-     */
-    private MatchResult match(String targetUserAgent, MatchState state) 
-            throws IOException {
-        MatchResult result;
-        if (userAgentCache != null) {
-            // Fetch the item using the cache.
-            result = userAgentCache.get(targetUserAgent, state);
-        } else {
-            // The cache does not exist so call the non caching method.
-            matchNoCache(targetUserAgent, state);
-            result = state;
-        }
-        return result;
-    }    
-    
     /**
      * Returns the result of a match based on the device Id returned from a 
      * previous match operation.
@@ -504,8 +355,8 @@ public class Provider {
         }
         String[] profileIdStrings = deviceId.split("-");
         ArrayList<Integer> profileIds = new ArrayList<Integer>();
-        for (int i = 0; i < profileIdStrings.length; i++) {
-            profileIds.add(Integer.parseInt(profileIdStrings[i]));
+        for (String profileIdString : profileIdStrings) {
+            profileIds.add(Integer.parseInt(profileIdString));
         }
         return matchForDeviceId(profileIds, match);
     }
@@ -540,4 +391,153 @@ public class Provider {
         }
         return match;
     }
+
+    /**
+     * Sets the state to the result of the match for the target User-Agent.
+     * @param targetUserAgent User-Agent to be matched
+     * @param state current working state of the matching process
+     * @throws IOException 
+     */
+    void matchNoCache(String targetUserAgent, MatchState state) 
+            throws IOException {
+        
+        long startNanoseconds = 0;
+        
+        state.reset(targetUserAgent);
+
+        if (recordDetectionTime) {
+            startNanoseconds = System.nanoTime();
+        }
+        
+        Controller.match(state);
+        
+        if (recordDetectionTime) {
+            state.setElapsed(System.nanoTime() - startNanoseconds);
+        }
+
+        // Update the counts for the provider.
+        detectionCount.incrementAndGet();
+        synchronized (methodCounts) {
+            MatchMethods method = state.getMethod();
+            methodCounts.put(method, methodCounts.get(method) + 1);
+        }
+    }
+    
+    /**
+     * For each of the important HTTP headers provides a mapping to a 
+     * match result.
+     * @param match The single match instance passed into the match method.
+     * @param headers The HTTP headers available for matching.
+     * @param importantHeaders HTTP header names important to the match process.
+     * @return A map of HTTP headers and match instances containing results 
+     * for them.
+     * @throws IOException 
+     */
+    private Map<String, MatchState> matchForHeaders(
+            Match match, Map<String, String> headers, ArrayList<String> importantHeaders)
+            throws IOException {
+        // Relates HTTP header names to match resutls.
+        Map<String, MatchState> matches = new HashMap<String, MatchState>();
+        
+        // Set the header name and match state for each
+        // important header.        
+        for(String headerName : importantHeaders) {
+            matches.put(headerName, new MatchState(
+                    match, headers.get(headerName)));
+        }
+        
+        // Using each of the match instances pass the value to the match method 
+        // and set the results.
+        for (Entry<String, MatchState> m : matches.entrySet()) {
+            // At this point we have a collection of the String => Match objects
+            // where Match objects are empty. Perform the Match for each String 
+            // hence making all matches correspond to the User Agents.
+            match(headers.get(m.getKey()), m.getValue());
+        }
+        return matches;
+    }
+
+    /**
+     * For a given user agent returns a match containing information about the
+     * capabilities of the device and it's components.
+     *
+     * @param targetUserAgent The user agent string to use as the target
+     * @param state information used to process the match
+     * @return a match containing information about the capabilities of the 
+     * device and it's components
+     * @throws IOException indicates and I/O exception occurred
+     */
+    private MatchResult match(String targetUserAgent, MatchState state) 
+            throws IOException {
+        MatchResult result;
+        if (userAgentCache != null) {
+            // Fetch the item using the cache.
+            result = userAgentCache.get(targetUserAgent, state);
+        } else {
+            // The cache does not exist so call the non caching method.
+            matchNoCache(targetUserAgent, state);
+            result = state;
+        }
+        return result;
+    }   
+    
+    /**
+     * See if any of the headers can be used for this components profile. As
+     * soon as one matches then stop and don't look at any more. They are 
+     * ordered in preferred sequence such that the first item is the most 
+     * preferred.
+     * @param masterState current working state of the matching process
+     * @param matches map of HTTP header names and match states
+     * @param component component to be retrieved
+     * @return Profile for the component provided from the matches for each 
+     * header
+     */
+    private static Profile getMatchingHeaderProfile(MatchState masterState, 
+            Map<String, MatchState> matches, Component component) 
+            throws IOException {
+        Profile result = null;
+        for (String header : component.getHttpheaders())
+        {
+            MatchState headerState = matches.get(header);
+            if (headerState != null &&
+                headerState.getSignature() != null)
+            {
+                result = processMatchedHeaderProfile(
+                        masterState, headerState, component);
+            }
+        }
+        return result;
+    }
+    
+    /**
+     * Updates the masterState with the header masterState and returns the 
+     * profile for the component requested.
+     * @param masterState current working state of the matching process
+     * @param headerState state for the specific header
+     * @param component the profile returned should relate to
+     * @return profile related to the component from the header state
+     * @throws IOException 
+     */
+    private static Profile processMatchedHeaderProfile(MatchState masterState, 
+            MatchState headerState, Component component) 
+            throws IOException {
+        
+        Profile result = null;
+        
+        // Merge the header state with the master state.
+        masterState.merge(headerState);
+
+        // Return the profile for this component.
+        int profileIndex = 0; 
+        Profile[] profiles = headerState.getSignature().getProfiles();
+        while (result == null &&
+               profileIndex < profiles.length) {
+            if (profiles[profileIndex].getComponent() == component) {
+                result = profiles[profileIndex];
+            }
+            profileIndex++;
+        }    
+        
+        return result;
+    }    
 }
