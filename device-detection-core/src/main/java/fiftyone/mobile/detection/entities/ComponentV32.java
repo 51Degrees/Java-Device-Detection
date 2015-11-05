@@ -33,13 +33,6 @@ import java.util.List;
 public class ComponentV32 extends Component {
 
     /**
-     * List of HTTP headers that should be checked in order to perform a 
-     * detection where more headers than User-Agent are available.
-     */
-    @SuppressWarnings("VolatileArrayField")
-    private volatile String[] httpHeaders;
-    
-    /**
      * Offsets of the HTTP headers in the data file.
      */
     private final int[] httpHeaderOffsets;
@@ -68,6 +61,7 @@ public class ComponentV32 extends Component {
      * @return List of HTTP headers as Strings.
      * @throws java.io.IOException
      */
+    @SuppressWarnings("DoubleCheckedLocking")
     @Override
     public String[] getHttpheaders() throws IOException {
         String[] localHttpHeaders = httpHeaders;
@@ -86,5 +80,7 @@ public class ComponentV32 extends Component {
         }
         return localHttpHeaders;
     }
+    @SuppressWarnings("VolatileArrayField")
+    private volatile String[] httpHeaders;
     
 }

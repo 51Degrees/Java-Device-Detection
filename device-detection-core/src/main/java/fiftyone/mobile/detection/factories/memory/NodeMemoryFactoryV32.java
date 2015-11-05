@@ -54,7 +54,12 @@ public class NodeMemoryFactoryV32 extends NodeFactory {
      * @throws java.io.IOException
      */
     @Override
-    public int getLength(fiftyone.mobile.detection.entities.Node entity) throws IOException {
-        return getBaseLength() + DetectionConstants.SIZE_OF_USHORT + (entity.getChildrenLength() * NodeFactoryShared.getNodeIndexLengthV32()) + (entity.getNumericChildrenLength() * getNodeNumericIndexLength()) + (entity.getRankedSignatureIndexes().length == 0 ? 0 : DetectionConstants.SIZE_OF_INT );
+    public int getLength(fiftyone.mobile.detection.entities.Node entity) 
+                                                            throws IOException {
+        return getBaseLength() 
+                + DetectionConstants.SIZE_OF_USHORT 
+                + (entity.getChildrenLength() * NodeFactoryShared.getNodeIndexLengthV32()) 
+                + (entity.getNumericChildrenLength() * getNodeNumericIndexLength()) 
+                + (entity.getRankedSignatureIndexes().length == 0 ? 0 : DetectionConstants.SIZE_OF_INT );
     }
 }

@@ -43,18 +43,20 @@ public class StreamFixedListRangeIterator<T> implements IClosableIterator<T> {
      */
     private final int count;
     /**
-     * 
+     * Reference to DataSet object used to obtain and release binary readers.
      */
     private final Dataset dataSet;
     /**
-     * 
+     * Used to create an entity of the corresponding type.
      */
     private final BaseEntityFactory<T> entityFactory;
     /**
      * Current position.
      */
     private int currentIndex;
-    
+    /**
+     * Start position.
+     */
     private final int startIndex;    
     
     /**
@@ -92,11 +94,17 @@ public class StreamFixedListRangeIterator<T> implements IClosableIterator<T> {
         }
     }
 
+    /**
+     * @return True if there are more elements to read, False otherwise.
+     */
     @Override
     public boolean hasNext() {
         return currentIndex - startIndex < count;
     }
 
+    /**
+     * @return next element in the list.
+     */
     @Override
     public T next() {
         T item = null;
@@ -109,6 +117,9 @@ public class StreamFixedListRangeIterator<T> implements IClosableIterator<T> {
         return item;
     }
 
+    /**
+     * Unsupported, do not use.
+     */
     @Override
     public void remove() {
         throw new UnsupportedOperationException("Remove is not a valid action "

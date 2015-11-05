@@ -58,10 +58,12 @@ public class StreamFixedList<T extends BaseEntity> extends StreamBaseList<T>
      * @param index read from.
      * @param count how many entries.
      * @return An enumerator for the list.
-     * @throws java.io.IOException
+     * @throws java.io.IOException if there was a problem reading from the data 
+     * file.
      */
     @Override
-    public StreamFixedListRangeIterator<T> getRange(int index, int count) throws IOException {
+    public StreamFixedListRangeIterator<T> getRange(int index, int count) 
+                                                            throws IOException {
         return new StreamFixedListRangeIterator<T>(
                 entityFactory, 
                 dataSet,
@@ -72,7 +74,6 @@ public class StreamFixedList<T extends BaseEntity> extends StreamBaseList<T>
     }
 
     /**
-     * Returns The number of items in the list.
      * @return The number of items in the list.
      */
     @Override
@@ -87,7 +88,6 @@ public class StreamFixedList<T extends BaseEntity> extends StreamBaseList<T>
     public void close() {
         throw new UnsupportedOperationException("Nothing to dispose of in the "
                 + "StreamFixedList."); 
-        //To change body of generated methods, choose Tools | Templates.
     }
 
     /**
@@ -106,6 +106,9 @@ public class StreamFixedList<T extends BaseEntity> extends StreamBaseList<T>
         return entityFactory.create(dataSet, index, reader);
     }
 
+    /**
+     * @return Iterator for the current list.
+     */
     @Override
     public Iterator<T> iterator() {
         return new StreamFixedListIterator(this);

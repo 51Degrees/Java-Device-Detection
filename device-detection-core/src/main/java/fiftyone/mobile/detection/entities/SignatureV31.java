@@ -30,16 +30,6 @@ import java.io.IOException;
 public class SignatureV31 extends Signature {
 
     /**
-     * List of the node offsets the signature relates to ordered by 
-     * offset of the node.
-     */
-    private final int[] nodeOffsets;
-    /**
-     * The rank of this signature.
-     */
-    protected volatile Integer rank;
-    
-    /**
      * Constructs a new instance of SignatureV31.
      * @param ds The data set the signature is contained within.
      * @param index The index in the data structure to the signature.
@@ -58,6 +48,7 @@ public class SignatureV31 extends Signature {
      * @throws java.io.IOException
      */
     @Override
+    @SuppressWarnings("DoubleCheckedLocking")
     public int getRank() throws IOException {
         Integer localRank = rank;
         if (localRank == null) {
@@ -70,6 +61,7 @@ public class SignatureV31 extends Signature {
         }
         return localRank;
     }
+    protected volatile Integer rank;
 
     /**
      * Returns List of the node offsets the signature relates to ordered by 
@@ -81,6 +73,7 @@ public class SignatureV31 extends Signature {
     public int[] getNodeOffsets() {
         return nodeOffsets;
     }
+    private final int[] nodeOffsets;
 
     /**
      * The number of characters in the signature.
@@ -99,9 +92,11 @@ public class SignatureV31 extends Signature {
      * @throws IOException 
      */
     private int getSignatureRank() throws IOException {
-        for (int rank = 0; rank < dataSet.rankedSignatureIndexes.size(); rank++) {
-            if (dataSet.rankedSignatureIndexes.get(rank).value == this.index)
-                return rank;
+        for (int tempRank = 0; 
+                tempRank < dataSet.rankedSignatureIndexes.size(); 
+                tempRank++) {
+            if (dataSet.rankedSignatureIndexes.get(tempRank).value == this.index)
+                return tempRank;
         }
         return Integer.MAX_VALUE;
     }

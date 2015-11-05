@@ -27,13 +27,14 @@ import fiftyone.mobile.detection.readers.BinaryReader;
 
 /**
  *
- * @author mike
  */
 public class ProfileMemoryFactory extends ProfileFactory {
 
     @Override
     protected Profile construct(Dataset dataSet, int index, BinaryReader reader) {
-        return new fiftyone.mobile.detection.entities.memory.Profile(dataSet, index, reader);
+        return new fiftyone.mobile.detection.entities.memory.Profile(dataSet, 
+                                                                    index, 
+                                                                    reader);
     }
     
 }

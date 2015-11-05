@@ -21,11 +21,8 @@
 
 package fiftyone.mobile.detection;
 
-import fiftyone.mobile.detection.Dataset;
-import fiftyone.mobile.detection.Provider;
 import fiftyone.mobile.detection.test.common.Results;
 import fiftyone.properties.MatchMethods;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.rules.TestName;

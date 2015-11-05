@@ -39,21 +39,21 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 public class MemoryMeasurementProcessor implements MatchProcessor {
 
-    private Logger logger = LoggerFactory.getLogger(MemoryMeasurementProcessor.class);
+    private final Logger logger = LoggerFactory.getLogger(MemoryMeasurementProcessor.class);
 
     public AtomicLong totalMemory = new AtomicLong();
 
     public AtomicInteger memorySamples = new AtomicInteger();
 
-    private ThreadMXBean threadMXBean = (ThreadMXBean) ManagementFactory.getThreadMXBean();
+    private final ThreadMXBean threadMXBean = (ThreadMXBean) ManagementFactory.getThreadMXBean();
 
-    private NumberFormat numberFormat = NumberFormat.getNumberInstance();
+    private final NumberFormat numberFormat = NumberFormat.getNumberInstance();
 
     long heapAtStart;
 
-    private ConcurrentHashMap<Long, Long> lastThreadAllocation = new ConcurrentHashMap<Long, Long>();
-    private ConcurrentHashMap<Long, Long> totalCumulativeThreadAllocation = new ConcurrentHashMap<Long, Long>();
-    private Runtime runtime = Runtime.getRuntime();
+    private final ConcurrentHashMap<Long, Long> lastThreadAllocation = new ConcurrentHashMap<Long, Long>();
+    private final ConcurrentHashMap<Long, Long> totalCumulativeThreadAllocation = new ConcurrentHashMap<Long, Long>();
+    private final Runtime runtime = Runtime.getRuntime();
 
     public MemoryMeasurementProcessor() {
     }

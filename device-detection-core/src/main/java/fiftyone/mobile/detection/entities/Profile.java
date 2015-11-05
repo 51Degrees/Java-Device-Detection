@@ -28,7 +28,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -41,46 +40,9 @@ import java.util.TreeSet;
 public abstract class Profile extends BaseEntity implements Comparable<Profile> {
     
     /**
-     * The component the profile belongs to.
-     */
-    private volatile Component component;
-    
-    /**
      * Index of the component the profile belongs to.
      */
     private final int componentIndex;
-    
-    /**
-     * List of Values associated with the property name.
-     */
-    private volatile SortedList<String, Values> nameToValues;
-    
-    /**
-     * Array of Properties associated with the profile.
-     */
-    @SuppressWarnings("VolatileArrayField")
-    private volatile Property[] properties;
-    
-    /**
-     * List of Property indexes wit the corresponding list of values.
-     */
-    private volatile SortedList<Integer, Values> propertyIndexToValues;
-    
-    /**
-     * The release date of the profile if it's a hardware profile.
-     */
-    private Date releaseDate;
-    
-    /**
-     * Release date checked.
-     */
-    private boolean releaseDateChecked;
-    
-    /**
-     * Array of signatures associated with the profile.
-     */
-    @SuppressWarnings("VolatileArrayField")
-    private volatile Signature[] signatures;
     
     /**
      * An array of the signature indexes associated with the profile.
@@ -89,17 +51,6 @@ public abstract class Profile extends BaseEntity implements Comparable<Profile> 
     @SuppressWarnings("VolatileArrayField")
     protected volatile int[] signatureIndexes;
     
-    /**
-     * A string representation of the profile.
-     */
-    private volatile String stringValue;
-    
-    /**
-     * An array of values associated with the profile.
-     */
-    @SuppressWarnings("VolatileArrayField")
-    private volatile Value[] values;
-
     /**
      * Unique Id of the profile. Does not change between different data sets.
      */
@@ -159,6 +110,7 @@ public abstract class Profile extends BaseEntity implements Comparable<Profile> 
         }
         return localComponent;
     }
+    private volatile Component component;
     
     /**
      * Returns an array of properties the profile relates to.
@@ -178,6 +130,8 @@ public abstract class Profile extends BaseEntity implements Comparable<Profile> 
         }
         return localProperties;
     }
+    @SuppressWarnings("VolatileArrayField")
+    private volatile Property[] properties;
     
     /**
      * Returns an array of properties the profile relates to. Used by the 
@@ -187,6 +141,7 @@ public abstract class Profile extends BaseEntity implements Comparable<Profile> 
     private Property[] doGetProperties() throws IOException {
         Set<Property> tree = new TreeSet<Property>(
                 new Comparator<Property>() {
+                    @Override
                     public int compare(Property o1, Property o2) {
                         try {
                             return o1.getName().compareTo(o2.getName());
@@ -225,7 +180,7 @@ public abstract class Profile extends BaseEntity implements Comparable<Profile> 
      */
     @SuppressWarnings("DoubleCheckedLocking")
     public Values getValues(Property property) throws IOException {
-        Values localValues = null;
+        Values localValues;
         localValues = getPropertyIndexToValues().get(property.getIndex());
         if (localValues == null) {
             synchronized (this) {
@@ -311,6 +266,8 @@ public abstract class Profile extends BaseEntity implements Comparable<Profile> 
         }
         return localSignatures;
     }
+    @SuppressWarnings("VolatileArrayField")
+    private volatile Signature[] signatures;
     
     /**
      * Gets the signatures related to the profile.
@@ -342,6 +299,8 @@ public abstract class Profile extends BaseEntity implements Comparable<Profile> 
         }
         return localValues;
     }
+    @SuppressWarnings("VolatileArrayField")
+    private volatile Value[] values;
     
     /**
      * @return Returns an array of values the profile relates to.
@@ -382,6 +341,7 @@ public abstract class Profile extends BaseEntity implements Comparable<Profile> 
      * by the profile. Used to speed up subsequent data processing.
      * @return a hash map with property indexes mapped to corresponding values.
      */
+    @SuppressWarnings("DoubleCheckedLocking")
     private SortedList<Integer, Values> getPropertyIndexToValues() {
         SortedList<Integer, Values> localPropertyIndexToValues = propertyIndexToValues;
         if (localPropertyIndexToValues == null) {
@@ -395,6 +355,7 @@ public abstract class Profile extends BaseEntity implements Comparable<Profile> 
         }
         return localPropertyIndexToValues;
     }
+    private volatile SortedList<Integer, Values> propertyIndexToValues;
     
     /**
      * A string representation of the profiles display values.
@@ -415,9 +376,10 @@ public abstract class Profile extends BaseEntity implements Comparable<Profile> 
                             Value value = getValues()[i];
                             if (value.getProperty().displayOrder > 0
                                     && value.getName().contains("Unknown") == false) {
-                                int index = Collections.binarySearch(list, value, propertyComparator);
-                                if (index < 0) {
-                                    list.add(~index, value);
+                                int tempIndex = Collections.binarySearch(
+                                            list, value, propertyComparator);
+                                if (tempIndex < 0) {
+                                    list.add(~tempIndex, value);
                                 }
                             }
                         }
@@ -443,6 +405,7 @@ public abstract class Profile extends BaseEntity implements Comparable<Profile> 
         }
         return localStringValue;
     }
+    private volatile String stringValue;
     
     /**
      * Comparator used to order the properties by descending display order.

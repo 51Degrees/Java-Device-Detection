@@ -35,11 +35,6 @@ import java.util.Map;
 public class PropertiesList extends MemoryFixedList<Property> {
 
     /**
-     * Contains the key value pair of Property name and Property object.
-     */
-    private final Map<String, Property> propertyNameDictionary;
-    
-    /**
      * Constructs a new instance of PropertiesList.
      * @param dataSet The Dataset being created.
      * @param reader Reader connected to the source data structure and 
@@ -72,12 +67,16 @@ public class PropertiesList extends MemoryFixedList<Property> {
         }
         return result;
     }
+    private final Map<String, Property> propertyNameDictionary;
     
     /**
      * Returns the property matching the name provided, or null if no such 
      * property is available.
+     * 
      * @param propertyName Property name required.
      * @return The property matching the name, otherwise null.
+     * @throws java.io.IOException if there was a problem reading from the data 
+     * file.
      */
     public Property get(String propertyName) throws IOException {
         Property property = getPropertyNameDictionary().get(propertyName);

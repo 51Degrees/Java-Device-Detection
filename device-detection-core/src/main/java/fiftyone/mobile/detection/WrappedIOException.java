@@ -25,15 +25,22 @@ package fiftyone.mobile.detection;
  */
 public class WrappedIOException extends RuntimeException {
     
-    private final String message;
-
+    /**
+     * 
+     * @param message 
+     */
     public WrappedIOException(final String message) {
         super();
         this.message = message;
     }
 
+    /**
+     * 
+     * @return 
+     */
     @Override
     public String getMessage() {
         return message;
     }
+    private final String message;
 }

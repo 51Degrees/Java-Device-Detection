@@ -25,7 +25,9 @@ import fiftyone.properties.MatchMethods;
 import fiftyone.mobile.detection.entities.Component;
 import fiftyone.mobile.detection.entities.Profile;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -403,4 +405,139 @@ public class Provider {
         }
         return result;
     }    
+    
+    /**
+     * Returns the result of a match based on the device Id returned from a 
+     * previous match operation.
+     * 
+     * @param deviceIdArray Byte array representation of the device Id, not null.
+     * @return The match object passed to the method updated with results for 
+     * the device id.
+     * @throws java.io.IOException if a problem was encountered when accessing 
+     * the device data file.
+     */
+    public  Match matchForDeviceId(byte[] deviceIdArray) throws IOException {
+        return matchForDeviceId(deviceIdArray, createMatch());
+    }
+    
+    /**
+     * Returns the result of a match based on the device Id returned from a 
+     * previous match operation.
+     * 
+     * @param deviceId String representation of the device Id, not null.
+     * @return The match object passed to the method updated with results for 
+     * the device id.
+     * @throws java.io.IOException if a problem was encountered when accessing 
+     * the device data file.
+     */
+    public Match matchForDeviceId(String deviceId) throws IOException {
+        return matchForDeviceId(deviceId, createMatch());
+    }
+    
+    /**
+     * Returns the result of a match based on the device Id returned from a 
+     * previous match operation.
+     * 
+     * @param profileIds List of profile IDs as integers, not null.
+     * @return The match object passed to the method updated with results for 
+     * the device id.
+     * @throws java.io.IOException if a problem was encountered when accessing 
+     * the device data file.
+     */
+    public Match matchForDeviceId(ArrayList<Integer> profileIds) 
+                                                            throws IOException {
+        return matchForDeviceId(profileIds, createMatch());
+    }
+    
+    /**
+     * Returns the result of a match based on the device Id returned from a 
+     * previous match operation.
+     * 
+     * @param deviceIdArray Byte array representation of the device Id.
+     * @param match A match object created by a previous match, or via the 
+     * createMatch() method, not null.
+     * @return The match object passed to the method updated with results for 
+     * the device id.
+     * @throws java.io.IOException if a problem was encountered when accessing 
+     * the device data file.
+     */
+    public Match matchForDeviceId(byte[] deviceIdArray, Match match) 
+                                                            throws IOException {
+        if (deviceIdArray.length == 0) {
+            throw new IllegalArgumentException("Byte array containing device Id"
+                    + " can not be empty.");
+        }
+        if (match == null) {
+            throw new IllegalArgumentException("Match object can not be null");
+        }
+        ArrayList<Integer> profileIds = new ArrayList<Integer>();
+        for (int i =0; i < deviceIdArray.length; i += 4) {
+            // Get the relevant 4 bytes.
+            byte[] byteId = Arrays.copyOfRange(deviceIdArray, i, i+4);
+            // Convert relevant bytes to integer.
+            Integer tempId = new BigInteger(byteId).intValue();
+            profileIds.add(tempId);
+        }
+        return matchForDeviceId(profileIds, match);
+    }
+    
+    /**
+     * Returns the result of a match based on the device Id returned from a 
+     * previous match operation.
+     * 
+     * @param deviceId String representation of the device Id.
+     * @param match A match object created by a previous match, or via the 
+     * createMatch() method, not null.
+     * @return The match object passed to the method updated with results for 
+     * the device id.
+     * @throws java.io.IOException if a problem was encountered when accessing 
+     * the device data file.
+     */
+    public Match matchForDeviceId(String deviceId, Match match) 
+                                                            throws IOException {
+        if (deviceId.isEmpty()) {
+            throw new IllegalArgumentException("String containing device Id "
+                    + "can not be empty.");
+        }
+        if (match == null) {
+            throw new IllegalArgumentException("Match object can not be null.");
+        }
+        String[] profileIdStrings = deviceId.split("-");
+        ArrayList<Integer> profileIds = new ArrayList<Integer>();
+        for (int i = 0; i < profileIdStrings.length; i++) {
+            profileIds.add(Integer.parseInt(profileIdStrings[i]));
+        }
+        return matchForDeviceId(profileIds, match);
+    }
+    
+    /**
+     * Returns the result of a match based on the device Id returned from a 
+     * previous match operation.
+     * 
+     * @param profileIds List of profile IDs as integers.
+     * @param match A match object created by a previous match, or via the 
+     * createMatch() method.
+     * @return The match object passed to the method updated with results for 
+     * the device id.
+     * @throws IOException if a problem was encountered when accessing 
+     * the device data file.
+     */
+    public Match matchForDeviceId(ArrayList<Integer> profileIds, Match match) 
+                                                            throws IOException {
+        if (profileIds.isEmpty()) {
+            throw new IllegalArgumentException("List of profile Ids can not be "
+                    + "empty or null.");
+        }
+        if (match == null) {
+            throw new IllegalArgumentException("Match object can not be null.");
+        }
+        match.reset();
+        for (Integer profileId : profileIds) {
+            Profile profile = dataSet.findProfile(profileId);
+            if (profile != null) {
+                match.state.getExplicitProfiles().add(profile);
+            }
+        }
+        return match;
+    }
 }

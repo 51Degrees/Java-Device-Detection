@@ -41,7 +41,12 @@ public class Profile extends fiftyone.mobile.detection.entities.Profile {
         position = reader.getPos();
     }
     
+    /** 
+     * @return Array of value indexes associated with the profile.
+     * @throws IOException if there was a problem reading from the data file.
+     */
     @Override
+    @SuppressWarnings("DoubleCheckedLocking")
     public int[] getValueIndexes() throws IOException {
         int[] localValueIndexes = valueIndexes;
         if(localValueIndexes == null) {
@@ -59,7 +64,12 @@ public class Profile extends fiftyone.mobile.detection.entities.Profile {
         return localValueIndexes;
     }
     
+    /**
+     * @return Array of signature indexes associated with the profile.
+     * @throws IOException if there was a problem reading from the data file.
+     */
     @Override
+    @SuppressWarnings("DoubleCheckedLocking")
     public int[] getSignatureIndexes() throws IOException {
         int[] localSignatureIndexes = signatureIndexes;
         if(localSignatureIndexes == null) {
