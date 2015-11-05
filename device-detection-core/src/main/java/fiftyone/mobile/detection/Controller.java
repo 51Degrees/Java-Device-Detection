@@ -141,7 +141,7 @@ class Controller {
 
             /// Can a precise match be found based on the nodes?
             int signatureIndex = state.match.getDataSet().getSignatureSearch().
-                    binarySearch(state.nodes);
+                    binarySearch(state.getNodesList());
 
             if (signatureIndex >= 0) {
                 // Yes a precise match was found.
@@ -155,7 +155,7 @@ class Controller {
 
                 // Can a precise match be found based on the nodes?
                 signatureIndex = state.match.getDataSet().getSignatureSearch().
-                    binarySearch(state.nodes);
+                    binarySearch(state.getNodesList());
 
                 if (signatureIndex >= 0) {
                     // Yes a precise match was found.

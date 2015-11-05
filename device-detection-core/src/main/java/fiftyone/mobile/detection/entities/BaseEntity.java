@@ -124,10 +124,16 @@ public class BaseEntity {
         return value;
     }
 
+    /**
+     * @return DataSet used to create this base entity.
+     */
     protected Dataset getDataSet() {
         return dataSet;
     }
 
+    /**
+     * @return Index of this base entity.
+     */
     public int getIndex() {
         return index;
     }

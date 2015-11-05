@@ -36,6 +36,7 @@ public class SupportedPatternFormatVersions {
     /**
      * Create the SupportedPatternFormatVersions object.
      */
+    @SuppressWarnings("MapReplaceableByEnumMap")
     public SupportedPatternFormatVersions() {
         patternVersions = new HashMap<DetectionConstants.FORMAT_VERSIONS, Version>();
         init();

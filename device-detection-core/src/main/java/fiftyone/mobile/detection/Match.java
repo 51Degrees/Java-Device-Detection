@@ -35,6 +35,7 @@ import fiftyone.mobile.detection.entities.Value;
 import fiftyone.mobile.detection.entities.Values;
 import fiftyone.properties.DetectionConstants;
 import fiftyone.properties.MatchMethods;
+import java.nio.ByteBuffer;
 
 /**
  * Contains all the information associated with the device detection and matched
@@ -228,6 +229,28 @@ public class Match {
             }
             result = Utilities.joinString(DetectionConstants.PROFILE_SEPARATOR, 
                                           profileIds);
+        }
+        return result;
+    }
+    
+    /**
+     * Id of the device represented as an array of bytes. Unlike the String Id 
+     * this Id only contains integers and no separators.
+     * 
+     * To obtain the profiles: wrap the byte array in a ByteBuffer and call 
+     * getInt() repeatedly.
+     * 
+     * @return Profile Id represented as byte array. Note that Id separators 
+     * such as "-" are not part of the byte array, only the integer IDs are.
+     * @throws IOException if there was a problem accessing the data file.
+     */
+    public byte[] getDeviceIdAsByteArray() throws IOException {
+        // Allocate enough bytes to store Id for every profile.
+        // Integer.SIZE divided by 8 as the size is in bits.
+        byte[] result = new byte[(getProfiles().length * Integer.SIZE / 8)];
+        ByteBuffer bb = ByteBuffer.wrap(result);
+        for (Profile tempProfile : getProfiles()) {
+            bb.putInt(tempProfile.profileId);
         }
         return result;
     }

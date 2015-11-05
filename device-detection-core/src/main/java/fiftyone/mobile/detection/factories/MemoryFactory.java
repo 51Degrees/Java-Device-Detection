@@ -117,7 +117,8 @@ public class MemoryFactory {
      * @return A DataSet filled with data from the array.
      * @throws IOException 
      */
-    public static Dataset create(String filename, boolean init) throws IOException {
+    public static Dataset create(String filename, boolean init) 
+                                                            throws IOException {
         File f = new File(filename);
         if (!f.exists() || !f.isFile())
             throw new IllegalArgumentException("Could not construct a dataset "
@@ -216,12 +217,14 @@ public class MemoryFactory {
      * initialised.
      * @throws IOException 
      */
+    @SuppressWarnings("null")
     public static void load(Dataset dataSet, BinaryReader reader, boolean init) 
             throws IOException {
         CommonFactory.loadHeader(dataSet, reader);
 
-        MemoryVariableList<AsciiString> strings = new MemoryVariableList<AsciiString>(
-                dataSet, reader, new AsciiStringFactory());
+        MemoryVariableList<AsciiString> strings = 
+                new MemoryVariableList<AsciiString>(dataSet, reader, 
+                                                    new AsciiStringFactory());
         
         MemoryFixedList<Component> components = null;
         switch(dataSet.versionEnum) {
@@ -279,8 +282,9 @@ public class MemoryFactory {
         
         MemoryFixedList<Node> rootNodes = new MemoryFixedList<Node>(dataSet,
                 reader, new RootNodeFactory());
-        MemoryFixedList<ProfileOffset> profileOffsets = new MemoryFixedList<ProfileOffset>(
-                dataSet, reader, new ProfileOffsetFactory());
+        MemoryFixedList<ProfileOffset> profileOffsets = 
+                new MemoryFixedList<ProfileOffset>( dataSet, reader, 
+                                                    new ProfileOffsetFactory());
 
         dataSet.strings = strings;
         dataSet.components = components;

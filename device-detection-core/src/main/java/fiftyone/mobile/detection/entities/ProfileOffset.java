@@ -32,28 +32,36 @@ public class ProfileOffset extends BaseEntity {
      * The length in bytes of the profile offset record in the data file.
      */
     public static final int RECORD_LENGTH = (4 * 2);
-    
-    private int profileId;
-    
-    private int offset;
-    
-    public int getProfileId() {
-        return profileId;
-    }
-    
+
     /**
-     * The position within the data file that the profile can be read from.
-     *
-     * @return offset of the profile Id in the profiles data structure
+     * Constructs a new ProfileOffset that maps profile Id to the corresponding 
+     * position in the data file.
+     * @param dataSet DataSet object to provide to the super class.
+     * @param offset the location in the data file to read from.
+     * @param reader BinaryReader to use to extract data from the data file.
      */
-    public int getOffset() {
-        return offset;
-    }
-   
     public ProfileOffset(Dataset dataSet, int offset,
             BinaryReader reader) {
         super(dataSet, offset);
         profileId = reader.readInt32();
         this.offset = reader.readInt32();
     }
+    
+    /**
+     * @return Id of the profile as integer.
+     */
+    public int getProfileId() {
+        return profileId;
+    }
+    private final int profileId;
+    
+    /**
+     * @return The position within the data file that the profile can be 
+     * read from.
+     */
+    public int getOffset() {
+        return offset;
+    }
+    private final int offset;
+
 }

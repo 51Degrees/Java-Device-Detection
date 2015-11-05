@@ -93,21 +93,22 @@ public class SignatureV32 extends Signature {
      * @throws java.io.IOException
      */
     @Override
+    @SuppressWarnings("DoubleCheckedLocking")
     public int[] getNodeOffsets() throws IOException {
         int[] localNodeOffsets = this.nodeOffsets;
         if (localNodeOffsets == null) {
             synchronized(this) {
                 localNodeOffsets = this.nodeOffsets;
                 if (localNodeOffsets == null) {
-                    int[] nodeOffsets = new int[nodeCount];
-                    IClosableIterator<IntegerEntity> iterator = null;
+                    int[] tempNodeOffsets = new int[nodeCount];
+                    IClosableIterator<IntegerEntity> iterator;
                     iterator = dataSet.signatureNodeOffsets.getRange(   
                                firstNodeOffsetIndex, nodeCount);
                     for (int i = 0; i < nodeCount; i++) {
-                        nodeOffsets[i] = iterator.next().value;
+                        tempNodeOffsets[i] = iterator.next().value;
                     }
                     iterator.close();
-                    this.nodeOffsets = localNodeOffsets = nodeOffsets;
+                    this.nodeOffsets = localNodeOffsets = tempNodeOffsets;
                 }
             }
         }

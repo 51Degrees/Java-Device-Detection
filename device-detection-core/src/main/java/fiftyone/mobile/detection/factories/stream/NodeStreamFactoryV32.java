@@ -47,7 +47,8 @@ public class NodeStreamFactoryV32 extends NodeFactory {
      * @throws java.io.IOException
      */
     @Override
-    protected Node construct(Dataset dataSet, int index, BinaryReader reader) throws IOException {
+    protected Node construct(Dataset dataSet, int index, BinaryReader reader) 
+                                                            throws IOException {
         return new fiftyone.mobile.detection.entities.stream.NodeV32(
                 (fiftyone.mobile.detection.entities.stream.Dataset)dataSet, 
                 index, 

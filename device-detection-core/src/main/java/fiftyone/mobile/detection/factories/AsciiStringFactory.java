@@ -37,6 +37,7 @@ public class AsciiStringFactory extends BaseEntityFactory<AsciiString> {
      * @param reader Binary reader positioned at the start of the AsciiString
      * @return A new instance of an AsciiString
      */
+    @Override
     public AsciiString create(Dataset dataSet, int offset,
             BinaryReader reader) {
         return new AsciiString(dataSet, offset, reader);

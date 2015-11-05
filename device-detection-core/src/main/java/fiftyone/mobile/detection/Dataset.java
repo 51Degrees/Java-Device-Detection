@@ -140,10 +140,6 @@ public class Dataset implements Closeable {
      */
     public int age;
     /**
-     * The browser component.
-     */
-    private volatile Component browsers;
-    /**
      * A list of all the components the data set contains.
      */
     public MemoryFixedList<Component> components;
@@ -155,10 +151,6 @@ public class Dataset implements Closeable {
      * The offset for the copyright notice associated with the data set.
      */
     public int copyrightOffset;
-    /**
-     * The crawler component.
-     */
-    private volatile Component crawlers;
     /**
      * The number of bytes to allocate to a buffer returning CSV format data for
      * a match.
@@ -173,10 +165,6 @@ public class Dataset implements Closeable {
      */
     public Guid export;
     /**
-     * Flag to indicate if the dataset is disposed.
-     */
-    private boolean disposed;
-    /**
      * The name of the property map used to create the dataset.
      */
     public volatile String format;
@@ -185,19 +173,9 @@ public class Dataset implements Closeable {
      */
     public int formatOffset;
     /**
-     * The hardware component.
-     */
-    private volatile Component hardware;
-    /**
      * The highest character the character trees can contain.
      */
     public byte highestCharacter;
-    /**
-     * List of unique HTTP Headers that the data set needs to consider to 
-     * perform the most accurate matches.
-     */
-    @SuppressWarnings("VolatileArrayField")
-    private volatile String[] httpHeaders;
     /**
      * The number of bytes to allocate to a buffer returning JSON format data
      * for a match.
@@ -252,10 +230,6 @@ public class Dataset implements Closeable {
      * The mode of operation the data set is using.
      */
     public final Modes mode;
-    /**
-     * The common name of the data set.
-     */
-    private volatile String name;
     /**
      * The offset for the common name of the data set.
      */
@@ -315,10 +289,6 @@ public class Dataset implements Closeable {
      */
     public IReadonlyList<Signature> signatures;
     /**
-     * The software component.
-     */
-    private volatile Component software;
-    /**
      * A list of ASCII byte arrays for strings used by the dataset.
      */
     public IReadonlyList<AsciiString> strings;
@@ -335,7 +305,7 @@ public class Dataset implements Closeable {
      */
     public Version version;
     /**
-     * The version of the data set as an enum.
+     * The version of the data set as an Enumeration.
      */
     public DetectionConstants.FORMAT_VERSIONS versionEnum;
     /**
@@ -448,6 +418,7 @@ public class Dataset implements Closeable {
     public boolean getDisposed() {
         return disposed;
     }
+    private boolean disposed;
 
     /**
      * The hardware component.
@@ -467,6 +438,7 @@ public class Dataset implements Closeable {
         }
         return localHardware;
     }
+    private volatile Component hardware;
     
 
     /**
@@ -487,7 +459,7 @@ public class Dataset implements Closeable {
         }
         return localSoftware;
     }
-    
+    private volatile Component software;
 
     /**
      * The browser component.
@@ -507,6 +479,7 @@ public class Dataset implements Closeable {
         }
         return localBrowsers;
     }
+    private volatile Component browsers;
 
     /**
      * The crawler component.
@@ -526,6 +499,7 @@ public class Dataset implements Closeable {
         }
         return localCrawlers;
     }
+    private volatile Component crawlers;
 
     /**
      * The copyright notice associated with the data set.
@@ -564,6 +538,7 @@ public class Dataset implements Closeable {
         }
         return localName;
     }
+    private volatile String name;
 
     /**
      * The name of the property map used to create the dataset.
@@ -735,6 +710,8 @@ public class Dataset implements Closeable {
         }
         return localHttpHeaders;
     }
+    @SuppressWarnings("VolatileArrayField")
+    private volatile String[] httpHeaders;
     
     /**
      * Called after the entire data set has been loaded to ensure any further
