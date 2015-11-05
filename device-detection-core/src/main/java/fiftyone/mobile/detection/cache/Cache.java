@@ -73,7 +73,7 @@ public class Cache<K, V> {
         }
     }
     
-    class DoublyLinkedList<KeyValuePair> {
+    class DoublyLinkedList {
 
         Node first = null;
         Node last = null;
@@ -167,6 +167,16 @@ public class Cache<K, V> {
      * The number of items the cache lists should have capacity for.
      */
     private final int cacheSize;
+    
+    /**
+     * The number of requests made to the cache.
+     */
+    private final AtomicLong requests = new AtomicLong(0);
+    
+    /**
+     * The number of times an item was not available.
+     */
+    private final AtomicLong misses = new AtomicLong(0);
 
     /**
      * Constructs a new instance of the cache.
@@ -189,20 +199,18 @@ public class Cache<K, V> {
     }
 
     /**
-     * @return number of misses (The number of times an item was not available).
+     * @return number of misses
      */
     public long getCacheMisses() {
         return misses.get();
     }
-    private final AtomicLong misses = new AtomicLong(0);
     
     /**
-     * @return number of requests (The number of requests made to the cache).
+     * @return number of requests
      */
     public long getCacheRequests() {
         return requests.get();
     }
-    private final AtomicLong requests = new AtomicLong(0);
     
     /**
      * @return the percentage of times cache request did not return a result.
