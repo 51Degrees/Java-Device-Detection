@@ -38,6 +38,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static fiftyone.mobile.detection.test.common.UserAgentGenerator.getRandomUserAgent;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
@@ -129,58 +130,64 @@ public abstract class ApiBase extends DetectionTestSupport {
         fetchAllProperties(getProvider().match((String) null));
     }
     
+    /**
+     * This method primarily tests the matchForDeviceId method of Provider class 
+     * and getDeviceIdAsByteArray method of Match class.
+     * @throws IOException propagated by the getDataset and getProvider methods 
+     * and usually indicate there was a problem accessing the 51Degrees data 
+     * file.
+     */
     @Test
     public void deviceId() throws IOException {
         Random r = new Random();
-        StringBuilder sbId = new StringBuilder();
-        StringBuilder sbBytes = new StringBuilder();
-        
+        // Get deviceId as a list of profile IDs
         ArrayList<Integer> deviceId = new ArrayList<Integer>();
+        byte[] deviceIdByteArray;
         String deviceIdString;
-        byte[] deviceIdArray;
         
-        // Get one random profile for each component.
+        StringBuilder sb = new StringBuilder();
         for (int i = 0; i < getDataset().getComponents().size(); i++) {
-            // First get component.
+            // Get component.
             Component component = getDataset().getComponents().get(i);
-            // Generate a random number in range of zero to last profile of current component.
-            int profile = r.nextInt(component.getProfiles().length);   
-            int id = component.getProfiles()[profile].profileId;
-            deviceId.add(id);
-            sbId.append(id);
-            sbBytes.append(id);
+            // Generate random number in range from 0 to max component index in 
+            // the list of profiles associated with the current component.
+            int randomProfile = r.nextInt(component.getProfiles().length);
+            // Get the profile with Id generated and retrieve its Id.
+            // Seems pointless but could potentially prevent errors by actually 
+            // verifying that the profile with provided Id exists.
+            int profileId = component.getProfiles()[randomProfile].profileId;
+            deviceId.add(profileId);
+            sb.append(profileId);
             if (i < getDataset().getComponents().size() - 1) {
-                sbId.append("-");
+                sb.append("-");
             }
         }
-        deviceIdString = sbId.toString();
-        deviceIdArray = sbBytes.toString().getBytes();
-        
-        for (byte b : deviceIdArray) {
-            System.out.println("->"+Integer.toBinaryString(b & 255 | 256).substring(1));
+        // String version of Id.
+        deviceIdString = sb.toString();
+        // Get device Id in the form of a byte array.
+        // Allocate byte array to store Id in the byte form.
+        deviceIdByteArray = new byte[(deviceId.size() * Integer.SIZE / 8)];
+        ByteBuffer bb = ByteBuffer.wrap(deviceIdByteArray);
+        for (int profileId : deviceId) {
+            bb.putInt(profileId);
         }
         
-        logger.debug("Device Id string is:           "+deviceIdString);
-        //byte[] deviceIdArray = deviceIdString.getBytes();
-        
-        logger.debug("length of byte array: "+deviceIdArray.length);
-        
+        // Test the respective match methods.
         Match matchDeviceId = getProvider().matchForDeviceId(deviceId);
-        Match matchDeviceIdString = getProvider().matchForDeviceId(deviceIdString);
-        Match matchDeviceIdArray = getProvider().matchForDeviceId(deviceIdArray);
-        logger.debug("Match with list of integers: \t"+matchDeviceId.getDeviceId());
-        logger.debug("Match with string ID:        \t"+matchDeviceIdString.getDeviceId());
-        logger.debug("Match with byte array:       \t"+matchDeviceIdArray.getDeviceId());
-        
-        /*
+        Match matchDeviceIdString = 
+                getProvider().matchForDeviceId(deviceIdString);
+        Match matchDeviceIdArray = 
+                getProvider().matchForDeviceId(deviceIdByteArray);
+        // Now assert the results are valid.
         assertTrue(matchDeviceId.getDeviceId().equals(deviceIdString));
         assertTrue(matchDeviceIdString.getDeviceId().equals(deviceIdString));
         assertTrue(matchDeviceIdArray.getDeviceId().equals(deviceIdString));
-        /*
-        assertTrue(Arrays.equals(matchDeviceId.getDeviceId().getBytes(), deviceIdArray));
-        assertTrue(Arrays.equals(matchDeviceIdString.getDeviceId().getBytes(), deviceIdArray));
-        assertTrue(Arrays.equals(matchDeviceIdArray.getDeviceId().getBytes(), deviceIdArray));
-                */
+        assertTrue(Arrays.equals(   matchDeviceId.getDeviceIdAsByteArray(), 
+                                    deviceIdByteArray));
+        assertTrue(Arrays.equals(   matchDeviceIdString.getDeviceIdAsByteArray(), 
+                                    deviceIdByteArray));
+        assertTrue(Arrays.equals(   matchDeviceIdArray.getDeviceIdAsByteArray(),
+                                    deviceIdByteArray));
     }
     
     private void fetchAllProperties(Match match) throws IOException {
