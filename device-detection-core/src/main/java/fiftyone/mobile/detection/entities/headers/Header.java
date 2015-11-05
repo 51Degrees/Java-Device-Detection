@@ -29,19 +29,6 @@ import fiftyone.mobile.detection.readers.BinaryReader;
 public class Header {
 
     /**
-     * The number of items contain in the collection.
-     */
-    private final int count;
-    /**
-     * The position in the file where the data structure starts.
-     */
-    private final int startPosition;
-    /**
-     * The number of bytes consumed by the data structure.
-     */
-    private final int length;
-
-    /**
      * Constructs a new instance of Header
      *
      * @param reader Reader connected to the source data structure and
@@ -53,15 +40,27 @@ public class Header {
         count = reader.readInt32();
     }
 
+    /**
+     * @return The number of items contain in the collection.
+     */
     public int getCount() {
         return count;
     }
+    private final int count;
 
+    /**
+     * @return The position in the file where the data structure starts.
+     */
     public int getStartPosition() {
         return startPosition;
     }
+    private final int startPosition;
 
+    /**
+     * @return The number of bytes consumed by the data structure.
+     */
     public int getLength() {
         return length;
     }
+    private final int length;
 }

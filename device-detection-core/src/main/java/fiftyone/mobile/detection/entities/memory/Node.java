@@ -28,12 +28,14 @@ import fiftyone.mobile.detection.readers.BinaryReader;
  * All data is loaded into memory when the entity is constructed.
  */
 public abstract class Node extends fiftyone.mobile.detection.entities.Node {
-    /**
-     * An array of all the numeric children.
-     */
-    @SuppressWarnings("VolatileArrayField")
-    private NodeNumericIndex[] numericChildren;
     
+    /**
+     * Creates a new Memory Node.
+     * 
+     * @param dataSet The data set the node is contained within.
+     * @param offset The offset in the data structure to the node.
+     * @param reader BinaryReader object to be used.
+     */
     public Node(Dataset dataSet, int offset, BinaryReader reader) {
         super(dataSet, offset, reader);
         super.numericChildren = readNodeNumericIndexes(
@@ -46,6 +48,6 @@ public abstract class Node extends fiftyone.mobile.detection.entities.Node {
      */
     @Override
     public NodeNumericIndex[] getNumericChildren() {
-        return this.numericChildren;
+        return super.numericChildren;
     } 
 }

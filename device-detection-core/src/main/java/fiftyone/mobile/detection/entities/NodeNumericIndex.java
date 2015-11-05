@@ -48,18 +48,18 @@ public class NodeNumericIndex extends BaseEntity {
      */
     @SuppressWarnings("DoubleCheckedLocking")
     Node getNode() throws IOException {
-        Node localNode = _node;
+        Node localNode = node;
         if (localNode == null) {
             synchronized (this) {
-                localNode = _node;
+                localNode = node;
                 if (localNode == null) {
-                    _node = localNode = getDataSet().nodes.get(RelatedNodeOffset);
+                    node = localNode = getDataSet().nodes.get(RelatedNodeOffset);
                 }
             }
         }
         return localNode;
     }
-    private volatile Node _node;
+    private volatile Node node;
 
     /**
      *

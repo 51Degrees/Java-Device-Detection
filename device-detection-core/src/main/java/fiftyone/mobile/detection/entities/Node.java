@@ -76,19 +76,6 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
      * The minimum length of a node assuming no node indexes or signatures.
      */
     public static final int MIN_LENGTH = 20;
-    private static final Range[] ranges = new Range[]{
-        new Range((short) 0, (short) 9),
-        new Range((short) 10, (short) 99),
-        new Range((short) 100, (short) 999),
-        new Range((short) 1000, Short.MAX_VALUE)
-    };
-    
-    /**
-     * The characters that make up the node if it's a complete node or null 
-     * if it's incomplete.
-     */
-    @SuppressWarnings("VolatileArrayField")
-    private volatile byte[] characters;
     
     /**
      * Number of numeric children associated with the node.
@@ -130,22 +117,15 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
      * Number of ranked signature indexes associated with the node.
      */
     protected final int rankedSignatureCount;
-    /**
-     * Parent node for this node.
-     */
-    private volatile Node parent = null;
-    /**
-     * Root node for this node.
-     */
-    private volatile Node root;
-
+    
     /**
      * Constructs a new instance of Node
      *
-     * @param dataSet The data set the node is contained within
-     * @param offset The offset in the data structure to the node
-     * @param reader BinaryReader object to be used
+     * @param dataSet The data set the node is contained within.
+     * @param offset The offset in the data structure to the node.
+     * @param reader BinaryReader object to be used.
      */
+    @SuppressWarnings("OverridableMethodCallInConstructor")
     public Node(Dataset dataSet, int offset, BinaryReader reader) {
         super(dataSet, offset);
         int readerPosition = reader.getPos(); 
@@ -179,6 +159,7 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
         }
         return localRoot;
     }
+    private volatile Node root;
 
     /**
      * Returns the parent node for this node.
@@ -198,6 +179,7 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
         }
         return localParent;
     }
+    private volatile Node parent = null;
 
     /**
      * Returns true if this node represents a completed sub string and the next
@@ -259,6 +241,8 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
         }
         return localCharacters;
     }
+    @SuppressWarnings("VolatileArrayField")
+    private volatile byte[] characters;
 
     /**
      * Used by the constructor to read the variable length list of child
@@ -282,6 +266,7 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
 
     /**
      * @return An array of the ranked signature indexes for the node.
+     * @throws java.io.IOException
      */
     public abstract int[] getRankedSignatureIndexes() throws IOException;
 
@@ -408,6 +393,12 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
         }
         throw new IllegalArgumentException("target");
     }
+    private static final Range[] ranges = new Range[]{
+        new Range((short) 0, (short) 9),
+        new Range((short) 10, (short) 99),
+        new Range((short) 100, (short) 999),
+        new Range((short) 1000, Short.MAX_VALUE)
+    };
 
     /**
      * Returns the node position as a number.

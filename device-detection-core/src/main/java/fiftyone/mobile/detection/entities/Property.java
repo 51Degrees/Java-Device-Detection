@@ -111,6 +111,7 @@ public class Property extends BaseEntity implements Comparable<Property> {
      * @return the name of the property when used in javascript.
      * @throws IOException 
      */
+     @SuppressWarnings("DoubleCheckedLocking")
     public String getJavaScriptName() throws IOException {
         String localJavascriptName = javascriptName;
         if (localJavascriptName == null) {
@@ -356,18 +357,11 @@ public class Property extends BaseEntity implements Comparable<Property> {
      * @throws IOException
      */
     private Values doGetValues() throws IOException {
-        Value[] values = new Value[lastValueIndex - firstValueIndex + 1];
+        Value[] tempValues = new Value[lastValueIndex - firstValueIndex + 1];
         for (int i = firstValueIndex, v = 0; i <= lastValueIndex; i++, v++) {
-            values[v] = dataSet.getValues().get(i);
+            tempValues[v] = dataSet.getValues().get(i);
         }
-        return new Values(this, values);
-        /*
-        List<Value> list = new ArrayList<Value>(lastValueIndex - firstValueIndex + 1);
-        for (int index = firstValueIndex; index <= lastValueIndex; index++) {
-            list.add(getDataSet().getValues().get(index));
-        }
-        return new Values(this, list);
-        */
+        return new Values(this, tempValues);
     }
 
     /**

@@ -51,6 +51,7 @@ public class NodeIndex extends BaseEntity implements Comparable<NodeIndex> {
     /**
      * Returns the characters related to this node index.
      */
+    @SuppressWarnings("DoubleCheckedLocking")
     byte[] getCharacters() throws IOException {
         byte[] localCharacters = characters;
         if (localCharacters == null) {

@@ -39,7 +39,8 @@ public class IntegerEntityFactory extends BaseEntityFactory<IntegerEntity> {
      * @throws IOException 
      */
     @Override
-    public IntegerEntity create(Dataset dataSet, int index, BinaryReader reader) throws IOException {
+    public IntegerEntity create(Dataset dataSet, int index, BinaryReader reader) 
+                                                            throws IOException {
         return new IntegerEntity(dataSet, index, reader);
     }
     

@@ -314,7 +314,7 @@ public class AutoUpdate {
                 GZIPInputStream gzis = new GZIPInputStream(fis);
                 try {
                     byte[] buffer = new byte[INPUT_BUFFER];
-                    int len = 0;
+                    int len;
                     while ((len = gzis.read(buffer)) > 0) {
                         fos.write(buffer, 0, len);
                     }
