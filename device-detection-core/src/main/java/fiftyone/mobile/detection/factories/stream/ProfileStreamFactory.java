@@ -26,14 +26,17 @@ import fiftyone.mobile.detection.readers.BinaryReader;
 
 /**
  *
- * @author mike
  */
-public class ProfileStreamFactory extends fiftyone.mobile.detection.factories.ProfileFactory {
+public class ProfileStreamFactory 
+        extends fiftyone.mobile.detection.factories.ProfileFactory {
     
     public ProfileStreamFactory() {}
 
     @Override
     protected Profile construct(Dataset dataSet, int index, BinaryReader reader) {
-        return new fiftyone.mobile.detection.entities.stream.Profile((fiftyone.mobile.detection.entities.stream.Dataset)dataSet, index, reader);
+        return new fiftyone.mobile.detection.entities.stream.Profile(
+                (fiftyone.mobile.detection.entities.stream.Dataset)dataSet, 
+                index, 
+                reader);
     }
 }

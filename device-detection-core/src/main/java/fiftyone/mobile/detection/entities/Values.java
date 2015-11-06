@@ -20,6 +20,7 @@
  * ********************************************************************* */
 package fiftyone.mobile.detection.entities;
 
+import fiftyone.mobile.detection.search.SearchArrays;
 import java.io.IOException;
 
 import fiftyone.properties.DetectionConstants;
@@ -33,15 +34,29 @@ import fiftyone.properties.DetectionConstants;
 @SuppressWarnings("serial")
 public class Values {
 
+    private static class SearchValuesByName extends SearchArrays<Value, String> {
+        @Override
+        public int compareTo(Value item, String key) {
+            return item.compareTo(key);
+        }
+    }
+    
+    /**
+     * Used to find values based on name.
+     */
+    private static final SearchValuesByName valuesNameSearch = 
+            new SearchValuesByName();    
+    
     /**
      * The property the list of values relates to.
      */
     private final Property property;
+    
     /**
      * An array of values to expose.
      */
-    private Value[] values;
-
+    private final Value[] values;
+    
     /**
      * Constructs a new instance of the values list.
      *
@@ -141,6 +156,16 @@ public class Values {
     
     public Value[] getAll() {
         return values;
+    }
+    
+    /**
+     * @param valueName name required.
+     * @return the value associated with the name provided.
+     * @throws java.io.IOException
+     */
+    public Value get(String valueName) throws IOException {
+        int index = valuesNameSearch.binarySearch(values, valueName);
+        return index >= 0 ? get(index) : null;
     }
     
     public Value get(int index) {

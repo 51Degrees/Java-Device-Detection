@@ -57,39 +57,13 @@ import fiftyone.properties.DetectionConstants;
  * The relevant characters from a user agent structured in a manner to enable
  * rapid comparison with a target user agent.
  */
-public abstract class Signature extends BaseEntity implements Comparable<Signature> {
+public abstract class Signature extends BaseEntity 
+                                implements Comparable<Signature> {
     
     /**
      * Offsets to profiles associated with the signature.
      */
     private final int[] profileOffsets;
-    
-    /**
-     * List of the profiles the signature relates to.
-     */
-    @SuppressWarnings("VolatileArrayField")
-    private volatile Profile[] profiles;
-    
-    /**
-     * An array of nodes associated with the signature.
-     */
-    @SuppressWarnings("VolatileArrayField")
-    private volatile Node[] nodes;
-    
-    /**
-     * The unique Device Id for the signature.
-     */
-    private volatile String deviceId;
-    
-    /**
-     * The length in bytes of the signature.
-     */
-    private volatile int _length;
-    
-    /**
-     * The signature as a string.
-     */
-    private volatile String stringValue;
     
     /**
      * Constructs a new instance of Signature
@@ -101,7 +75,8 @@ public abstract class Signature extends BaseEntity implements Comparable<Signatu
      */
     public Signature(Dataset dataSet, int index, BinaryReader reader) {
         super(dataSet, index);
-        profileOffsets = readOffsets(dataSet, reader, dataSet.signatureProfilesCount);
+        profileOffsets = readOffsets(dataSet, reader, 
+                                    dataSet.signatureProfilesCount);
     }
     
     /**
@@ -112,7 +87,8 @@ public abstract class Signature extends BaseEntity implements Comparable<Signatu
      */
     @SuppressWarnings("DoubleCheckedLocking")
     private SortedList<Integer, Values> getPropertyIndexToValues() {
-        SortedList<Integer, Values> localPropertyIndexToValues = propertyIndexToValues;
+        SortedList<Integer, Values> localPropertyIndexToValues;
+        localPropertyIndexToValues = propertyIndexToValues;
         if (localPropertyIndexToValues == null) {
             synchronized (this) {
                 localPropertyIndexToValues = propertyIndexToValues;
@@ -133,7 +109,8 @@ public abstract class Signature extends BaseEntity implements Comparable<Signatu
      */
     @SuppressWarnings("DoubleCheckedLocking")
     private SortedList<String, Values> getPropertyNameToValues() {
-        SortedList<String, Values> localPropertyNameToValues = propertyNameToValues;
+        SortedList<String, Values> localPropertyNameToValues;
+        localPropertyNameToValues = propertyNameToValues;
         if (localPropertyNameToValues == null) {
             synchronized (this) {
                 localPropertyNameToValues = propertyNameToValues;
@@ -184,6 +161,7 @@ public abstract class Signature extends BaseEntity implements Comparable<Signatu
         }
         return localDeviceId;
     }
+    private volatile String deviceId;
     
     /**
      * Gets the values associated with the property.
@@ -280,17 +258,18 @@ public abstract class Signature extends BaseEntity implements Comparable<Signatu
      * @throws IOException indicates an I/O exception occurred
      */
     public int getLength() throws IOException {
-        int localLength = _length;
+        int localLength = length;
         if (localLength == 0) {
             synchronized (this) {
-                localLength = _length;
+                localLength = length;
                 if (localLength == 0) {
-                    _length = localLength = getSignatureLength();
+                    length = localLength = getSignatureLength();
                 }
             }
         }
         return localLength;
     }
+    private volatile int length;
 
     /**
      * Returns an array of nodes associated with the signature.
@@ -323,6 +302,8 @@ public abstract class Signature extends BaseEntity implements Comparable<Signatu
         }
         return localNodes;
     }
+    @SuppressWarnings("VolatileArrayField")
+    private volatile Node[] nodes;
 
     /**
      * Uses the offsets list which must be locked to read in the arrays of nodes
@@ -389,7 +370,8 @@ public abstract class Signature extends BaseEntity implements Comparable<Signatu
      * @return dictionary of properties and values for the signature
      * @throws IOException indicates an I/O exception occurred
      */
-    public SortedList<String, List<String>> getPropertyValuesAsStrings() throws IOException {
+    public SortedList<String, List<String>> getPropertyValuesAsStrings() 
+                                                        throws IOException {
         // Initialise the HashMap with the known number of values and 1 as the 
         // threshold to avoid the need to rehash it.
         int numberOfValues = getValues().length;
@@ -434,6 +416,8 @@ public abstract class Signature extends BaseEntity implements Comparable<Signatu
         }
         return prof.toArray(new Profile[prof.size()]);
     }
+    @SuppressWarnings("VolatileArrayField")
+    private volatile Profile[] profiles;
 
     /**
      * Compares this signature to a list of node offsets.
@@ -443,9 +427,9 @@ public abstract class Signature extends BaseEntity implements Comparable<Signatu
      * @throws java.io.IOException
      */
     public int compareTo(List<Node> nodes) throws IOException {
-        int length = Math.min(getNodeOffsets().length, nodes.size());
+        int tempLength = Math.min(getNodeOffsets().length, nodes.size());
 
-        for (int i = 0; i < length; i++) {
+        for (int i = 0; i < tempLength; i++) {
             int difference = getNodeOffsets()[i] - nodes.get(i).getIndex();
             if (difference != 0) {
                 return difference;
@@ -472,9 +456,9 @@ public abstract class Signature extends BaseEntity implements Comparable<Signatu
     @Override
     public int compareTo(Signature other) {
         try {
-            int length = Math.min(getNodeOffsets().length, other.getNodeOffsets().length);
-            
-            for (int i = 0; i < length; i++) {
+            int tempLength = Math.min(  getNodeOffsets().length, 
+                                        other.getNodeOffsets().length); 
+            for (int i = 0; i < tempLength; i++) {
                 int difference = getNodeOffsets()[i] - other.getNodeOffsets()[i];
                 if (difference != 0) {
                     return difference;
@@ -525,6 +509,7 @@ public abstract class Signature extends BaseEntity implements Comparable<Signatu
         }
         return localStringValue;
     }
+    private volatile String stringValue;
     
     /**
      * Array of node offsets associated with the signature.

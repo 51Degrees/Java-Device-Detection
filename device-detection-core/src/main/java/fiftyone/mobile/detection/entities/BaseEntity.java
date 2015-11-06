@@ -72,48 +72,24 @@ public class BaseEntity {
     }
 
     /**
+     * The unique index of the item in the collection of items, or the unique 
+     * offset to the item in the source data structure.
+     * @param offsetOrIndex
+     * @return 
+     */
+    public int compareTo(int offsetOrIndex) {
+        return index - offsetOrIndex;
+    }
+    
+    /**
      * Compares entities based on their Index properties.
      * @param other The entity to be compared against.
      * @return The position of one entity over the other.
      */
     public int compareTo(BaseEntity other) {
-        // Following is equivalnt to Index.CompareTo(other.Index) in c#.
-        if (this.index > other.index)
-            return 1;
-        else if (this.index == other.index)
-            return 0;
-        else
-            return -1;
+        return compareTo(other.index);
     }
     
-    /**
-     * Uses a divide and conquer method to search the ordered list of indexes.
-     *
-     * @param list List of entities to be searched
-     * @param indexOrOffset The index or offset to be sought
-     * @return The index of the entity in the list or twos complement of insert
-     * index
-     */
-    protected int binarySearch(BaseEntity[] list, int indexOrOffset) {
-        int lower = 0;
-        int upper = list.length - 1;
-
-        while (lower <= upper) {
-            int middle = lower + (upper - lower) / 2;
-            int comparisonResult = list[middle].index
-                    - indexOrOffset;
-            if (comparisonResult == 0) {
-                return middle;
-            } else if (comparisonResult > 0) {
-                upper = middle - 1;
-            } else {
-                lower = middle + 1;
-            }
-        }
-
-        return ~lower;
-    }
-
     /**
      * Reads an integer array where the first integer is the number of following
      * integers.
@@ -148,10 +124,16 @@ public class BaseEntity {
         return value;
     }
 
+    /**
+     * @return DataSet used to create this base entity.
+     */
     protected Dataset getDataSet() {
         return dataSet;
     }
 
+    /**
+     * @return Index of this base entity.
+     */
     public int getIndex() {
         return index;
     }

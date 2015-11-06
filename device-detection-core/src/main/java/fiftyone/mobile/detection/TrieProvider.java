@@ -84,7 +84,7 @@ public abstract class TrieProvider implements Closeable {
     /**
      * Byte array of the Strings available.
      */
-    private ByteBuffer _Strings;
+    private final ByteBuffer _Strings;
     /**
      * Byte array of the available properties.
      */
@@ -92,19 +92,19 @@ public abstract class TrieProvider implements Closeable {
     /**
      * Byte array of the devices list.
      */
-    private ByteBuffer _devices;
+    private final ByteBuffer _devices;
     /**
      * Byte array of the look up list loaded into memory.
      */
-    private short[] _lookupList;
+    private final short[] _lookupList;
     /**
      * A pool of readers that can be used in multi threaded operation.
      */
-    private TriePool pool;
+    private final TriePool pool;
     /**
      * The position in the source data file of the nodes.
      */
-    private long _nodesOffset;
+    private final long _nodesOffset;
     /**
      * Dictionary of property names to indexes.
      */
@@ -166,6 +166,7 @@ public abstract class TrieProvider implements Closeable {
      * @return a list of Http headers that the provider can use for 
      * device detection.
      */
+    @SuppressWarnings("DoubleCheckedLocking")
     public List<String> getHttpHeaders() {
         List<String> localHttpHeaders = httpHeaders;
         if (localHttpHeaders == null) {
@@ -381,6 +382,7 @@ public abstract class TrieProvider implements Closeable {
      * Returns the String at the offset provided.
      *
      * @param offset
+     * @return 
      */
     protected String getStringValue(int offset) {
         int index = 0;
@@ -397,9 +399,10 @@ public abstract class TrieProvider implements Closeable {
     /**
      * Converts a user agent in to a null terminated byte array.
      *
-     * @param userAgent The useragent to be tested.
+     * @param userAgent The User-Agent to be tested.
      * @return A null terminated byte array.
      */
+    @SuppressWarnings("null")
     private static byte[] getUserAgentByteArray(String userAgent) {
         byte[] result = new byte[userAgent != null ? userAgent.length() + 1 : 0];
         if (result.length > 0) {

@@ -113,6 +113,7 @@ public final class StreamFactory {
      * @return Stream Dataset object that has just been written to.
      * @throws IOException 
      */
+    @SuppressWarnings("null")
     static void load(Dataset dataSet) throws IOException {
         BinaryReader reader = null;
         try {
@@ -194,8 +195,9 @@ public final class StreamFactory {
                     dataSet, reader, new RootNodeFactory());
             dataSet.rootNodes = rootNodes;
             
-            MemoryFixedList<ProfileOffset> profileOffsets = new MemoryFixedList<ProfileOffset>(
-                    dataSet, reader, new ProfileOffsetFactory());
+            MemoryFixedList<ProfileOffset> profileOffsets = 
+                new MemoryFixedList<ProfileOffset>( dataSet, reader, 
+                                                    new ProfileOffsetFactory());
              dataSet.profileOffsets = profileOffsets;
              
             //Read into memory all small lists which are frequently accessed.

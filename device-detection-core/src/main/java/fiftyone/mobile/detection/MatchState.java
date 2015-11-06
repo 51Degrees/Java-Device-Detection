@@ -168,14 +168,14 @@ public class MatchState extends MatchResult
      */    
     @Override
     Node[] getNodes() {
-        Node[] result = new Node[nodes.size()];
-        nodes.toArray(result);
+        Node[] result = new Node[nodesList.size()];
+        nodesList.toArray(result);
         return result;
     }
     public ArrayList<Node> getNodesList() {
-        return nodes;
+        return nodesList;
     }
-    final ArrayList<Node> nodes = new ArrayList<Node>();
+    final ArrayList<Node> nodesList = new ArrayList<Node>();
 
     /**
      * During the process of matching the profiles may vary, for example when
@@ -185,6 +185,7 @@ public class MatchState extends MatchResult
      * @return profiles associated with the match state.
      * @throws java.io.IOException
      */
+    @SuppressWarnings("DoubleCheckedLocking")
     public ArrayList<Profile> getExplicitProfiles() throws IOException {
         ArrayList<Profile> result = explicitProfiles;
         if (result == null) {
@@ -271,7 +272,7 @@ public class MatchState extends MatchResult
         stringsRead = 0;
         signature = null;
         signatures.clear();
-        nodes.clear();
+        nodesList.clear();
         explicitProfiles = null;
     }
     
@@ -327,8 +328,8 @@ public class MatchState extends MatchResult
      * @return The index of the node inserted into the list
      */
     int insertNode(Node node) {
-        int index = ~Collections.binarySearch(nodes, node);
-        nodes.add(index, node);
+        int index = ~Collections.binarySearch(nodesList, node);
+        nodesList.add(index, node);
         return index;
     }    
     

@@ -288,7 +288,8 @@ public class AutoUpdate {
         AutoUpdateStatus status = AUTO_UPDATE_IN_PROGRESS;
         final String serverHash = client.getHeaderField("Content-MD5");
         final String downloadHash = getMd5Hash(compressedTempFile);
-        if (serverHash.equals(downloadHash) == false) {
+        if (serverHash != null ||
+            downloadHash.equals(serverHash) == false) {
             status = AUTO_UPDATE_ERR_MD5_VALIDATION_FAILED;
         }
         return status;

@@ -31,13 +31,6 @@ import java.io.IOException;
 public class ComponentV31 extends Component {
     
     /**
-     * List of HTTP headers that should be checked in order to perform a 
-     * detection where more headers than User-Agent are available.
-     */
-    @SuppressWarnings("VolatileArrayField")
-    private volatile String[] httpHeaders;
-
-    /**
      * Constructs a new instance of ComponentV31. Reads the string offsets to 
      * the HTTP Headers during the constructor.
      * @param dataSet The Dataset being created.
@@ -57,6 +50,7 @@ public class ComponentV31 extends Component {
      * @return List of HTTP headers as Strings.
      * @throws java.io.IOException
      */
+    @SuppressWarnings("DoubleCheckedLocking")
     @Override
     public String[] getHttpheaders() throws IOException {
         String[] localHttpHeaders = httpHeaders;
@@ -88,7 +82,7 @@ public class ComponentV31 extends Component {
         }
         return localHttpHeaders;
     }
-    
-    
+    @SuppressWarnings("VolatileArrayField")
+    private volatile String[] httpHeaders;
     
 }

@@ -10,7 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>device-detection-webapp-examples</artifactId>
-    <name>51 Degrees :: Device Detection :: Web Examples</name>
+    <name>51Degrees :: Device Detection :: Web Examples</name>
     <packaging>war</packaging>
 
     <dependencies>

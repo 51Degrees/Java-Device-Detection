@@ -10,13 +10,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>device-detection-examples</artifactId>
-    <name>51 Degrees :: Device Detection :: Examples</name>
+    <name>51Degrees :: Device Detection :: Examples</name>
     <description>Examples of how to use 51 Degrees device detection core.</description>
-
-    <organization>
-        <name>51 Degrees</name>
-        <url>http://51degrees.com</url>
-    </organization>
 
     <dependencies>
         <dependency>

@@ -37,7 +37,7 @@ public class TrieReader {
     /**
      * Buffers mapped to the files channel.
      */
-    private ArrayList<MappedByteBuffer> _buffers;
+    private final ArrayList<MappedByteBuffer> _buffers;
     /**
      * The File Channel linked to the trie data.
      */
@@ -57,12 +57,12 @@ public class TrieReader {
     private long _globalPosition;
 
     /**
-     *
      * Creates the class by creating multiple ByteBuffers that can be read from.
      *
      * @param reader File channel to read from.
      * @throws java.io.IOException indicates an I/O exception occurred
      */
+    @SuppressWarnings("")
     public TrieReader(final FileChannel reader) throws IOException {
         _position = 0;
         _globalPosition = 0;
@@ -76,7 +76,7 @@ public class TrieReader {
         _buffers = new ArrayList<MappedByteBuffer>(buffersNeeded);
         while (readPosition != reader.size()) {
             long bytesLeft = reader.size() - readPosition;
-            int bytesToRead = 0;
+            int bytesToRead;
             if (bytesLeft > Integer.MAX_VALUE) {
                 bytesToRead = Integer.MAX_VALUE;
             } else {
@@ -92,7 +92,6 @@ public class TrieReader {
     }
 
     /**
-     *
      * Returns the current logical position value.
      *
      * @return the current logical position in the file.
@@ -102,10 +101,9 @@ public class TrieReader {
     }
 
     /**
-     *
      * Sets the logical position in the file.
      *
-     **** @param position position value.
+     * @param position position value.
      */
     public void setPos(long position) {
         //position -= _start;
@@ -124,7 +122,6 @@ public class TrieReader {
     }
 
     /**
-     *
      * Read an Unsigned byte from the file at the current location.
      *
      * @return The value read.
@@ -139,10 +136,9 @@ public class TrieReader {
     }
 
     /**
-     *
      * Read an Unsigned byte from the file at a specified location.
      *
-     **** @param position Position to read from.
+     * @param position Position to read from.
      * @return The value read.
      */
     public short readUByte(long position) {
@@ -167,10 +163,9 @@ public class TrieReader {
     }
 
     /**
-     *
      * Read an Unsigned short from the file at a specified location.
      *
-     **** @param position Position to read from.
+     * @param position Position to read from.
      * @return The value read.
      */
     public int readUShort(long position) {
@@ -179,7 +174,6 @@ public class TrieReader {
     }
 
     /**
-     *
      * Read an Unsigned integer from the file at the current location.
      *
      * @return The Value read.
@@ -207,7 +201,6 @@ public class TrieReader {
     }
 
     /**
-     *
      * Read an signed integer from the file at the current location.
      *
      * @return The Value read.
@@ -233,7 +226,6 @@ public class TrieReader {
     }
 
     /**
-     *
      * Read an signed long from the file at the current location.
      *
      * @return The Value read.
@@ -253,7 +245,7 @@ public class TrieReader {
      *
      * Read an signed long from the file at a specified location.
      *
-     **** @param position Position to read from.
+     * @param position Position to read from.
      * @return The value read.
      * @throws IOException indicates an I/O exception occurred
      */
@@ -295,7 +287,7 @@ public class TrieReader {
      *
      * Reads a certain data type from the file e.g. byte, Unsigned Integer etc.
      *
-     **** @param dataType Type of data to read.
+     * @param dataType Type of data to read.
      * @return byte array of data.
      */
     private byte[] getValue(TrieReader.DataType dataType) {
@@ -340,7 +332,9 @@ public class TrieReader {
      */
     public void close() throws IOException {
         for (ByteBuffer b : _buffers) {
-            b.clear();
+            if (b != null) {
+                b.clear();
+            }
             b = null;
         }
         _triFile.close();

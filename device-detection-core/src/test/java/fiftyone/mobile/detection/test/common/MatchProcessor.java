@@ -33,6 +33,7 @@ public interface MatchProcessor {
      * Performs some action with the match returns from detection.
      * @param match
      * @param result 
+     * @throws java.io.IOException 
      */
     void process(Match match, Results result) throws IOException ;
 
