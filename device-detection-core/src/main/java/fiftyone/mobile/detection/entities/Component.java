@@ -44,42 +44,14 @@ import java.util.List;
 public abstract class Component extends BaseEntity 
                                 implements Comparable<Component> {
     /**
-     * The default profile that should be returned for the component.
-     */
-    private volatile Profile defaultProfile;
-    
-    /**
      * Offset for the default profile that should be returned for the component.
      */
     private final int defaultProfileOffset;
     
     /**
-     * The unique name of the component.
-     */
-    private volatile String name;
-    
-    /**
      * Offset for the unique name of the component.
      */
     private final int nameOffset;
-    
-    /**
-     * An array of profiles associated with the component.
-     */
-    @SuppressWarnings("VolatileArrayField")
-    private volatile Profile[] profiles;
-    
-    /**
-     * The unique Id of the component. Does not change between different data
-     * sets.
-     */
-    private final int componentId;
-    
-    /**
-     * Array of properties associated with the component.
-     */
-    @SuppressWarnings("VolatileArrayField")
-    private volatile Property[] properties;
 
     /**
      * Constructs a new instance of Component
@@ -126,9 +98,10 @@ public abstract class Component extends BaseEntity
         }
         return localDefaultProfile;
     }
+    private volatile Profile defaultProfile;
     
     /**
-     * An array of the profiles.
+     * An array of profiles associated with the component.
      * @return an array of the profiles.
      * @throws java.io.IOException indicates an I/O exception occurred
      */
@@ -145,6 +118,8 @@ public abstract class Component extends BaseEntity
         }
         return localProfiles;
     }
+    @SuppressWarnings("VolatileArrayField")
+    private volatile Profile[] profiles;
     
     /**
      * Array of properties the component relates to.
@@ -165,6 +140,8 @@ public abstract class Component extends BaseEntity
         }
         return localProperties;
     }
+    @SuppressWarnings("VolatileArrayField")
+    private volatile Property[] properties;
     
     /**
      * Initialises the references to profiles.
@@ -197,6 +174,7 @@ public abstract class Component extends BaseEntity
         }
         return localName;
     }
+    private volatile String name;
 
     /**
      * Returns an array of all the profiles that relate to this component.
@@ -217,22 +195,24 @@ public abstract class Component extends BaseEntity
      * @return An array of the properties associated with the component.
      */
     private Property[] doGetProperties() throws IOException {
-        List<Property> properties = new ArrayList<Property>();
+        List<Property> tempProperties = new ArrayList<Property>();
         for (Property property : getDataSet().getProperties()) {
             if (property.getComponent().getComponentId() == componentId) {
-                properties.add(property);
+                tempProperties.add(property);
             }
         }
-        return properties.toArray(new Property[properties.size()]);
+        return tempProperties.toArray(new Property[tempProperties.size()]);
     }
 
     /**
-     * The unique Id of the component.
+     * The unique Id of the component. Does not change between different data
+     * sets.
      * @return The unique Id of the component.
      */
     public int getComponentId() {
         return componentId;
     }
+    private final int componentId;
 
     /**
      * Returns the components name.
@@ -251,7 +231,9 @@ public abstract class Component extends BaseEntity
      * List of HTTP headers that should be checked in order to perform a 
      * detection where more headers than User-Agent are available. This data 
      * is used by methods that can HTTP Header collections.
-     * @return 
+     * @return List of HTTP headers that should be checked in order to perform  
+     * detection
+     * @throws java.io.IOException 
      */
     public abstract String[] getHttpheaders() throws IOException;
 }

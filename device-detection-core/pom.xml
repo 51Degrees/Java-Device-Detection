@@ -10,7 +10,7 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <name>51 Degrees :: Device Detection :: Core</name>
+    <name>51Degrees :: Device Detection :: Core</name>
     <artifactId>device-detection-core</artifactId>
 
     <dependencies>

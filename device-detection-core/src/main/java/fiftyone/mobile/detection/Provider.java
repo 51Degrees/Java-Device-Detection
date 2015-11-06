@@ -25,7 +25,9 @@ import fiftyone.properties.MatchMethods;
 import fiftyone.mobile.detection.entities.Component;
 import fiftyone.mobile.detection.entities.Profile;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -226,66 +228,6 @@ public class Provider {
         }
         return match;
     }
-
-    /**
-     * See if any of the headers can be used for this components profile. As
-     * soon as one matches then stop and don't look at any more. They are 
-     * ordered in preferred sequence such that the first item is the most 
-     * preferred.
-     * @param masterState current working state of the matching process
-     * @param matches map of HTTP header names and match states
-     * @param component component to be retrieved
-     * @return Profile for the component provided from the matches for each 
-     * header
-     */
-    private static Profile getMatchingHeaderProfile(MatchState masterState, 
-            Map<String, MatchState> matches, Component component) 
-            throws IOException {
-        Profile result = null;
-        for (String header : component.getHttpheaders())
-        {
-            MatchState headerState = matches.get(header);
-            if (headerState != null &&
-                headerState.getSignature() != null)
-            {
-                result = processMatchedHeaderProfile(
-                        masterState, headerState, component);
-            }
-        }
-        return result;
-    }
-    
-    /**
-     * Updates the masterState with the header masterState and returns the 
-     * profile for the component requested.
-     * @param masterState current working state of the matching process
-     * @param headerState state for the specific header
-     * @param component the profile returned should relate to
-     * @return profile related to the component from the header state
-     * @throws IOException 
-     */
-    private static Profile processMatchedHeaderProfile(MatchState masterState, 
-            MatchState headerState, Component component) 
-            throws IOException {
-        
-        Profile result = null;
-        
-        // Merge the header state with the master state.
-        masterState.merge(headerState);
-
-        // Return the profile for this component.
-        int profileIndex = 0; 
-        Profile[] profiles = headerState.getSignature().getProfiles();
-        while (result == null &&
-               profileIndex < profiles.length) {
-            if (profiles[profileIndex].getComponent() == component) {
-                result = profiles[profileIndex];
-            }
-            profileIndex++;
-        }    
-        
-        return result;
-    }
     
     /**
      * For a given user agent returns a match containing information about the
@@ -312,6 +254,141 @@ public class Provider {
      */
     public Match match(String targetUserAgent, Match match) throws IOException {
         match.setResult(match(targetUserAgent, match.state));
+        return match;
+    }
+        
+    /**
+     * Returns the result of a match based on the device Id returned from a 
+     * previous match operation.
+     * 
+     * @param deviceIdArray Byte array representation of the device Id, not null.
+     * @return The match object passed to the method updated with results for 
+     * the device id.
+     * @throws java.io.IOException if a problem was encountered when accessing 
+     * the device data file.
+     */
+    public  Match matchForDeviceId(byte[] deviceIdArray) throws IOException {
+        return matchForDeviceId(deviceIdArray, createMatch());
+    }
+    
+    /**
+     * Returns the result of a match based on the device Id returned from a 
+     * previous match operation.
+     * 
+     * @param deviceId String representation of the device Id, not null.
+     * @return The match object passed to the method updated with results for 
+     * the device id.
+     * @throws java.io.IOException if a problem was encountered when accessing 
+     * the device data file.
+     */
+    public Match matchForDeviceId(String deviceId) throws IOException {
+        return matchForDeviceId(deviceId, createMatch());
+    }
+    
+    /**
+     * Returns the result of a match based on the device Id returned from a 
+     * previous match operation.
+     * 
+     * @param profileIds List of profile IDs as integers, not null.
+     * @return The match object passed to the method updated with results for 
+     * the device id.
+     * @throws java.io.IOException if a problem was encountered when accessing 
+     * the device data file.
+     */
+    public Match matchForDeviceId(ArrayList<Integer> profileIds) 
+                                                            throws IOException {
+        return matchForDeviceId(profileIds, createMatch());
+    }
+    
+    /**
+     * Returns the result of a match based on the device Id returned from a 
+     * previous match operation.
+     * 
+     * @param deviceIdArray Byte array representation of the device Id.
+     * @param match A match object created by a previous match, or via the 
+     * createMatch() method, not null.
+     * @return The match object passed to the method updated with results for 
+     * the device id.
+     * @throws java.io.IOException if a problem was encountered when accessing 
+     * the device data file.
+     */
+    public Match matchForDeviceId(byte[] deviceIdArray, Match match) 
+                                                            throws IOException {
+        if (deviceIdArray.length == 0) {
+            throw new IllegalArgumentException("Byte array containing device Id"
+                    + " can not be empty.");
+        }
+        if (match == null) {
+            throw new IllegalArgumentException("Match object can not be null");
+        }
+        ArrayList<Integer> profileIds = new ArrayList<Integer>();
+        for (int i =0; i < deviceIdArray.length; i += 4) {
+            // Get the relevant 4 bytes.
+            byte[] byteId = Arrays.copyOfRange(deviceIdArray, i, i+4);
+            // Convert relevant bytes to integer.
+            Integer tempId = new BigInteger(byteId).intValue();
+            profileIds.add(tempId);
+        }
+        return matchForDeviceId(profileIds, match);
+    }
+    
+    /**
+     * Returns the result of a match based on the device Id returned from a 
+     * previous match operation.
+     * 
+     * @param deviceId String representation of the device Id.
+     * @param match A match object created by a previous match, or via the 
+     * createMatch() method, not null.
+     * @return The match object passed to the method updated with results for 
+     * the device id.
+     * @throws java.io.IOException if a problem was encountered when accessing 
+     * the device data file.
+     */
+    public Match matchForDeviceId(String deviceId, Match match) 
+                                                            throws IOException {
+        if (deviceId.isEmpty()) {
+            throw new IllegalArgumentException("String containing device Id "
+                    + "can not be empty.");
+        }
+        if (match == null) {
+            throw new IllegalArgumentException("Match object can not be null.");
+        }
+        String[] profileIdStrings = deviceId.split("-");
+        ArrayList<Integer> profileIds = new ArrayList<Integer>();
+        for (String profileIdString : profileIdStrings) {
+            profileIds.add(Integer.parseInt(profileIdString));
+        }
+        return matchForDeviceId(profileIds, match);
+    }
+    
+    /**
+     * Returns the result of a match based on the device Id returned from a 
+     * previous match operation.
+     * 
+     * @param profileIds List of profile IDs as integers.
+     * @param match A match object created by a previous match, or via the 
+     * createMatch() method.
+     * @return The match object passed to the method updated with results for 
+     * the device id.
+     * @throws IOException if a problem was encountered when accessing 
+     * the device data file.
+     */
+    public Match matchForDeviceId(ArrayList<Integer> profileIds, Match match) 
+                                                            throws IOException {
+        if (profileIds.isEmpty()) {
+            throw new IllegalArgumentException("List of profile Ids can not be "
+                    + "empty or null.");
+        }
+        if (match == null) {
+            throw new IllegalArgumentException("Match object can not be null.");
+        }
+        match.reset();
+        for (Integer profileId : profileIds) {
+            Profile profile = dataSet.findProfile(profileId);
+            if (profile != null) {
+                match.state.getExplicitProfiles().add(profile);
+            }
+        }
         return match;
     }
 
@@ -401,6 +478,66 @@ public class Provider {
             matchNoCache(targetUserAgent, state);
             result = state;
         }
+        return result;
+    }   
+    
+    /**
+     * See if any of the headers can be used for this components profile. As
+     * soon as one matches then stop and don't look at any more. They are 
+     * ordered in preferred sequence such that the first item is the most 
+     * preferred.
+     * @param masterState current working state of the matching process
+     * @param matches map of HTTP header names and match states
+     * @param component component to be retrieved
+     * @return Profile for the component provided from the matches for each 
+     * header
+     */
+    private static Profile getMatchingHeaderProfile(MatchState masterState, 
+            Map<String, MatchState> matches, Component component) 
+            throws IOException {
+        Profile result = null;
+        for (String header : component.getHttpheaders())
+        {
+            MatchState headerState = matches.get(header);
+            if (headerState != null &&
+                headerState.getSignature() != null)
+            {
+                result = processMatchedHeaderProfile(
+                        masterState, headerState, component);
+            }
+        }
+        return result;
+    }
+    
+    /**
+     * Updates the masterState with the header masterState and returns the 
+     * profile for the component requested.
+     * @param masterState current working state of the matching process
+     * @param headerState state for the specific header
+     * @param component the profile returned should relate to
+     * @return profile related to the component from the header state
+     * @throws IOException 
+     */
+    private static Profile processMatchedHeaderProfile(MatchState masterState, 
+            MatchState headerState, Component component) 
+            throws IOException {
+        
+        Profile result = null;
+        
+        // Merge the header state with the master state.
+        masterState.merge(headerState);
+
+        // Return the profile for this component.
+        int profileIndex = 0; 
+        Profile[] profiles = headerState.getSignature().getProfiles();
+        while (result == null &&
+               profileIndex < profiles.length) {
+            if (profiles[profileIndex].getComponent() == component) {
+                result = profiles[profileIndex];
+            }
+            profileIndex++;
+        }    
+        
         return result;
     }    
 }

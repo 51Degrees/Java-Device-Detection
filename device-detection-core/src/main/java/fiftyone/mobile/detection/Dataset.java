@@ -43,6 +43,7 @@ import fiftyone.mobile.detection.entities.Version;
 import fiftyone.mobile.detection.entities.memory.MemoryFixedList;
 import fiftyone.mobile.detection.entities.memory.PropertiesList;
 import fiftyone.mobile.detection.entities.stream.ICacheList;
+import fiftyone.mobile.detection.search.SearchBase;
 import fiftyone.properties.DetectionConstants;
 import java.io.Closeable;
 
@@ -62,14 +63,82 @@ import java.io.Closeable;
  * For more information see https://51degrees.com/Support/Documentation/Java
  */
 public class Dataset implements Closeable {
+    
+    /**
+     * Used to search for a signature from a list of nodes.
+     */
+    static class SearchSignatureByNodes 
+        extends SearchBase<Signature, List<Node>, IReadonlyList<Signature>> {
+
+        private final IReadonlyList<Signature> signatures;
+        
+        SearchSignatureByNodes(IReadonlyList<Signature> signatures) {
+            this.signatures = signatures;
+        }
+        
+        @Override
+        protected int getCount(IReadonlyList<Signature> list) {
+            return list.size();
+        }
+
+        @Override
+        protected Signature getValue(IReadonlyList<Signature> list, int index) 
+                throws IOException {
+            return list.get(index);
+        }
+
+        @Override
+        protected int compareTo(Signature item, List<Node> nodes) 
+                throws IOException {
+            return item.compareTo(nodes);
+        }
+        
+        int binarySearch(List<Node> nodes) throws IOException {
+            return super.binarySearch(signatures, nodes);
+        }
+    }
+    
+    /**
+     * Used to search for a profile offset from a profile id.
+     */
+    private static class SearchProfileOffsetByProfileId 
+        extends SearchBase<ProfileOffset, Integer, IReadonlyList<ProfileOffset>> {
+
+        private final IReadonlyList<ProfileOffset> profileOffsets;
+        
+        SearchProfileOffsetByProfileId(
+                IReadonlyList<ProfileOffset> profileOffsets) {
+            this.profileOffsets = profileOffsets;
+        }
+        
+        @Override
+        protected int getCount(IReadonlyList<ProfileOffset> list) {
+            return list.size();
+        }
+
+        @Override
+        protected ProfileOffset getValue(
+                IReadonlyList<ProfileOffset> list, 
+                int index) 
+                throws IOException {
+            return list.get(index);
+        }
+
+        @Override
+        protected int compareTo(ProfileOffset item, Integer profileId) 
+                throws IOException {
+            return item.getProfileId() - profileId;
+        }
+        
+        int binarySearch(Integer profileId) throws IOException {
+            return super.binarySearch(profileOffsets, profileId);
+        }
+    }
+    
     /**
      * Age of the data in months when exported.
      */
     public int age;
-    /**
-     * The browser component.
-     */
-    private volatile Component browsers;
     /**
      * A list of all the components the data set contains.
      */
@@ -82,10 +151,6 @@ public class Dataset implements Closeable {
      * The offset for the copyright notice associated with the data set.
      */
     public int copyrightOffset;
-    /**
-     * The crawler component.
-     */
-    private volatile Component crawlers;
     /**
      * The number of bytes to allocate to a buffer returning CSV format data for
      * a match.
@@ -100,10 +165,6 @@ public class Dataset implements Closeable {
      */
     public Guid export;
     /**
-     * Flag to indicate if the dataset is disposed.
-     */
-    private boolean disposed;
-    /**
      * The name of the property map used to create the dataset.
      */
     public volatile String format;
@@ -112,19 +173,9 @@ public class Dataset implements Closeable {
      */
     public int formatOffset;
     /**
-     * The hardware component.
-     */
-    private volatile Component hardware;
-    /**
      * The highest character the character trees can contain.
      */
     public byte highestCharacter;
-    /**
-     * List of unique HTTP Headers that the data set needs to consider to 
-     * perform the most accurate matches.
-     */
-    @SuppressWarnings("VolatileArrayField")
-    private volatile String[] httpHeaders;
     /**
      * The number of bytes to allocate to a buffer returning JSON format data
      * for a match.
@@ -179,10 +230,6 @@ public class Dataset implements Closeable {
      * The mode of operation the data set is using.
      */
     public final Modes mode;
-    /**
-     * The common name of the data set.
-     */
-    private volatile String name;
     /**
      * The offset for the common name of the data set.
      */
@@ -242,10 +289,6 @@ public class Dataset implements Closeable {
      */
     public IReadonlyList<Signature> signatures;
     /**
-     * The software component.
-     */
-    private volatile Component software;
-    /**
      * A list of ASCII byte arrays for strings used by the dataset.
      */
     public IReadonlyList<AsciiString> strings;
@@ -262,7 +305,7 @@ public class Dataset implements Closeable {
      */
     public Version version;
     /**
-     * The version of the data set as an enum.
+     * The version of the data set as an Enumeration.
      */
     public DetectionConstants.FORMAT_VERSIONS versionEnum;
     /**
@@ -375,6 +418,7 @@ public class Dataset implements Closeable {
     public boolean getDisposed() {
         return disposed;
     }
+    private boolean disposed;
 
     /**
      * The hardware component.
@@ -394,6 +438,7 @@ public class Dataset implements Closeable {
         }
         return localHardware;
     }
+    private volatile Component hardware;
     
 
     /**
@@ -414,7 +459,7 @@ public class Dataset implements Closeable {
         }
         return localSoftware;
     }
-    
+    private volatile Component software;
 
     /**
      * The browser component.
@@ -434,6 +479,7 @@ public class Dataset implements Closeable {
         }
         return localBrowsers;
     }
+    private volatile Component browsers;
 
     /**
      * The crawler component.
@@ -453,6 +499,7 @@ public class Dataset implements Closeable {
         }
         return localCrawlers;
     }
+    private volatile Component crawlers;
 
     /**
      * The copyright notice associated with the data set.
@@ -491,6 +538,7 @@ public class Dataset implements Closeable {
         }
         return localName;
     }
+    private volatile String name;
 
     /**
      * The name of the property map used to create the dataset.
@@ -510,8 +558,47 @@ public class Dataset implements Closeable {
         }
         return localFormat;
     }
+    
+    /**
+     * Used to search for a signature from a list of nodes.
+     * @return search instance connected to the list of signatures
+     */
+    @SuppressWarnings("DoubleCheckedLocking")
+    SearchSignatureByNodes getSignatureSearch() {
+        SearchSignatureByNodes result = sigantureSearch;
+        if (result == null) {
+            synchronized (this) {
+                result = sigantureSearch;
+                if (result == null) {
+                    sigantureSearch = result = new SearchSignatureByNodes(
+                        signatures);
+                }
+            }
+        }
+        return result;
+    }
+    private volatile SearchSignatureByNodes sigantureSearch;
 
-
+    /**
+     *
+     * @return an instance of the profile offset search.
+     */
+    @SuppressWarnings("DoubleCheckedLocking")
+    private SearchProfileOffsetByProfileId getProfileOffsetSearch() {
+        SearchProfileOffsetByProfileId result = profileOffsetSearch;
+        if (result == null) {
+            synchronized (this) {
+                result = profileOffsetSearch;
+                if (result == null) {
+                    profileOffsetSearch = result = 
+                            new SearchProfileOffsetByProfileId(profileOffsets);
+                }
+            }
+        }
+        return result;
+    }
+    private volatile SearchProfileOffsetByProfileId profileOffsetSearch;
+    
     /**
      * A list of all the components the data set contains.
      * @return a read-only list of all components contained in data set
@@ -600,6 +687,7 @@ public class Dataset implements Closeable {
      * @return list of HTTP headers as Strings.
      * @throws java.io.IOException
      */
+    @SuppressWarnings("DoubleCheckedLocking")
     public String[] getHttpHeaders() throws IOException {
         String[] localHttpHeaders = httpHeaders;
         if (localHttpHeaders == null) {
@@ -614,13 +702,16 @@ public class Dataset implements Closeable {
                            }
                        }
                     }
-                    httpHeaders = localHttpHeaders = new String[tempList.size()];
+                    localHttpHeaders = new String[tempList.size()];
                     tempList.toArray(localHttpHeaders);
+                    httpHeaders = localHttpHeaders;
                 }
             }
         }
         return localHttpHeaders;
     }
+    @SuppressWarnings("VolatileArrayField")
+    private volatile String[] httpHeaders;
     
     /**
      * Called after the entire data set has been loaded to ensure any further
@@ -784,22 +875,9 @@ public class Dataset implements Closeable {
      * @throws IOException signals an I/O exception occurred
      */
     public Profile findProfile(int profileId) throws IOException {
-        int lower = 0;
-        int upper = profileOffsets.size() - 1;
-
-        while (lower <= upper) {
-            int middle = lower + (upper - lower) / 2;
-            int comparisonResult = profileOffsets.get(middle).getProfileId() - profileId;
-            if (comparisonResult == 0) {
-                return profiles.get(profileOffsets.get(middle).getOffset());
-            } else if (comparisonResult > 0) {
-                upper = middle - 1;
-            } else {
-                lower = middle + 1;
-            }
-        }
-
-        return null;
+        int index = getProfileOffsetSearch().binarySearch(profileId);
+        return index < 0 ? null : profiles.get(
+                profileOffsets.get(index).getOffset());
     }
 
     /**
@@ -818,51 +896,67 @@ public class Dataset implements Closeable {
      * @return The percentage of requests for ranked signatures which were 
      * not already contained in the cache.
      */
+    @Deprecated
     public double getPercentageRankedSignatureCacheMisses() {
         return getPercentageMisses(rankedSignatureIndexes);
     }
     
     /**
      * Number of times the signature cache was switched.
+     * Note: The LRU does not require switching and this method has been 
+     * deprecated.
      * A value is only returned when operating in Stream mode.
      * @return Number of times the signature cache was switched.
      */
+    @Deprecated
     public long getSignatureCacheSwitches() {
         return getSwitches(signatures);
     }
     
     /**
      * Number of times the node cache was switched.
+     * Note: The LRU does not require switching and this method has been 
+     * deprecated.
      * A value is only returned when operating in Stream mode.
      * @return Number of times the node cache was switched.
      */
+    @Deprecated
     public long getNodeCacheSwitches() {
         return getSwitches(nodes);
     }
     
     /**
      * Number of times the strings cache was switched.
+     * Note: The LRU does not require switching and this method has been 
+     * deprecated.
      * A value is only returned when operating in Stream mode.
      * @return Number of times the strings cache was switched.
      */
+    @Deprecated
     public long getStringsCacheSwitches() {
         return getSwitches(strings);
     }
     
     /**
      * Number of times the profiles cache was switched.
+     * Note: The LRU does not require switching and this method has been 
+     * deprecated.
      * A value is only returned when operating in Stream mode.
      * @return Number of times the profiles cache was switched.
      */
+    @Deprecated
     public long getProfilesCacheSwitches() {
         return getSwitches(profiles);
     }
     
     /**
      * Number of times the values cache was switched.
+     * Note: The LRU does not require switching and this method has been 
+     * deprecated.
      * A value is only returned when operating in Stream mode.
      * @return Number of times the values cache was switched.
      */
+    @Deprecated
     public long getValuesCacheSwitches() {
         return getSwitches(values);
     }
@@ -899,9 +993,12 @@ public class Dataset implements Closeable {
     
     /**
      * Returns the number of times the cache lists were switched.
+     * Note: The LRU does not require switching and this method has been 
+     * deprecated.
      * @param list a Cache object to get percentage from.
      * @return 0 if object is not Cache, percentage otherwise.
      */
+    @Deprecated
     private static long getSwitches(Object list) {
         if (list instanceof ICacheList) {
             ICacheList c = (ICacheList)list;

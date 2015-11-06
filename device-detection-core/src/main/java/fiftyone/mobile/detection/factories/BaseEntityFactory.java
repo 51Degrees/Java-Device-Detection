@@ -26,7 +26,8 @@ import java.io.IOException;
 
 public abstract class BaseEntityFactory<T> {
 
-    public abstract T create(Dataset dataSet, int index, BinaryReader reader) throws IOException;
+    public abstract T create(Dataset dataSet, int index, BinaryReader reader) 
+                                                            throws IOException;
 
     /**
      * @param entity whose size is required.

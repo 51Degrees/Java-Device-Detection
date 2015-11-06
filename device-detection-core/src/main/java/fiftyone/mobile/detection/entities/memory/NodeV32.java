@@ -49,6 +49,14 @@ public class NodeV32 extends Node{
      */
     public NodeV32(Dataset dataSet, int offset, BinaryReader reader) {
         super(dataSet, offset, reader);
+        super.rankedSignatureCount = reader.readUInt16();
+        super.children = NodeFactoryShared.readNodeIndexesV32(
+                dataSet, 
+                reader, 
+                (int)(offset + reader.getPos() - nodeStartStreamPosition), 
+                childrenCount);  
+        super.numericChildren = readNodeNumericIndexes(
+                dataSet, reader, numericChildrenCount);
         if (rankedSignatureCount > 0) {
             nodeRankedSignatureValue = reader.readInt32();
         }
@@ -56,6 +64,7 @@ public class NodeV32 extends Node{
     
     /**
      * Loads all the ranked signature indexes for the node.
+     * @throws java.io.IOException
      */
     @Override
     public void init() throws IOException {
@@ -88,33 +97,6 @@ public class NodeV32 extends Node{
             }
         }
         return rsi;
-    }
-
-    /**
-     * Reads the ranked signature count from a 2 byte ushort.
-     * @param reader Reader connected to the source data structure and 
-     * positioned to start reading.
-     * @return The count of ranked signatures associated with the node.
-     */
-    @Override
-    public int readerRankedSignatureCount(BinaryReader reader) {
-        return reader.readUInt16();
-    }
-
-    /**
-     * Used by the constructor to read the variable length list of child node 
-     * indexes associated with the node. Returns node indexes from V32 data 
-     * format.
-     * @param dataSet The data set the node is contained within.
-     * @param reader Reader connected to the source data structure and 
-     * positioned to start reading.
-     * @param offset The offset in the data structure to the node.
-     * @param count The number of node indexes that need to be read.
-     * @return An array of child node indexes for the node.
-     */
-    @Override
-    protected NodeIndex[] readNodeIndexes(Dataset dataSet, BinaryReader reader, int offset, int count) {
-        return NodeFactoryShared.readNodeIndexesV32(dataSet, reader, offset, count);
     }
 
     /**

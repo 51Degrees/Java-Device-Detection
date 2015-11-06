@@ -29,10 +29,14 @@ import java.io.IOException;
 public class RootNodeFactory extends BaseEntityFactory<Node> {
 
     @Override
-    public Node create(Dataset dataSet, int index, BinaryReader reader) throws IOException {
+    public Node create(Dataset dataSet, int index, BinaryReader reader) 
+                                                            throws IOException {
         return dataSet.nodes.get(reader.readInt32());
     }
     
+    /**
+     * @return length of the RootNode record.
+     */
     @Override
     public int getLength() {
         return DetectionConstants.SIZE_OF_INT;

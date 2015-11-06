@@ -31,7 +31,8 @@ import fiftyone.mobile.detection.entities.Signature;
 class NearestScore extends BaseScore {
 
     @Override
-    protected int getInitialScore(Signature signature, int lastNodeCharacter) throws IOException {
+    protected int getInitialScore(Signature signature, int lastNodeCharacter) 
+                                                            throws IOException {
         return 0;
     }
 

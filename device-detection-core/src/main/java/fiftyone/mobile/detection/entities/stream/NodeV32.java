@@ -20,10 +20,8 @@
  * ********************************************************************* */
 package fiftyone.mobile.detection.entities.stream;
 
-import fiftyone.mobile.detection.Dataset;
 import fiftyone.mobile.detection.IClosableIterator;
 import fiftyone.mobile.detection.entities.IntegerEntity;
-import fiftyone.mobile.detection.entities.NodeIndex;
 import fiftyone.mobile.detection.factories.NodeFactoryShared;
 import fiftyone.mobile.detection.readers.BinaryReader;
 import fiftyone.properties.DetectionConstants;
@@ -48,39 +46,18 @@ public class NodeV32 extends Node {
      * @param offset The offset in the data structure to the node.
      * @param reader Reader connected to the source data structure and 
      * positioned to start reading.
+     * @throws java.io.IOException
      */
     public NodeV32(fiftyone.mobile.detection.entities.stream.Dataset dataSet, 
                     int offset, BinaryReader reader) throws IOException {
         super(dataSet, offset, reader);
-    }
-
-    /**
-     * Reads the ranked signature count from a 2 byte ushort.
-     * @param reader Reader connected to the source data structure and 
-     * positioned to start reading.
-     * @return The count of ranked signatures associated with the node.
-     */
-    @Override
-    public int readerRankedSignatureCount(BinaryReader reader) {
-        return reader.readUInt16();
-    }
-
-    /**
-     * Used by the constructor to read the variable length list of child node 
-     * indexes associated with the node. Returns node indexes from V32 data 
-     * format.
-     * @param dataSet The data set the node is contained within.
-     * @param reader Reader connected to the source data structure and 
-     * positioned to start reading.
-     * @param offset The offset in the data structure to the node.
-     * @param count The number of node indexes that need to be read.
-     * @return An array of child node indexes for the node.
-     */
-    @Override
-    protected NodeIndex[] readNodeIndexes(Dataset dataSet, BinaryReader reader, 
-            int offset, int count) {
-        return NodeFactoryShared.readNodeIndexesV32(dataSet, reader, 
-                                                    offset, count);
+        super.rankedSignatureCount = reader.readUInt16();
+        super.children = NodeFactoryShared.readNodeIndexesV32(
+                dataSet, 
+                reader, 
+                (int)(offset + reader.getPos() - nodeStartStreamPosition), 
+                childrenCount);
+        super.numericChildrenPosition = reader.getPos();
     }
 
     /**
@@ -124,22 +101,21 @@ public class NodeV32 extends Node {
                         getNumericChildrenLength()));
                 
                 // Read the index.
-                int index = reader.readInt32();
+                int rankedSignatureIndex = reader.readInt32();
                 
                 if (rankedSignatureCount == 1) {
                     // If the count is one then the value is the 
                     // ranked signature index.
                     rsi = new int[rankedSignatureCount];
-                    rsi[0] = index;
+                    rsi[0] = rankedSignatureIndex;
                 } else {
                     // If the count is greater than one then the value is the 
                     // index of the first ranked signature index in the merged 
                     // list.
-                    IClosableIterator<IntegerEntity> range = null;
+                    IClosableIterator<IntegerEntity> range;
+                    range = dataSet.getNodeRankedSignatureIndexes()
+                        .getRange(rankedSignatureIndex, rankedSignatureCount);
                     try {
-                        range = dataSet.getNodeRankedSignatureIndexes()
-                                .getRange(index, rankedSignatureCount);
-                        // Fill the array with values.
                         int currentIndex = 0;
                         rsi = new int[rankedSignatureCount];
                         while (range.hasNext()) {

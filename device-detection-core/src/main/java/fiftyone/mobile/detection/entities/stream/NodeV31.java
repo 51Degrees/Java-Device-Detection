@@ -20,13 +20,10 @@
  * ********************************************************************* */
 package fiftyone.mobile.detection.entities.stream;
 
-import fiftyone.mobile.detection.Dataset;
-import fiftyone.mobile.detection.entities.NodeIndex;
 import fiftyone.mobile.detection.factories.NodeFactoryShared;
 import fiftyone.mobile.detection.readers.BinaryReader;
 import fiftyone.properties.DetectionConstants;
 import java.io.IOException;
-
 
 /**
  * Represents a NodeV31 which can be used with the Stream data set. 
@@ -53,24 +50,13 @@ public class NodeV31 extends Node {
     public NodeV31(fiftyone.mobile.detection.entities.stream.Dataset dataSet, 
             int offset, BinaryReader reader) throws IOException {
         super(dataSet, offset, reader);
-    }
-
-    /**
-     * Reads the ranked signature count from a 4 byte integer.
-     * @param reader Reader connected to the source data structure and 
-     * positioned to start reading.
-     * @return The count of ranked signatures associated with the node.
-     */
-    @Override
-    public int readerRankedSignatureCount(BinaryReader reader) {
-        return reader.readInt32();
-    }
-
-    @Override
-    protected NodeIndex[] readNodeIndexes(Dataset dataSet, BinaryReader reader, 
-            int offset, int count) {
-        return NodeFactoryShared.readNodeIndexesV31(dataSet, reader, 
-                                                    offset, count);
+        super.rankedSignatureCount = reader.readInt32();
+        super.children = NodeFactoryShared.readNodeIndexesV31(
+                dataSet, 
+                reader, 
+                (int)(offset + reader.getPos() - nodeStartStreamPosition), 
+                childrenCount);
+        super.numericChildrenPosition = reader.getPos();
     }
 
     /**

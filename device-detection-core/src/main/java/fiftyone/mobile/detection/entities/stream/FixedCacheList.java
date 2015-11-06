@@ -52,7 +52,7 @@ import java.io.IOException;
  * @param <T> The type of BaseEntity the list will contain.
  */
 public class FixedCacheList<T extends BaseEntity> extends StreamFixedList<T> 
-                                  implements ICacheLoader<Integer, T>, ICacheList {
+                            implements ICacheLoader<Integer, T>, ICacheList {
 
     /**
      * Used to store previously accessed items to improve performance and

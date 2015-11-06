@@ -21,11 +21,8 @@
 
 package fiftyone.mobile.detection;
 
-import fiftyone.mobile.detection.Dataset;
-import fiftyone.mobile.detection.Provider;
 import fiftyone.mobile.detection.test.common.Results;
 import fiftyone.properties.MatchMethods;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.rules.TestName;
@@ -229,23 +226,17 @@ public class DetectionTestSupport {
     }
 
     public static void reportCache(Dataset dataSet) {
-        System.out.printf("Node cache switches '%d' with '%.0f%%' misses\r\n",
-                dataSet.getNodeCacheSwitches(),
+        System.out.printf("Node cache misses '%.0f%%'\r\n",
                 dataSet.getPercentageNodeCacheMisses() * (double)100);
-        System.out.printf("Profiles cache switches '%d' with '%.0f%%' misses\r\n",
-                dataSet.getProfilesCacheSwitches(),
+        System.out.printf("Profiles cache misses '%.0f%%'\r\n",
                 dataSet.getPercentageProfilesCacheMisses() * (double)100);
-        System.out.printf("Ranked Signatures cache switches '%d' with '%.0f%%' misses\r\n",
-                dataSet.getRankedSignatureCacheSwitches(),
+        System.out.printf("Ranked Signatures cache misses '%.0f%%'\r\n",
                 dataSet.getPercentageRankedSignatureCacheMisses() * (double)100);
-        System.out.printf("Signatures cache switches '%d' with '%.0f%%' misses\r\n",
-                dataSet.getSignatureCacheSwitches(),
+        System.out.printf("Signatures cache misses '%.0f%%'\r\n",
                 dataSet.getPercentageSignatureCacheMisses() * (double)100);
-        System.out.printf("Strings cache switches '%d' with '%.0f%%' misses\r\n",
-                dataSet.getStringsCacheSwitches(),
+        System.out.printf("Strings cache misses '%.0f%%'\r\n",
                 dataSet.getPercentageStringsCacheMisses() * (double)100);
-        System.out.printf("Values cache switches '%d' with '%.0f%%' misses\r\n",
-                dataSet.getValuesCacheSwitches(),
+        System.out.printf("Values cache misses '%.0f%%'\r\n",
                 dataSet.getPercentageValuesCacheMisses() * (double)100);
     }
 
@@ -258,8 +249,7 @@ public class DetectionTestSupport {
     }
 
     public static void reportProvider(Provider provider) {
-        System.out.printf("User-Agent cache switches '%d' with '%.0f%%' misses\r\n",
-                provider.getCacheSwitches(),
+        System.out.printf("User-Agent cache misses '%.0f%%'\r\n",
                 provider.getPercentageCacheMisses());
         if (provider.dataSet instanceof fiftyone.mobile.detection.entities.stream.Dataset)
         {

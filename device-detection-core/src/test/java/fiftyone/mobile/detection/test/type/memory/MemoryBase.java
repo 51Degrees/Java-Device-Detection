@@ -30,11 +30,14 @@ import org.junit.After;
 import org.junit.Before;
 
 import java.io.IOException;
+import java.text.NumberFormat;
 
 import static org.junit.Assert.assertTrue;
 
 public abstract class MemoryBase extends DetectionTestSupport {
 
+    private static NumberFormat numberFormat = NumberFormat.getNumberInstance();
+    
     protected abstract Dataset getDataset();
 
     /**
@@ -65,9 +68,13 @@ public abstract class MemoryBase extends DetectionTestSupport {
     }
 
     private void display(Results results, double maxAllowedMemory) {
-        logger.info("Average Allocated per Detection {}", memory.getAverageMemoryAllocatedPerDetection(results));
+        logger.info("Average Allocated per Detection '{}' ", 
+                numberFormat.format(
+                        memory.getAverageMemoryAllocatedPerDetection(results)));
         memory.logHeapState();
-        String message = String.format("Average Used: '%dMB' Max Allowed: '%dMB'", memory.getAverageMemoryUsed(),(int) maxAllowedMemory);
+        String message = String.format(
+                "Average Used: '%dMB' Max Allowed: '%dMB'", 
+                memory.getAverageMemoryUsed(),(int) maxAllowedMemory);
         if (memory.getAverageMemoryUsed() < maxAllowedMemory) {
             logger.info(message);
         } else {
@@ -75,5 +82,4 @@ public abstract class MemoryBase extends DetectionTestSupport {
         }
         assertTrue(message, memory.getAverageMemoryUsed() < maxAllowedMemory);
     }
-
 }

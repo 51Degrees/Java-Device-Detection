@@ -159,8 +159,8 @@ public class Results {
      * Trie Callable Detector
      */
     public static  class TrieDetector extends CallableDetector {
-        private Results results;
-        private TrieProvider provider;
+        private final Results results;
+        private final TrieProvider provider;
 
         public TrieDetector(TrieProvider provider, Results results) {
             this.provider = provider;
@@ -186,9 +186,9 @@ public class Results {
      * Pattern Callable Detector
      */
     public static class PatternDetector extends  CallableDetector {
-        private MatchProcessor processor;
-        private Provider provider;
-        private Results results;
+        private final MatchProcessor processor;
+        private final Provider provider;
+        private final Results results;
 
         public PatternDetector(MatchProcessor processor, Provider provider, Results results) {
             this.processor = processor;

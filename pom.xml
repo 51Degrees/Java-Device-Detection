@@ -9,7 +9,12 @@
     <packaging>pom</packaging>
     <version>3.2.2-SNAPSHOT</version>
 
-    <name>51 Degrees :: Device Detection</name>
+    <name>51Degrees :: Device Detection</name>
+
+    <organization>
+        <name>51Degrees</name>
+        <url>http://51degrees.com</url>
+    </organization>
 
     <modules>
         <module>device-detection-core</module>

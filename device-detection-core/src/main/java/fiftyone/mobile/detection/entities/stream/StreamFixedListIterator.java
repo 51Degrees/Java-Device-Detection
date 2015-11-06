@@ -26,6 +26,7 @@ import java.util.Iterator;
 /**
  * A general class that iterates over entities in StreamVariableLists. The iteration
  * lazy loads for low memory and quick start retrieval.
+ * @param <T>
  */
 public class StreamFixedListIterator<T extends BaseEntity> implements Iterator<T> {
 
@@ -53,6 +54,7 @@ public class StreamFixedListIterator<T extends BaseEntity> implements Iterator<T
      * 
      * @return true if there are more entities to iterate.
      */
+    @Override
     public boolean hasNext() {
     
         return index < size;
@@ -63,6 +65,7 @@ public class StreamFixedListIterator<T extends BaseEntity> implements Iterator<T
      * 
      * @return the next entity in the list.
      */
+    @Override
     public T next() {
         try {
             T t = fixedList.get(index);
@@ -77,6 +80,7 @@ public class StreamFixedListIterator<T extends BaseEntity> implements Iterator<T
     /**
      * remove is not supported.
      */
+    @Override
     public void remove() {
         throw new UnsupportedOperationException("Remove is not a valid action "
                 + "for the StreamFixedListIterator");

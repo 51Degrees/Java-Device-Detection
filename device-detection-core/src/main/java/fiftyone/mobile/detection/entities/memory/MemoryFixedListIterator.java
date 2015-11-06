@@ -28,7 +28,7 @@ import fiftyone.mobile.detection.entities.BaseEntity;
  * @param <T> The type of BaseEntity the list will contain
  */
 public class MemoryFixedListIterator<T extends BaseEntity> 
-                                                implements IClosableIterator<T> {
+                                            implements IClosableIterator<T> {
     /**
      * List to iterate over.
      */
