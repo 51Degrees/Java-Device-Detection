@@ -74,7 +74,7 @@ public class MemoryVariableList<T extends BaseEntity> extends
         }
         
         int binarySearch(Integer offset) throws IOException {
-            return super.binarySearch(array, offset);
+            return super.binarySearch(array, offset).getIndex();
         }
     }
     

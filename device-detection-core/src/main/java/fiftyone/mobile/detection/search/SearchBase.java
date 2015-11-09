@@ -31,7 +31,7 @@ import java.io.IOException;
  * @param <L> type of the list containing the items
  */
 public abstract class SearchBase<T, K, L> {
-    
+
     /**
      * Gets the count of items in the list.
      * @param list whose is to be returned
@@ -56,7 +56,7 @@ public abstract class SearchBase<T, K, L> {
      * @throws IOException 
      */
     protected abstract int compareTo(T item, K key) throws IOException;
- 
+
     /**
      * Core implementation of the binary search.
      * @param list list ordered in ascending key value
@@ -64,22 +64,25 @@ public abstract class SearchBase<T, K, L> {
      * @return the index of the key, or ones complement if not found
      * @throws IOException 
      */
-    public int binarySearch(L list, K key) throws IOException {
+    public SearchResult binarySearch(L list, K key) throws IOException {
+        SearchResult results = new SearchResult();
         int lower = 0;
         int upper = getCount(list) - 1;
 
         while (lower <= upper) {
-            int middle = lower + (upper - lower) / 2;
-            int comparisonResult = compareTo(getValue(list, middle), key);
+            results.Iterations++;
+            results.Index = lower + (upper - lower) / 2;
+            int comparisonResult = compareTo(getValue(list, results.Index), key);
             if (comparisonResult == 0) {
-                return middle;
+                return results;
             } else if (comparisonResult > 0) {
-                upper = middle - 1;
+                upper = results.Index - 1;
             } else {
-                lower = middle + 1;
+                lower = results.Index + 1;
             }
         }
 
-        return ~lower;
+        results.Index = ~lower;
+        return results;
     }
 }

@@ -153,6 +153,14 @@ public class Match {
         return getResult().getNodesEvaluated();
     }    
     
+    
+    /**
+     * @return the number of nodes found by the match.
+     */
+    public int getNodesFound() {
+        return getResult().getNodes().length;
+    }
+    
     /**
      * @return integer representing number of strings read for the match
      */

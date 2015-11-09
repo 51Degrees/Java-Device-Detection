@@ -164,7 +164,7 @@ public class Values {
      * @throws java.io.IOException
      */
     public Value get(String valueName) throws IOException {
-        int index = valuesNameSearch.binarySearch(values, valueName);
+        int index = valuesNameSearch.binarySearch(values, valueName).getIndex();
         return index >= 0 ? get(index) : null;
     }
     

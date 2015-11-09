@@ -44,6 +44,7 @@ import fiftyone.mobile.detection.entities.memory.MemoryFixedList;
 import fiftyone.mobile.detection.entities.memory.PropertiesList;
 import fiftyone.mobile.detection.entities.stream.ICacheList;
 import fiftyone.mobile.detection.search.SearchBase;
+import fiftyone.mobile.detection.search.SearchResult;
 import fiftyone.properties.DetectionConstants;
 import java.io.Closeable;
 
@@ -93,7 +94,7 @@ public class Dataset implements Closeable {
             return item.compareTo(nodes);
         }
         
-        int binarySearch(List<Node> nodes) throws IOException {
+        SearchResult binarySearch(List<Node> nodes) throws IOException {
             return super.binarySearch(signatures, nodes);
         }
     }
@@ -130,7 +131,7 @@ public class Dataset implements Closeable {
             return item.getProfileId() - profileId;
         }
         
-        int binarySearch(Integer profileId) throws IOException {
+        SearchResult binarySearch(Integer profileId) throws IOException {
             return super.binarySearch(profileOffsets, profileId);
         }
     }
@@ -875,7 +876,7 @@ public class Dataset implements Closeable {
      * @throws IOException signals an I/O exception occurred
      */
     public Profile findProfile(int profileId) throws IOException {
-        int index = getProfileOffsetSearch().binarySearch(profileId);
+        int index = getProfileOffsetSearch().binarySearch(profileId).getIndex();
         return index < 0 ? null : profiles.get(
                 profileOffsets.get(index).getOffset());
     }

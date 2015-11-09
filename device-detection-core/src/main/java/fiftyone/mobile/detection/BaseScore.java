@@ -41,8 +41,8 @@ abstract class BaseScore {
      * @param lastNodeCharacter
      * @return
      */
-    protected abstract int getInitialScore(Signature signature, 
-                                    int lastNodeCharacter) throws IOException;
+    protected abstract int getInitialScore(
+            Signature signature, int lastNodeCharacter) throws IOException;
 
     /**
      * Checks all the signatures using the scoring method provided.
@@ -56,8 +56,8 @@ abstract class BaseScore {
         closestSignatures.reset();
         state.setLowestScore(Integer.MAX_VALUE);
         int lastNodeCharacter = state.getNodesList().get(state.getNodesList().size() - 1).getRoot().position;
-        while (closestSignatures.hasNext()
-                && count < state.getDataSet().maxSignatures) {
+        while (closestSignatures.hasNext() &&
+               count < state.getDataSet().maxSignatures) {
             rankedSignatureIndex = closestSignatures.next();
             signatureIndex = state.getDataSet().rankedSignatureIndexes.get(
                     rankedSignatureIndex).getValue();
@@ -78,7 +78,7 @@ abstract class BaseScore {
      * @param lastNodeCharacter The signature to be evaluated.
      * @throws IOException 
      */
-    private void evaluateSignature(MatchState state, Signature signature, int lastNodeCharacter) throws IOException {
+        private void evaluateSignature(MatchState state, Signature signature, int lastNodeCharacter) throws IOException {
         state.incrSignaturesCompared();
 
         // Get the score between the target and the signature stopping if it's

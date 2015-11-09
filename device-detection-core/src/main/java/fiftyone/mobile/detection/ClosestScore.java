@@ -20,8 +20,8 @@
  * ********************************************************************* */
 package fiftyone.mobile.detection;
 
+import fiftyone.mobile.detection.entities.BaseEntity;
 import java.io.IOException;
-
 import fiftyone.mobile.detection.entities.Node;
 import fiftyone.mobile.detection.entities.Signature;
 
@@ -42,7 +42,7 @@ class ClosestScore extends BaseScore {
      *
      * @param state current working state of the matching process
      * @param node
-     * @return
+     * @return difference score
      * @throws IOException
      */
     @Override
@@ -59,8 +59,8 @@ class ClosestScore extends BaseScore {
 
         while (nodeIndex >= 0 && score < state.getLowestScore()) {
             int difference = Math.abs(
-                    state.getTargetUserAgentArray()[targetIndex]
-                    - node.getCharacters()[nodeIndex]);
+                    state.getTargetUserAgentArray()[targetIndex] -
+                    node.getCharacters()[nodeIndex]);
             if (difference != 0) {
                 int numericDifference = 0;
 
@@ -68,10 +68,12 @@ class ClosestScore extends BaseScore {
                 // the full number is considered in the difference comparison.
                 int newNodeIndex = nodeIndex + 1;
                 int newTargetIndex = targetIndex + 1;
-                while (newNodeIndex < node.getLength()
-                        && newTargetIndex < state.getTargetUserAgentArray().length
-                        && getIsNumeric(state.getTargetUserAgentArray()[newTargetIndex])
-                        && getIsNumeric(node.getCharacters()[newNodeIndex])) {
+                while (newNodeIndex < node.getLength() &&
+                       newTargetIndex < state.getTargetUserAgentArray().length && 
+                       BaseEntity.getIsNumeric(
+                               state.getTargetUserAgentArray()[newTargetIndex]) &&
+                       BaseEntity.getIsNumeric(
+                               node.getCharacters()[newNodeIndex])) {
                     newNodeIndex++;
                     newTargetIndex++;
                 }
@@ -80,9 +82,11 @@ class ClosestScore extends BaseScore {
 
                 // Find when the characters stop being numbers.
                 int characters = 0;
-                while (nodeIndex >= 0
-                        && getIsNumeric(state.getTargetUserAgentArray()[targetIndex])
-                        && getIsNumeric(node.getCharacters()[nodeIndex])) {
+                while (nodeIndex >= 0 &&
+                       BaseEntity.getIsNumeric(
+                               state.getTargetUserAgentArray()[targetIndex]) &&
+                       BaseEntity.getIsNumeric(
+                               node.getCharacters()[nodeIndex])) {
                     nodeIndex--;
                     targetIndex--;
                     characters++;
@@ -92,8 +96,14 @@ class ClosestScore extends BaseScore {
                 // compare the numeric values.
                 if (characters > 1) {
                     numericDifference = Math.abs(
-                            getNumber(state.getTargetUserAgentArray(), targetIndex + 1, characters)
-                            - getNumber(node.getCharacters(), nodeIndex + 1, characters));
+                            BaseEntity.getNumber(
+                                    state.getTargetUserAgentArray(), 
+                                    targetIndex + 1, 
+                                    characters) -
+                            BaseEntity.getNumber(
+                                    node.getCharacters(), 
+                                    nodeIndex + 1, 
+                                    characters));
                 }
 
                 if (numericDifference != 0) {
@@ -107,27 +117,5 @@ class ClosestScore extends BaseScore {
         }
 
         return score;
-    }
-
-    private static boolean getIsNumeric(byte value) {
-        return (value >= (byte) '0' && value <= (byte) '9');
-    }
-
-    /**
-     * Returns an integer representation of the characters between start and
-     * end. Assumes that all the characters are numeric characters.
-     *
-     * @param array Array of characters with numeric characters present between
-     * start and end
-     * @param start The first character to use to convert to a number
-     * @param end The last character to use to convert to a number
-     * @return
-     */
-    private static int getNumber(byte[] array, int start, int length) {
-        int value = 0;
-        for (int i = start + length - 1, p = 0; i >= start; i--, p++) {
-            value += (int) (Math.pow(10, p)) * ((byte) array[i] - (byte) '0');
-        }
-        return value;
     }
 }

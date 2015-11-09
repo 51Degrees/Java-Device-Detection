@@ -89,14 +89,14 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
             new SearchNodeNumericIndex();
     
     /**
-     * The minimum length of a node assuming no node indexes or signatures.
+     * Ranges of numeric values for comparison.
      */
-    public static final int MIN_LENGTH = 20;
     private static final Range[] ranges = new Range[]{
-        new Range((short) 0, (short) 9),
-        new Range((short) 10, (short) 99),
-        new Range((short) 100, (short) 999),
-        new Range((short) 1000, Short.MAX_VALUE)
+        new Range((short) 0, (short) 10),
+        new Range((short) 10, (short) 100),
+        new Range((short) 100, (short) 1000),
+        new Range((short) 1000, (short) 10000),
+        new Range((short) 10000, Short.MAX_VALUE)
     };
     
     /**
@@ -352,19 +352,18 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
         if (node == null && numericChildrenCount > 0) {
             // No. So try each of the numeric matches in ascending order of
             // difference.
-            Integer target = getCurrentPositionAsNumeric(state);
-            if (target != null) {
+            int target = getCurrentPositionAsNumeric(state);
+            if (target >= 0) {
                 NodeNumericIndexIterator iterator = 
-                                                getNumericNodeIterator(target);
+                        getNumericNodeIterator(target);
                 if (iterator != null) {
                     while (iterator.hasNext()) {
                         NodeNumericIndex current = iterator.next();
                         node = current.getNode().getCompleteNumericNode(state);
                         if (node != null) {
                             int difference = 
-                                        Math.abs(target - current.getValue());
-                            state.setLowestScore(
-                                    state.getLowestScore() + difference);
+                                    Math.abs(target - current.getValue());
+                            state.incrLowestScore(difference);
                             break;
                         }
                     }
@@ -392,7 +391,7 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
             Range range = getRange(target);
 
             int startIndex = numericChildrenSearch.binarySearch(
-                    getNumericChildren(), target);
+                    getNumericChildren(), target).getIndex();
             if (startIndex < 0) {
                 startIndex = ~startIndex - 1;
             }
@@ -426,7 +425,7 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
      * @return Null if there is no numeric characters, otherwise the characters
      * as an integer
      */
-    private Integer getCurrentPositionAsNumeric(MatchState state) {
+    private int getCurrentPositionAsNumeric(MatchState state) {
         // Find the left most numeric character from the current position.
         int i = position;
         while (i >= 0
@@ -469,7 +468,7 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
      * @param state current working state of the matching process
      * @return The next child node, or null if there isn't one
      */
-    Node getNextNode(MatchState state) throws IOException {
+    private Node getNextNode(MatchState state) throws IOException {
         int upper = children.length - 1;
 
         if (upper >= 0) {

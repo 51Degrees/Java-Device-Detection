@@ -54,14 +54,7 @@ public class MatchState extends MatchResult
     void setMethod(MatchMethods value) {
         super.method = value;
     }
-
-    /**
-     * Increments the number of nodes checked.
-     */    
-    void incrNodesEvaluated(int value) {
-        super.nodesEvaluated += value;
-    }
-    
+   
     /**
      * Increments the nodes evaluated by one.
      */
@@ -69,14 +62,6 @@ public class MatchState extends MatchResult
         super.nodesEvaluated++;
     }    
 
-    /**
-     * Increments the number of root nodes checked against the target 
-     * User-Agent.
-     */    
-    void incrRootNodesEvaluated(int value) {
-        super.rootNodesEvaluated += value;
-    }
-    
     /**
      * Increments the number of root nodes checked against the target 
      * User-Agent by one.
@@ -140,7 +125,7 @@ public class MatchState extends MatchResult
     /**
      * Increments the lowest score recorded for the signature that was found.
      */    
-    void incrLowestScore(int value) {
+    public void incrLowestScore(int value) {
         super.lowestScore += value;
     }
     

@@ -256,7 +256,7 @@ public class Value extends BaseEntity {
         for (Profile profile : getComponent().getProfiles()) {
             if (valuesIndexSearch.binarySearch(
                     profile.getValues(), 
-                    getIndex()) >= 0) {
+                    getIndex()).getIndex() >= 0) {
                 list.add(profile);
             }
         }

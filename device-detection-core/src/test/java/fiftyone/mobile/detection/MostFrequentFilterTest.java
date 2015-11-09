@@ -51,7 +51,7 @@ public class MostFrequentFilterTest extends DetectionTestSupport {
             arrays[i] = createArray(NUMBER_OF_ELEMENTS, 0, 1);
         }
         MostFrequentFilter filter = 
-                new MostFrequentFilter(arrays);
+                new MostFrequentFilter(arrays, Integer.MAX_VALUE);
         assertTrue(filter.size() == NUMBER_OF_ELEMENTS);
         for (int i = 0; i < arrays[0].length; i++) {
             assertTrue(filter.get(i).equals(arrays[0][i]));
@@ -67,7 +67,7 @@ public class MostFrequentFilterTest extends DetectionTestSupport {
             startValue += arrays[i].length;
         }
         MostFrequentFilter filter = 
-                new MostFrequentFilter(arrays);
+                new MostFrequentFilter(arrays, Integer.MAX_VALUE);
         assertTrue(filter.size() == 
                 NUMBER_OF_ELEMENTS * NUMBER_OF_ARRAYS);
         int lastValue = 0;
@@ -87,7 +87,7 @@ public class MostFrequentFilterTest extends DetectionTestSupport {
         }
         arrays[arrays.length - 1] = arrays[0];
         MostFrequentFilter filter = 
-                new MostFrequentFilter(arrays);
+                new MostFrequentFilter(arrays, Integer.MAX_VALUE);
         assertTrue(filter.size() == NUMBER_OF_ELEMENTS);
         for (int i = 0; i < arrays[0].length; i++) {
             assertTrue(filter.get(i) == arrays[0][i]);
@@ -105,7 +105,7 @@ public class MostFrequentFilterTest extends DetectionTestSupport {
         arrays[arrays.length - 1] = new int[] { 
             arrays[0][NUMBER_OF_ELEMENTS / 2] };
         MostFrequentFilter filter = 
-                new MostFrequentFilter(arrays);
+                new MostFrequentFilter(arrays, Integer.MAX_VALUE);
         assertTrue(filter.size() == 1);
         assertTrue(filter.get(0) == arrays[arrays.length - 1][0]);
     }
@@ -118,7 +118,7 @@ public class MostFrequentFilterTest extends DetectionTestSupport {
         }
         arrays[arrays.length - 1] = createArray(NUMBER_OF_ELEMENTS / 5, 0, 5);
         MostFrequentFilter filter = 
-                new MostFrequentFilter(arrays);
+                new MostFrequentFilter(arrays, Integer.MAX_VALUE);
         assertTrue(filter.size() == NUMBER_OF_ELEMENTS / 5);
         for (int i = 0; i < arrays[arrays.length - 1].length; i++) {
             assertTrue(filter.get(i) == arrays[arrays.length - 1][i]);
@@ -132,7 +132,7 @@ public class MostFrequentFilterTest extends DetectionTestSupport {
             arrays[i] = createArray(NUMBER_OF_ELEMENTS * (arrays.length - i), 0, 1);
         }
         MostFrequentFilter filter = 
-                new MostFrequentFilter(arrays);
+                new MostFrequentFilter(arrays, Integer.MAX_VALUE);
         assertTrue(filter.size() == NUMBER_OF_ELEMENTS);
         for (int i = 0; i < arrays[arrays.length - 1].length; i++) {
             assertTrue(filter.get(i) == arrays[arrays.length - 1][i]);
@@ -146,7 +146,7 @@ public class MostFrequentFilterTest extends DetectionTestSupport {
             arrays[i] = createArray(NUMBER_OF_ELEMENTS, 0, 1);
         }
         MostFrequentFilter filter = 
-                new MostFrequentFilter(arrays);
+                new MostFrequentFilter(arrays, Integer.MAX_VALUE);
         assertTrue(filter.size() == NUMBER_OF_ELEMENTS);
         for (int i = 0; i < arrays[0].length; i++) {
             assertTrue(filter.get(i) == arrays[0][i]);

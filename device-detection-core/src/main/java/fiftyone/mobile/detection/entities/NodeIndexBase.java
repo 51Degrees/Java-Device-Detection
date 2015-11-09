@@ -65,13 +65,11 @@ public abstract class NodeIndexBase extends BaseEntity {
         } 
         
         if (getDataSet().nodes instanceof MemoryBaseList) {
-            if (result == null) {
-                synchronized (this) {
-                    result = node;
-                    if (result == null) {
-                        node = result = getDataSet().getNodes().get(
-                                relatedNodeOffset);
-                    }
+            synchronized (this) {
+                result = node;
+                if (result == null) {
+                    node = result = getDataSet().getNodes().get(
+                            relatedNodeOffset);
                 }
             }
             return result;

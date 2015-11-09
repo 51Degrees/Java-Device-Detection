@@ -39,4 +39,9 @@ interface RankedSignatureIterator {
      * @return the next integer in the iteration.
      */
     int next();
+    
+    /**
+     * @return number of items in the iterator.
+     */
+    int size();
 }

@@ -25,6 +25,7 @@ import java.io.IOException;
 
 import fiftyone.properties.MatchMethods;
 import fiftyone.mobile.detection.entities.Node;
+import fiftyone.mobile.detection.search.SearchResult;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -140,8 +141,7 @@ class Controller {
             evaluate(state);
 
             /// Can a precise match be found based on the nodes?
-            int signatureIndex = state.match.getDataSet().getSignatureSearch().
-                    binarySearch(state.getNodesList());
+            int signatureIndex = getExactSignatureIndex(state);
 
             if (signatureIndex >= 0) {
                 // Yes a precise match was found.
@@ -154,8 +154,7 @@ class Controller {
                 evaluateNumeric(state);
 
                 // Can a precise match be found based on the nodes?
-                signatureIndex = state.match.getDataSet().getSignatureSearch().
-                    binarySearch(state.getNodesList());
+                signatureIndex = getExactSignatureIndex(state);
 
                 if (signatureIndex >= 0) {
                     // Yes a precise match was found.
@@ -276,6 +275,21 @@ class Controller {
     }
 
     /**
+     * If the nodes of the match correspond exactly to a signature then return
+     * the index of the signature found. Otherwise -1.
+     * @param state of the match process
+     * @return index of the signature or -1
+     * @throws IOException 
+     */
+    private static int getExactSignatureIndex(MatchState state) throws IOException
+    {
+        SearchResult result = state.match.getDataSet().getSignatureSearch().
+            binarySearch(state.getNodesList());
+        state.signaturesRead += result.getIterations();
+        return result.getIndex();
+    }
+    
+    /**
      * Returns a distinct list of signatures which most closely match the target
      * user agent string. Where a single signature is not present across all the
      * nodes the signatures which match the most nodes from the target user
@@ -286,11 +300,9 @@ class Controller {
      */
     private static RankedSignatureIterator getClosestSignatures(
             final MatchState state) throws IOException {
-
+        RankedSignatureIterator result;
         if (state.getNodesList().size() == 1) {
-            state.setClosestSignaturesCount(
-                    state.getNodesList().get(0).getRankedSignatureIndexes().length);
-            return new RankedSignatureIterator() {
+            result = new RankedSignatureIterator() {
                 final int[] rankedSignatureIndexes =
                         state.getNodesList().get(0).getRankedSignatureIndexes();
                 int index = 0;
@@ -298,6 +310,11 @@ class Controller {
                 @Override
                 public boolean hasNext() {
                     return index < rankedSignatureIndexes.length;
+                }
+                
+                @Override
+                public int size() {
+                    return rankedSignatureIndexes.length;
                 }
 
                 @Override
@@ -313,16 +330,19 @@ class Controller {
                 }
             };
         } else {
-            final MostFrequentFilter filter = 
-                    new MostFrequentFilter(state.getNodesList());
-            state.setClosestSignaturesCount(filter.size());            
-            return new RankedSignatureIterator() {
+            final MostFrequentFilter filter = new MostFrequentFilter(state);
+            result = new RankedSignatureIterator() {
                 final List<Integer> rankedSignatureIndexes = filter;
                 int index = 0;
 
                 @Override
                 public boolean hasNext() {
                     return index < rankedSignatureIndexes.size();
+                }
+                
+                @Override
+                public int size() {
+                    return rankedSignatureIndexes.size();
                 }
 
                 @Override
@@ -338,5 +358,7 @@ class Controller {
                 }
             };
         }
+        state.closestSignaturesCount += result.size();
+        return result;
     }
 }
