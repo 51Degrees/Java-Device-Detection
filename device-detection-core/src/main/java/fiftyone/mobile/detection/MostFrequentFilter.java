@@ -60,6 +60,7 @@ class MostFrequentFilter extends ArrayList<Integer> {
         }
     }
     
+    private final int maxResults;
     private int topCount = 0;
     private int lowestCount = 0;
     private int lowestValue;
@@ -71,15 +72,17 @@ class MostFrequentFilter extends ArrayList<Integer> {
      * @param lists array of T arrays generated for unit testing
      * @throws IOException 
      */
-    MostFrequentFilter(int[][] lists) {
+    MostFrequentFilter(int[][] lists, int maxResults) {
+        this.maxResults = maxResults;
         for (int[] list : lists) {
             this.lists.add(new OrderedItems(list));
         }
         Init();
     }
     
-    MostFrequentFilter(List<Node> nodes) throws IOException {
-        for (Node node : nodes) {
+    MostFrequentFilter(MatchState state) throws IOException {
+        this.maxResults = state.getDataSet().maxSignatures;
+        for (Node node : state.getNodesList()) {
             this.lists.add(new OrderedItems(node.getRankedSignatureIndexes()));
         }
         Init();
@@ -88,12 +91,14 @@ class MostFrequentFilter extends ArrayList<Integer> {
     private void Init() {
         Collections.sort(lists);
         countLowest();
-        while (lists.size() >= topCount) {
+        while (lists.size() > topCount || (
+               lists.size() == topCount && super.size() < this.maxResults)) {
             if (lowestCount > topCount) {
                 super.clear();
                 topCount = lowestCount;
             }
-            if (lowestCount == topCount)
+            if (lowestCount == topCount &&
+                super.size() < this.maxResults)
             {
                 super.add(lists.getFirst().value);
             }

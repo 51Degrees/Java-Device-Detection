@@ -32,7 +32,7 @@ class NearestScore extends BaseScore {
 
     @Override
     protected int getInitialScore(Signature signature, int lastNodeCharacter) 
-                                                            throws IOException {
+            throws IOException {
         return 0;
     }
 

@@ -6,7 +6,7 @@
  * This Source Code Form is the subject of the following patent 
  * applications, owned by 51Degrees Mobile Experts Limited of 5 Charlotte
  * Close, Caversham, Reading, Berkshire, United Kingdom RG4 7BY: 
- * European Patent Application No. 13192291.6; and 
+ * European Patent Application No. 13192291.6; and
  * United States Patent Application Nos. 14/085,223 and 14/085,301.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -18,19 +18,15 @@
  * This Source Code Form is "Incompatible With Secondary Licenses", as
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
-package fiftyone.mobile.detection.entities;
+package fiftyone.mobile.detection.search;
 
-class Range {
-
-    final short lower;
-    final short upper;
-
-    Range(short lower, short upper) {
-        this.lower = lower;
-        this.upper = upper;
+public class SearchResult {
+    public int getIndex() {
+        return Index;
     }
-
-    boolean inRange(int value) {
-        return value >= lower && value < upper;
+    int Index;
+    public int getIterations() {
+        return Iterations;
     }
+    int Iterations;
 }
