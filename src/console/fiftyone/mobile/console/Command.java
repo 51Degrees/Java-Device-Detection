@@ -58,6 +58,7 @@ public class Command {
         TrieProvider t32 = null;
         Provider p;
         
+        // Snippet Start
         // Construct the provider based on the file names provided.
         if (new File(patternFileName).exists()) 
         {
@@ -70,6 +71,7 @@ public class Command {
             throw new IOException(String.format(
                     "File '%s' data file can't be found.", patternFileName));
         }
+        // Snippet End
         
         if (new File(trieFileName).exists()) {
             t = TrieFactory.create(trieFileName);
