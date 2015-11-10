@@ -31,36 +31,58 @@ import java.io.Closeable;
 import java.io.IOException;
 
 /**
+ * <!-- snippet -->
  * Example of listing properties and possible values from a Dataset
  * <p>
  * The example illustrates:
  * <ol>
- *     <li>Loading a memory-resident Pattern Dataset</li>
- *     <p><code>dataset = MemoryFactory.create(Shared.getLitePatternV32(), true);</code></p>
- *     <li>Enumerating properties contained in the dataset loaded</li>
- *     <p><code>for(Property property : dataset.getProperties()) {</code></p>
- *     <li>Enumerating values that the property may have</li>
- *     <p><code>for (Value value : property.getValues().getAll()) {</code></p>
+ *  <li>Loading a memory-resident Pattern Dataset
+ *  <p><code>dataset = MemoryFactory.create(Shared.getLitePatternV32(), true);
+ *  </code>
+ *  <li>Enumerating properties contained in the dataset loaded
+ *  <p><code>for(Property property : dataset.getProperties()) {</code>
+ *  <li>Accessing description for each property.
+ *  <p><code>property.getDescription()</code>
+ *  <li>Enumerating values that the property may have
+ *  <p><code>for (Value value : property.getValues().getAll()) {</code>
+ *  <li>Accessing description of each value
+ *  <p><code>if (value.getDescription() != null) {</code>
  * </ol>
- * The <a href="https://51degrees.com/resources/property-dictionary">51 Degrees Property Dictionary</a>
- * contains a description of each of the properties and the editions in which they are available.
+ * The <a href="https://51degrees.com/resources/property-dictionary">
+ * 51 Degrees Property Dictionary</a> contains a description of each of the 
+ * properties and the editions in which they are available.
  * <p>
- * <p>
- * {@link #main} assumes it is being run with a working directory at root of project or of this module.
+ * {@link #main} assumes it is being run with a working directory at root of 
+ * project or of this module.
+ * <!-- snippet -->
  */
 public class MetadataExample implements Closeable {
 
+    // Dataset created from 51Degrees data fiel.
     private final Dataset dataset;
 
+    /**
+     * Creates a new Dataset using memory factory which creates a 
+     * memory-resident representation of data.
+     * 
+     * @throws IOException if there was a problem reading from the data file.
+     */
     public MetadataExample() throws IOException {
         dataset = MemoryFactory.create(Shared.getLitePatternV32(), true);
     }
 
+    /**
+     * Lists all properties available in provided data file and all possible 
+     * values for each property. 
+     * 
+     * @throws IOException if there was a problem reading from the data file.
+     */
     public void listProperties () throws IOException {
         // iterate over all properties in the dataset
         for(Property property : dataset.getProperties()) {
             //Get individual property, print name and description.
-            System.out.format("%s - %s%n", property.getName(), property.getDescription());
+            System.out.format("%s - %s%n", property.getName(), 
+                    property.getDescription());
 
             // collects name, values and their descriptions
             StringBuilder propertyOutput = new StringBuilder();
@@ -93,8 +115,9 @@ public class MetadataExample implements Closeable {
     }
 
     /**
-     * Don't forget to close datasets when you are done with them
-     * @throws IOException
+     * Don't forget to close datasets when you are done with them.
+     * 
+     * @throws IOException if there was a problem accessing the data file.
      */
     @Override
     public void close() throws IOException {

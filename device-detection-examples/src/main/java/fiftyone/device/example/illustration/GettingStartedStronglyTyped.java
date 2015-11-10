@@ -29,12 +29,21 @@ import java.io.Closeable;
 import java.io.IOException;
 
 /**
+ * <!-- snippet -->
  * Getting started example of using 51Degrees device detection. The example 
- * shows how to;
- * 
- * 1) instantiate 51Degrees detection provider;
- * 2) pass in a single HTTP User-Agent header; and 
- * 3) extract the IsMobile as a boolean value.
+ * shows how to:
+ * <ol>
+ *  <li>instantiate 51Degrees detection provider
+ *  <p><code>provider = new Provider(StreamFactory.create(
+ *  Shared.getLitePatternV32(), false));</code>
+ *  <li>pass in a single HTTP User-Agent header
+ *  <p><code>Match match = provider.match(userAgent);</code>
+ *  <li>extract the value of the IsMobile property as boolean
+ *  <p><code>match.getValues("IsMobile").toBool();</code>
+ * </ol>
+ * {@link #main} assumes it is being run with a working directory at root of 
+ * project or of this module.
+ * <!-- snippet -->
  */
 public class GettingStartedStronglyTyped implements Closeable {
     
@@ -57,19 +66,24 @@ public class GettingStartedStronglyTyped implements Closeable {
     
     /**
      * Initialises the device detection Provider with the included Lite data
-     * file. For more data see - https://51degrees.com/compare-data-options
+     * file. For more data see: 
+     * <a href="https://51degrees.com/compare-data-options">compare data options
+     * </a>
      * 
      * @throws IOException can be thrown if there is a problem reading from the 
      * provided data file.
      */
     public GettingStartedStronglyTyped() throws IOException {
         provider = new Provider(StreamFactory.create(
-                Shared.getLitePatternV32(), true));
+                Shared.getLitePatternV32(), false));
     }
 
     /**
-     * Method performs device detection by invoking the match method of the 
-     * provider object. Match results are then stored in the Match object.
+     * Matches provided User-Agent string and returns the IsMobile property 
+     * value as boolean.
+     * Detection initiated by invoking {@link Provider#match(java.lang.String)}.
+     * Detection results are then stored in the {@link Match} object and can be 
+     * accessed using the {@code Match.getValues("PropertyName")} method.
      * 
      * @param userAgent HTTP User-Agent string.
      * @return True if the User-Agent is mobile, False otherwise.
@@ -81,8 +95,11 @@ public class GettingStartedStronglyTyped implements Closeable {
     }
     
     /**
-     * Closes the Dataset by releasing data file readers and freeing the data 
-     * file from locking.
+     * Closes the {@link fiftyone.mobile.detection.Dataset} by releasing data 
+     * file readers and freeing the data file from locks. This method should 
+     * only be used when the {@code Dataset} is no longer required, i.e. when 
+     * device detection functionality is no longer required, or the data file 
+     * needs to be freed.
      * 
      * @throws IOException if there is a problem accessing the data file.
      */
@@ -92,9 +109,13 @@ public class GettingStartedStronglyTyped implements Closeable {
     }
     
     /**
-     * Main entry point that instantiates GettingStartedStronglyTyped class, 
-     * invokes isMobile method, prints results depending on the boolean value 
-     * returned by the isMobile method and finally closes the Dataset.
+     * Main entry point for this example. For each of the User-Agents defined 
+     * in this class: 
+     * <ol> 
+     * <li>invokes {@link #isMobile(java.lang.String) } method; and
+     * <li>prints output depending on the boolean value returned by the 
+     * {@code isMobile} method.
+     * </ol>
      * 
      * @param args command line arguments, not used.
      * @throws IOException if there is a problem accessing the data file. 
