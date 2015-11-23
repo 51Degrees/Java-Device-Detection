@@ -449,7 +449,7 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
                 return range;
             }
         }
-        throw new IllegalArgumentException("target");
+        return ranges[ranges.length - 1];
     }
 
     /**
