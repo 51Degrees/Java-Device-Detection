@@ -40,6 +40,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.UUID;
 import java.util.concurrent.Semaphore;
 import java.util.regex.Matcher;
@@ -48,9 +49,50 @@ import java.util.zip.GZIPInputStream;
 import javax.net.ssl.HttpsURLConnection;
 
 /**
- * Used to fetch new device data from 51Degrees if a Premium or Enterprise. 
+ * Used to fetch new device data from 51Degrees if a Premium or Enterprise 
+ * licence key is available.
+ * <p>
  * Requires a valid 51Degrees licence key and read/write access to the file
  * system folder where the downloaded file should be written.
+ * <p>
+ * Class only pulls the data file once per invocation and has no concept of the 
+ * environment. For a sample implementation please see the AutoUpdate class in 
+ * the 'Webapp' package.
+ * <p>
+ * When implementing custom auto updates keep in mind the following points:
+ * <ul>
+ *  <li>You need a licence key for the automatic update to work, 
+ *  <a href="https://51degrees.com/compare-data-options">get a licence key</a>.
+ *  <li>You need to implement two timers. The first timer should wake up the 
+ *  second timer when the next update is ready (see below). The second timer 
+ *  should attempt to download the data file by calling one of the update 
+ *  functions in this class.
+ *  <p>
+ *  Please note that auto update will return a 
+ *  {@link AutoUpdateStatus status code}. If the status code is 
+ *  {@code AUTO_UPDATE_SUCCESS} then no further actions required, if the status 
+ *  code is {@code AUTO_UPDATE_NOT_NEEDED} then no newer data is currently 
+ *  available. All other codes indicate there is a problem with the update.
+ *  <li>If you are using Stream mode you should not invoke automatic update 
+ *  with the same file path as the one used for constructing the stream data 
+ *  set. Stream data set retains a file lock on the underlying file to perform 
+ *  detection lookups and the auto update will fail to replace the data file.
+ *  Use a copy of the master file for device detection while leaving the master 
+ *  data file free of locks.
+ *  <li>Each data file (including 'Lite') contains a date when the next data 
+ *  file will be released which can be accessed like: 
+ *  <code>dataset.nextUpdate;</code>. The next update date is set by 51Degrees 
+ *  when the data file gets generated. Use this date to avoid unnecessary 
+ *  automatic update requests.
+ *  <li>A licence key may be blacklisted, preventing further automatic updates 
+ *  if we see excessive amount of traffic (i.e., if the amount of update 
+ *  requests from your Web site or project becomes so large that it starts to 
+ *  cause the quality of service to deteriorate for other clients).
+ *  <p>
+ *  If your key is blacklisted the update server will respond with 403 
+ *  Forbidden. Please contact 51Degrees as soon as possible. We will not 
+ *  blacklist your key without contacting you first.
+ * </ul>
  */
 public class AutoUpdate {
     
@@ -288,7 +330,7 @@ public class AutoUpdate {
         AutoUpdateStatus status = AUTO_UPDATE_IN_PROGRESS;
         final String serverHash = client.getHeaderField("Content-MD5");
         final String downloadHash = getMd5Hash(compressedTempFile);
-        if (serverHash != null ||
+        if (serverHash == null ||
             downloadHash.equals(serverHash) == false) {
             status = AUTO_UPDATE_ERR_MD5_VALIDATION_FAILED;
         }
@@ -315,7 +357,7 @@ public class AutoUpdate {
                 GZIPInputStream gzis = new GZIPInputStream(fis);
                 try {
                     byte[] buffer = new byte[INPUT_BUFFER];
-                    int len = 0;
+                    int len;
                     while ((len = gzis.read(buffer)) > 0) {
                         fos.write(buffer, 0, len);
                     }
@@ -486,23 +528,6 @@ public class AutoUpdate {
     }
     
     /**
-     * Creates a data set header for the file provided and returns the published 
-     * date from the file.
-     * @param dataFile path to a binary data file uncompressed
-     * @return published date of the data file provided, or -1 if does not exist
-     * @throws IOException 
-     */
-    private static long getDataFileDate(File dataFile) throws IOException {
-        long lastModified = -1;
-        Dataset dataSet = getDataSetWithHeaderPopulated(dataFile);
-        if (dataSet != null) {
-            lastModified = dataSet.published.getTime();
-            dataSet.close();
-        }
-        return lastModified;
-    }
-    
-    /**
      * Validate the supplied keys to exclude keys from 3rd party products from 
      * being used.
      * 
@@ -566,7 +591,8 @@ public class AutoUpdate {
 
             // The hash retrived from the responce header is in lower case with 
             // no spaces, must make sure this hash conforms to the scheme too.
-            return hashBuilder.toString().toLowerCase().replaceAll(" ", "");                
+            return hashBuilder.toString().toLowerCase(Locale.ENGLISH)
+                    .replaceAll(" ", "");            
         }
         finally {
             fis.close();
@@ -600,6 +626,7 @@ public class AutoUpdate {
      * The method will try to rename the file 10 times forcing garbage 
      * collection if possible after each failed attempt. If the file still
      * can't be renamed then false will be returned.
+     * 
      * @param sourceFile file to be renamed
      * @param destFile destination file name
      * @return true if the source file was renamed, otherwise false.

@@ -22,6 +22,12 @@ package fiftyone.mobile.detection.webapp;
 
 import java.io.Serializable;
 
+/**
+ * Used with 51Degrees bandwidth calculation.
+ * <p>
+ * You should not access objects of this class directly or instantiate new 
+ * objects using this class as they are part of the internal logic.
+ */
 @SuppressWarnings("serial")
 public class Stat implements Comparable<Stat>, Serializable {
     // Set when the server starts to send the headers.

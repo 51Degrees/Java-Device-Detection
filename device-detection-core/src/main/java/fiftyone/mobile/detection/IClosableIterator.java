@@ -23,8 +23,11 @@ package fiftyone.mobile.detection;
 import java.util.Iterator;
 
 /**
- * Should be used if at some point resources will have to be released. I.e. with 
- * lazy loading of the properties where the reader has to be released.
+ * Should be used if at some point resources will have to be released. 
+ * I.e. with lazy loading of the properties where the reader has to be released.
+ * <p>
+ * This class should not be called as it is part of the internal logic.
+ * 
  * @param <T> type of class to be closable
  */
 public interface IClosableIterator<T> extends Iterator<T> {

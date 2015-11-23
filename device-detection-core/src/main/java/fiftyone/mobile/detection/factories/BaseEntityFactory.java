@@ -24,15 +24,33 @@ import fiftyone.mobile.detection.Dataset;
 import fiftyone.mobile.detection.readers.BinaryReader;
 import java.io.IOException;
 
+/**
+ * Provides common set of methods for all entity factories.
+ * <p>
+ * Objects of this class should not be created directly as they are part of the 
+ * internal logic.
+ * 
+ * @param <T> Type of entity to create.
+ */
 public abstract class BaseEntityFactory<T> {
 
+    /**
+     * Creates a new entity.
+     * 
+     * @param dataSet The data set to read entity from.
+     * @param index The offset to the start of the entity within the string
+     * data structure.
+     * @param reader Binary reader positioned at the start of the AsciiString.
+     * @return A new instance of an entity.
+     * @throws IOException if there was a problem accessing data file.
+     */
     public abstract T create(Dataset dataSet, int index, BinaryReader reader) 
                                                             throws IOException;
 
     /**
      * @param entity whose size is required.
      * @return the size of the entity provided.
-     * @throws java.io.IOException
+     * @throws java.io.IOException if there was a problem accessing data file.
      */
     public int getLength(T entity) throws IOException {
         throw new UnsupportedOperationException("Can not retrieve the size of "
@@ -42,7 +60,7 @@ public abstract class BaseEntityFactory<T> {
 
     /**
      * @return returns the size of a fixed length entity type.
-     * @throws java.io.IOException
+     * @throws java.io.IOException if there was a problem accessing data file.
      */
     public int getLength() throws IOException {
         throw new UnsupportedOperationException("Can not retrieve the size of "

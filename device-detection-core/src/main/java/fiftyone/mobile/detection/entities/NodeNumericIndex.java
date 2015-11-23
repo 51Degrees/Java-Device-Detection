@@ -26,6 +26,13 @@ import fiftyone.mobile.detection.Dataset;
  * Represents a child of a node with a numeric value rather than character
  * values. Used to support the Numeric matching method if an exact match can't
  * be found.
+ * <p>
+ * Objects of this class should not be created directly as they are part of the 
+ * internal logic.
+ * <p>
+ * For more information see: 
+ * <a href="https://51degrees.com/support/documentation/device-detection-data-model">
+ * 51Degrees pattern data model</a>.
  */
 public class NodeNumericIndex extends NodeIndexBase {
 
@@ -37,13 +44,13 @@ public class NodeNumericIndex extends NodeIndexBase {
     }
 
     /**
-     * Constructs a new instance of NodeNumericIndex
+     * Constructs a new instance of NodeNumericIndex.
      *
-     * @param dataSet The data set the node is contained within
+     * @param dataSet The data set the node is contained within.
      * @param value Array of bytes representing an integer offset to a string,
      * or the array of characters to be used by the node.
      * @param relatedNodeOffset The offset in the list of nodes to the node the
-     * index relates to
+     * index relates to.
      */
     NodeNumericIndex(Dataset dataSet, short value, int relatedNodeOffset) {
         super(dataSet, value, relatedNodeOffset);

@@ -26,13 +26,23 @@ import fiftyone.properties.DetectionConstants;
 import java.io.IOException;
 
 /**
- * Returns constants for HTTP Headers.
+ * Extends {@link Component} by providing implementation for the 
+ * {@link #getHttpheaders()} method.
+ * <p>
+ * Objects of this class should not be created directly as they are part of the 
+ * internal logic. Use the relevant {@link Dataset} method to access these 
+ * objects.
+ * <p>
+ * For more information see: 
+ * <a href="https://51degrees.com/support/documentation/device-detection-data-model">
+ * 51Degrees pattern data model</a>.
  */
 public class ComponentV31 extends Component {
     
     /**
      * Constructs a new instance of ComponentV31. Reads the string offsets to 
      * the HTTP Headers during the constructor.
+     * 
      * @param dataSet The Dataset being created.
      * @param index Index of the component within the list.
      * @param reader Reader connected to the source data structure and 
@@ -44,11 +54,11 @@ public class ComponentV31 extends Component {
     }
 
     /**
-     * List of HTTP headers that should be checked in order to perform a 
-     * detection where more headers than User-Agent are available. This data 
-     * is used by methods that can HTTP Header collections.
-     * @return List of HTTP headers as Strings.
-     * @throws java.io.IOException
+     * Implements {@code getHttpheaders()} method. For version 3.1 a list of 
+     * HTTP headers is retrieved from {@link DetectionConstants}.
+     * 
+     * @return List of HTTP headers as strings.
+     * @throws java.io.IOException if there was a problem accessing data file.
      */
     @SuppressWarnings("DoubleCheckedLocking")
     @Override

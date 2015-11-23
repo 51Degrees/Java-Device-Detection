@@ -18,11 +18,6 @@
  * This Source Code Form is "Incompatible With Secondary Licenses", as
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package fiftyone.mobile.detection.entities.memory;
 
 import fiftyone.mobile.detection.Dataset;
@@ -30,11 +25,21 @@ import fiftyone.mobile.detection.entities.BaseEntity;
 import fiftyone.mobile.detection.readers.BinaryReader;
 
 /**
- * All data is loaded into memory when the entity is constructed.
+ * All data is loaded into memory when the entity is constructed. Extends 
+ * memory version of {@link fiftyone.mobile.detection.entities.Profile}.
+ * <p>
+ * Objects of this class should not be created directly as they are part of the 
+ * internal logic.
+ * <p>
+ * For more information see:
+ * <a href="https://51degrees.com/support/documentation/pattern">
+ * how Pattern device detection works</a>.
+ * 
  */
 public class Profile extends fiftyone.mobile.detection.entities.Profile {
     /**
      * Constructs a new instance of the Profile.
+     * 
      * @param dataSet The data set whose profile list the profile will be 
      * contained within.
      * @param offset The offset position in the data structure to the profile.
@@ -51,6 +56,7 @@ public class Profile extends fiftyone.mobile.detection.entities.Profile {
 
     /**
      * Get array of value indexes associated with the profile.
+     * 
      * @return Array of value indexes associated with the profile.
      */
     @Override
@@ -60,6 +66,7 @@ public class Profile extends fiftyone.mobile.detection.entities.Profile {
 
     /**
      * Get array of signature indexes associated with the profile.
+     * 
      * @return Array of signature indexes associated with the profile.
      */
     @Override

@@ -23,6 +23,19 @@ package fiftyone.mobile.detection;
 /**
  * The Enumeration contains all possible states that the AutoUpdate process can 
  * potentially be in. Used as the return type for the AutoUpdate.
+ * <p>
+ * Use the return status code to determine whether any further actions are 
+ * necessary. For example: if the return code is AUTO_UPDATE_SUCCESS nothing 
+ * else needs to be done as the update completed successfully.
+ * If AUTO_UPDATE_NOT_NEEDED was returned and you know the next update date is 
+ * today, then retry update in six hours. All other status codes will indicate 
+ * a problem with the update. AUTO_UPDATE_ERR_429_TOO_MANY_ATTEMPTS for instance 
+ * means that your licence key has been used too many times in the last half 
+ * hour interval.
+ * <p>
+ * For more details please see:
+ * <a href="https://51degrees.com/support/documentation/automatic-updates">
+ * licence keys and automatic updates</a> general information.
  */
 public enum AutoUpdateStatus {
     /**

@@ -26,6 +26,14 @@ import fiftyone.mobile.detection.readers.BinaryReader;
 
 /**
  * All data is loaded into memory when the entity is constructed.
+ * Extends {@link fiftyone.mobile.detection.entities.Node}.
+ * <p>
+ * Objects of this class should not be created directly as they are part of the 
+ * internal logic.
+ * <p>
+ * For more information see:
+ * <a href="https://51degrees.com/support/documentation/pattern">
+ * how Pattern device detection works</a>.
  */
 public abstract class Node extends fiftyone.mobile.detection.entities.Node {
     

@@ -26,7 +26,10 @@ import fiftyone.mobile.detection.factories.ProfileFactory;
 import fiftyone.mobile.detection.readers.BinaryReader;
 
 /**
- *
+ * Creates Profile entities for use with memory data set.
+ * <p>
+ * Objects of this class should not be created directly as they are part of the 
+ * internal logic.
  */
 public class ProfileMemoryFactory extends ProfileFactory {
 

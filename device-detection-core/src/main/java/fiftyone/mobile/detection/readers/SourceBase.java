@@ -27,9 +27,12 @@ import java.nio.ByteBuffer;
 /**
  * Providers the base for a data source containing the uncompressed data 
  * structures used by the data set.
- * 
+ * <p>
  * Must be disposed to ensure that the readers are closed and any resources
  * free for other uses.
+ * <p>
+ * Objects of this class should not be created directly as they are part of the 
+ * internal logic.
  */
 public abstract class SourceBase implements Closeable {
     

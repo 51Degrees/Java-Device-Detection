@@ -21,13 +21,17 @@
 package fiftyone.mobile.detection;
 
 /**
- *
+ * Class wraps a RuntimeException. Used to throw an exception when it can not 
+ * be pushed further up the call stack.
+ * <p>
+ * This class should not be called as it is part of the internal logic.
  */
 public class WrappedIOException extends RuntimeException {
     
     /**
+     * Creates a new instance of WrappedIOException.
      * 
-     * @param message 
+     * @param message string of text describing the problem.
      */
     public WrappedIOException(final String message) {
         super();
@@ -35,8 +39,7 @@ public class WrappedIOException extends RuntimeException {
     }
 
     /**
-     * 
-     * @return 
+     * @return string of text describing the problem.
      */
     @Override
     public String getMessage() {

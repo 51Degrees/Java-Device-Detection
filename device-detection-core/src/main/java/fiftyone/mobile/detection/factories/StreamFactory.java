@@ -47,24 +47,40 @@ import java.util.Date;
 
 /**
  * Factory class used to create a DetectorDataSet from a source data structure.
+ * <p>
  * All the entities are held in the persistent store and only loads into memory
  * when required. A cache mechanism is used to improve efficiency as many
- * entities are frequently used in a high volume environment. <p> The data set
- will be initialised very quickly as only the header information is load.
- Entities are then created when requested by the detection process and stored
- in a cache to avoid being recreated if their requested again after a short
- period of time. <p> The very small data structures RootNodes, Properties and
- * Components are always /stored in memory as there is no benefit retrieving
- * them every time they're needed. <p> For more information see
- * http://51degrees.mobi/Support/Documentation/Java
+ * entities are frequently used in a high volume environment. 
+ * <p>
+ * The data set will be initialised very quickly as only the header information 
+ * is loaded. Entities are then created when requested by the detection process 
+ * and stored in a cache to avoid being recreated if their requested again after 
+ * a short period of time.
+ * <p>
+ * The very small data structures RootNodes, Properties and Components are 
+ * always stored in memory as there is no benefit retrieving them every time 
+ * they're needed.
+ * <p>
+ * A dataset can be created in several ways:
+ * <ul>
+ *  <li>Using a data file:
+ *  <p><code>Dataset ds = StreamFactory.create("path_to_file", false);</code>
+ *  <p>Where the boolean flag indicates if the data file should or should not 
+ *  be deleted when close() is invoked.
+ *  <li>Using a byte array:
+ *  <p><code>Dataset ds = StreamFactory.create(dataFileAsByteArray);</code>
+ *  <p>Where the byte array is the 51Degrees device data file read into a byte
+ *  array.
+ * </ul>
  */
 public final class StreamFactory {
 
     /**
      * Constructor creates a new dataset from the supplied bytes array.
+     * 
      * @param data a byte array containing the data file.
      * @return Stream Dataset object.
-     * @throws IOException 
+     * @throws IOException if there was a problem accessing data file.
      */
     public static Dataset create(byte[] data) throws IOException {
         Dataset dataSet = new Dataset(data, Modes.MEMORY_MAPPED);
@@ -75,12 +91,13 @@ public final class StreamFactory {
     /**
      * Creates a new DataSet from the file provided. The last modified date of 
      * the data set is the last write time of the data file provided.
+     * 
      * @param filePath Uncompressed file containing the data for the data set.
      * @param isTempFile True if the file should be deleted when the source is 
      * disposed
      * @return A DataSet configured to read entities from the file path when 
      * required.
-     * @throws IOException 
+     * @throws IOException if there was a problem accessing data file.
      */
     public static Dataset create(String filePath, boolean isTempFile) throws IOException {
         return create(filePath, 
@@ -90,12 +107,13 @@ public final class StreamFactory {
     
     /**
      * Constructor creates a new dataset from the supplied data file.
+     * 
      * @param filepath name of the file (with path to file) to load data from.
      * @param lastModified Date and time the source data was last modified.
      * @param isTempFile True if the file should be deleted when the source is 
-     * disposed
+     * disposed.
      * @return Stream Dataset object.
-     * @throws IOException 
+     * @throws IOException if there was a problem accessing data file.
      */
     public static Dataset create(String filepath, Date lastModified, 
             boolean isTempFile) throws IOException {
@@ -108,10 +126,11 @@ public final class StreamFactory {
      * Uses the provided BinaryReader to load the necessary values from the data 
      * file in to the Dataset. Stream mode only loads the essential information 
      * such as file headers.
+     * 
      * @param reader BinaryReader to use for reading data in to the dataset.
      * @param dataSet The dataset object to load in to.
      * @return Stream Dataset object that has just been written to.
-     * @throws IOException 
+     * @throws IOException if there was a problem accessing data file.
      */
     @SuppressWarnings("null")
     static void load(Dataset dataSet) throws IOException {

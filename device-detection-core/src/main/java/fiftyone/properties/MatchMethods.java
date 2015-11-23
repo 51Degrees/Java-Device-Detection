@@ -23,19 +23,20 @@ package fiftyone.properties;
 /**
  * Enumerator of possible methods used to obtain the match. Modified to also 
  * return a numeric value associated with the ENUM entry.
- *
- * NONE No match could be determined between the target user agent and
- * the list of signatures. Defaults were used.
- * EXACT The signature returned matches precisely with the target user
- * agent.
- * NUMERIC The signature returned matches the target user agent with only
- * minor differences between numeric numbers.
- * CLOSEST No signature matched precisely and some relevant characters
- * may be different between the returned signature and the target user agent.
- * The Match.Confidence property should be used to determine the degree of
- * difference.
- * NEAREST The signature returned contains all the same sub strings as
- * the target user agent, but there are minor differences in position.
+ * <ul>
+ *  <li>NONE No match could be determined between the target User-Agent and
+ *  the list of signatures. Defaults were used.
+ *  <li>EXACT The signature returned matches precisely with the target 
+ *  User-Agent.
+ *  <li>NUMERIC The signature returned matches the target User-Agent with only
+ *  minor differences between numeric numbers.
+ *  <li>CLOSEST No signature matched precisely and some relevant characters
+ *  may be different between the returned signature and the target User-Agent.
+ *  The Match.Confidence property should be used to determine the degree of
+ *  difference.
+ *  <li>NEAREST The signature returned contains all the same sub strings as
+ *  the target User-Agent, but there are minor differences in position.
+ * </ul>
  */
 public enum MatchMethods {
     NONE(0),
@@ -46,7 +47,7 @@ public enum MatchMethods {
     
     private final int method;
     
-    private MatchMethods(int method) {
+    MatchMethods(int method) {
         this.method = method;
     }
     

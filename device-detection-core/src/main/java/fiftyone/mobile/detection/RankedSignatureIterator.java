@@ -22,6 +22,8 @@ package fiftyone.mobile.detection;
 
 /**
  * Used to iterate over the closest signatures.
+ * <p>
+ * This class should not be called as it is part of the internal logic.
  */
 interface RankedSignatureIterator {
 

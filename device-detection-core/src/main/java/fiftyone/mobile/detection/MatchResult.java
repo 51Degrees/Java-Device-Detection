@@ -58,7 +58,7 @@ public class MatchResult {
     protected int nodesEvaluated;
 
     /**
-     * @return The number of root nodes checked against the target user agent.
+     * @return The number of root nodes checked against the target User-Agent.
      */
     public int getRootNodesEvaluated() {
         return rootNodesEvaluated;

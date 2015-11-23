@@ -27,6 +27,9 @@ import fiftyone.properties.DetectionConstants;
 
 /**
  * A factory that provides the common components for Node v 3.1 and 3.2.
+ * <p>
+ * Objects of this class should not be created directly as they are part of the 
+ * internal logic.
  */
 public class NodeFactoryShared {
     /**
@@ -64,6 +67,7 @@ public class NodeFactoryShared {
     /**
      * Used by the constructor to read the variable length list of child
      * node indexes associated with the node in V3.1 format.
+     * 
      * @param dataSet The data set the node is contained within.
      * @param reader Reader connected to the source data structure and 
      * positioned to start reading.
@@ -91,12 +95,13 @@ public class NodeFactoryShared {
     /**
      * Used by the constructor to read the variable length list of child
      * node indexes associated with the node in V3.2 format.
+     * 
      * @param dataSet The data set the node is contained within.
      * @param reader Reader connected to the source data structure and 
      * positioned to start reading.
      * @param offset The offset in the data structure to the node.
      * @param count The number of node indexes that need to be read.
-     * @return An array of child node indexes for the node
+     * @return An array of child node indexes for the node.
      */
     public static NodeIndex[] readNodeIndexesV32(Dataset dataSet, 
             BinaryReader reader, int offset, int count) {
@@ -118,10 +123,11 @@ public class NodeFactoryShared {
     
     /**
      * Reads the value and removes any zero characters if it's a string.
+     * 
      * @param reader Reader connected to the source data structure and 
      * positioned to start reading.
      * @param isString True if the value is a string in the strings list.
-     * @return 
+     * @return value as a byte array with zero characters removed for strings.
      */
     private static byte[] readValue(BinaryReader reader, boolean isString) {
         byte[] byteValue = reader.readBytes(DetectionConstants.SIZE_OF_INT);

@@ -22,6 +22,9 @@ package fiftyone.mobile.detection.webapp;
 
 /**
  * Dimensions of the image being manipulated.
+ * <p>
+ * You should not access objects of this class directly or instantiate new 
+ * objects using this class as they are part of the internal logic.
  */
 class Size {
     int width;

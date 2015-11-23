@@ -25,6 +25,13 @@ import fiftyone.mobile.detection.readers.BinaryReader;
 
 /**
  * An integer item in a list of integers.
+ * <p>
+ * Objects of this class should not be created directly as they are part of the 
+ * internal logic.
+ * <p>
+ * For more information see: 
+ * <a href="https://51degrees.com/support/documentation/device-detection-data-model">
+ * 51Degrees pattern data model</a>.
  */
 public class IntegerEntity extends BaseEntity {
     /**
@@ -34,6 +41,7 @@ public class IntegerEntity extends BaseEntity {
     
     /**
      * Constructs a new instance of Integer.
+     * 
      * @param dataSet data set whose strings list the string is contained within.
      * @param offsetOrIndex The index in the data structure to the integer.
      * @param reader Binary reader positioned at the start of the Integer.

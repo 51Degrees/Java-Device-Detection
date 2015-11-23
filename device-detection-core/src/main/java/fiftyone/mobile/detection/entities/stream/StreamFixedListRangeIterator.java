@@ -31,7 +31,11 @@ import java.io.IOException;
  * specific number of integer objects from the data file it's best to do so 
  * on the as-needed basis instead of loading everything in to memory. This class 
  * provides a way to read the integers one by one.
- * @param <T>
+ * <p>
+ * Objects of this class should not be created directly as they are part of the 
+ * internal logic.
+ * 
+ * @param <T> The type of BaseEntity to iterate.
  */
 public class StreamFixedListRangeIterator<T> implements IClosableIterator<T> {
     /**
@@ -61,12 +65,13 @@ public class StreamFixedListRangeIterator<T> implements IClosableIterator<T> {
     
     /**
      * An enumerable that can be used to read through the entries.
+     * 
      * @param count of the number of items to return
      * @param entityFactory to create new items of the type required
      * @param dataSet the entities returned will relate to
      * @param startIndex of the item in the fixed list
      * @param startPosition of the first byte in the byte stream
-     * @throws java.io.IOException 
+     * @throws java.io.IOException if there was a problem accessing data file.
      */
     public StreamFixedListRangeIterator(
             BaseEntityFactory<T> entityFactory, 

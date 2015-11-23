@@ -24,6 +24,12 @@ import fiftyone.mobile.detection.Dataset;
 import fiftyone.mobile.detection.entities.Value;
 import fiftyone.mobile.detection.readers.BinaryReader;
 
+/**
+ * Creates new instances of a Value entity.
+ * <p>
+ * Objects of this class should not be created directly as they are part of the 
+ * internal logic.
+ */
 public class ValueFactory extends BaseEntityFactory<Value> {
 
     @Override

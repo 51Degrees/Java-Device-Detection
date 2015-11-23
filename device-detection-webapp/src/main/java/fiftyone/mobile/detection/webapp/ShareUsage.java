@@ -43,6 +43,14 @@ import javax.xml.stream.XMLStreamWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Shares device related data to with 51Degrees helping us improve the 
+ * quality of device detection and to spot new devices. Controlled in the 
+ * Web.xml file.
+ * <p>
+ * You should not access objects of this class directly or instantiate new 
+ * objects using this class as they are part of the internal logic.
+ */
 class ShareUsage implements Runnable {
 
     /**
@@ -52,7 +60,7 @@ class ShareUsage implements Runnable {
     /**
      * Used to hold information from the jar file, default values set below.
      */
-    private static String _productName = "51Degrees.mobi - Detection - Java";
+    private static final String _productName = "51Degrees.mobi - Detection - Java";
     /**
      * Used to stop the thread.
      */
@@ -85,10 +93,9 @@ class ShareUsage implements Runnable {
     final Logger logger = LoggerFactory.getLogger(ShareUsage.class);
 
     /**
-     *
      * Sets the enabled state of the class.
      *
-     * @param newDevicesUrl Url of potential new host.
+     * @param newDevicesUrl URL of potential new host.
      * @param newDeviceDetail Controls how much data is sent.
      */
     public ShareUsage(final String newDevicesUrl,
@@ -114,7 +121,6 @@ class ShareUsage implements Runnable {
     }
 
     /**
-     *
      * Adds the request details to the queue for processing by the background
      * thread.
      *
@@ -136,7 +142,6 @@ class ShareUsage implements Runnable {
     }
 
     /**
-     *
      * Adds the request details to the queue for processing by the background
      * thread.
      *
@@ -164,7 +169,6 @@ class ShareUsage implements Runnable {
     }
 
     /**
-     *
      * Sends all the data on the queue.
      *
      * @param stream Output stream to send data to.
@@ -227,7 +231,8 @@ class ShareUsage implements Runnable {
 
                     // Get the response and record the content if it's valid. If
                     // it's not valid consider turning off the functionality.
-                    InputStreamReader stream = new InputStreamReader(request.getInputStream());
+                    InputStreamReader stream = 
+                            new InputStreamReader(request.getInputStream());
                     if (stream.ready()) {
                         BufferedReader response = new BufferedReader(stream);
                         if (response != null) {
@@ -265,10 +270,9 @@ class ShareUsage implements Runnable {
     }
 
     /**
-     *
      * Indicates if the IP address is local.
      *
-     * @param address Ip address to examine.
+     * @param address IP address to examine.
      * @return true if local, else false.
      */
     private static boolean isLocal(String address) {
@@ -281,7 +285,6 @@ class ShareUsage implements Runnable {
     }
 
     /**
-     *
      * Records the information as XML data and converts to a byte array for
      * storage.
      *
@@ -291,11 +294,13 @@ class ShareUsage implements Runnable {
      * @param newDeviceDetail How much information to be recorded.
      * @return The XML data as a byte array.
      * @throws XMLStreamException
-     * @throws IOException
+     * @throws IOException if there was a problem accessing data file.
      */
     private static byte[] getContent(HashMap<String, String> Headers,
-            String HostAddress, String URI, NewDeviceDetails newDeviceDetail)
-            throws XMLStreamException, IOException {
+                                     String HostAddress, 
+                                     String URI, 
+                                     NewDeviceDetails newDeviceDetail)
+                                        throws XMLStreamException, IOException {
         // If the headers contain 51D as a setting or the request is to a web
         // service then do not send the data.
         boolean ignore = Headers.get("51D") != null || URI.endsWith("asmx");
@@ -309,7 +314,7 @@ class ShareUsage implements Runnable {
             writer.writeStartElement("Device");
             // Write the current date and time
             writer.writeStartElement("DateSent");
-            writer.writeCharacters(dateFormat.format(new Date()).toString());
+            writer.writeCharacters(dateFormat.format(new Date()));
             writer.writeEndElement();
 
             writer.writeStartElement("Version");

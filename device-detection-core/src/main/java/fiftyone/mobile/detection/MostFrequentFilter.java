@@ -25,12 +25,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.ListIterator;
 
 /**
  * Used to find the most frequently occurring values in multiple ordered lists
  * of integers.
+ * <p>
+ * This class should not be called as it is part of the internal logic.
  */
 class MostFrequentFilter extends ArrayList<Integer> {
     

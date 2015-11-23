@@ -147,8 +147,8 @@ public class Results {
         protected String userAgent;
 
         /**
-         * return a new Callable with the user agent to test
-         * @param userAgent the user agent to test
+         * return a new Callable with the User-Agent to test
+         * @param userAgent the User-Agent to test
          * @return a CallableDetector of the appropriate class
          * @throws Exception if a detector could not be created
          */
@@ -215,15 +215,15 @@ public class Results {
         public CallableDetector newDetector(String userAgent) throws Exception {
             // create new instance of self
             CallableDetector instance = new PatternDetector(processor, provider, results);
-            // set the user agent up
+            // set the User-Agent up
             instance.userAgent = userAgent;
             return instance;
         }
     }
 
     /**
-     * Carry out repeated detections on the passed user agents in a multi-threaded way
-     * @param userAgents the user agents to test
+     * Carry out repeated detections on the passed User-Agents in a multi-threaded way
+     * @param userAgents the User-Agents to test
      * @param detector a {@link fiftyone.mobile.detection.test.common.Results.CallableDetector} to do the
      *                 detections with
      * @return the number of detections carried out

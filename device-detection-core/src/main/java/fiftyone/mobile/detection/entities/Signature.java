@@ -32,30 +32,38 @@ import fiftyone.mobile.detection.readers.BinaryReader;
 import fiftyone.properties.DetectionConstants;
 
 /**
- * Signature of a user agent. <p> A signature contains those characters of a
- * user agent which are relevant for the purposes of device detection. For
- * example; most user agents will start with "Mozilla" and therefore these
- * characters are of very little use when detecting devices. Other characters
- * such as those that represent the model of the hardware are very relevant. <p>
- * A signature contains both an array of relevant characters from user agents
+ * Signature of a User-Agent - the relevant characters from a User-Agent 
+ * structured in a manner to enable rapid comparison with a target User-Agent. 
+ * <p> 
+ * A signature contains those characters of a User-Agent which are relevant 
+ * for the purposes of device detection. For example: most User-Agents will 
+ * start with "Mozilla" and therefore these characters are of very little use 
+ * when detecting devices. Other characters such as those that represent the 
+ * model of the hardware are very relevant. 
+ * <p>
+ * A signature contains both an array of relevant characters from User-Agents
  * identified when the data was created and the unique complete node identifies
- * of relevant sub strings contained in multiple signatures and user agents.
+ * of relevant sub strings contained in multiple signatures and User-Agents.
  * Together this information is used at detection time to rapidly identify the
- * signature matching a target user agent. <p> Signatures relate to device
- * properties via profiles. Each signature relates to one profile for each
- * component type. <p> For more information about signature see
- * https://51degrees.com/Support/Documentation/Java <p> Unlike other entities
+ * signature matching a target User-Agent. 
+ * <p> 
+ * Signatures relate to device {@link Property properties} via 
+ * {@link Profile profiles}. Each signature relates to one profile for each
+ * {@link Component} type.
+ * <p> 
+ * Unlike other entities
  * the signature may have a varying number of nodes and profiles associated with
  * it depending on the data set. All signatures within a data set will have the
  * same number of profiles and nodes associated with them all. As these can
- * change across data sets they can't be included in the source code. As such a
- * secondary header is used in the data set to indicate the number of profiles
- * and nodes in use. The Memory.SignatureList and Stream.SignatureList lists are
- * therefore used to manage lists of signatures rather than the generic lists.
- */
-/**
- * The relevant characters from a user agent structured in a manner to enable
- * rapid comparison with a target user agent.
+ * change across data sets they can't be included in the source code.
+ * <p>
+ * Objects of this class should not be created directly as they are part of the 
+ * internal logic. Use the relevant {@link Dataset} method to access these 
+ * objects.
+ * <p>
+ * For more information see: 
+ * <a href="https://51degrees.com/support/documentation/device-detection-data-model">
+ * 51Degrees pattern data model</a>.
  */
 public abstract class Signature extends BaseEntity 
                                 implements Comparable<Signature> {
@@ -68,10 +76,10 @@ public abstract class Signature extends BaseEntity
     /**
      * Constructs a new instance of Signature
      *
-     * @param dataSet The data set the node is contained within
-     * @param index The index in the data structure to the node
+     * @param dataSet the {@link Dataset} the signature is contained within.
+     * @param index the index in the data structure to the signature.
      * @param reader Reader connected to the source data structure and
-     * positioned to start reading
+     * positioned to start reading.
      */
     public Signature(Dataset dataSet, int index, BinaryReader reader) {
         super(dataSet, index);
@@ -126,8 +134,9 @@ public abstract class Signature extends BaseEntity
     
     /**
      * List of the profiles the signature relates to.
-     * @return List of the profiles the signature relates to
-     * @throws IOException indicates an I/O exception occurred
+     * 
+     * @return List of the {@link Profile profiles} the signature relates to.
+     * @throws IOException if there was a problem accessing data file.
      */
     @SuppressWarnings("DoubleCheckedLocking")
     public Profile[] getProfiles() throws IOException {
@@ -144,9 +153,11 @@ public abstract class Signature extends BaseEntity
     }
     
     /**
-     * The unique Device Id for the signature.
-     * @return unique Device Id for the signature
-     * @throws IOException indicates an I/O exception occurred
+     * The unique Device Id for the signature. Is is composed of the four 
+     * {@link Profile} IDs, one per each {@link Component}.
+     * 
+     * @return unique Device Id for the signature.
+     * @throws IOException if there was a problem accessing data file.
      */
     @SuppressWarnings("DoubleCheckedLocking")
     public String getDeviceId() throws IOException {
@@ -165,17 +176,18 @@ public abstract class Signature extends BaseEntity
     
     /**
      * Gets the values associated with the property.
-     * @param property The property whose values are required
-     * @return Value(s) associated with the property, or null if the property 
-     * does not exist
-     * @throws java.io.IOException
+     * 
+     * @param property the {@link Property} whose values are required
+     * @return {@link Values} associated with the property, or null if the 
+     * property does not exist.
+     * @throws java.io.IOException if there was a problem accessing data file.
      */
     @SuppressWarnings("DoubleCheckedLocking")
     public Values getValues(Property property) throws IOException {
-        Values localValues = propertyIndexToValues.get(property.index);
+        Values localValues = getPropertyIndexToValues().get(property.index);
         if (localValues == null) {
             synchronized (this) {
-                localValues = propertyIndexToValues.get(property.index);
+                localValues = getPropertyIndexToValues().get(property.index);
                 if (localValues == null) {
                     localValues = getPropertyValues(property);
                     getPropertyIndexToValues().add(property.index, localValues);
@@ -187,10 +199,11 @@ public abstract class Signature extends BaseEntity
     
     /**
      * Gets the values associated with the property name.
-     * @param propertyName Name of the property whose values are required.
-     * @return Value(s) associated with the property, or null if the property 
-     * does not exist.
-     * @throws java.io.IOException
+     * 
+     * @param propertyName name of the {@link Property} whose values are required.
+     * @return {@link Values} associated with the property, or null if the 
+     * property does not exist.
+     * @throws java.io.IOException if there was a problem accessing data file.
      */
     @SuppressWarnings("DoubleCheckedLocking")
     public Values getValues(String propertyName) throws IOException {
@@ -232,8 +245,9 @@ public abstract class Signature extends BaseEntity
     }
     
     /**
-     * @return an array of values associated with the signature.
-     * @throws IOException 
+     * @return an array of {@link Value value} objects associated with this 
+     * signature.
+     * @throws IOException if there was a problem accessing data file.
      */
     @SuppressWarnings("DoubleCheckedLocking")
     public Value[] getValues() throws IOException {
@@ -254,8 +268,8 @@ public abstract class Signature extends BaseEntity
     /**
      * The length in bytes of the signature.
      *
-     * @return length in bytes of the signature
-     * @throws IOException indicates an I/O exception occurred
+     * @return length in bytes of the signature.
+     * @throws IOException if there was a problem accessing data file.
      */
     public int getLength() throws IOException {
         int localLength = length;
@@ -286,8 +300,9 @@ public abstract class Signature extends BaseEntity
     
     /**
      * An array of nodes associated with the signature.
+     * 
      * @return  An array of nodes associated with the signature.
-     * @throws java.io.IOException
+     * @throws java.io.IOException if there was a problem accessing data file.
      */
     @SuppressWarnings("DoubleCheckedLocking")
     public Node[] getNodes() throws IOException {
@@ -338,7 +353,7 @@ public abstract class Signature extends BaseEntity
      * initialisation steps that require other items in the data set can be
      * completed.
      *
-     * @throws IOException indicates an I/O exception occurred
+     * @throws IOException if there was a problem accessing data file.
      */
     public void init() throws IOException {
         if (nodes == null)
@@ -349,6 +364,9 @@ public abstract class Signature extends BaseEntity
             values = getValues();
         if (deviceId == null)
             deviceId = getDeviceId();
+        if (length == 0) {
+            length = getSignatureLength();
+        }
     }
 
     private String initGetDeviceId() throws IOException {
@@ -367,8 +385,8 @@ public abstract class Signature extends BaseEntity
     /**
      * Gets a string list of the properties and names.
      *
-     * @return dictionary of properties and values for the signature
-     * @throws IOException indicates an I/O exception occurred
+     * @return dictionary of properties and values for the signature.
+     * @throws IOException if there was a problem accessing data file.
      */
     public SortedList<String, List<String>> getPropertyValuesAsStrings() 
                                                         throws IOException {
@@ -422,9 +440,9 @@ public abstract class Signature extends BaseEntity
     /**
      * Compares this signature to a list of node offsets.
      *
-     * @param nodes list of nodes to compare to
-     * @return Indication of relative value based on the node offsets
-     * @throws java.io.IOException
+     * @param nodes list of nodes to compare to.
+     * @return Indication of relative value based on the node offsets.
+     * @throws java.io.IOException if there was a problem accessing data file.
      */
     public int compareTo(List<Node> nodes) throws IOException {
         int tempLength = Math.min(getNodeOffsets().length, nodes.size());
@@ -450,8 +468,8 @@ public abstract class Signature extends BaseEntity
      * Compares this signature to another based on the node offsets. The node
      * offsets in both signatures must be in ascending order.
      *
-     * @param other The signature to be compared against
-     * @return Indication of relative value based based on node offsets
+     * @param other The signature to be compared against.
+     * @return Indication of relative value based based on node offsets.
      */
     @Override
     public int compareTo(Signature other) {
@@ -480,7 +498,10 @@ public abstract class Signature extends BaseEntity
     /**
      * String representation of the signature where irrelevant characters are
      * removed.
-     * @return The signature as a string
+     * <p>
+     * This method should not be called as it is part of the internal logic.
+     * 
+     * @return The signature as a string.
      */
     @Override
     @SuppressWarnings("DoubleCheckedLocking")
@@ -513,8 +534,9 @@ public abstract class Signature extends BaseEntity
     
     /**
      * Array of node offsets associated with the signature.
+     * 
      * @return Array of node offsets associated with the signature.
-     * @throws java.io.IOException
+     * @throws java.io.IOException if there was a problem accessing data file.
      */
     public abstract int[] getNodeOffsets() throws IOException;
     
@@ -528,8 +550,9 @@ public abstract class Signature extends BaseEntity
     /**
      * Gets the rank, where a lower number means the signature is more popular, 
      * of the signature compared to other signatures.
+     * 
      * @return Rank of the signature.
-     * @throws java.io.IOException
+     * @throws java.io.IOException if there was a problem accessing data file.
      */
     public abstract int getRank() throws IOException;
 }

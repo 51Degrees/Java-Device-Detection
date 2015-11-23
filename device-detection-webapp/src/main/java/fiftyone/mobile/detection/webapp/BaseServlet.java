@@ -30,6 +30,13 @@ import javax.servlet.http.HttpServletRequest;
  * Adds functionality to a base HttpServlet to provide properties associated
  * with the requesting device. The Listener must be included in the web
  * configuration.
+ * <p>
+ * If you wish to use the 51Degrees servlet all you need to do is extend this 
+ * class in your Servlet implementation:
+ * <code>public class MyServlet extends BaseServlet</code>
+ * <p>
+ * Extending this class grants you access to image optimiser, core and feature 
+ * JavaScript functionality.
  */
 @SuppressWarnings("serial")
 public class BaseServlet extends HttpServlet {
@@ -42,7 +49,7 @@ public class BaseServlet extends HttpServlet {
      *
      * @param request the request property results are for.
      * @return a set of results containing access to properties.
-     * @throws IOException
+     * @throws IOException if there was a problem accessing data file.
      */
     protected Map<String, String[]> getResult(final HttpServletRequest request) 
             throws IOException {
@@ -50,8 +57,7 @@ public class BaseServlet extends HttpServlet {
     }
     
     /**
-     * 
-     * @param request
+     * @param request current HttpServletRequest.
      * @return the active provider for the system.
      */
     protected WebProvider getProvider(final HttpServletRequest request) {
@@ -62,9 +68,10 @@ public class BaseServlet extends HttpServlet {
      * Returns the value associated with the device property requested.
      *
      * @param request the request property results are for.
-     * @param propertyName device property name required.
-     * @return
-     * @throws IOException
+     * @param propertyName name of the property required expressed as a string.
+     * @return value of the requested property for current request as a string.
+     * @throws javax.servlet.ServletException 
+     * @throws IOException if there was a problem accessing data file.
      */
     protected String getProperty(
             final HttpServletRequest request,
@@ -82,8 +89,8 @@ public class BaseServlet extends HttpServlet {
     /**
      * Joins a list of strings into a comma separated string.
      *
-     * @param values list of values to join
-     * @return single string comma separated
+     * @param values list of values to join.
+     * @return single string comma separated.
      */
     protected String join(final String[] values) {
         final StringBuilder builder = new StringBuilder();

@@ -27,9 +27,16 @@ import fiftyone.properties.DetectionConstants;
 
 /**
  * Encapsulates a list of one or more values. Provides methods to return
- * boolean, double and string representations of the values list. 
- * 
- * The class contains helper methods to make consuming the data set easier.
+ * boolean, double and string representations of the values list. Also contains 
+ * helper methods to make consuming the data set easier.
+ * <p>
+ * Objects of this class should not be created directly as they are part of the 
+ * internal logic. Use the relevant {@link Dataset} method to access these 
+ * objects.
+ * <p>
+ * For more information see: 
+ * <a href="https://51degrees.com/support/documentation/device-detection-data-model">
+ * 51Degrees pattern data model</a>.
  */
 @SuppressWarnings("serial")
 public class Values {
@@ -69,12 +76,11 @@ public class Values {
     }
 
     /**
-     * The value represented as a boolean. return A boolean representation of
-     * the only item in the list. MobileException Thrown if the method is called
-     * for a property with multiple values
+     * The value represented as a boolean. MobileException Thrown if the 
+     * method is called for a property with multiple values.
      *
-     * @return return A boolean representation of the only item in the list
-     * @throws IOException indicates an I/O exception occurred
+     * @return return a boolean representation of the only item in the list.
+     * @throws IOException if there was a problem accessing data file.
      */
     public boolean toBool() throws IOException {
         if (property.isList) {
@@ -88,10 +94,11 @@ public class Values {
     }
 
     /**
-     * The value represented as a double.
+     * The value represented as a double. Unsupported operation exception is 
+     * thrown if value is a list.
      *
      * @return A double representation of the only item in the list.
-     * @throws IOException indicates an I/O exception occurred
+     * @throws IOException if there was a problem accessing data file.
      */
     public double toDouble() throws IOException {
         if (property.isList) {
@@ -107,8 +114,8 @@ public class Values {
     /**
      * Returns the values as a string array.
      *
-     * @return a string array of values
-     * @throws IOException indicates an I/O exception occurred
+     * @return a string array of {@link Value} objects.
+     * @throws IOException if there was a problem accessing data file.
      */
     public String[] toStringArray() throws IOException {
         String[] array = new String[values.length];
@@ -119,10 +126,10 @@ public class Values {
     }
 
     /**
-     * The values represented as a string where multiple values are seperated by
-     * colons.
+     * The values represented as a string where multiple values are separated 
+     * by colons.
      *
-     * @return The values as a string
+     * @return the {@link Value} object names separated by colons as a string.
      */
     @Override
     public String toString() {
@@ -142,8 +149,8 @@ public class Values {
     /**
      * Returns true if any of the values are the null values for the property.
      *
-     * @return true if any of the values are the null values for the property
-     * @throws IOException indicates an I/O exception occurred
+     * @return true if any of the values are the null values for the property.
+     * @throws IOException if there was a problem accessing data file.
      */
     public boolean getIsDefault() throws IOException {
         for (Value value : values) {
@@ -154,24 +161,47 @@ public class Values {
         return false;
     }
     
+    /**
+     * Returns the backing array of values.
+     * 
+     * @return entire array of {@link Value} objects.
+     */
     public Value[] getAll() {
         return values;
     }
     
     /**
-     * @param valueName name required.
-     * @return the value associated with the name provided.
-     * @throws java.io.IOException
+     * Returns the value by name.
+     * 
+     * @param valueName name of the {@link Value} required.
+     * @return the value associated with the name provided, null if one does 
+     * not exist.
+     * @throws java.io.IOException if there was a problem accessing data file.
      */
     public Value get(String valueName) throws IOException {
         int index = valuesNameSearch.binarySearch(values, valueName).getIndex();
         return index >= 0 ? get(index) : null;
     }
     
+    /**
+     * Gets the element at index.
+     * 
+     * @param index of the element in the array.
+     * @return {@link Value} at provided index, or null if out of bounds.
+     */
     public Value get(int index) {
+        if (index > values.length) {
+            return null;
+        }
         return values[index];
     }
     
+    /**
+     * Checks if a value is present in this list.
+     * 
+     * @param item {@link Value} to check for.
+     * @return true if provided value exists, false otherwise.
+     */
     public boolean contains(Value item) {
         for (Value v : values) {
             if (v.equals(item)) {
@@ -181,6 +211,12 @@ public class Values {
         return false;
     }
     
+    /**
+     * Makes a copy of the current array of values to the provided array.
+     * 
+     * @param array of {@link Value} objects.
+     * @param arrayIndex copy from.
+     */
     public void copyTo(Value[] array, int arrayIndex) {
         int current = arrayIndex;
         int i = 0;
@@ -191,6 +227,9 @@ public class Values {
         }
     }
     
+    /**
+     * @return number of items in the backing array of {@link Value} objects.
+     */
     public int count() {
         return values.length;
     }

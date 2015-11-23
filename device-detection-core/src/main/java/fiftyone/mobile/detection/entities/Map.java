@@ -27,6 +27,14 @@ import java.io.IOException;
 /**
  * A node index contains the characters and related child nodes of the current
  * node should any of the characters match at the position.
+ * <p>
+ * Objects of this class should not be created directly as they are part of the 
+ * internal logic. Use the relevant {@link Dataset} method to access these 
+ * objects.
+ * <p>
+ * For more information see: 
+ * <a href="https://51degrees.com/support/documentation/device-detection-data-model">
+ * 51Degrees pattern data model</a>.
  */
 public class Map extends BaseEntity implements Comparable<Map> {
 
@@ -43,7 +51,8 @@ public class Map extends BaseEntity implements Comparable<Map> {
             synchronized (this) {
                 localName = name;
                 if (localName == null) {
-                    name = localName = getDataSet().strings.get(nameIndex).toString();
+                    name = localName = 
+                            getDataSet().strings.get(nameIndex).toString();
                 }
             }
         }
@@ -68,6 +77,8 @@ public class Map extends BaseEntity implements Comparable<Map> {
      * Called after the entire data set has been loaded to ensure any further
      * initialisation steps that require other items in the data set can be
      * completed.
+     * <p>
+     * This method should not be called as it is part of the internal logic.
      */
     void init() throws IOException {
         getName();

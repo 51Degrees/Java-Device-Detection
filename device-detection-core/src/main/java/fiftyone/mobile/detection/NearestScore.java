@@ -27,6 +27,8 @@ import fiftyone.mobile.detection.entities.Signature;
 /**
  * Used to determine if all the signature node sub strings are in the target
  * just at different character positions.
+ * <p>
+ * This class should not be called as it is part of the internal logic.
  */
 class NearestScore extends BaseScore {
 

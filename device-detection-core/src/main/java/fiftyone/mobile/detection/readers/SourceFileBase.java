@@ -24,6 +24,9 @@ import java.io.File;
 
 /**
  * Base class for file sources.
+ * <p>
+ * Objects of this class should not be created directly as they are part of the 
+ * internal logic.
  */
 public abstract class SourceFileBase extends SourceBase {
 
@@ -40,6 +43,7 @@ public abstract class SourceFileBase extends SourceBase {
     
     /**
      * Construct a new source from file on disk.
+     * 
      * @param fileName File source of the data.
      * @param isTempFile True if the file will be deleted when the 
      * source is disposed.
@@ -51,7 +55,7 @@ public abstract class SourceFileBase extends SourceBase {
     
     /**
      * Delete the file if it's a temporary file and it still exists.
-     * 
+     * <p>
      * If the file is not deleted the first time then retry forcing garbage 
      * collection. If the file was used as a memory mapped buffer it may take
      * time for the buffer to be released after the file handle.
@@ -70,7 +74,8 @@ public abstract class SourceFileBase extends SourceBase {
     
     /**
      * Returns the file used to construct this Source.
-     * @return  the file used to construct this Source.
+     * 
+     * @return the file used to construct this Source.
      */
     protected File getFile() {
         return fileInfo;

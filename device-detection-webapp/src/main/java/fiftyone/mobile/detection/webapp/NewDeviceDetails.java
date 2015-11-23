@@ -21,11 +21,10 @@
 package fiftyone.mobile.detection.webapp;
 
 /**
- *
  * Enumeration use for defining the amount of detail of the share usage data.
- *
- * @author 51Degrees.mobi
- * @version 2.2.8.9
+ * <p>
+ * You should not access objects of this class directly or instantiate new 
+ * objects using this class as they are part of the internal logic.
  */
 public enum NewDeviceDetails {
 

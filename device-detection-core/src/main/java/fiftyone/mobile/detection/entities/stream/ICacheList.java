@@ -24,6 +24,7 @@ package fiftyone.mobile.detection.entities.stream;
  * Lists that use a cache can return information about the cache
  * misses for performance analysis. They implement this interface
  * to provide this data to the DataSet.
+ * // TODO: list implements interfaced can be cached. Exposes cache stats. used for performance tuning purposes.
  */
 public interface ICacheList {
     /**

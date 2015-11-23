@@ -41,6 +41,13 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Used to resize an image or retrieve one from cache if it exists.
+ * Available as part of the 51Degrees Servlet.
+ * <p>
+ * You should not access objects of this class directly or instantiate new 
+ * objects using this class as they are part of the internal logic.
+ */
 class ImageOptimizer {
 
     private final static Logger logger = LoggerFactory
@@ -60,6 +67,7 @@ class ImageOptimizer {
     
     /**
      * Get a list of parameters from with the query string.
+     * 
      * @param request
      * @return 
      */
