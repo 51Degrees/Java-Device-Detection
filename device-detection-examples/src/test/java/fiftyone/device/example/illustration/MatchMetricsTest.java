@@ -35,14 +35,14 @@ import org.junit.Test;
  * Tests the example program prior to release. See illustration class for 
  * documentation and guidance.
  */
-public class GettingStartedMatchMetricsTest {
+public class MatchMetricsTest {
     
-    static GettingStartedMatchMetrics gs;
+    static MatchMetrics gs;
     Match match;
     
     @BeforeClass
     public static void setUp() throws IOException {
-        gs = new GettingStartedMatchMetrics();
+        gs = new MatchMetrics();
     }
     
     @AfterClass
