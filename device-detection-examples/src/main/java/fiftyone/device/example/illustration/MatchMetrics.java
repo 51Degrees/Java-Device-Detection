@@ -58,11 +58,12 @@ import java.io.IOException;
  *  <p><code>match.getSignature().getRank();</code>
  * </ol>
  * <p>
+ * // TODO: review the wording and styling of sentences.
  * {@link #main} assumes it is being run with a working directory at root of 
  * project or of this module.
  * <!-- snippet -->
  */
-public class GettingStartedMatchMetrics implements Closeable {
+public class MatchMetrics implements Closeable {
     
     // Device detection provider which takes User-Agents and returns matches.
     protected final Provider provider;
@@ -90,7 +91,7 @@ public class GettingStartedMatchMetrics implements Closeable {
      * @throws IOException can be thrown if there is a problem reading from the 
      * provided data file.
      */
-    public GettingStartedMatchMetrics() throws IOException {
+    public MatchMetrics() throws IOException {
         provider = new Provider(StreamFactory.create(
                 Shared.getLitePatternV32(), true));
     }
@@ -208,7 +209,7 @@ public class GettingStartedMatchMetrics implements Closeable {
      * @throws IOException if there is a problem accessing the data file. 
      */
     public static void main(String[] args) throws IOException {
-        GettingStartedMatchMetrics gs = new GettingStartedMatchMetrics();
+        MatchMetrics gs = new MatchMetrics();
         Match match;
         try {
             // Display metrics for mobile User-Agent.

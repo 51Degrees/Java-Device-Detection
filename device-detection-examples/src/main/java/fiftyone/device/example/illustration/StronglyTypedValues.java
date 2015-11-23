@@ -32,6 +32,7 @@ import java.io.IOException;
  * <!-- snippet -->
  * Getting started example of using 51Degrees device detection. The example 
  * shows how to:
+ * 
  * <ol>
  *  <li>instantiate 51Degrees detection provider
  *  <p><code>provider = new Provider(StreamFactory.create(
@@ -41,11 +42,12 @@ import java.io.IOException;
  *  <li>extract the value of the IsMobile property as boolean
  *  <p><code>match.getValues("IsMobile").toBool();</code>
  * </ol>
+ * 
  * {@link #main} assumes it is being run with a working directory at root of 
  * project or of this module.
  * <!-- snippet -->
  */
-public class GettingStartedStronglyTyped implements Closeable {
+public class StronglyTypedValues implements Closeable {
     
     // Device detection provider which takes User-Agents and returns matches.
     protected final Provider provider;
@@ -73,7 +75,7 @@ public class GettingStartedStronglyTyped implements Closeable {
      * @throws IOException can be thrown if there is a problem reading from the 
      * provided data file.
      */
-    public GettingStartedStronglyTyped() throws IOException {
+    public StronglyTypedValues() throws IOException {
         provider = new Provider(StreamFactory.create(
                 Shared.getLitePatternV32(), false));
     }
@@ -122,7 +124,7 @@ public class GettingStartedStronglyTyped implements Closeable {
      */
      public static void main(String[] args) throws IOException {
         System.out.println("Starting GettingStartedStronglyTyped example.");
-        GettingStartedStronglyTyped gs = new GettingStartedStronglyTyped();
+        StronglyTypedValues gs = new StronglyTypedValues();
         try {
             System.out.println("User-Agent: "+gs.mobileUserAgent);
             if(gs.isMobile(gs.mobileUserAgent)) {
