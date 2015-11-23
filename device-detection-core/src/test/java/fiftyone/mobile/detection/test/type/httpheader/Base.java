@@ -116,7 +116,7 @@ public abstract class Base extends DetectionTestSupport {
             dataSetIndex++;
         }
 
-        // Loop through setting 2 user agent headers.
+        // Loop through setting 2 User-Agent headers.
         Iterator<String> userAgentIterator = UserAgentGenerator.getUserAgentsIterable(userAgentPattern).iterator();
         Iterator<String> deviceIterator = UserAgentGenerator.getUserAgentsIterable(devicePattern).iterator();
         while(userAgentIterator.hasNext()&&

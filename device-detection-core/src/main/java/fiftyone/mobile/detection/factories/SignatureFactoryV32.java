@@ -28,14 +28,17 @@ import fiftyone.properties.DetectionConstants;
 
 /**
  * Class handles the creation of the old v 3.2 signature entities.
+ * <p>
+ * Objects of this class should not be created directly as they are part of the 
+ * internal logic.
  */
 public class SignatureFactoryV32 extends BaseEntityFactory<Signature> {
     /**
      * The length of each signature record in the dataset.
      * Equivalent to sizeof(byte) + sizeof(int) + sizeof(int) in C#.
      * byte = count of nodes associated with the signature
-     * int = first index of the node offset in signaturesnodes
-     * int = rank of the signature
+     * int = first index of the node offset in SignatureNodes
+     * int = rank of the signature.
      */
     private static final int NODES_LENGTH = 
             DetectionConstants.SIZE_OF_BYTE +
@@ -50,6 +53,7 @@ public class SignatureFactoryV32 extends BaseEntityFactory<Signature> {
     
     /**
      * Constructs a new instance of SignatureFactoryV32.
+     * 
      * @param dataSet The data set the factory will create signatures for.
      */
     public SignatureFactoryV32(Dataset dataSet) {
@@ -60,6 +64,7 @@ public class SignatureFactoryV32 extends BaseEntityFactory<Signature> {
     
     /**
      * Creates a new instance of SignatureV32.
+     * 
      * @param dataSet The data set whose signature list the value is contained 
      * within.
      * @param index The index of the signature within the values data structure.
@@ -73,6 +78,7 @@ public class SignatureFactoryV32 extends BaseEntityFactory<Signature> {
     
     /**
      * The length of the signature.
+     * 
      * @return Length of the signature in bytes.
      */
     @Override

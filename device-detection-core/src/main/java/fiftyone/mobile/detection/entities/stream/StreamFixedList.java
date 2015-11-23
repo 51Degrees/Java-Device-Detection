@@ -31,19 +31,21 @@ import java.util.Iterator;
  * Lists can be stored as a set of related objects entirely within memory, or 
  * the relevant objects loaded as required from a file or other permanent store
  * as required.
- * 
+ * <p>
  * Delegate methods are used to create new instances of items to add to the list
  * in order to avoid creating many inherited list classes for each type.
- * 
- * Should not be referenced directly.
+ * <p>
+ * Objects of this class should not be created directly as they are part of the 
+ * internal logic.
  *
- * @param <T> The type of BaseEntity the list will contain 
+ * @param <T> The type of BaseEntity the list will contain.
  */
 public class StreamFixedList<T extends BaseEntity> extends StreamBaseList<T> 
                                                     implements IFixedList<T> {
     /**
      * Constructs a new instance of StreamBaseList{T} ready to 
      * read entities from the source.
+     * 
      * @param dataSet Dataset being created.
      * @param reader Reader used to initialise the header only.
      * @param entityFactory Used to create new instances of the entity.
@@ -55,11 +57,11 @@ public class StreamFixedList<T extends BaseEntity> extends StreamBaseList<T>
 
     /**
      * An enumerator for the list between the range provided.
+     * 
      * @param index read from.
      * @param count how many entries.
      * @return An enumerator for the list.
-     * @throws java.io.IOException if there was a problem reading from the data 
-     * file.
+     * @throws java.io.IOException if there was a problem accessing data file.
      */
     @Override
     public StreamFixedListRangeIterator<T> getRange(int index, int count) 
@@ -92,11 +94,12 @@ public class StreamFixedList<T extends BaseEntity> extends StreamBaseList<T>
 
     /**
      * Creates a new entity of type T.
+     * 
      * @param index The index of the entity being created.
      * @param reader Reader connected to the source data structure and
      * positioned to start reading.
      * @return A new entity of type T at the index provided.
-     * @throws IOException indicates an I/O exception occurred
+     * @throws IOException if there was a problem accessing data file.
      */
     @Override
     protected T createEntity(int index, BinaryReader reader) 

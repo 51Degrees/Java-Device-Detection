@@ -22,7 +22,6 @@ package fiftyone.mobile.detection.webapp;
 
 import java.io.IOException;
 import java.net.URLDecoder;
-import java.util.Collection;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
@@ -33,6 +32,14 @@ import javax.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * 51Degrees "Enterprise" data file contains a JavaScript snippet that can 
+ * be used to detect the speed of the client's connection. 
+ * <p>
+ * This information can then be used to adjust the amount of resources sent to 
+ * the client. Slower connection could benefit from sending smaller images 
+ * with less bit depth as well as less resources.
+ */
 class Bandwidth {
 
     final private static Logger logger = LoggerFactory
@@ -43,7 +50,7 @@ class Bandwidth {
     private static final String COOKIE_DELIM = "|";
 
     static void process(HttpServletRequest req, HttpServletResponse resp,
-            HttpSession session, Cookie[] cookies) {
+                        HttpSession session, Cookie[] cookies) {
         Stats stats = (Stats) session.getAttribute(SESSION_KEY);
         if (stats == null) {
             stats = new Stats();
@@ -109,14 +116,14 @@ class Bandwidth {
         stats.lastId = newStat.id;
         newStat.serverTimeSent = System.currentTimeMillis();
         session.setAttribute(SESSION_KEY, stats);
-    }
-    
+    } 
     
     /**
      * Returns the bandwidth monitoring JavaScript for the current request.
-     * @param request
-     * @return
-     * @throws IOException 
+     * 
+     * @param request current HttpServletRequest.
+     * @return JavaScript as a string.
+     * @throws IOException if there was a problem accessing data file.
      */
     static String getJavascript(HttpServletRequest request) throws IOException {
         Map<String, String[]> results = WebProvider.getResult(request);

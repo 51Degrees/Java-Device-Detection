@@ -26,6 +26,9 @@ import java.io.IOException;
 
 /**
  * Profile entity with stream specific data access implementation.
+ * <p>
+ * Objects of this class should not be created directly as they are part of the 
+ * internal logic.
  */
 public class Profile extends fiftyone.mobile.detection.entities.Profile {
     private final int position;

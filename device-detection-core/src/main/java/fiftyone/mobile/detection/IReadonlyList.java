@@ -27,7 +27,7 @@ import java.io.Closeable;
 
 /**
  * A list which only provides those features needed to read items from the list.
- * 
+ * // TODO: document interface to readonly list of entities.
  * @param <T> The type of BaseEntity the list will contain.
  */
 public interface IReadonlyList<T extends BaseEntity> extends Iterable<T>, Closeable {

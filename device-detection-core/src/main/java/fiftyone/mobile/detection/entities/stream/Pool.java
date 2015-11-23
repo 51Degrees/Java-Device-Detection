@@ -30,11 +30,22 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * As multiple threads need to read from the Source concurrently this class
  * provides a mechanism for readers to be recycled across threads and requests.
- * 
+ * <p>
+ * Each data set constructed using the Stream Factory will maintain a pool of 
+ * readers in order to perform device lookup and retrieve various entities.
+ * <p>
  * Used by the BaseList of type T to provide multiple readers for the list.
- * 
+ * <p>
  * The Dataset must be disposed of to ensure the readers in the pool 
  * are closed.
+ * <p>
+ * Objects of this class should not be created directly as they are part of the 
+ * internal logic.
+ * <p>
+ * The concept of the pool is slightly different to that, used in our C API. 
+ * The C API also maintains a pool, but it is a pool of work sets where each 
+ * work set is constructed from the data set and contains device information 
+ * relevant to the device being detected. This pool only contains readers.
  */
 public class Pool {
 
@@ -56,7 +67,8 @@ public class Pool {
 
     /**
      * Constructs a new pool of readers for the SourceBase provided.
-     * @param source The data source for the list
+     * 
+     * @param source The data source for the list.
      */
     Pool(SourceBase source) {
         this.source = source;
@@ -65,8 +77,9 @@ public class Pool {
     /**
      * Returns a reader to the temp file for exclusive use. Release method must
      * be called to return the reader to the pool when finished.
-     * @return Reader open and ready to read from the temp file
-     * @throws java.io.IOException
+     * 
+     * @return Reader open and ready to read from the temp file.
+     * @throws java.io.IOException if there was a problem accessing data file.
      */
     public BinaryReader getReader() throws IOException {
         synchronized(readers) {
@@ -95,6 +108,7 @@ public class Pool {
     /**
      * The number of readers that have been created. May not be the same as 
      * the readers in the queue as some may be in use.
+     * 
      * @return The number of readers that have been created.
      */
     public int getReadersCreated() {
@@ -103,6 +117,7 @@ public class Pool {
     
     /**
      * Returns The number of readers in the queue.
+     * 
      * @return The number of readers in the queue.
      */
     public int getReadersQueued() {

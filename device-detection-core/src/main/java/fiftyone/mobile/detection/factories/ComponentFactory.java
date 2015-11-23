@@ -23,10 +23,17 @@ package fiftyone.mobile.detection.factories;
 import fiftyone.mobile.detection.entities.Component;
 import fiftyone.properties.DetectionConstants;
 
+/**
+ * Creates new instances of a Component entity.
+ * <p>
+ * Objects of this class should not be created directly as they are part of the 
+ * internal logic.
+ */
 public abstract class ComponentFactory extends BaseEntityFactory<Component> {
 
     /**
      * Returns the length of the Component entity.
+     * 
      * @return Length in bytes of a Component entity.
      */
     @Override

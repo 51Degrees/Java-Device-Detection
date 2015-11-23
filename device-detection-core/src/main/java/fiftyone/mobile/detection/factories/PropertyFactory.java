@@ -25,8 +25,24 @@ import fiftyone.mobile.detection.entities.Property;
 import fiftyone.mobile.detection.readers.BinaryReader;
 import java.io.IOException;
 
+/**
+ * Creates new instances of a Property entity.
+ * <p>
+ * Objects of this class should not be created directly as they are part of the 
+ * internal logic.
+ */
 public class PropertyFactory extends BaseEntityFactory<Property> {
 
+    /**
+     * Creates a new instance of Property.
+     * 
+     * @param dataSet The data set containing property list.
+     * @param index The offset to the start of the property within the  
+     * data structure.
+     * @param reader Binary reader positioned at the start of the Property.
+     * @return A new instance of a Property.
+     * @throws java.io.IOException if there was a problem accessing data file.
+     */
     @Override
     public Property create(Dataset dataSet, int index,
             BinaryReader reader) throws IOException {

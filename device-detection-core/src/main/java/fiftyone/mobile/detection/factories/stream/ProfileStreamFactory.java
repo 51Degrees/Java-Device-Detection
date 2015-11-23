@@ -25,7 +25,10 @@ import fiftyone.mobile.detection.entities.Profile;
 import fiftyone.mobile.detection.readers.BinaryReader;
 
 /**
- *
+ * Creates Profile entities for use with stream data set.
+ * <p>
+ * Objects of this class should not be created directly as they are part of the 
+ * internal logic.
  */
 public class ProfileStreamFactory 
         extends fiftyone.mobile.detection.factories.ProfileFactory {

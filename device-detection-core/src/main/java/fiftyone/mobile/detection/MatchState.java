@@ -262,7 +262,7 @@ public class MatchState extends MatchResult
     }
     
     /**
-     * Resets the match for the user agent returning all the fields to the
+     * Resets the match for the User-Agent returning all the fields to the
      * values they would have when the match was first constructed. Used to
      * avoid having to reallocate memory for data structures when a lot of
      * detections are being performed.
@@ -296,10 +296,10 @@ public class MatchState extends MatchResult
     
     /**
      * Reset the next character position index based on the length of the target
-     * user agent and the root nodes.
+     * User-Agent and the root nodes.
      */
     void resetNextCharacterPositionIndex() {
-        // Start checking on the far right of the user agent.
+        // Start checking on the far right of the User-Agent.
         nextCharacterPositionIndex = Math.min(
                 targetUserAgentArray.length - 1,
                 getDataSet().rootNodes.size() - 1);

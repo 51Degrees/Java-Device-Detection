@@ -25,11 +25,14 @@ import java.io.IOException;
 import fiftyone.mobile.detection.entities.Node;
 import fiftyone.mobile.detection.entities.Signature;
 
+/**
+ * This method should not be called as it is part of the internal logic.
+ */
 class ClosestScore extends BaseScore {
 
     /**
      * Calculate the initial score based on the difference in length of the
-     * right most node and the target user agent.
+     * right most node and the target User-Agent.
      */
     @Override
     protected int getInitialScore(Signature signature, int lastNodeCharacter) throws IOException {
@@ -37,7 +40,7 @@ class ClosestScore extends BaseScore {
     }
 
     /**
-     * Returns the difference score between the node and the target user agent
+     * Returns the difference score between the node and the target User-Agent
      * working from right to left.
      *
      * @param state current working state of the matching process

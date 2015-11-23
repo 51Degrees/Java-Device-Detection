@@ -25,13 +25,22 @@ import fiftyone.mobile.detection.readers.BinaryReader;
 import java.io.IOException;
 
 /**
- * Signature of a user agent in version 3.1 data format.
+ * Extends {@link Signature} to provide implementation for the abstract methods.
+ * <p>
+ * Objects of this class should not be created directly as they are part of the 
+ * internal logic. Use the relevant {@link Dataset} method to access these 
+ * objects.
+ * <p>
+ * For more information see: 
+ * <a href="https://51degrees.com/support/documentation/device-detection-data-model">
+ * 51Degrees pattern data model</a>.
  */
 public class SignatureV31 extends Signature {
 
     /**
      * Constructs a new instance of SignatureV31.
-     * @param ds The data set the signature is contained within.
+     * 
+     * @param ds the {@link Dataset} the signature is contained within.
      * @param index The index in the data structure to the signature.
      * @param reader Reader connected to the source data structure and 
      * positioned to start reading.
@@ -44,8 +53,9 @@ public class SignatureV31 extends Signature {
     /**
      * Gets the rank, where a lower number means the signature is more popular, 
      * of the signature compared to other signatures.
+     * 
      * @return rank of signature expressed as integer.
-     * @throws java.io.IOException
+     * @throws java.io.IOException if there was a problem accessing data file.
      */
     @Override
     @SuppressWarnings("DoubleCheckedLocking")
@@ -66,6 +76,7 @@ public class SignatureV31 extends Signature {
     /**
      * Returns List of the node offsets the signature relates to ordered by 
      * offset of the node.
+     * 
      * @return List of the node offsets the signature relates to ordered by 
      * offset of the node.
      */

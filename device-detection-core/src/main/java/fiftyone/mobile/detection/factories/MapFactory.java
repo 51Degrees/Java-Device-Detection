@@ -24,8 +24,22 @@ import fiftyone.mobile.detection.Dataset;
 import fiftyone.mobile.detection.entities.Map;
 import fiftyone.mobile.detection.readers.BinaryReader;
 
+/**
+ * Creates new instances of a Map entity.
+ * <p>
+ * Objects of this class should not be created directly as they are part of the 
+ * internal logic.
+ */
 public class MapFactory extends BaseEntityFactory<Map> {
 
+    /**
+     * Creates a new instance of Map.
+     * 
+     * @param dataSet data set whose data structure includes map values.
+     * @param index to the start of the Map within the data structure.
+     * @param reader Binary reader positioned at the start of the Map.
+     * @return A new instance of a Map.
+     */
     @Override
     public Map create(Dataset dataSet, int index,
             BinaryReader reader) {

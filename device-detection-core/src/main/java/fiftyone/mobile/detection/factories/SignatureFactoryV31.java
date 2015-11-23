@@ -29,6 +29,9 @@ import java.io.IOException;
 
 /**
  * Class handles the creation of the old v 3.1 signature entities.
+ * <p>
+ * Objects of this class should not be created directly as they are part of the 
+ * internal logic.
  */
 public class SignatureFactoryV31 extends BaseEntityFactory<Signature>{
     
@@ -39,6 +42,7 @@ public class SignatureFactoryV31 extends BaseEntityFactory<Signature>{
     
     /**
      * Constructs a new instance of SignatureFactoryV31.
+     * 
      * @param dataSet The data set the factory will create signatures for.
      */
     public SignatureFactoryV31(Dataset dataSet) {
@@ -49,12 +53,13 @@ public class SignatureFactoryV31 extends BaseEntityFactory<Signature>{
     
     /**
      * Creates a new instance of SignatureV31.
+     * 
      * @param dataSet The data set whose signature list the value is contained 
      * within.
      * @param index The index of the signature within the values data structure.
      * @param reader  Binary reader positioned at the start of the signature.
      * @return A new instance of a Signature.
-     * @throws IOException 
+     * @throws IOException if there was a problem reading data file.
      */
     @Override
     public Signature create(Dataset dataSet, int index, BinaryReader reader) 
@@ -64,6 +69,7 @@ public class SignatureFactoryV31 extends BaseEntityFactory<Signature>{
     
     /**
      * The length of the signature.
+     * 
      * @return Length of the signature in bytes.
      */
     @Override

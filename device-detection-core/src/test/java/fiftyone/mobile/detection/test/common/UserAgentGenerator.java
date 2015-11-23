@@ -31,15 +31,15 @@ public class UserAgentGenerator extends UserAgentGeneratorLoader {
     private static final Random random = new Random();
 
     /**
-     * Get a random user agent whose characters may be swapped with each other
+     * Get a random User-Agent whose characters may be swapped with each other
      *
      * @param swaps how many character swaps to do
-     * @return a random user agent which may also have been randomised.
+     * @return a random User-Agent which may also have been randomised.
      */
     public static String getRandomUserAgent(int swaps) {
-        // get a random user agent
+        // get a random User-Agent
         String result = getUserAgents().get(random.nextInt(getUserAgents().size()));
-        // swap as many chars in the user agent as determined by the parameter
+        // swap as many chars in the User-Agent as determined by the parameter
         if (swaps > 0) {
             StringBuilder buf = new StringBuilder(result);
             for (int i = 0; i < swaps; i++) {
@@ -129,11 +129,11 @@ public class UserAgentGenerator extends UserAgentGeneratorLoader {
     }
 
     /**
-     * Returns user agents that match the pattern provided.
+     * Returns User-Agents that match the pattern provided.
      *
-     * @param pattern regular expression used to filter the user agents
+     * @param pattern regular expression used to filter the User-Agents
      *                returned.
-     * @return a string iterable returning user agents that match the pattern.
+     * @return a string iterable returning User-Agents that match the pattern.
      */
     public static Iterable<String> getUserAgentsIterable(final String pattern) {
         // TODO it would be quicker if the pattern were supplied precompiled by the caller

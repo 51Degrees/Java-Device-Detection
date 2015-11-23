@@ -24,6 +24,15 @@ import fiftyone.mobile.detection.Dataset;
 import fiftyone.mobile.detection.entities.memory.MemoryBaseList;
 import java.io.IOException;
 
+/**
+ * <p>
+ * Objects of this class should not be created directly as they are part of the 
+ * internal logic.
+ * <p>
+ * For more information see: 
+ * <a href="https://51degrees.com/support/documentation/device-detection-data-model">
+ * 51Degrees pattern data model</a>.
+ */
 public abstract class NodeIndexBase extends BaseEntity {
     
     /**

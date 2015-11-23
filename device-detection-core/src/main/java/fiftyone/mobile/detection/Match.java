@@ -38,25 +38,55 @@ import fiftyone.properties.MatchMethods;
 import java.nio.ByteBuffer;
 
 /**
- * Contains all the information associated with the device detection and matched
- * result.
- * 
- * The match property can be used to request results from the match using 
- * the accessor provided with a Property or the string name of the property. 
- * 
- * The Signature the target device match against can be returned along with 
- * the associated profiles. 
- * 
- * Statistics associated with the match can also be returned. For example: the 
- * Elapsed property returns the time taken to perform the match. The Confidence 
- * property provides a value to indicate the differences between the match 
- * result and the target user agent.
- *
- * For more information see http://51degrees.mobi/Support/Documentation/Java
- */
-/**
- * Generate when a device detection is requested to include the signature
- * matched, the confidence of the match and the method used to obtain the match.
+ * Contains detection results with all the information relevant to the matched 
+ * device.
+ * <p>
+ * Access {@link Property} values using the 
+ * {@link #getValues(java.lang.String)} method for property names and 
+ * {@link #getValues(fiftyone.mobile.detection.entities.Property)} for property 
+ * objects. For example: {@code match.getValues("IsMobile");}
+ * <p>
+ * All values are returned as strings unless you request a specific format:
+ * {@code match.getValues("ScreenPixelsWidth").toDouble();}
+ * <p>
+ * If you want a more general device information like the rank you should use 
+ * {@link #getSignature()} method which returns a {@link Signature} object this 
+ * device relates to.
+ * <p>
+ * Match also provides various metrics properties: device Id, method used, 
+ * difference and rank.
+ * <ul>
+ *  <li>Device id consists of four {@link Component components} where each 
+ *  component is the Id of the {@link Profile} matched by the detector. 
+ *  Access like:
+ *  {@code match.getDeviceId();}
+ *  <li>Detection method refers to the algorithm used for this match. Use like: 
+ *  {@code match.getMethod();}
+ *  <br />For more information on the detection methods see: 
+ *  <a href="https://51degrees.com/support/documentation/pattern">
+ *  how Pattern device detection works</a>.
+ *  <li>Difference indicates the level of confidence in the current detection 
+ *  results. Used in conjunction with the detection method and only makes sense 
+ *  if "Numeric", "Closest" or "Nearest" algorithm was used. The higher the 
+ *  number the lower the confidence.
+ *  <li>Rank provides information on the level of popularity of the User-Agent 
+ *  used to create this match. The lower the rank the more popular the 
+ *  User-Agent is. Popularity is determined by 51Degrees based on our internal 
+ *  usage statistics.
+ * </ul>
+ * <p>
+ * Keeping the data file up to date improves the overall quality of detection 
+ * as the 51Degrees data team adds (on average) 200 new devices to our database 
+ * each week. With Premium and Enterprise data files can benefit from the 
+ * <a href="https://51degrees.com/compare-data-options">
+ * automatic data updates</a> as well as a wider range of properties and more 
+ * devices.
+ * <p>
+ * This object should not be created manually in the external code. Use one of 
+ * the match methods in the {@link Provider} class to obtain a match object 
+ * with data members initialised.
+ * <p>
+ * For more information see https://51degrees.com/Support/Documentation/Java
  */
 public class Match {
 
@@ -83,14 +113,14 @@ public class Match {
     private MatchResult matchResult;
     
     /**
-     * @return dataset used to create the match.
+     * @return {@link Dataset} used to create the match.
      */
     public Dataset getDataSet() {
         return provider.dataSet;
     }
     
     /**
-     * @return target user agent string used for detection
+     * @return target User-Agent string used for detection
      */
     public String getTargetUserAgent() {
         return getResult().getTargetUserAgent();
@@ -104,14 +134,39 @@ public class Match {
     }
     
     /**
-     * @return signature with closest match to the user agent provided.
+     * Returns a {@list Signature} that best fits the provided User-Agent string.
+     * A signature can be used to retrieve {@link Profile profiles} and rank.
+     * 
+     * @return {@link Signature} with best match to the User-Agent provided.
      */
     public Signature getSignature() {
         return getResult().getSignature();
     }
     
     /**
-     * @return method used to obtain match.
+     * Returns the detection method used to obtain this object. Method used 
+     * reflects the confidence of the detector in the accuracy of the current 
+     * match.
+     * <p>
+     * <ul>
+     *  <li>"Exact" means the detector is confident the results are accurate. 
+     *  <li>"None" means the User-Agent provided is fake.
+     *  <li>"Numeric", "Closest" and "Nearest" will always return a result but 
+     *  the {@link #getDifference()} should be used to assess the accuracy of 
+     *  the detection. The higher the number the less confident the detector is.
+     * </ul>
+     * <p>
+     * With Premium or Enterprise data files you will see more "Exact" 
+     * detections as the number of device combinations available in these files 
+     * is significantly larger than in the "Lite" data file.
+     * <a href="https://51degrees.com/compare-data-options">
+     * Compare data options</a>
+     * <p>
+     * For more information on detection methods see: 
+     * <a href="https://51degrees.com/support/documentation/pattern">
+     * how Pattern device detection works</a>
+     * 
+     * @return {@link MatchMethods} used to obtain match.
      */
     public MatchMethods getMethod() {
         return getResult().getMethod();
@@ -169,9 +224,13 @@ public class Match {
     }    
     
     /**
-     * Array of profiles associated with the device that was found.
-     * @return array of profiles associated with the device that was found
-     * @throws IOException indicates an I/O exception occurred
+     * Array of {@link Profile profiles} associated with the device that was 
+     * found. Profiles can then be used to retrieve {@link Property properties} 
+     * and {@link Value values}.
+     * 
+     * @return array of {@link Profile profiles} associated with the device 
+     *  that was found.
+     * @throws IOException if there was a problem accessing data file.
      */
     public Profile[] getProfiles() throws IOException {
         return overriddenProfiles == null ? 
@@ -184,6 +243,7 @@ public class Match {
      * overridden for this instance of match.
      * This property is needed to ensure that other references to the instance 
      * of MatchResult are not altered when overriding profiles.
+     * 
      * @return profiles set specifically for this match.
      * @throws IOException 
      */
@@ -208,12 +268,12 @@ public class Match {
     private volatile Profile[] overriddenProfiles;       
         
     /**
-     * The numeric difference between the target user agent and the 
-     * match. Numeric sub strings of the same length are compared 
-     * based on the numeric value. Other character differences are 
-     * compared based on the difference in ASCII values of the two
-     * characters at the same positions.
-     * @return numeric difference
+     * The numeric difference between the target User-Agent and the match. 
+     * Numeric sub strings of the same length are compared based on the numeric 
+     * value. Other character differences are compared based on the difference 
+     * in ASCII values of the two characters at the same positions.
+     * 
+     * @return numeric difference.
      */    
     public int getDifference() {
         int score = getResult().getLowestScore();
@@ -221,9 +281,16 @@ public class Match {
     }    
     
     /**
-     * The unique id of the device represented by the match.
+     * The unique id of the device represented by the match. Id is composed of 
+     * several {@link Profile profiles} separated by hyphen symbol. One profile 
+     * is chosen per each {@link Component component}.
+     * <p>
+     * Device Id can be stored for future use and the relevant 
+     * {@link Property properties} and {@link Value values} restored using the 
+     * {@link Provider#matchForDeviceId(java.lang.String)} method.
+     * 
      * @return string representing unique id of device
-     * @throws IOException signals an I/O exception occurred
+     * @throws IOException if there was a problem accessing data file.
      */
     public String getDeviceId() throws IOException {
         String result;
@@ -243,10 +310,14 @@ public class Match {
     
     /**
      * Id of the device represented as an array of bytes. Unlike the String Id 
-     * this Id only contains integers and no separators.
-     * 
-     * To obtain the profiles: wrap the byte array in a ByteBuffer and call 
-     * getInt() repeatedly.
+     * this Id only contains integers and no hyphen separators.
+     * <p>
+     * To obtain the unique profile IDs wrap the byte array in a ByteBuffer and 
+     * use {@code getInt()} repeatedly.
+     * <p>
+     * To obtain a {@link Match} with the corresponding 
+     * {@link Property properties} and {@link Value values} use the 
+     * {@link Provider#matchForDeviceId(byte[])}.
      * 
      * @return Profile Id represented as byte array. Note that Id separators 
      * such as "-" are not part of the byte array, only the integer IDs are.
@@ -264,7 +335,7 @@ public class Match {
     }
     
     /**
-     * @return user agent of the matching device with irrelevant characters 
+     * @return User-Agent of the matching device with irrelevant characters 
      * removed.
      */
     public String getUserAgent() {
@@ -274,6 +345,7 @@ public class Match {
     /**
      * This method is not memory efficient and should be avoided as the Match 
      * class now exposes an getValues methods keyed on property name.
+     * 
      * @return the results of the match as a sorted list of property names 
      * and values.
      * @throws IOException
@@ -315,14 +387,14 @@ public class Match {
     
 
     /**
-     * Gets the values associated with the property name using the profiles
-     * found by the match. If matched profiles don't contain a value then the
-     * default profiles for each of the components are also checked.
+     * Gets the {@link Values} associated with the property name using the 
+     * profiles found by the match. If matched profiles don't contain a value 
+     * then the default profiles for each of the components are also checked.
      *
-     * @param property The property whose values are required
+     * @param property The property whose values are required.
      * @return Array of the values associated with the property, or null if the
-     * property does not exist
-     * @throws IOException indicates an I/O exception occurred
+     * property does not exist.
+     * @throws IOException if there was a problem accessing data file.
      */
     public Values getValues(Property property) throws IOException {
         Values value = null;
@@ -348,14 +420,14 @@ public class Match {
     }
 
     /**
-     * Gets the values associated with the property name using the profiles
-     * found by the match. If matched profiles don't contain a value then the
-     * default profiles for each of the components are also checked.
+     * Gets the {@link Values} associated with the property name using the 
+     * profiles found by the match. If matched profiles don't contain a value 
+     * then the default profiles for each of the components are also checked.
      *
-     * @param propertyName The property name whose values are required
+     * @param propertyName The property name whose values are required.
      * @return Array of the values associated with the property, or null if the
-     * property does not exist
-     * @throws IOException indicates an I/O exception occurred
+     * property does not exist.
+     * @throws IOException if there was a problem accessing data file.
      */
     public Values getValues(String propertyName) throws IOException {
         return getValues(getDataSet().get(propertyName));
@@ -374,10 +446,10 @@ public class Match {
 
     /**
      * Constructs a new detection match ready to be used to identify the
-     * profiles associated with the target user agent.
+     * profiles associated with the target User-Agent.
      *
      * @param dataSet data set to be used for this match
-     * @param targetUserAgent user agent to identify
+     * @param targetUserAgent User-Agent to identify
      * @throws UnsupportedEncodingException indicates an Unsupported Encoding 
      * exception occurred
      */
@@ -422,9 +494,9 @@ public class Match {
     
     
     /**
-     * A string representation of the nodes found from the target user agent.
+     * A string representation of the nodes found from the target User-Agent.
      *
-     * @return a string representation of the match
+     * @return a string representation of the match.
      */
     @Override
     public String toString() {

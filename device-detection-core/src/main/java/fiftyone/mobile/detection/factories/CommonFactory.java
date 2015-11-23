@@ -29,11 +29,16 @@ import java.util.Calendar;
 import java.util.Date;
 
 /**
- * Extension methods used to load data into the data set entity.
+ * Extension methods used to load data into the data set entity. Used at the 
+ * start of both memory and stream factories.
+ * <p>
+ * Objects of this class should not be created directly as they are part of the 
+ * internal logic.
  */
 public class CommonFactory {
     /**
      * Loads the data set headers information.
+     * 
      * @param dataSet The data set to be loaded.
      * @param reader Reader positioned at the beginning of the data source.
      */
@@ -98,8 +103,8 @@ public class CommonFactory {
     /**
      * Reads a date in year, month and day order from the reader.
      *
-     * @param reader Reader positioned at the start of the date
-     * @return A date time with the year, month and day set from the reader
+     * @param reader Reader positioned at the start of the date.
+     * @return A date time with the year, month and day set from the reader.
      */
     private static Date readDate(BinaryReader reader) {
         int year = reader.readInt16();

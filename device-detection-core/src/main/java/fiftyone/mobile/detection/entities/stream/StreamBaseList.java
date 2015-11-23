@@ -30,14 +30,17 @@ import java.io.IOException;
  * Lists can be stored as a set of related objects entirely within memory, or 
  * the relevant objects loaded as required from a file or other permanent store
  * as required.
- * 
+ * <p>
  * Delegate methods are used to create new instances of items to add to the 
  * list in order to avoid creating many inherited list classes for each 
  * BaseEntity type.
- * 
+ * <p>
  * Should not be referenced directly.
- *
- * @param <T> The type of BaseEntity the list will contain
+ * <p>
+ * Objects of this class should not be created directly as they are part of the 
+ * internal logic.
+ * 
+ * @param <T> The type of BaseEntity the list will contain.
  */
 public abstract class StreamBaseList<T extends BaseEntity> {
     /**
@@ -56,13 +59,14 @@ public abstract class StreamBaseList<T extends BaseEntity> {
     /**
      * Used to create a new entity of type T when an item is required from the 
      * list.
+     * 
      * @param key The offset position in the data structure to the entity to 
      * be returned from the list, or the index of the entity to be returned 
      * from the list.
      * @param reader Reader connected to the source data structure and 
      * positioned to start reading.
      * @return A new instance of type T.
-     * @throws IOException 
+     * @throws IOException if there was a problem accessing data file.
      */
     protected abstract T createEntity(int key, BinaryReader reader) 
                                                         throws IOException;
@@ -70,9 +74,10 @@ public abstract class StreamBaseList<T extends BaseEntity> {
     /**
      * Constructs a new instance of BaseList of type T ready to read 
      * entities from the source.
-     * @param dataSet Dataset being created
-     * @param reader Reader used to initialise the header only
-     * @param entityFactory a base entity factory to be used
+     * 
+     * @param dataSet Dataset being created.
+     * @param reader Reader used to initialise the header only.
+     * @param entityFactory a base entity factory to be used.
      */
     public StreamBaseList(Dataset dataSet, BinaryReader reader, 
             BaseEntityFactory<T> entityFactory) {
@@ -83,9 +88,10 @@ public abstract class StreamBaseList<T extends BaseEntity> {
 
     /**
      * Retrieves the record at the offset or index requested.
+     * 
      * @param key Index or offset of the record required.
      * @return A new instance of the item at the offset or index.
-     * @throws java.io.IOException
+     * @throws java.io.IOException if there was a problem accessing data file.
      */
     public T get(int key) throws IOException {
         T item = null;
@@ -103,6 +109,7 @@ public abstract class StreamBaseList<T extends BaseEntity> {
 
     /**
      * Returns The number of items in the list.
+     * 
      * @return The number of items in the list.
      */
     public int size() {

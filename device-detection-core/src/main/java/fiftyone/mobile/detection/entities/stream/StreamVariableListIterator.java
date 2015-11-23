@@ -27,11 +27,14 @@ import java.util.Iterator;
 /**
  * A general class that iterates over entities in StreamVariableLists. 
  * The iteration lazy loads for low memory and quick start retrieval.
+ * <p>
+ * Objects of this class should not be created directly as they are part of the 
+ * internal logic.
+ * 
  * @param <T> The type of BaseEntity the list will contain.
  */
 public class StreamVariableListIterator<T extends BaseEntity> 
                                             implements Iterator<T> {
-
     /**
      * Contains the output of Header.getSize(). Number of entries.
      */
@@ -51,7 +54,8 @@ public class StreamVariableListIterator<T extends BaseEntity>
     
     /**
      * Constructs the StreamVariableListIterator.
-     * @param streamVariableList 
+     * 
+     * @param streamVariableList list to iterate over.
      */
     public StreamVariableListIterator(StreamVariableList<T> streamVariableList)
     {
@@ -65,6 +69,7 @@ public class StreamVariableListIterator<T extends BaseEntity>
     
     /**
      * Gets if there are any more entities in the list.
+     * 
      * @return true if there are more entities to iterate.
      */
     @Override
@@ -74,6 +79,7 @@ public class StreamVariableListIterator<T extends BaseEntity>
 
     /**
      * Gets the next entity for retrieval and increments the iteration.
+     * 
      * @return the next entity in the list.
      */
     @Override
@@ -89,7 +95,7 @@ public class StreamVariableListIterator<T extends BaseEntity>
     }
 
     /**
-     * Unsupported.
+     * Not supported.
      */
     @Override
     public void remove() {

@@ -26,6 +26,9 @@ import fiftyone.mobile.detection.entities.BaseEntity;
 /**
  * Provides an additional method to reduce the number of parameters passed when 
  * adding an item to the cache.
+ * <p>
+ * Objects of this class should not be created directly as they are part of the 
+ * internal logic.
  * 
  * @param <T> The type of BaseEntity the cache will contain.
  */
@@ -34,6 +37,7 @@ public class Cache<T extends BaseEntity>
 
     /**
      * Constructs a new instance of the cache.
+     * 
      * @param cacheSize number of items to store in the cache.
      * @param loader used to fetch items not in the cache.
      */

@@ -25,6 +25,13 @@ import fiftyone.mobile.detection.readers.BinaryReader;
 
 /**
  * Maps a profile id to its position in the data file.
+ * <p>
+ * Objects of this class should not be created directly as they are part of the 
+ * internal logic.
+ * <p>
+ * For more information see: 
+ * <a href="https://51degrees.com/support/documentation/device-detection-data-model">
+ * 51Degrees pattern data model</a>.
  */
 public class ProfileOffset extends BaseEntity {
 
@@ -36,6 +43,7 @@ public class ProfileOffset extends BaseEntity {
     /**
      * Constructs a new ProfileOffset that maps profile Id to the corresponding 
      * position in the data file.
+     * 
      * @param dataSet DataSet object to provide to the super class.
      * @param offset the location in the data file to read from.
      * @param reader BinaryReader to use to extract data from the data file.
@@ -63,5 +71,4 @@ public class ProfileOffset extends BaseEntity {
         return offset;
     }
     private final int offset;
-
 }

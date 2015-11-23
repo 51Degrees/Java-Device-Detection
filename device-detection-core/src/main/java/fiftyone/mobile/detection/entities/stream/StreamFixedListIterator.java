@@ -24,9 +24,13 @@ import fiftyone.mobile.detection.entities.BaseEntity;
 import java.util.Iterator;
 
 /**
- * A general class that iterates over entities in StreamVariableLists. The iteration
- * lazy loads for low memory and quick start retrieval.
- * @param <T>
+ * A general class that iterates over entities in StreamVariableLists. 
+ * The iteration lazy loads for low memory and quick start retrieval.
+ * <p>
+ * Objects of this class should not be created directly as they are part of the 
+ * internal logic.
+ * 
+ * @param <T> The type of BaseEntity to iterate. 
  */
 public class StreamFixedListIterator<T extends BaseEntity> implements Iterator<T> {
 
@@ -39,7 +43,7 @@ public class StreamFixedListIterator<T extends BaseEntity> implements Iterator<T
     /**
      * Constructs the StreamFixedListIterator.
      * 
-     * @param streamFixedList 
+     * @param streamFixedList list to iterate over.
      */
     public StreamFixedListIterator(StreamFixedList<T> streamFixedList)
     {

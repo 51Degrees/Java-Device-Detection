@@ -27,20 +27,15 @@ import java.util.concurrent.atomic.AtomicLong;
 /**
  * Many of the entities used by the detector data set are requested repeatedly. 
  * The cache improves memory usage and reduces strain on the garbage collector
- * by storing previously requested entities for a short period of time to avoid 
- * the need to re-fetch them from the underlying storage mechanism.
+ * by storing previously requested entities for a period of time to avoid the 
+ * need to re-fetch them from the underlying storage mechanism.
+ * <p>
+ * The Least Recently Used (LRU) cache is used. LRU cache keeps track of what 
+ * was used when in order to discard the least recently used items first.
+ * Every time a cache item is used the "age" of the item used is updated.
+ * <p>
+ * This class should not be called as it is part of the internal logic.
  * 
- * The cache works by maintaining two dictionaries of entities keyed on their 
- * offset or index. The inactive list contains all items requested since the 
- * cache was created or last serviced. The active list contains all the items 
- * currently in the cache. The inactive list is always updated when an item is 
- * requested.
- * 
- * When the cache is serviced the active list is destroyed and the inactive list
- * becomes the active list. i.e. all the items that were requested since the 
- * cache was last serviced are now in the cache. A new inactive list is created 
- * to store all items being requested since the cache was last serviced.
- *
  * @param <K> Key for the cache items.
  * @param <V> Value for the cache items.
  */
@@ -174,6 +169,7 @@ public class Cache<K, V> {
     
     /**
      * Constructs a new instance of the cache.
+     * 
      * @param cacheSize The number of items to store in the cache.
      * @param loader used to fetch items not in the cache.
      */    
@@ -211,9 +207,10 @@ public class Cache<K, V> {
      * Retrieves the value for key requested. If the key does not exist
      * in the cache then the Fetch method of the cache's loader is used to
      * retrieve the value.
-     * @param key or the item required
-     * @return An instance of the value associated with the key
-     * @throws java.io.IOException
+     * 
+     * @param key or the item required.
+     * @return An instance of the value associated with the key.
+     * @throws java.io.IOException if there was a problem accessing data file.
      */    
     public V get(K key) throws IOException {
         return get(key, loader);
@@ -223,10 +220,11 @@ public class Cache<K, V> {
      * Retrieves the value for key requested. If the key does not exist
      * in the cache then the Fetch method is used to retrieve the value
      * from another loader.
+     * 
      * @param key or the item required
      * @param loader to fetch the items from
      * @return An instance of the value associated with the key
-     * @throws java.io.IOException
+     * @throws java.io.IOException if there was a problem accessing data file.
      */
     public V get(K key, ICacheLoader<K,V> loader) throws IOException {
         boolean added = false;
@@ -287,7 +285,7 @@ public class Cache<K, V> {
     }
 
     /**
-     * Resets the stats for the cache.
+     * Resets the 'stats' for the cache.
      */
     public void resetCache()
     {

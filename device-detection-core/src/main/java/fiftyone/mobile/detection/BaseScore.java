@@ -50,6 +50,7 @@ abstract class BaseScore {
      * @param closestSignatures Signature strings to evaluate.
      * @throws IOException 
      */
+    @SuppressWarnings("all, cast")
     void evaluateSignatures(MatchState state,
             RankedSignatureIterator closestSignatures) throws IOException {
         int count = 0, signatureIndex, rankedSignatureIndex;
@@ -71,7 +72,7 @@ abstract class BaseScore {
 
     /**
      * Compares all the characters up to the max length between the signature 
-     * and the target user agent updating the match information if this 
+     * and the target User-Agent updating the match information if this 
      * signature is better than any evaluated previously.
      * @param state current working state of the matching process
      * @param signature Signature string.
@@ -95,7 +96,7 @@ abstract class BaseScore {
     /**
      * Steps through the nodes of the signature comparing those that aren't 
      * contained in the matched nodes to determine a score between the signature
-     * and the target user agent. If that score becomes greater or equal to the
+     * and the target User-Agent. If that score becomes greater or equal to the
      * lowest score determined so far then stop.
      * @param state current working state of the matching process
      * @param signature Signature string.
@@ -107,7 +108,7 @@ abstract class BaseScore {
     private int getScore(MatchState state, Signature signature, 
             int lastNodeCharacter) throws IOException {
         // Calculate the initial score based on the difference in length of 
-        // the right most node and the target user agent.
+        // the right most node and the target User-Agent.
         int runningScore = getInitialScore(signature, lastNodeCharacter);
 
         // We only need to check the nodes that are different. As the nodes
@@ -130,7 +131,7 @@ abstract class BaseScore {
 
                 // If the score is less than zero then a score could not be 
                 // determined and the signature can't be compared to the target
-                // user agent. Exit with a high score.
+                // User-Agent. Exit with a high score.
                 if (score < 0) {
                     return Integer.MAX_VALUE;
                 }

@@ -27,6 +27,13 @@ import java.nio.ByteBuffer;
 /**
  * A node index contains the characters and related child nodes of the current
  * node should any of the characters match at the position.
+ * <p>
+ * Objects of this class should not be created directly as they are part of the 
+ * internal logic.
+ * <p>
+ * For more information see: 
+ * <a href="https://51degrees.com/support/documentation/device-detection-data-model">
+ * 51Degrees pattern data model</a>.
  */
 public class NodeIndex extends NodeIndexBase implements Comparable<NodeIndex> {
 
@@ -98,11 +105,6 @@ public class NodeIndex extends NodeIndexBase implements Comparable<NodeIndex> {
 
     /**
      * Returns the characters the node index relates to.
-     *
-     * @param dataSet
-     * @param isString
-     * @param value
-     * @return
      */
     private static byte[] getCharacters(Dataset dataSet,
             boolean isString, byte[] value) throws IOException {

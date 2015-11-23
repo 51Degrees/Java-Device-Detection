@@ -36,16 +36,17 @@ import java.util.List;
  * Lists can be stored as a set of related objects entirely within memory, or
  * the relevant objects loaded as required from a file or other permanent store
  * as required. 
- * 
- * This class provides base functions for lists implemented in
- * memory using arrays of type T. 
- * 
+ * <p>
+ * This class provides base functions for lists implemented in memory using 
+ * arrays of type T. List extended by other lists in this package.
+ * <p>
  * Interfaces are used to create new instances of items to add to the list in 
  * order to avoid creating many inherited list classes for each type. 
- * 
+ * <p>
  * The data is held in the private variable array. 
- * 
- * Should not be referenced directly.
+ * <p>
+ * Objects of this class should not be created directly as they are part of the 
+ * internal logic.
  *
  * @param <T> The type the list will contain.
  */
@@ -74,10 +75,10 @@ public abstract class MemoryBaseList<T extends BaseEntity> implements
      * following construction to read all the entities which form the list
      * before the list can be used.
      *
-     * @param dataSet Dataset being created
-     * @param reader Reader used to initialise the header
+     * @param dataSet Dataset being created.
+     * @param reader Reader used to initialise the header.
      * @param entityFactory Interface used to create new entities of type T from
-     * the read method
+     * the read method.
      */
     MemoryBaseList(Dataset dataSet, BinaryReader reader,
                                     BaseEntityFactory<T> entityFactory) {
@@ -98,6 +99,7 @@ public abstract class MemoryBaseList<T extends BaseEntity> implements
 
     /**
      * Returns An iterator to the array of items.
+     * 
      * @return An iterator to the array of items.
      */
     @Override
@@ -107,6 +109,7 @@ public abstract class MemoryBaseList<T extends BaseEntity> implements
 
     /**
      * Returns The number of entities the list contains.
+     * 
      * @return The number of entities the list contains.
      */
     @Override
@@ -116,9 +119,10 @@ public abstract class MemoryBaseList<T extends BaseEntity> implements
     
     /**
      * Reads all the records to be added to the list.
+     * 
      * @param reader Reader connected to the source data structure and 
      * positioned to start reading.
-     * @throws java.io.IOException
+     * @throws java.io.IOException if there was a problem accessing data file.
      */
     public abstract void read(BinaryReader reader) throws IOException;
 }

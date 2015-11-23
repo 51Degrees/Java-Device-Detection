@@ -20,6 +20,9 @@
  * ********************************************************************* */
 package fiftyone.mobile.detection.webapp;
 
+/**
+ * Contains various settings as constants.
+ */
 public class Constants {
 
     /**
@@ -85,8 +88,7 @@ public class Constants {
     
     /**
      * The number of seconds to wait between checks for new data files on the
-     * disk. Another process may have performed the
-     * update.
+     * disk. Another process may have performed the update.
      */
     public static final int FILE_CHECK_WAIT = 2 * 60;
     

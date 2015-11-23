@@ -33,18 +33,25 @@ import fiftyone.mobile.detection.search.SearchArrays;
 import java.util.Collections;
 
 /**
- * A value associated with a property and component within the dataset. <p>
- * Every property can return one of many values, or multiple values if it's a
- * list property. For example; SupportedBearers returns a list of the bearers
- * that the device can support. <p> The value class contains all the information
- * associated with the value including the display name, and also other
- * information such as a description or URL to find out additional information.
- * These other properties can be used by UI developers to provide users with
- * more information about the meaning and intended use of a value. <p> For more
- * information see http://51degrees.com/Support/Documentation/Java
- */
-/**
- * A value associated with a property and component within the dataset.
+ * A value associated with a property and component within the dataset. 
+ * <p>
+ * Every {@link Property} can return one of many values, or multiple values 
+ * if it's a list property. For example: SupportedBearers returns a list of 
+ * the bearers that the device can support. 
+ * <p> 
+ * Class contains metadata related to this value including the display name, 
+ * description and URL to find out additional information. Metadata can be used 
+ * by UI developers to provide users with more information about the meaning and 
+ * intended use of this value. Access metadata like:
+ * {@code value.getDescription();} and {@code value.getUrl();}.
+ * <p>
+ * Objects of this class should not be created directly as they are part of the 
+ * internal logic. Use the relevant {@link Dataset} method to access these 
+ * objects.
+ * <p>
+ * For more information see: 
+ * <a href="https://51degrees.com/support/documentation/device-detection-data-model">
+ * 51Degrees pattern data model</a>.
  */
 public class Value extends BaseEntity {
 
@@ -56,8 +63,8 @@ public class Value extends BaseEntity {
     }
     
     /**
-     * The value as an integer. Integer instead of int because of the nullable 
-     * requirement.
+     * The value as an integer. Integer object instead of integer primitive 
+     * because of the nullable requirement.
      */
     private volatile Integer asInt;
     
@@ -72,8 +79,8 @@ public class Value extends BaseEntity {
     private static final SearchValues valuesIndexSearch = new SearchValues();
     
     /**
-     * @return The name of the value.
-     * @throws IOException indicates an I/O exception occurred
+     * @return The name of the value as string.
+     * @throws IOException if there was a problem accessing data file.
      */
     @SuppressWarnings("DoubleCheckedLocking")
     public String getName() throws IOException {
@@ -82,7 +89,8 @@ public class Value extends BaseEntity {
             synchronized (this) {
                 localName = name;
                 if (localName == null) {
-                    name = localName = getDataSet().strings.get(nameIndex).toString();
+                    name = localName = 
+                            getDataSet().strings.get(nameIndex).toString();
                 }
             }
         }
@@ -92,8 +100,9 @@ public class Value extends BaseEntity {
     private final int nameIndex;
 
     /**
-     * @return Array containing the signatures that the value is associated with.
-     * @throws IOException indicates an I/O exception occurred
+     * @return array containing the {@link Signature signatures} that the value 
+     * is associated with.
+     * @throws IOException if there was a problem accessing data file.
      */
     @SuppressWarnings("DoubleCheckedLocking")
     public Signature[] getSignatures() throws IOException {
@@ -112,8 +121,9 @@ public class Value extends BaseEntity {
     private volatile Signature[] signatures;
 
     /**
-     * @return Array containing the profiles the value is associated with.
-     * @throws IOException indicates an I/O exception occurred
+     * @return Array containing the {@link Profile profiles} this value is 
+     * associated with.
+     * @throws IOException if there was a problem accessing data file.
      */
     @SuppressWarnings("DoubleCheckedLocking")
     public Profile[] getProfiles() throws IOException {
@@ -132,8 +142,8 @@ public class Value extends BaseEntity {
     private volatile Profile[] profiles;
 
     /**
-     * @return The property the value relates to.
-     * @throws IOException indicates an I/O exception occurred
+     * @return The {@link Property} the value relates to.
+     * @throws IOException if there was a problem accessing data file.
      */
     @SuppressWarnings("DoubleCheckedLocking")
     public Property getProperty() throws IOException {
@@ -152,8 +162,8 @@ public class Value extends BaseEntity {
     final int propertyIndex;
 
     /**
-     * @return The component the value relates to.
-     * @throws IOException indicates an I/O exception occurred
+     * @return The {@link Component} the value relates to.
+     * @throws IOException if there was a problem accessing data file.
      */
     public Component getComponent() throws IOException {
         return getProperty().getComponent();
@@ -162,7 +172,7 @@ public class Value extends BaseEntity {
     /**
      * @return A description of the value suitable to be displayed to end users
      * via a user interface.
-     * @throws IOException indicates an I/O exception occurred
+     * @throws IOException if there was a problem accessing data file.
      */
     @SuppressWarnings("DoubleCheckedLocking")
     public String getDescription() throws IOException {
@@ -183,7 +193,7 @@ public class Value extends BaseEntity {
 
     /**
      * @return A URL to more information about the value if present.
-     * @throws IOException indicates an I/O exception occurred
+     * @throws IOException if there was a problem accessing data file.
      */
     @SuppressWarnings("DoubleCheckedLocking")
     public URL getUrl() throws IOException {
@@ -203,12 +213,12 @@ public class Value extends BaseEntity {
     private final int urlIndex;
 
     /**
-     * Constructs a new instance of Value
+     * Constructs a new instance of Value.
      *
-     * @param dataSet The data set the value is contained within
-     * @param index The index in the data structure to the value
+     * @param dataSet the {@link Dataset} the value is contained within.
+     * @param index the index in the data structure to the value.
      * @param reader Reader connected to the source data structure and
-     * positioned to start reading
+     * positioned to start reading.
      */
     public Value(Dataset dataSet, int index, BinaryReader reader) {
         super(dataSet, index);
@@ -224,8 +234,10 @@ public class Value extends BaseEntity {
      * initialisation steps that require other items in the data set can be
      * completed. The Profiles and Signatures are not initialised as they are
      * very rarely used and take a long time to initialise.
+     * <p>
+     * This method should not be called as it is part of the internal logic.
      *
-     * @throws IOException indicates an I/O exception occurred
+     * @throws IOException if there was a problem accessing data file.
      */
     public void init() throws IOException {
         name = getDataSet().strings.get(nameIndex).toString();
@@ -289,6 +301,12 @@ public class Value extends BaseEntity {
         return result;
     }
 
+    /**
+     * Compares two values by name.
+     * 
+     * @param value name of value to compare the current value against.
+     * @return integer representing difference.
+     */
     public int compareTo(String value) {
         try {
             return getName().compareTo(value);
@@ -301,8 +319,8 @@ public class Value extends BaseEntity {
      * Compares this value to another using the index field if they're in the
      * same list other wise the name value.
      *
-     * @param other The value to be compared against
-     * @return Indication of relative value based on index field
+     * @param other The value to be compared against.
+     * @return Indication of relative value based on index field.
      */
     public int compareTo(Value other) {
         if (getDataSet() == other.getDataSet()) {
@@ -318,7 +336,7 @@ public class Value extends BaseEntity {
     /**
      * Returns the value as a string.
      *
-     * @return the value name as a string
+     * @return the value name as a string.
      */
     @Override
     public String toString() {
@@ -331,7 +349,7 @@ public class Value extends BaseEntity {
 
     /**
      * @return Returns the value as a number.
-     * @throws IOException indicates an I/O exception occurred
+     * @throws IOException if there was a problem accessing data file.
      */
     @SuppressWarnings("DoubleCheckedLocking")
     public double toDouble() throws IOException {
@@ -341,10 +359,12 @@ public class Value extends BaseEntity {
                 localAsNumber = asNumber;
                 if (localAsNumber == null) {
                     try {
-                        asNumber = localAsNumber = Double.parseDouble(getName());
+                        asNumber = localAsNumber = 
+                                Double.parseDouble(getName());
                     } catch (NumberFormatException e) {
                         if (this != getProperty().getDefaultValue()) {
-                            asNumber = localAsNumber = getProperty().getDefaultValue().toDouble();
+                            asNumber = localAsNumber = 
+                                    getProperty().getDefaultValue().toDouble();
                         } else {
                             asNumber = localAsNumber = (double) 0;
                         }
@@ -358,7 +378,7 @@ public class Value extends BaseEntity {
 
     /**
      * @return Returns the value as a boolean.
-     * @throws IOException indicates an I/O exception occurred
+     * @throws IOException if there was a problem accessing data file.
      */
     @SuppressWarnings("DoubleCheckedLocking")
     public boolean toBool() throws IOException {
@@ -381,7 +401,7 @@ public class Value extends BaseEntity {
      *
      * @return true if the value is the null value for the property. If the
      * property has no null value false is always returned.
-     * @throws IOException indicates an I/O exception occurred
+     * @throws IOException if there was a problem accessing data file.
      */
     public boolean getIsDefault() throws IOException {
         Value defaultValue = property.getDefaultValue();
@@ -393,10 +413,11 @@ public class Value extends BaseEntity {
     
     /**
      * Returns the value as an integer.
+     * 
      * @return If the value can not convert to an integer and the value is not 
      * equal to the null value then the null value for the property will be 
      * used. If no conversion is possible 0 is returned.
-     * @throws java.io.IOException
+     * @throws java.io.IOException if there was a problem accessing data file.
      */
     @SuppressWarnings("DoubleCheckedLocking")
     public int toInt() throws IOException {

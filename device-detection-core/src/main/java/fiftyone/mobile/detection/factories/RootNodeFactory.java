@@ -26,6 +26,12 @@ import fiftyone.mobile.detection.readers.BinaryReader;
 import fiftyone.properties.DetectionConstants;
 import java.io.IOException;
 
+/**
+ * Creates new instances of a RootNode entity.
+ * <p>
+ * Objects of this class should not be created directly as they are part of the 
+ * internal logic.
+ */
 public class RootNodeFactory extends BaseEntityFactory<Node> {
 
     @Override

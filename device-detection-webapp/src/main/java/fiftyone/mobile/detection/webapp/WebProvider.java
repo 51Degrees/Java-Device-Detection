@@ -45,6 +45,19 @@ import java.util.Date;
 import java.util.UUID;
 import javax.servlet.ServletContext;
 
+/**
+ * Web version of the 51Degrees {@link Provider} class.
+ * <p>
+ * The fundamental difference between a regular provider and a Web provider is 
+ * in the way the data file is managed. Regular provider does not have a concept 
+ * of the environment it is being used in. The Web provider on the other hand 
+ * is designed to handle temporary data files in order to allow the master file 
+ * to be updated.
+ * <p>
+ * This class provides an additional match method that takes an 
+ * HttpServletRequest object to extract the HTTP headers and call a match method 
+ * that takes in a list of HTTP headers in the parent provider class.
+ */
 public class WebProvider extends Provider implements Closeable {
 
     /**
@@ -64,7 +77,8 @@ public class WebProvider extends Provider implements Closeable {
     /**
      * Used to log information about activity.
      */
-    private final static Logger logger = LoggerFactory.getLogger(WebProvider.class);
+    private final static Logger logger = 
+            LoggerFactory.getLogger(WebProvider.class);
     /**
      * Used to store the result for the current request in the
      * HttpServletRequest's attribute collection.
@@ -79,6 +93,7 @@ public class WebProvider extends Provider implements Closeable {
     /**
      * Constructs a new instance of the web provider connected to the dataset
      * provided.
+     * 
      * @param dataSet used by the provider.
      */
     public WebProvider(Dataset dataSet) {
@@ -88,6 +103,7 @@ public class WebProvider extends Provider implements Closeable {
     /**
      * Constructs a new instance of the web provider connected to the dataset
      * provided with a cache of specific size.
+     * 
      * @param dataSet used by the provider.
      * @param cacheSize number of cache entries.
      */
@@ -127,6 +143,7 @@ public class WebProvider extends Provider implements Closeable {
      * @param sc Servlet context for the request.
      * @return a reference to the active provider.
      */
+    @SuppressWarnings("DoubleCheckedLocking")
     public static WebProvider getActiveProvider(ServletContext sc) {
         if (activeProvider == null) {
             synchronized (lock) {
@@ -139,8 +156,7 @@ public class WebProvider extends Provider implements Closeable {
     }
 
     /**
-     *
-     * @param sc
+     * @param sc current ServletContext.
      * @return the binary file path from the configuration file
      */
     static File getBinaryFilePath(ServletContext sc) {
@@ -360,8 +376,7 @@ public class WebProvider extends Provider implements Closeable {
                         + " cause.",
                         binaryFile),
                         ex);
-                // Reset the provider to enable it to be created from the embedded 
-                // data.
+                // Reset the provider.
                 provider = null;
             }
         }
@@ -401,35 +416,6 @@ public class WebProvider extends Provider implements Closeable {
         }
         return super.match(headers);
     }
-    
-    /**
-     * The function has been re-written. The original function was causing 
-     * the detection result to always return the default profile. Reason being 
-     * that HttpServletRequest provides HTTP headers as lower-case strings 
-     * where as the combination of lower and upper case letters was expected 
-     * by the match method.
-     * 
-     * Converts the request headers into a map and then passed the map to the
-     * base implementation of the matcher.
-     *
-     * @param request
-     * @return
-     */
-    /*
-    public Match match(HttpServletRequest request) throws IOException {
-        HashMap headers = new HashMap<String, String>();
-        Enumeration<String> headerNames = request.getHeaderNames();
-        while (headerNames.hasMoreElements()) {
-            String headerName = headerNames.nextElement();
-            // Add the first value for the header name, if any, to the map.
-            Enumeration<String> headerValues = request.getHeaders(headerName);
-            if (headerValues.hasMoreElements()) {
-                headers.put(headerName, headerValues.nextElement());
-            }
-        }
-        return super.match(headers);
-    }
-    */
 
     /**
      * Obtains the match result from the request container, then the session and
@@ -440,10 +426,11 @@ public class WebProvider extends Provider implements Closeable {
      * @return a match object with properties associated with the device
      * @throws IOException
      */
-    public static Map<String, String[]> getResult(final HttpServletRequest request)
-            throws IOException {
+    public static Map<String, String[]> getResult(
+                        final HttpServletRequest request) throws IOException {
         boolean hasOverrides = ProfileOverride.hasOverrides(request);
-        Map<String, String[]> results = (Map<String, String[]>) request.getAttribute(RESULT_ATTIBUTE);
+        Map<String, String[]> results = 
+                (Map<String, String[]>) request.getAttribute(RESULT_ATTIBUTE);
         //HttpSession session = request.getSession();
 
         // If there are no results already for the request, or there are 
@@ -478,6 +465,8 @@ public class WebProvider extends Provider implements Closeable {
     /**
      * Forces a new active provider to be created by setting the current one to
      * null.
+     * 
+     * @throws java.io.IOException if there was a problem accessing data file.
      */
     public static void refresh() throws IOException {
         if (activeProvider != null) {
