@@ -35,6 +35,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * Every time a cache item is used the "age" of the item used is updated.
  * <p>
  * This class should not be called as it is part of the internal logic.
+ * //TODO: talk about the doubly list list and the cache usage and how it speed things up.
  * 
  * @param <K> Key for the cache items.
  * @param <V> Value for the cache items.
@@ -53,8 +54,8 @@ public class Cache<K, V> {
         }
     }
 
-    class Node {
-        final KeyValuePair item;
+    class Node<T> {
+        final T item;
         Node next;
         Node previous;
         DoublyLinkedList list;
@@ -63,7 +64,7 @@ public class Cache<K, V> {
             return list;
         }
 
-        public Node(KeyValuePair item) {
+        public Node(T item) {
             this.item = item;
         }
     }
@@ -270,7 +271,8 @@ public class Cache<K, V> {
                 }
             }
         }
-        return node.item.value;
+        KeyValuePair kvp = (KeyValuePair)node.item;
+        return kvp.value;
     }
     
     /**
@@ -279,7 +281,8 @@ public class Cache<K, V> {
     private void removeLeastRecent() {
         if (hashMap.size() > cacheSize) {
             Node removedNode = linkedList.removeLast();
-            assert hashMap.remove(removedNode.item.key) != null;
+            KeyValuePair kvp = (KeyValuePair)removedNode.item;
+            assert hashMap.remove(kvp.key) != null;
             assert hashMap.size() == cacheSize;
         }
     }
