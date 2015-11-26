@@ -126,7 +126,7 @@ public class MetadataExample implements Closeable {
 
 
     public static void main(String[] args) throws IOException {
-        System.out.println("Starting Offline Processing Example");
+        System.out.println("Starting Metadata Example");
         System.out.print("Loading dataset ...\r");
         MetadataExample example = new MetadataExample();
         try {
