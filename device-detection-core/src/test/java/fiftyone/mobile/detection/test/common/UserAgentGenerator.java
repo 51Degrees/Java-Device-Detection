@@ -136,7 +136,6 @@ public class UserAgentGenerator extends UserAgentGeneratorLoader {
      * @return a string iterable returning User-Agents that match the pattern.
      */
     public static Iterable<String> getUserAgentsIterable(final String pattern) {
-        // TODO it would be quicker if the pattern were supplied precompiled by the caller
         final Pattern regex = Pattern.compile(pattern);
         return new Iterable<String>() {
             @Override

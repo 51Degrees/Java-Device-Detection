@@ -21,14 +21,14 @@
 package fiftyone.mobile.detection.entities.stream;
 
 /**
- * Lists that use a cache can return information about the cache
- * misses for performance analysis. They implement this interface
- * to provide this data to the DataSet.
- * // TODO: list implements interfaced can be cached. Exposes cache stats. used for performance tuning purposes.
+ * Interface provides access to the cache statistics which can be used for 
+ * performance tuning purposes. Used in conjunction with lists where items can 
+ * be cached.
  */
 public interface ICacheList {
     /**
      * Returns the percentage of cache misses.
+     * 
      * @return the percentage of cache misses.
      */
     double getPercentageMisses();
@@ -37,6 +37,7 @@ public interface ICacheList {
      * The number of times the lists have been switched.
      * Note: The LRU does not require switching and this method has been 
      * deprecated.
+     * 
      * @return The number of times the lists have been switched.
      */
     @Deprecated
