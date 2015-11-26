@@ -66,7 +66,7 @@ import java.util.ArrayList;
  * profiles (one profile per component).
  * <!-- snippet -->
  */
-public class MatchFromDeviceId {
+public class MatchForDeviceId {
     
     // Device detection provider which takes User-Agents and returns matches.
     protected final Provider provider;
@@ -80,7 +80,7 @@ public class MatchFromDeviceId {
      * Creates new provider object with the Stream dataset.
      * @throws IOException if there was a problem accessing the data file.
      */
-    public MatchFromDeviceId() throws IOException {
+    public MatchForDeviceId() throws IOException {
         provider = new Provider(StreamFactory.create(
                 Shared.getLitePatternV32(), false));
     }
@@ -97,7 +97,7 @@ public class MatchFromDeviceId {
      * @throws IOException 
      */
     public static void main(String[] args) throws IOException {
-        MatchFromDeviceId device = new MatchFromDeviceId();
+        MatchForDeviceId device = new MatchForDeviceId();
         // Get device Id for some User-Agent.
         Match matchFromUA = device.matchForUserAgent(device.mobileUserAgent);
         // Store for future use.
