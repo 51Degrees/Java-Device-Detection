@@ -39,10 +39,31 @@ package fiftyone.properties;
  * </ul>
  */
 public enum MatchMethods {
+    /**
+     * No match could be determined between the target User-Agent and the list 
+     * of signatures. Defaults were used.
+     */
     NONE(0),
+    /**
+     * The signature returned matches precisely with the target User-Agent.
+     */
     EXACT(1),
+    /**
+     * The signature returned matches the target User-Agent with only minor 
+     * differences between numeric numbers.
+     */
     NUMERIC(2),
+    /**
+     * NEAREST The signature returned contains all the same sub strings as
+     *  the target User-Agent, but there are minor differences in position.
+     */
     NEAREST(3),
+    /**
+     * No signature matched precisely and some relevant characters may be 
+     * different between the returned signature and the target User-Agent.
+     * The Match.Confidence property should be used to determine the degree 
+     * of difference.
+     */
     CLOSEST(4);
     
     private final int method;
