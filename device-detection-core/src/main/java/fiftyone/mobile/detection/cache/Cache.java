@@ -34,8 +34,22 @@ import java.util.concurrent.atomic.AtomicLong;
  * was used when in order to discard the least recently used items first.
  * Every time a cache item is used the "age" of the item used is updated.
  * <p>
+ * Cache is implemented using the doubly linked list of Nodes where each Node 
+ * tracks the next and previous Node and contains a value. Cache entries are 
+ * stored as a Key : Value pair.
+ * <p>
+ * For a vast majority of the real life environments a constant stream of unique 
+ * user-Agents is a fairly rare event. Usually the same User-Agent can be 
+ * encountered multiple times within a fairly short period of time as the user 
+ * is making a subsequent request. Caching frequently occurring User-Agents 
+ * improved detection speed considerably.
+ * <p>
+ * Some devices are also more popular than others and while the User-Agents for 
+ * such devices may differ, the combination of components used would be very 
+ * similar. Therefore internal caching is also used to take advantage of the 
+ * more frequently occurring entities.
+ * <p>
  * This class should not be called as it is part of the internal logic.
- * //TODO: talk about the doubly list list and the cache usage and how it speed things up.
  * 
  * @param <K> Key for the cache items.
  * @param <V> Value for the cache items.
