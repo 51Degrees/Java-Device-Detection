@@ -51,7 +51,6 @@ public class Results {
 
     public final HashMap<MatchMethods, AtomicInteger> methods;
 
-    // TODO do not understand why this works this way
     public long getElapsedTime() {
         synchronized(this) {
             if (elapsedTime == 0) {
@@ -242,7 +241,7 @@ public class Results {
                 fail("Could not submit task for execution " + e1.getMessage() + Arrays.asList(e1.getStackTrace()));
             }
 
-            // Wait for all the futures to complete. Allow TODO this was 20 millis but the tests actually need much longer
+            // Wait for all the futures to complete.
             // milliseconds per test which is generally the longest
             // anything should take even on a very slow system or where
             // memory checks are being performed.
