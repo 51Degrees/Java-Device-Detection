@@ -68,6 +68,17 @@ public abstract class ProfileFactory extends BaseEntityFactory<Profile> {
             (entity.getSignatureIndexes().length * 4);
     }
     
+    /**
+     * Returns a new Profile object. Implementation differs for memory and 
+     * stream.
+     * 
+     * @param dataSet the data set whose profile list the profile is contained 
+     *                within.
+     * @param index the offset to the start of the profile within the profile 
+     *              data structure.
+     * @param reader Binary reader positioned at the start of the Profile.
+     * @return A new instance of an Profile.
+     */
     protected abstract Profile construct(Dataset dataSet, int index,
             BinaryReader reader);
 }

@@ -32,8 +32,16 @@ package fiftyone.mobile.detection.entities;
  */
 public class Guid {
 
+    /**
+     * Contains the GUID data.
+     */
     public final byte[] data;
 
+    /**
+     * Constructs a new GUID.
+     * 
+     * @param data byte array representing GUID.
+     */
     public Guid(byte[] data) {
         this.data = data;
     }

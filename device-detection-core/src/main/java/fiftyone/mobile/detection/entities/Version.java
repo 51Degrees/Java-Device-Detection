@@ -48,7 +48,14 @@ public class Version {
      * Revision number. I.e., x.x.x.6.
      */
     public final int revision;
-
+    /**
+     * Creates a new Version object.
+     * 
+     * @param major version 3.x.x.x.
+     * @param minor version x.3.x.x.
+     * @param build version x.x.3.x.
+     * @param revision  version x.x.x.3.
+     */
     public Version(int major, int minor, int build, int revision) {
         this.major = major;
         this.minor = minor;

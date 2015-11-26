@@ -36,6 +36,13 @@ public class Profile extends fiftyone.mobile.detection.entities.Profile {
     private final int signatureIndexesCount;
     private final Pool pool;
     
+    /**
+     * Constructs a new Profile object.
+     * 
+     * @param dataSet the data set the profile is contained within.
+     * @param index the index in the data structure to the profile.
+     * @param reader BinaryReader object to be used.
+     */
     public Profile(Dataset dataSet, int index, BinaryReader reader) {
         super(dataSet, index, reader);
         this.pool = dataSet.pool;

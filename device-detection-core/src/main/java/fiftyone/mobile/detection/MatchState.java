@@ -124,6 +124,8 @@ public class MatchState extends MatchResult
 
     /**
      * Increments the lowest score recorded for the signature that was found.
+     * 
+     * @param value to increment by.
      */    
     public void incrLowestScore(int value) {
         super.lowestScore += value;
