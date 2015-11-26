@@ -33,13 +33,13 @@ import org.junit.Test;
 /**
  *
  */
-public class MatchFromDeviceIdTest {
+public class MatchForDeviceIdTest {
     
-    static MatchFromDeviceId mfdi;
+    static MatchForDeviceId mfdi;
     
     @BeforeClass
     public static void setUp() throws IOException {
-        mfdi = new MatchFromDeviceId();
+        mfdi = new MatchForDeviceId();
     }
     
     @AfterClass
