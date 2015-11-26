@@ -41,7 +41,20 @@ package fiftyone.mobile.detection.entities;
  * 51Degrees pattern data model</a>.
  */
 public enum Modes {
+    /**
+     * The device data is loaded into memory. Offers the fastest device 
+     * detection in Java managed code, but a slower startup time.
+     */
     FILE,
+    /**
+     * he device data is loaded into memory. Offers the fastest device 
+     * detection in Java managed code, but a slower startup time.
+     */
     MEMORY,
+    /**
+     * The device data is loaded into memory as a byte array. 
+     * Java class instances are created when needed and then cleared from the 
+     * cache.
+     */
     MEMORY_MAPPED
 }

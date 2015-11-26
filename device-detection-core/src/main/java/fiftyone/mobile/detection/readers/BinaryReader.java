@@ -47,11 +47,22 @@ public class BinaryReader implements Closeable {
     private ByteBuffer byteBuffer;
     private FileChannel channel;
 
+    /**
+     * Creates a new BinaryReader object from byte array.
+     * 
+     * @param data byte array to use as the source.
+     */
     public BinaryReader(byte[] data) {
         byteBuffer = ByteBuffer.wrap(data);
         byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
     }
     
+    /**
+     * Creates a new BinaryReader object from file input stream.
+     * 
+     * @param fileInputStream an open stream to the data file.
+     * @throws IOException if there was a problem accessing data file.
+     */
     public BinaryReader(FileInputStream fileInputStream) throws IOException {
         channel = fileInputStream.getChannel();
         byteBuffer = channel.map(
@@ -61,15 +72,28 @@ public class BinaryReader implements Closeable {
         byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
     }
 
+    /**
+     * Creates a new BinaryReader from a byte buffer.
+     * 
+     * @param byteBuffer mapped to the data file.
+     */
     public BinaryReader(ByteBuffer byteBuffer) {
         this.byteBuffer = byteBuffer;
         this.byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
     }
 
+    /**
+     * Sets position.
+     * 
+     * @param pos position to set.
+     */
     public void setPos(int pos) {
         byteBuffer.position(pos);
     }
     
+    /**
+     * @return current position in the byte buffer.
+     */
     public int getPos() {
         return byteBuffer.position();
     }

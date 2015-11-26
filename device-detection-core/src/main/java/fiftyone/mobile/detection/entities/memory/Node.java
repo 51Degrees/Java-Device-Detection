@@ -37,12 +37,20 @@ import fiftyone.mobile.detection.readers.BinaryReader;
  */
 public abstract class Node extends fiftyone.mobile.detection.entities.Node {
     
+    /**
+     * Creates a new Node object for use with memory mode.
+     * 
+     * @param dataSet the data set the item is contained within.
+     * @param offset the offset in the data structure to the node.
+     * @param reader BinaryReader object to be used.
+     */
     public Node(Dataset dataSet, int offset, BinaryReader reader) {
         super(dataSet, offset, reader);
     }
 
     /**
      * An array of all the numeric children.
+     * 
      * @return An array of all the numeric children.
      */
     @Override

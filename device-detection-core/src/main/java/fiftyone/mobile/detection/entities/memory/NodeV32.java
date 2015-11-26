@@ -119,6 +119,7 @@ public class NodeV32 extends Node{
      * @throws java.io.IOException if there was a problem accessing data file.
      */
     @Override
+    @SuppressWarnings("DoubleCheckedLocking")
     public int[] getRankedSignatureIndexes() throws IOException {
         int[] localRankedSignatureIndexes = rankedSignatureIndexes;
         if (localRankedSignatureIndexes == null) {

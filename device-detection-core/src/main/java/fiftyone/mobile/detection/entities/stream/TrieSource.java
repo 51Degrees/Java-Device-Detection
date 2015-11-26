@@ -37,7 +37,8 @@ public class TrieSource implements Closeable {
 
     private final FileInputStream fileInputStream;
 
-    public TrieSource(String filename, boolean isTempFile) throws FileNotFoundException {
+    public TrieSource(String filename, boolean isTempFile) 
+                                                throws FileNotFoundException {
         fileInputStream = new FileInputStream(filename);
     }
 
