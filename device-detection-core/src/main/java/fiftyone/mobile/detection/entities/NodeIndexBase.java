@@ -25,6 +25,7 @@ import fiftyone.mobile.detection.entities.memory.MemoryBaseList;
 import java.io.IOException;
 
 /**
+ * Base class used by all node indexes containing common functionality.
  * <p>
  * Objects of this class should not be created directly as they are part of the 
  * internal logic.

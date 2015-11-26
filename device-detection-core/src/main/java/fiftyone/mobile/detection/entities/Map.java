@@ -25,8 +25,7 @@ import fiftyone.mobile.detection.readers.BinaryReader;
 import java.io.IOException;
 
 /**
- * A node index contains the characters and related child nodes of the current
- * node should any of the characters match at the position.
+ * Class used to link a property to one or more export maps.
  * <p>
  * Objects of this class should not be created directly as they are part of the 
  * internal logic. Use the relevant {@link Dataset} method to access these 

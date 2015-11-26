@@ -31,7 +31,8 @@ import fiftyone.mobile.detection.readers.BinaryReader;
  * Class provides this functionality along with many common methods used 
  * by multiple entities.
  * <p>
- * All entities in this package extend this class.
+ * All entities in this package extend this class. Every entity contains a 
+ * unique integer key.
  * <p>
  * Objects of this class should not be created directly as they are part of the 
  * internal logic.
