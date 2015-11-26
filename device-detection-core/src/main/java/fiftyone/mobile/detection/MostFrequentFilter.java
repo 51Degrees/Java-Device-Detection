@@ -23,9 +23,9 @@ package fiftyone.mobile.detection;
 import fiftyone.mobile.detection.entities.Node;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
-import java.util.LinkedList;
-import java.util.ListIterator;
+import java.util.Comparator;
 
 /**
  * Used to find the most frequently occurring values in multiple ordered lists
@@ -35,149 +35,200 @@ import java.util.ListIterator;
  */
 class MostFrequentFilter extends ArrayList<Integer> {
     
-    private class OrderedItems implements Comparable<OrderedItems> {
-        
-        private final int[] array;
-        private int index = 0;
-        int value;
-        
-        OrderedItems(int[] array) {
-            this.array = array;
-            this.value = array[index];
-        }
-
-        boolean moveNext() {
-            index++;
-            if (index < array.length) {
-                value = array[index];
-                return true;
-            } 
-            return false;
-        }
-
-        @Override
-        public int compareTo(OrderedItems o) {
-            return value - o.value;
-        }
-    }
-    
-    private final int maxResults;
-    private int topCount = 0;
-    private int lowestCount = 0;
-    private int lowestValue;
-    private final LinkedList<OrderedItems> lists = 
-            new LinkedList<OrderedItems>();
-    
     /**
      * Constructor used for unit testing.
      * @param lists array of T arrays generated for unit testing
      * @throws IOException 
      */
     MostFrequentFilter(int[][] lists, int maxResults) {
-        this.maxResults = maxResults;
-        for (int[] list : lists) {
-            this.lists.add(new OrderedItems(list));
+        Arrays.sort(lists, new ArrayLengthComparator());
+        ArrayList<OrderedList> localLists = new ArrayList<OrderedList>();
+        for (int[] l : lists) {
+            localLists.add(new OrderedList(l));
         }
-        Init();
+        Init(localLists.toArray(new OrderedList[localLists.size()]), 
+                maxResults);
     }
     
     MostFrequentFilter(MatchState state) throws IOException {
-        this.maxResults = state.getDataSet().maxSignatures;
-        for (Node node : state.getNodesList()) {
-            this.lists.add(new OrderedItems(node.getRankedSignatureIndexes()));
+        ArrayList<OrderedList> localLists = new ArrayList<OrderedList>();
+        Node[] nds = state.getNodes().clone();
+        Arrays.sort(nds, new NodeLengthComparator());
+        for (Node node : nds) {
+            localLists.add(new OrderedList(node.getRankedSignatureIndexes()));
         }
-        Init();
+        Init(localLists.toArray(new OrderedList[localLists.size()]), 
+                state.getDataSet().maxSignatures);
     }
     
-    private void Init() {
-        Collections.sort(lists);
-        countLowest();
-        while (lists.size() > topCount || (
-               lists.size() == topCount && super.size() < this.maxResults)) {
-            if (lowestCount > topCount) {
-                super.clear();
-                topCount = lowestCount;
+    private void Init(OrderedList[] lists, int maxResults) {
+        int topCount = 0;
+        if (lists.length == 1) {
+            for (int i = 0; i < maxResults; i++) {
+                add(lists[0].items[i]);
             }
-            if (lowestCount == topCount &&
-                super.size() < this.maxResults)
-            {
-                super.add(lists.getFirst().value);
+        } else if (lists.length > 1) {
+            for (int listIndex = 0; 
+                    listIndex < lists.length && 
+                    (lists.length - listIndex) >= topCount; 
+                    listIndex++) {
+                for (OrderedList ol : lists) {
+                    ol.reset();
+                }
+                while (lists[listIndex].moveNext()) {
+                    if (getHasProcessed(lists, listIndex) == false) {
+                        int count = getCount(lists, listIndex, topCount);
+                        if (count > topCount) {
+                            topCount = count;
+                            clear();
+                        }
+                        if (count == topCount) {
+                            add(lists[listIndex].current());
+                        }
+                    }
+                }
             }
-            moveNext();
         }
         Collections.sort(this);
+        if (size() > maxResults) {
+            removeRange(maxResults, size());
+        }
     }
     
-    private void moveNext() {
-        if (lists.size() == 1) {
-            // Only one node in the list left so just
-            // move this one on and set the count at one.
-            if (lists.getFirst().moveNext() == false) {
-                lists.removeFirst();
-                lowestCount = 0; 
-            }
-            else {
-                lowestCount = 1;
+    /**
+     * If the value of the target node has already been processed because
+     * it's contained in a previous list then return true. If not and
+     * it still needs to be checked return false.
+     * 
+     * @param lists OrderedList array being filtered.
+     * @param index Index of the list whose current value should be checked in 
+     * prior lists.
+     * @return True if the value has been processed, otherwise false.
+     */
+    private boolean getHasProcessed(OrderedList[] lists, int index) {
+        for (int i = (index - 1); i >= 0; i--) {
+            if (lists[i].contains(lists[index].current())) {
+                return true;
             }
         }
-        else {
-            // Move down the list those nodes with higher values
-            // once incremented.
-            moveLowest();
-
-            // Get the number of identical low values.
-            countLowest();
+        return false;
+    }
+    
+    /**
+     * Returns the number of lists the target value is contained in.
+     * 
+     * @param lists being filtered.
+     * @param index of the list whose current value should be counted.
+     * @param topCount highest count so far.
+     * @return Number of lists that contain the value held by the list at the 
+     * index.
+     */
+    private int getCount(OrderedList[] lists, int index, int topCount) {
+        int count = 1;
+        for (int i = index + 1; 
+                i < lists.length && 
+                (lists.length - index + count) > topCount; 
+                i++) {
+            if (lists[i].contains(lists[index].current())) {
+                count++;
+            }
+        }
+        return count;
+    }
+    
+    /**
+     * Fronts an array of integers. Used to identify duplicate items in the 
+     * lists that are being filtered.
+     */
+    private class OrderedList {
+        private final int[] items;
+        private int nextStartIndex;
+        private int currentIndex;
+        
+        /**
+         * Constructs a new instance of the OrderedList.
+         * 
+         * @param items Array of integers to include in the list.
+         */
+        OrderedList(int[] items) {
+            this.items = items;
+            this.nextStartIndex = 0;
+            this.currentIndex = -1;
+        }
+        
+        /**
+         * Determines if the ordered list contains the value requested.
+         * Updates the start index as we know the next request to this method 
+         * will always be for a value larger than the one just passed.
+         * 
+         * @param value integer to be checked in the list.
+         * @return True if the list contains the value, otherwise false.
+         */
+        boolean contains(int value) {
+            int itemIndex = Arrays.binarySearch(
+                    this.items, 
+                    this.nextStartIndex, 
+                    this.items.length - 1, 
+                    value);
+            this.nextStartIndex = itemIndex +1;
+            if (itemIndex < 0) {
+                this.nextStartIndex = ~itemIndex;
+            }
+            return itemIndex >= 0;
+        }
+        
+        /**
+         * @return current index.
+         */
+        int current() {
+            return this.items[this.currentIndex];
+        }
+        
+        /**
+         * Increments index and returns True if the new index is still within 
+         * array range, False otherwise. Invoking this method WILL INCREASE the 
+         * index.
+         * 
+         * @return True if new index is within bounds of the current array, 
+         * False otherwise.
+         */
+        boolean moveNext() {
+            this.currentIndex++;
+            return this.currentIndex < this.items.length;
+        }
+        
+        /**
+         * Resets the current and start indexes.
+         */
+        void reset() {
+            this.currentIndex = -1;
+            this.nextStartIndex = 0;
         }
     }
-
-    /**
-     * Move all the nodes that are at the lowest value on by one ensuring they 
-     * continue to be represented in ascending order of lowest value.
-     */
-    private void moveLowest() {
-        OrderedItems node = lists.getFirst();
-        while (node != null && node.value == lowestValue) {
-            if (node.moveNext() == false) {
-                lists.remove(node);
+    
+    private class NodeLengthComparator implements Comparator<Node> {
+        @Override
+        public int compare(Node n1, Node n2) {
+            try {
+                if (n1.getRankedSignatureIndexes().length > 
+                        n2.getRankedSignatureIndexes().length) {
+                    return 1;
+                }
+            } catch (IOException ex) {
+                System.err.println("ERROR");
             }
-            else {
-                sortLowest();
-            }
-            node = lists.peekFirst();
+            
+            return -1;
         }
     }
-
-    /**
-     * Count the number of nodes with the same lowest value.
-     */
-    private void countLowest() {
-        lowestCount = 0;
-        ListIterator<OrderedItems> iterator = lists.listIterator();
-        OrderedItems node = iterator.hasNext() ? iterator.next() : null;
-        if (node != null) {
-            lowestValue = node.value;
-            do {
-                lowestCount++;
-                node = iterator.hasNext() ? iterator.next() : null;
-            } while (node != null &&
-                node.value == lowestValue);
+    
+    private class ArrayLengthComparator implements Comparator<int[]> {
+        @Override
+        public int compare(int[] t, int[] t1) {
+                if (t.length > t1.length) {
+                        return 1;
+                }
+                return -1;
         }
     }
-
-    /**
-     * Moves the first node down the list to maintain ordering based on the 
-     * value of the current value for each node.
-     */
-    private void sortLowest() {
-        ListIterator<OrderedItems> iterator = lists.listIterator();
-        OrderedItems firstNode = iterator.next();
-        OrderedItems node = iterator.hasNext() ? iterator.next() : null;
-        while(node != null && firstNode.value > node.value) {
-            node = iterator.hasNext() ? iterator.next() : null;
-        }
-        if (node == null || iterator.previous() != firstNode) {
-            iterator.add(firstNode);
-            lists.removeFirst();
-        }
-    }    
 }
