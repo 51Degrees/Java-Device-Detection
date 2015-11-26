@@ -27,7 +27,8 @@ import java.io.IOException;
 
 /**
  * Extends {@link Component} by providing implementation for the 
- * {@link #getHttpheaders()} method.
+ * {@link #getHttpheaders()} method. Headers for version 3.1 are hard coded 
+ * into the Constants.
  * <p>
  * Objects of this class should not be created directly as they are part of the 
  * internal logic. Use the relevant {@link Dataset} method to access these 

@@ -39,7 +39,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * stored as a Key : Value pair.
  * <p>
  * For a vast majority of the real life environments a constant stream of unique 
- * user-Agents is a fairly rare event. Usually the same User-Agent can be 
+ * User-Agents is a fairly rare event. Usually the same User-Agent can be 
  * encountered multiple times within a fairly short period of time as the user 
  * is making a subsequent request. Caching frequently occurring User-Agents 
  * improved detection speed considerably.
