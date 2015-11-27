@@ -29,9 +29,10 @@ import org.junit.experimental.categories.Category;
 @Category(TestType.TypeUnit.class)
 public class MostFrequentFilterTest extends DetectionTestSupport {
  
-    private static final int NUMBER_OF_ELEMENTS = 10000;
+    private static final int NUMBER_OF_ARRAYS = 10;
     
-    private static final int NUMBER_OF_ARRAYS = 5;
+    private static final int NUMBER_OF_ELEMENTS = 
+            Short.MAX_VALUE / NUMBER_OF_ARRAYS;
     
     private int[] createArray(int size, int firstValue, int increment) {
         int[] array = new int[size];
@@ -50,7 +51,7 @@ public class MostFrequentFilterTest extends DetectionTestSupport {
         for (int i = 0; i < arrays.length; i++) {
             arrays[i] = createArray(NUMBER_OF_ELEMENTS, 0, 1);
         }
-        MostFrequentFilter filter = 
+        MostFrequentFilter filter =
                 new MostFrequentFilter(arrays, Integer.MAX_VALUE);
         assertTrue(filter.size() == NUMBER_OF_ELEMENTS);
         for (int i = 0; i < arrays[0].length; i++) {

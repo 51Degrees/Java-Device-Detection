@@ -43,13 +43,11 @@ class MostFrequentFilter extends ArrayList<Integer> {
      * @throws IOException if there was a problem accessing data file.
      */
     MostFrequentFilter(int[][] lists, int maxResults) {
-        Arrays.sort(lists, new ArrayLengthComparator());
-        ArrayList<OrderedList> localLists = new ArrayList<OrderedList>();
-        for (int[] l : lists) {
-            localLists.add(new OrderedList(l));
+        OrderedList[] localLists = new OrderedList[lists.length];
+        for (int i = 0; i < lists.length; i++) {
+            localLists[i] = new OrderedList(lists[i]);
         }
-        Init(localLists.toArray(new OrderedList[localLists.size()]), 
-                maxResults);
+        Init(localLists, maxResults);
     }
     
     /**
@@ -62,14 +60,12 @@ class MostFrequentFilter extends ArrayList<Integer> {
      * @throws IOException if there was a problem accessing data file.
      */
     MostFrequentFilter(MatchState state) throws IOException {
-        ArrayList<OrderedList> localLists = new ArrayList<OrderedList>();
-        Node[] nds = state.getNodes().clone();
-        Arrays.sort(nds, new NodeLengthComparator());
-        for (Node node : nds) {
-            localLists.add(new OrderedList(node.getRankedSignatureIndexes()));
+        OrderedList[] localLists = new OrderedList[state.getNodes().length];
+        for (int i = 0; i < state.getNodes().length; i++) {
+            localLists[i] = new OrderedList(
+                    state.getNodes()[i].getRankedSignatureIndexes());
         }
-        Init(localLists.toArray(new OrderedList[localLists.size()]), 
-                state.getDataSet().maxSignatures);
+        Init(localLists, state.getDataSet().maxSignatures);
     }
     
     /**
@@ -83,10 +79,19 @@ class MostFrequentFilter extends ArrayList<Integer> {
     private void Init(OrderedList[] lists, int maxResults) {
         int topCount = 0;
         if (lists.length == 1) {
+            if (lists[0].items.length < maxResults) {
+                maxResults = lists[0].items.length;
+            }
             for (int i = 0; i < maxResults; i++) {
                 add(lists[0].items[i]);
             }
         } else if (lists.length > 1) {
+            Arrays.sort(lists, new Comparator<OrderedList>() {
+                @Override
+                public int compare(OrderedList o1, OrderedList o2) {
+                return o1.items.length - o2.items.length;
+                }
+            });
             for (int listIndex = 0; 
                     listIndex < lists.length && 
                     (lists.length - listIndex) >= topCount; 
@@ -187,11 +192,13 @@ class MostFrequentFilter extends ArrayList<Integer> {
             int itemIndex = Arrays.binarySearch(
                     this.items, 
                     this.nextStartIndex, 
-                    this.items.length - 1, 
+                    this.items.length, 
                     value);
-            this.nextStartIndex = itemIndex +1;
             if (itemIndex < 0) {
                 this.nextStartIndex = ~itemIndex;
+            }
+            else {
+                this.nextStartIndex = itemIndex + 1;
             }
             return itemIndex >= 0;
         }
@@ -222,39 +229,6 @@ class MostFrequentFilter extends ArrayList<Integer> {
         void reset() {
             this.currentIndex = -1;
             this.nextStartIndex = 0;
-        }
-    }
-    
-    /**
-     * Comparator for two Nodes. The number of ranked signature indexes used to 
-     * determine the larger/smaller Node.
-     */
-    private class NodeLengthComparator implements Comparator<Node> {
-        @Override
-        public int compare(Node n1, Node n2) {
-            try {
-                if (n1.getRankedSignatureIndexes().length > 
-                        n2.getRankedSignatureIndexes().length) {
-                    return 1;
-                }
-            } catch (IOException ex) {
-                System.err.println("ERROR");
-            }
-            
-            return -1;
-        }
-    }
-    
-    /**
-     * Comparator for two integer arrays.
-     */
-    private class ArrayLengthComparator implements Comparator<int[]> {
-        @Override
-        public int compare(int[] t, int[] t1) {
-                if (t.length > t1.length) {
-                        return 1;
-                }
-                return -1;
         }
     }
 }
