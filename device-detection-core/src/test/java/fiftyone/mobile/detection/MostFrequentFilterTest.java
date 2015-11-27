@@ -26,7 +26,7 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-@Category(TestType.TypeUnit.class)
+@Category(TestType.TypeApi.class)
 public class MostFrequentFilterTest extends DetectionTestSupport {
  
     private static final int NUMBER_OF_ARRAYS = 10;
@@ -151,6 +151,23 @@ public class MostFrequentFilterTest extends DetectionTestSupport {
         assertTrue(filter.size() == NUMBER_OF_ELEMENTS);
         for (int i = 0; i < arrays[0].length; i++) {
             assertTrue(filter.get(i) == arrays[0][i]);
+        }
+    }
+    
+    @Test
+    public void maxResults() {
+        int[][] arrays = new int[4][];
+        int startValue = 1;
+        for (int i = 2; i >= 0; i -= 2) {
+            arrays[i] = createArray(NUMBER_OF_ELEMENTS, startValue, 1);
+            arrays[i + 1] = createArray(NUMBER_OF_ELEMENTS, startValue, 1);
+            startValue += arrays[i].length;
+        }
+        MostFrequentFilter filter = 
+                new MostFrequentFilter(arrays, NUMBER_OF_ELEMENTS / 10);
+        assertTrue(filter.size() == NUMBER_OF_ELEMENTS / 10);
+        for (int i = 0; i < filter.size() - 1; i++) {
+            assertTrue(filter.get(i) < filter.get(i + 1));
         }
     }
 }
