@@ -20,6 +20,15 @@
  * ********************************************************************* */
 package fiftyone.mobile.detection.entities;
 
+/**
+ * <p>
+ * Objects of this class should not be created directly as they are part of the 
+ * internal logic.
+ * <p>
+ * For more information see: 
+ * <a href="https://51degrees.com/support/documentation/device-detection-data-model">
+ * 51Degrees pattern data model</a>.
+ */
 class Range {
 
     final short lower;
@@ -31,6 +40,6 @@ class Range {
     }
 
     boolean inRange(int value) {
-        return value >= lower && value <= upper;
+        return value >= lower && value < upper;
     }
 }

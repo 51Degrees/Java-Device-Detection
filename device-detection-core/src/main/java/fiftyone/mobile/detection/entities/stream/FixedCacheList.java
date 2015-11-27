@@ -30,24 +30,25 @@ import java.io.IOException;
 /**
  * A readonly list of fixed length entity types held on persistent storage 
  * rather than in memory.
- * 
+ * <p>
  * Entities in the underlying data structure are either fixed length where the 
  * data that represents them always contains the same number of bytes, or 
  * variable length where the number of bytes to represent the entity varies.
- *
+ * <p>
  * This class uses the index of the entity in the accessor. The list is 
  * typically used by entities that need to be found quickly using a divide and 
  * conquer algorithm.
- * 
+ * <p>
  * The constructor will read the header information about the underlying data 
  * structure. The data for each entity is only loaded when requested via the 
  * accessor. A cache is used to avoid creating duplicate objects when requested 
  * multiple times.
- * 
+ * <p>
  * Data sources which don't support seeking can not be used. Specifically 
  * compressed data structures can not be used with these lists.
- * 
- * Should not be referenced directly.
+ * <p>
+ * Objects of this class should not be created directly as they are part of the 
+ * internal logic
  * 
  * @param <T> The type of BaseEntity the list will contain.
  */
@@ -63,6 +64,7 @@ public class FixedCacheList<T extends BaseEntity> extends StreamFixedList<T>
     
     /**
      * Constructs a new instance of FixedCacheList{T}.
+     * 
      * @param dataSet The DataSet being created
      * @param reader Reader connected to the source data structure and 
      * positioned to start reading.
@@ -77,6 +79,7 @@ public class FixedCacheList<T extends BaseEntity> extends StreamFixedList<T>
     
     /**
      * Returns Percentage of request that were not already held in the cache.
+     * 
      * @return Percentage of request that were not already held in the cache.
      */
     @Override
@@ -86,6 +89,7 @@ public class FixedCacheList<T extends BaseEntity> extends StreamFixedList<T>
     
     /**
      * Returns The number of times the cache has been switched.
+     * 
      * @return The number of times the cache has been switched.
      */
     @Override
@@ -95,7 +99,7 @@ public class FixedCacheList<T extends BaseEntity> extends StreamFixedList<T>
     }
 
     /**
-     * Resets the cache list stats for the list.
+     * Resets the cache list status for the list.
      */
     @Override
     public void resetCache() {
@@ -104,9 +108,10 @@ public class FixedCacheList<T extends BaseEntity> extends StreamFixedList<T>
     
     /**
      * Retrieves the entity at the offset or index requested.
+     * 
      * @param key Index or offset of the entity required.
      * @return A new instance of the entity at the offset or index.
-     * @throws java.io.IOException
+     * @throws java.io.IOException if there was a problem accessing data file.
      */
     @Override
     public T get(int key) throws IOException {
@@ -116,9 +121,10 @@ public class FixedCacheList<T extends BaseEntity> extends StreamFixedList<T>
     /**
      * Used to retrieve items from the underlying list. Called by Cache{T} when
      * a cache miss occurs.
+     * 
      * @param key index or offset of the entity required
      * @return he base lists item for the key provided
-     * @throws java.io.IOException
+     * @throws java.io.IOException if there was a problem accessing data file.
      */
     @Override
     public T fetch(Integer key) throws IOException {

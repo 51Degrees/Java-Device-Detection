@@ -6,7 +6,7 @@
  * This Source Code Form is the subject of the following patent 
  * applications, owned by 51Degrees Mobile Experts Limited of 5 Charlotte
  * Close, Caversham, Reading, Berkshire, United Kingdom RG4 7BY: 
- * European Patent Application No. 13192291.6; and 
+ * European Patent Application No. 13192291.6; and
  * United States Patent Application Nos. 14/085,223 and 14/085,301.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -18,32 +18,15 @@
  * This Source Code Form is "Incompatible With Secondary Licenses", as
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
-package fiftyone.mobile.detection;
+package fiftyone.mobile.detection.search;
 
-/**
- * Used to iterate over the closest signatures.
- * <p>
- * This class should not be called as it is part of the internal logic.
- */
-interface RankedSignatureIterator {
-
-    /**
-     * Resets the iterator to be used again.
-     */
-    void reset();
-
-    /**
-     * @return returns true if there are more elements in the next property.
-     */
-    boolean hasNext();
-
-    /**
-     * @return the next integer in the iteration.
-     */
-    int next();
-    
-    /**
-     * @return number of items in the iterator.
-     */
-    int size();
+public class SearchResult {
+    public int getIndex() {
+        return Index;
+    }
+    int Index;
+    public int getIterations() {
+        return Iterations;
+    }
+    int Iterations;
 }

@@ -33,9 +33,32 @@ import java.util.Set;
 import java.util.TreeSet;
 
 /**
- * Represents a collection of properties and values relating to a profile which
- * in turn relates to a component. Each Signature relates to one profile for
- * each component.
+ * Profile is a collection of {@link Value values} for a single 
+ * {@link Component} gathered under a unique Id.
+ * <p>
+ * All profiles belong to one of the four components: hardware, software, 
+ * crawler and browser and have a number of values associated with each profile.
+ * The contents of existing profiles should not change over time. Each value 
+ * contains a getter method for the corresponding {@link Property}.
+ * <p>
+ * Profiles make up the unique Id of a device. Each device Id consists of
+ * <p>
+ * Each profile relates to one or more {@link Signature}.
+ * <p>
+ * New profiles are added with each data file update. Some profiles may be 
+ * removed if we do not see any use of the profile for a long period of time. 
+ * Premium and Enterprise data contain a lot more profiles and hence provide 
+ * better detection results, especially for less common devices.
+ * <a href="https://51degrees.com/compare-data-options">
+ * Compare data options</a>.
+ * <p>
+ * Objects of this class should not be created directly as they are part of the 
+ * internal logic. Use the relevant {@link Dataset} method to access these 
+ * objects.
+ * <p>
+ * For more information see: 
+ * <a href="https://51degrees.com/support/documentation/device-detection-data-model">
+ * 51Degrees pattern data model</a>.
  */
 public abstract class Profile extends BaseEntity implements Comparable<Profile> {
     
@@ -71,9 +94,9 @@ public abstract class Profile extends BaseEntity implements Comparable<Profile> 
     /**
      * Constructs a new instance of the Profile
      *
-     * @param dataSet The data set the profile will be contained with in
-     * @param offset The offset of the profile in the source data structure
-     * @param reader Reader connected to the input stream
+     * @param dataSet The data set the profile will be contained within.
+     * @param offset The offset of the profile in the source data structure.
+     * @param reader Reader connected to the input stream.
      */
     public Profile(Dataset dataSet, int offset, BinaryReader reader) {
         super(dataSet, offset);
@@ -94,8 +117,9 @@ public abstract class Profile extends BaseEntity implements Comparable<Profile> 
     
     /**
      * The component the profile belongs to.
-     * @return The component the profile belongs to
-     * @throws java.io.IOException
+     * 
+     * @return The {@link Component} the profile belongs to.
+     * @throws java.io.IOException if there was a problem accessing data file.
      */
     @SuppressWarnings("DoubleCheckedLocking")
     public Component getComponent() throws IOException {
@@ -114,8 +138,9 @@ public abstract class Profile extends BaseEntity implements Comparable<Profile> 
     
     /**
      * Returns an array of properties the profile relates to.
-     * @return An array of properties associated with the profile.
-     * @throws java.io.IOException indicates an I/O exception occurred
+     * 
+     * @return array of {@link Property properties} associated with this profile.
+     * @throws java.io.IOException if there was a problem accessing data file.
      */
     @SuppressWarnings("DoubleCheckedLocking")
     public Property[] getProperties() throws IOException {
@@ -161,10 +186,10 @@ public abstract class Profile extends BaseEntity implements Comparable<Profile> 
     /**
      * Gets the values associated with the property name.
      *
-     * @param propertyName Name of the property whose values are required
-     * @return Array of the values associated with the property, or null if the
-     * property does not exist
-     * @throws IOException indicates an I/O exception occurred
+     * @param propertyName string name of the {@link Property} required.
+     * @return Array of the {@link Values} associated with the property, or null 
+     * if the property does not exist.
+     * @throws IOException if there was a problem accessing data file.
      */
     public Values getValues(String propertyName) throws IOException {
         return getValues(dataSet.properties.get(propertyName));
@@ -173,10 +198,10 @@ public abstract class Profile extends BaseEntity implements Comparable<Profile> 
     /**
      * Gets the values associated with the property.
      *
-     * @param property The property whose values are required
-     * @return Array of the values associated with the property, or null if the
-     * property does not exist
-     * @throws java.io.IOException indicates an I/O exception occurred
+     * @param property the {@link Property} whose values are required.
+     * @return Array of the {@link Values} associated with the property, or null 
+     * if the property does not exist.
+     * @throws java.io.IOException if there was a problem accessing data file.
      */
     @SuppressWarnings("DoubleCheckedLocking")
     public Values getValues(Property property) throws IOException {
@@ -250,8 +275,9 @@ public abstract class Profile extends BaseEntity implements Comparable<Profile> 
     
     /**
      * Gets the signatures related to the profile.
-     * @return Array of signatures associated with the profile.
-     * @throws java.io.IOException indicates an I/O exception occurred
+     * 
+     * @return array of {@link Signature signatures} associated with this profile.
+     * @throws java.io.IOException if there was a problem accessing data file.
      */
     @SuppressWarnings("DoubleCheckedLocking")
     public Signature[] getSignatures() throws IOException {
@@ -283,8 +309,9 @@ public abstract class Profile extends BaseEntity implements Comparable<Profile> 
     
     /**
      * Gets the values associated with the profile.
-     * @return An array of values associated with the profile.
-     * @throws java.io.IOException indicates an I/O exception occurred
+     * 
+     * @return array of {@link Value values} associated with this profile.
+     * @throws java.io.IOException if there was a problem accessing data file.
      */
     @SuppressWarnings("DoubleCheckedLocking")
     public Value[] getValues() throws IOException {
@@ -317,8 +344,10 @@ public abstract class Profile extends BaseEntity implements Comparable<Profile> 
      * Called after the entire data set has been loaded to ensure 
      * any further initialisation steps that require other items in
      * the data set can be completed.
+     * <p>
+     * This method should not be called as it is part of the internal logic.
      *
-     * @throws java.io.IOException indicates an I/O exception occurred
+     * @throws java.io.IOException if there was a problem accessing data file.
      */
     public void init() throws IOException {
         if (properties == null)
@@ -360,7 +389,7 @@ public abstract class Profile extends BaseEntity implements Comparable<Profile> 
     /**
      * A string representation of the profiles display values.
      *
-     * @return the profile as a string
+     * @return the profile as a string.
      */
     @Override
     @SuppressWarnings("DoubleCheckedLocking")
@@ -430,15 +459,17 @@ public abstract class Profile extends BaseEntity implements Comparable<Profile> 
     /**
      * A array of the indexes of the values associated with the profile in order
      * of value index in the data set values list.
-     * @return A array of the indexes of the values associated with the profile.
-     * @throws java.io.IOException
+     * 
+     * @return array of the indexes of the values associated with the profile.
+     * @throws java.io.IOException if there was a problem accessing data file.
      */
     public abstract int[] getValueIndexes() throws IOException;
     
     /**
      * An array of the signature indexes associated with the profile.
+     * 
      * @return An array of the signature indexes associated with the profile.
-     * @throws java.io.IOException
+     * @throws java.io.IOException if there was a problem accessing data file.
      */
     public abstract int[] getSignatureIndexes() throws IOException;
 }

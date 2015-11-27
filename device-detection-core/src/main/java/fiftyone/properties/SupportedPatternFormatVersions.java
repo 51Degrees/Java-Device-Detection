@@ -28,6 +28,9 @@ import java.util.Map.Entry;
 /**
  * Provides logic for storing the Enumeration values mapped to the Version 
  * objects.
+ * <p>
+ * Objects of this class should not be created directly as they are part of the 
+ * internal logic.
  */
 public class SupportedPatternFormatVersions {
     
@@ -56,6 +59,7 @@ public class SupportedPatternFormatVersions {
     
     /**
      * Check if the given format version Enum is present in the list.
+     * 
      * @param formatVersion FORMAT_VERSIONS Enum to check for.
      * @return True if such Enum exists amongst the keys.
      */
@@ -65,6 +69,7 @@ public class SupportedPatternFormatVersions {
     
     /**
      * Check if he given Version is present in the list.
+     * 
      * @param version Version object to check for.
      * @return True if such Version object exists.
      */
@@ -80,6 +85,7 @@ public class SupportedPatternFormatVersions {
     /**
      * Compare the two version objects. In order for the two versions to be the 
      * same they must have the same value for each part of the version.
+     * 
      * @param one first Version object to compare to second.
      * @param two second Version object to compare to first.
      * @return True if all version parts match.
@@ -102,6 +108,7 @@ public class SupportedPatternFormatVersions {
     
     /**
      * Get the FORMAT_VERSIONS Enum associated with the provided Version object.
+     * 
      * @param version Version object to get FORMAT_VERSIONS Enum for.
      * @return FORMAT_VERSIONS Enum corresponding to the provided Version object.
      */
@@ -118,6 +125,7 @@ public class SupportedPatternFormatVersions {
     
     /**
      * Converts the list to string.
+     * 
      * @return List as string.
      */
     @Override

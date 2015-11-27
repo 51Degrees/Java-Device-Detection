@@ -26,21 +26,26 @@ import fiftyone.mobile.detection.entities.BaseEntity;
 import java.io.Closeable;
 
 /**
- * A list which only provides those features needed to read items from the list.
+ * Provides a read-only set of features to access the list. All of the 
+ * 51Degrees entities are stored in a read-only lists within the dataset to 
+ * prevent elements elements being removed unintentionally.
  * 
  * @param <T> The type of BaseEntity the list will contain.
  */
-public interface IReadonlyList<T extends BaseEntity> extends Iterable<T>, Closeable {
+public interface IReadonlyList<T extends BaseEntity> 
+                                                extends Iterable<T>, Closeable {
     /**
      * Accessor for the list.
+     * 
      * @param i Index or offset of the entity required.
      * @return Accessor for the list.
-     * @throws IOException 
+     * @throws IOException if there was a problem accessing data file.
      */
     T get(int i) throws IOException;
 
     /**
      * Returns number of items in the list.
+     * 
      * @return number of items in the list.
      */
     int size();

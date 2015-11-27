@@ -23,13 +23,18 @@ package fiftyone.mobile.detection.cache;
 import java.io.IOException;
 
 /**
- * Source of items for the cache if the key does not already exist.
+ * Interface provides methods for load new items into cache if the item does not 
+ * already exist and to provide results.
+ * <p>
+ * This method should not be called as it is part of the internal logic.
+ * 
  * @param <K> Type of the cache key
  * @param <V> Type of the cached value
  */
 public interface ICacheLoader<K,V> {
     /**
      * Returns the value associated with the key from the source.
+     * 
      * @param key for the value required
      * @return Value associated with the key
      * @throws java.io.IOException

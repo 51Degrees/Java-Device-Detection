@@ -28,14 +28,32 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Intercepts HTTP requests of the parent Servlet to check the request path for 
+ * 51Degrees functionality such as image optimiser, core and feature JavaScript 
+ * functionality.
+ * <p>
+ * The functionality of this class will only be available when extending the 
+ * BaseServlet as:
+ * <code>public class MyServlet extends BaseServlet</code>
+ */
 @SuppressWarnings("serial")
 public final class FiftyOneDegreesServlet extends HttpServlet {
 
-    final private static Logger logger = LoggerFactory
+    private final static Logger logger = LoggerFactory
             .getLogger(FiftyOneDegreesServlet.class);
     private static final String JAVASCRIPT_CORE = "/core.js";
     private static final String JAVASCRIPT_FEATURES = "/features.js";
 
+    /**
+     * Intercepts HTTP request to extend response with 51Degrees functionality 
+     * like the image resizing, core and feature JavaScript.
+     * 
+     * @param request
+     * @param response
+     * @throws IOException
+     * @throws ServletException 
+     */
     @Override
     protected void doGet(HttpServletRequest request,
             HttpServletResponse response) throws IOException, ServletException {

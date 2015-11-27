@@ -20,12 +20,15 @@
  * ********************************************************************* */
 package fiftyone.mobile.detection.webapp;
 
+/**
+ * Contains various settings as constants.
+ */
 public class Constants {
 
     /**
      * The version of the API to report in usage sharing.
      */
-    public static final String VERSION = "3.1.8.4";
+    public static final String VERSION = "3.2.2.21";
     
     /**
      * Context parameter in the web.xml file for the file path.
@@ -85,8 +88,7 @@ public class Constants {
     
     /**
      * The number of seconds to wait between checks for new data files on the
-     * disk. Another process may have performed the
-     * update.
+     * disk. Another process may have performed the update.
      */
     public static final int FILE_CHECK_WAIT = 2 * 60;
     

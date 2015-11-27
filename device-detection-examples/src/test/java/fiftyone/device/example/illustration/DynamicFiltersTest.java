@@ -21,43 +21,48 @@
 
 package fiftyone.device.example.illustration;
 
+import fiftyone.mobile.detection.entities.Signature;
 import java.io.IOException;
+import java.util.ArrayList;
 import org.junit.AfterClass;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
- * Tests the example program prior to release. See illustration class for 
- * documentation and guidance.
+ *
  */
-public class GettingStartedStronglyTypedTest {
+public class DynamicFiltersTest {
     
-    static GettingStartedStronglyTyped gs;
+    static DynamicFilters df;
     
     @BeforeClass
     public static void setUp() throws IOException {
-        gs = new GettingStartedStronglyTyped();
+        df = new DynamicFilters();
     }
     
     @AfterClass
     public static void tearDown() throws IOException {
-        gs.close();
+        df.close();
     }
     
     @Test
-    public void testLiteGettingStartedMobileUA() throws IOException {
-        assertTrue(gs.isMobile(gs.mobileUserAgent));
-    }
-    
-    @Test
-    public void testLiteGettingStartedDesktopUA() throws IOException {
-        assertFalse(gs.isMobile(gs.desktopUserAgent));
-    }
-    
-    @Test
-    public void testLiteGettingStartedMediahubUA() throws IOException {
-        assertFalse(gs.isMobile(gs.mediaHubUserAgent));
+    public void dynamicFilter() throws IOException {
+        ArrayList<Signature> signatures;
+        int signaturesOriginal = df.signatures.size();
+        signatures = df.filterBy("IsMobile", "True", null);
+        int signaturesIsMobile = signatures.size();
+        signatures = df.filterBy("PlatformName", "Android", signatures);
+        int signaturesPlatformname = signatures.size();
+        signatures = df.filterBy("BrowserName", "Chrome", signatures);
+        int signaturesBrowserName = signatures.size();
+        
+        assertTrue(signaturesOriginal >= signaturesIsMobile);
+        assertTrue(signaturesIsMobile >= signaturesPlatformname);
+        assertTrue(signaturesPlatformname >= signaturesBrowserName);
+        
+        for (Signature sig : signatures) {
+            assertTrue(sig.getDeviceId() != null);
+        }
     }
 }

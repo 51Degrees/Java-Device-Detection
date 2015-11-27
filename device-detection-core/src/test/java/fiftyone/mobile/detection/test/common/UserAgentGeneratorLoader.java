@@ -32,9 +32,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 /**
- * Package local class to bootstrap user agent strings for {@link UserAgentGenerator}
+ * Package local class to bootstrap User-Agent strings for {@link UserAgentGenerator}
  * <p/>
- * Tests that use user agents will skip if no user agent file was found on initial load
+ * Tests that use User-Agents will skip if no User-Agent file was found on initial load
  */
 class UserAgentGeneratorLoader {
     private static Logger logger = LoggerFactory.getLogger(UserAgentGenerator.class);

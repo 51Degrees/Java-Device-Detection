@@ -30,27 +30,39 @@ import java.io.Closeable;
 import java.io.IOException;
 
 /**
+ *  <!-- snippet -->
  * Getting started example of using 51Degrees device detection match metrics 
  * information. The example shows how to;
- * 
- * 1) instantiate 51Degrees detection provider;
- * 2) pass in a single HTTP User-Agent header; and 
- * 3) obtain device Id, match method, difference and signature rank.
- * 
- * DeviceId: is consists of four components separated by a hyphen symbol:
- * Hardware-Platform-Browser-IsCrawler where each component is in turn an ID of 
- * the corresponding Profile.
- * Match method: provides information about the algorithm that was used to 
- * perform detection for a particular User-Agent. For more information on what 
- * each method means please see: 
- * https://51degrees.com/support/documentation/pattern
- * Difference: is used when detection method is not Exact or None. This is an 
- * integer value and the larger the value the less confident the detector is in 
- * this result.
- * Rank: integer value that indicates how popular the device is. The lower the 
- * rank the more popular the signature.
+ * <ol>
+ *  <li>Instantiate 51Degrees detection provider
+ *  <p><code>provider = new Provider(StreamFactory.create(
+ *  Shared.getLitePatternV32(), false));</code>
+ *  <li>Pass in a single HTTP User-Agent header
+ *  <p><code>Match match = provider.match(userAgent);</code>
+ *  <li>Obtain device Id: consists of four components separated by a hyphen 
+ *  symbol: Hardware-Platform-Browser-IsCrawler where each Component is 
+ *  represented an ID of the corresponding Profile.
+ *  <p><code>match.getDeviceId();</code>
+ *  <li>Retrieve match method: provides information about the 
+ *  algorithm that was used to perform detection for a particular User-Agent. 
+ *  For more information on what each method means please see: 
+ *  <a href="https://51degrees.com/support/documentation/pattern">
+ *  How device detection works</a>
+ *  <p><code>match.getMethod();</code>
+ *  <li>Get difference:  used when detection method is not Exact or None. 
+ *  This is an integer value and the larger the value the less confident the 
+ *  detector is in this result.
+ *  <p><code>match.getDifference();</code>
+ *  <li>Retrieve signature rank: an integer value that indicates how popular 
+ *  the device is. The lower the rank the more popular the signature.
+ *  <p><code>match.getSignature().getRank();</code>
+ * </ol>
+ * <p>
+ * {@link #main} assumes it is being run with a working directory at root of 
+ * project or of this module.
+ * <!-- snippet -->
  */
-public class GettingStartedMatchMetrics implements Closeable {
+public class MatchMetrics implements Closeable {
     
     // Device detection provider which takes User-Agents and returns matches.
     protected final Provider provider;
@@ -71,22 +83,24 @@ public class GettingStartedMatchMetrics implements Closeable {
 
     /**
      * Initialises the device detection Provider with the included Lite data
-     * file. For more data see - https://51degrees.com/compare-data-options
+     * file. For more data see: 
+     * <a href="https://51degrees.com/compare-data-options">compare data options
+     * </a>
      * 
      * @throws IOException can be thrown if there is a problem reading from the 
      * provided data file.
      */
-    public GettingStartedMatchMetrics() throws IOException {
+    public MatchMetrics() throws IOException {
         provider = new Provider(StreamFactory.create(
                 Shared.getLitePatternV32(), true));
     }
     
     /**
-     * Method extracts MatchMethods enumeration value from the Match object.
-     * The extracted value represents what algorithm was used to perform this
+     * Extracts MatchMethods enumeration value from the {@link Match} object.
+     * The extracted value represents the algorithm used to perform this
      * detection.
-     * 
-     * Match object must be created and populated by invoking the 
+     * <p>
+     * {@code Match} object must be created and populated by invoking the 
      * <code>provider.match(userAgentString)</code> before supplying to this 
      * method.
      * 
@@ -101,17 +115,17 @@ public class GettingStartedMatchMetrics implements Closeable {
     }
     
     /**
-     * Method extract the difference value from the Match object provided.
+     * Extract the difference value from the {@link Match} object provided.
      * Difference represents the level of confidence the detector has in the 
      * accuracy of the current detection. The higher the number the less 
      * confident the detector is.
-     * 
+     * <p>
      * Difference value is only relevant to Nearest, Closest and Numeric 
      * methods. Exact method will always have a value of zero. Difference is 
      * irrelevant to None as the User-Agent that yielded this result is almost 
      * certainly fake.
-     * 
-     * Match object must be created and populated by invoking the 
+     * <p>
+     * {@code Match} object must be created and populated by invoking the 
      * <code>provider.match(userAgentString)</code> before supplying to this 
      * method.
      * 
@@ -127,13 +141,13 @@ public class GettingStartedMatchMetrics implements Closeable {
     }
     
     /**
-     * Method extracts the signature rank from the Match object provided.
+     * Extracts the signature rank from the {@link Match} object provided.
      * Signature rank indicates the relative level of popularity of the given 
      * signature. The lower the value the more popular the requesting device is.
-     * 
+     * <p>
      * Popularity is determined by 51Degrees and is based on our statistics.
-     * 
-     * Match object must be created and populated by invoking the 
+     * <p>
+     * {@code Match} object must be created and populated by invoking the 
      * <code>provider.match(userAgentString)</code> before supplying to this 
      * method.
      * 
@@ -166,8 +180,11 @@ public class GettingStartedMatchMetrics implements Closeable {
     }
     
     /**
-     * Closes the Dataset by releasing data file readers and freeing the data 
-     * file from locking.
+     * Closes the {@link fiftyone.mobile.detection.Dataset} by releasing data 
+     * file readers and freeing the data file from locks. This method should 
+     * only be used when the {@code Dataset} is no longer required, i.e. when 
+     * device detection functionality is no longer required, or the data file 
+     * needs to be freed.
      * 
      * @throws IOException if there is a problem accessing the data file.
      */
@@ -177,17 +194,21 @@ public class GettingStartedMatchMetrics implements Closeable {
     }
     
     /**
-     * Main entry point that instantiates GettingStartedMatchMetrics class. 
-     * For each of the User-Agents defined in this class method invokes 
-     * detection and stores detection information in a Match object. Match 
-     * object is then passed to one of the relevant methods to retrieve the 
-     * required result, i.e.: getDeviceId is invoked to return an Id string.
+     * Main entry point for this example. For each of the User-Agents defined 
+     * in this class: 
+     * <ol>
+     * <li>performs detection; 
+     * <li>stores detection information in a {@link Match} object;
+     * <li>Each {@code Match} object is then passed to one of the relevant 
+     * methods to retrieve match metrics information, i.e.: 
+     * {@link #getDeviceId} is invoked to return an Id string.
+     * </ol>
      * 
      * @param args command line arguments, not used.
      * @throws IOException if there is a problem accessing the data file. 
      */
     public static void main(String[] args) throws IOException {
-        GettingStartedMatchMetrics gs = new GettingStartedMatchMetrics();
+        MatchMetrics gs = new MatchMetrics();
         Match match;
         try {
             // Display metrics for mobile User-Agent.

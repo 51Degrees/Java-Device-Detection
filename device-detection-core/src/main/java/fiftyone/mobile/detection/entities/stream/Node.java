@@ -29,6 +29,9 @@ import java.io.IOException;
  * Stream data set. NumericChidren and RankedSignatureIndexes are not loaded
  * into memory when the entity is constructed, they're only loaded from the
  * data source when requested.
+ * <p>
+ * Objects of this class should not be created directly as they are part of the 
+ * internal logic.
  */
 public abstract class Node extends fiftyone.mobile.detection.entities.Node {
     
@@ -44,21 +47,24 @@ public abstract class Node extends fiftyone.mobile.detection.entities.Node {
 
     /**
      * Constructs a new instance of Node.
+     * 
      * @param dataSet The data set the node is contained within.
      * @param offset The offset in the data structure to the node.
      * @param reader Reader connected to the source data structure and 
      * positioned to start reading.
-     * @throws java.io.IOException
+     * @throws java.io.IOException if there was a problem accessing data file.
      */
-    public Node(Dataset dataSet, int offset, BinaryReader reader) throws IOException {
+    public Node(Dataset dataSet, int offset, BinaryReader reader) 
+                                                            throws IOException {
         super(dataSet, offset, reader);
         this.pool = dataSet.pool;
     }
     
     /**
      * An array of all the numeric children.
+     * 
      * @return array of all the numeric children.
-     * @throws java.io.IOException
+     * @throws java.io.IOException if there was a problem accessing data file.
      */
     @Override
     @SuppressWarnings("DoubleCheckedLocking")

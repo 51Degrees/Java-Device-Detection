@@ -27,7 +27,10 @@ import fiftyone.mobile.detection.readers.BinaryReader;
 import java.io.IOException;
 
 /**
- * Factory used to create stream Entities.Node entities of version 3.1.
+ * Factory used to create stream Node entities of version 3.1.
+ * <p>
+ * Objects of this class should not be created directly as they are part of the 
+ * internal logic.
  */
 public class NodeStreamFactoryV31 extends NodeFactory {
 
@@ -38,12 +41,13 @@ public class NodeStreamFactoryV31 extends NodeFactory {
 
     /**
      * Constructs a new Entities.Stream.NodeV31 entity from the offset provided.
+     * 
      * @param dataSet The data set the node is contained within.
      * @param index The offset in the data structure to the node.
      * @param reader Reader connected to the source data structure and 
      * positioned to start reading.
      * @return A new Entities.Node entity from the data set.
-     * @throws java.io.IOException
+     * @throws java.io.IOException if there was a problem accessing data file.
      */
     @Override
     protected Node construct(Dataset dataSet, int index, BinaryReader reader) 

@@ -21,20 +21,40 @@
 package fiftyone.mobile.detection.entities;
 
 /**
- * The modes of operation the data set can be built in.
- * 
+ * The modes of operation the data set can be used in.
+ * <p>
  * FILE: The device data is held on disk and loaded into memory when needed. 
  * Caching is used to clear out stale items. Lowest memory use and slowest 
  * device detection.
- * 
+ * <p>
  * MEMORY: The device data is loaded into memory. Offers the fastest device 
  * detection in Java managed code, but a slower startup time.
- * 
+ * <p>
  * MEMORY_MAPPED: The device data is loaded into memory as a byte array. 
  * Java class instances are created when needed and then cleared from the cache.
+ * <p>
+ * Objects of this class should not be created directly as they are part of the 
+ * internal logic.
+ * <p>
+ * For more information see: 
+ * <a href="https://51degrees.com/support/documentation/device-detection-data-model">
+ * 51Degrees pattern data model</a>.
  */
 public enum Modes {
+    /**
+     * The device data is loaded into memory. Offers the fastest device 
+     * detection in Java managed code, but a slower startup time.
+     */
     FILE,
+    /**
+     * he device data is loaded into memory. Offers the fastest device 
+     * detection in Java managed code, but a slower startup time.
+     */
     MEMORY,
+    /**
+     * The device data is loaded into memory as a byte array. 
+     * Java class instances are created when needed and then cleared from the 
+     * cache.
+     */
     MEMORY_MAPPED
 }

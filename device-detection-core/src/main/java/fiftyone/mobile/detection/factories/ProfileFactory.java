@@ -25,6 +25,12 @@ import fiftyone.mobile.detection.entities.Profile;
 import fiftyone.mobile.detection.readers.BinaryReader;
 import java.io.IOException;
 
+/**
+ * Creates new instances of a Profile entity.
+ * <p>
+ * Objects of this class should not be created directly as they are part of the 
+ * internal logic.
+ */
 public abstract class ProfileFactory extends BaseEntityFactory<Profile> {
 
     /**
@@ -34,6 +40,7 @@ public abstract class ProfileFactory extends BaseEntityFactory<Profile> {
     
     /**
      * Creates a new instance of Profile.
+     * 
      * @param dataSet The data set whose profile list the profile is contained 
      * within.
      * @param index The offset to the start of the profile within the profile 
@@ -49,9 +56,10 @@ public abstract class ProfileFactory extends BaseEntityFactory<Profile> {
 
     /**
      * Returns the length of the Profile entity.
+     * 
      * @param entity Entity of type.
      * @return Length in bytes of the Profile.
-     * @throws java.io.IOException
+     * @throws java.io.IOException if there was a problem accessing data file.
      */
     @Override
     public int getLength(Profile entity) throws IOException {
@@ -60,6 +68,17 @@ public abstract class ProfileFactory extends BaseEntityFactory<Profile> {
             (entity.getSignatureIndexes().length * 4);
     }
     
+    /**
+     * Returns a new Profile object. Implementation differs for memory and 
+     * stream.
+     * 
+     * @param dataSet the data set whose profile list the profile is contained 
+     *                within.
+     * @param index the offset to the start of the profile within the profile 
+     *              data structure.
+     * @param reader Binary reader positioned at the start of the Profile.
+     * @return A new instance of an Profile.
+     */
     protected abstract Profile construct(Dataset dataSet, int index,
             BinaryReader reader);
 }

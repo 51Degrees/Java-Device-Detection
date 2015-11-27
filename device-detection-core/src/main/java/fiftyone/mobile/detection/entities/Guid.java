@@ -20,10 +20,28 @@
  * ********************************************************************* */
 package fiftyone.mobile.detection.entities;
 
+/**
+ * Class implements a globally unique identifier (GUID).
+ * <p>
+ * Objects of this class should not be created directly as they are part of the 
+ * internal logic.
+ * <p>
+ * For more information see: 
+ * <a href="https://51degrees.com/support/documentation/device-detection-data-model">
+ * 51Degrees pattern data model</a>.
+ */
 public class Guid {
 
+    /**
+     * Contains the GUID data.
+     */
     public final byte[] data;
 
+    /**
+     * Constructs a new GUID.
+     * 
+     * @param data byte array representing GUID.
+     */
     public Guid(byte[] data) {
         this.data = data;
     }

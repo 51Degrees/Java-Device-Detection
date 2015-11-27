@@ -30,23 +30,24 @@ import java.util.List;
 
 /**
  * A readonly list of variable length entity types held in memory. 
- * 
+ * <p>
  * Entities in the underlying data structure are either fixed length where the 
  * data that represents them always contains the same number of bytes, or 
  * variable length where the number of bytes to represent the entity varies.
- * 
+ * <p>
  * This class uses the offset of the first byte of the entities data in the 
  * underlying data structure in the accessor. As such the list isn't being 
  * used as a traditional list because items are not retrieved by their index 
  * in the list, but by there offset in the underlying data structure.
- * 
+ * <p>
  * The constructor will read the header information about the underlying data 
  * structure and the entities are added to the list when the Read method 
  * is called.
- * 
+ * <p>
  * The class supports source stream that do not support seeking.
- * 
- * Should not be referenced directly.
+ * <p>
+ * Objects of this class should not be created directly as they are part of the 
+ * internal logic.
  *
  * @param <T> The type of BaseEntity the list will contain
  */
@@ -74,20 +75,20 @@ public class MemoryVariableList<T extends BaseEntity> extends
         }
         
         int binarySearch(Integer offset) throws IOException {
-            return super.binarySearch(array, offset);
+            return super.binarySearch(array, offset).getIndex();
         }
     }
     
     private final SearchVariableList search = new SearchVariableList();
     
     /**
-     * Constructs a new instance of VariableList of type T
+     * Constructs a new instance of VariableList of type T.
      *
-     * @param dataSet The DetectorDataSet being created
+     * @param dataSet The DetectorDataSet being created.
      * @param reader Reader connected to the source data structure and
-     * positioned to start reading
+     * positioned to start reading.
      * @param entityFactory Interface implementation used to create and size new
-     * entities of type T
+     * entities of type T.
      */
     public MemoryVariableList(Dataset dataSet, BinaryReader reader,
             BaseEntityFactory<T> entityFactory) {
@@ -96,9 +97,10 @@ public class MemoryVariableList<T extends BaseEntity> extends
 
     /**
      * Reads the list into memory.
+     * 
      * @param reader Reader connected to the source data structure and
-     * positioned to start reading
-     * @throws java.io.IOException
+     * positioned to start reading.
+     * @throws java.io.IOException if there was a problem accessing data file.
      */
     @Override
     public void read(BinaryReader reader) throws IOException {
@@ -111,14 +113,15 @@ public class MemoryVariableList<T extends BaseEntity> extends
     }
 
     /**
-     * Accessor for the variable list. <p> As all the entities are held in
-     * memory and in ascending order of offset a BinarySearch can be used to
-     * determine the one that relates to the given offset rapidly.
+     * Accessor for the variable list.
+     * <p> As all the entities are held in memory and in ascending order of 
+     * offset a BinarySearch can be used to determine the one that relates to 
+     * the given offset rapidly.
      *
      * @param offset The offset position in the data structure to the entity to
-     * be returned from the list
-     * @return Entity at the offset requested
-     * @throws java.io.IOException
+     * be returned from the list.
+     * @return Entity at the offset requested.
+     * @throws java.io.IOException if there was a problem accessing data file.
      */
     @Override
     public T get(int offset) throws IOException {

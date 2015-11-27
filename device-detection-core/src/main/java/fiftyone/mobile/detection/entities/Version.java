@@ -20,13 +20,42 @@
  * ********************************************************************* */
 package fiftyone.mobile.detection.entities;
 
+/**
+ * Class implements version used for reading from the data set.
+ * <p>
+ * Objects of this class should not be created directly as they are part of the 
+ * internal logic.
+ * <p>
+ * For more information see: 
+ * <a href="https://51degrees.com/support/documentation/device-detection-data-model">
+ * 51Degrees pattern data model</a>.
+ */
 public class Version {
 
+    /**
+     * Major version. I.e., 3.x.x.x.
+     */
     public final int major;
+    /**
+     * Minor version. I.e., x.2.x.x.
+     */
     public final int minor;
+    /**
+     * Build number. I.e., x.x.5.x.
+     */
     public final int build;
+    /**
+     * Revision number. I.e., x.x.x.6.
+     */
     public final int revision;
-
+    /**
+     * Creates a new Version object.
+     * 
+     * @param major version 3.x.x.x.
+     * @param minor version x.3.x.x.
+     * @param build version x.x.3.x.
+     * @param revision  version x.x.x.3.
+     */
     public Version(int major, int minor, int build, int revision) {
         this.major = major;
         this.minor = minor;
@@ -34,6 +63,9 @@ public class Version {
         this.revision = revision;
     }
 
+    /**
+     * @return version as a string.
+     */
     @Override
     public String toString() {
         return String.format("%s.%s.%s.%s",

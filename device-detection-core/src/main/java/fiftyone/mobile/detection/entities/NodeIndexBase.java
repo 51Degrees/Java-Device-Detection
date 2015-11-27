@@ -24,6 +24,16 @@ import fiftyone.mobile.detection.Dataset;
 import fiftyone.mobile.detection.entities.memory.MemoryBaseList;
 import java.io.IOException;
 
+/**
+ * Base class used by all node indexes containing common functionality.
+ * <p>
+ * Objects of this class should not be created directly as they are part of the 
+ * internal logic.
+ * <p>
+ * For more information see: 
+ * <a href="https://51degrees.com/support/documentation/device-detection-data-model">
+ * 51Degrees pattern data model</a>.
+ */
 public abstract class NodeIndexBase extends BaseEntity {
     
     /**
@@ -65,13 +75,11 @@ public abstract class NodeIndexBase extends BaseEntity {
         } 
         
         if (getDataSet().nodes instanceof MemoryBaseList) {
-            if (result == null) {
-                synchronized (this) {
-                    result = node;
-                    if (result == null) {
-                        node = result = getDataSet().getNodes().get(
-                                relatedNodeOffset);
-                    }
+            synchronized (this) {
+                result = node;
+                if (result == null) {
+                    node = result = getDataSet().getNodes().get(
+                            relatedNodeOffset);
                 }
             }
             return result;

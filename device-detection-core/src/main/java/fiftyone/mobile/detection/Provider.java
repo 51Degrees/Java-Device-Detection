@@ -34,12 +34,37 @@ import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
- * Provider used to perform a detection based on a user agent string.
+ * Exposes several match methods to be used for device detection.
+ * <p>
+ * Provider requires a {@link Dataset} object connected to one of the 51Degrees 
+ * device data files in order to perform device detection. Can be created like:
+ * <ul>
+ *  <li>For use with Stream factory:
+ *  <p>{@code Provider p = new Provider(StreamFactory.create("path_to_file"));}
+ *  <li>For use with Memory factory:
+ *  <p>{@code Provider p = new Provider(MemoryFactory.create("path_to_file"));}
+ * </ul>
+ * For explanation on the difference between stream and memory see:
+ * <a href="https://51degrees.com/support/documentation/pattern">
+ * how device detection works</a> "Modes of operation" section.
+ * <p>
+ * Match methods return a {@link Match} object that contains detection results 
+ * for a specific User-Agent string, collection of HTTP headers of a device Id.
+ * Use it to retrieve detection results like: 
+ * {@code match.getValues("IsMobile");}
+ * <p>
+ * You can access the underlying data set like: 
+ * {@code provider.dataset.publised} to retrieve various meta information like 
+ * the published date and the next update date as well as the list of various 
+ * entities like {@link Profile profiles} and {@link Property properties}.
+ * <p>
+ * Remember to {@link Dataset#close() close} the underlying data set when 
+ * program finishes to release resources and remove file lock.
  */
 public class Provider {
 
     /**
-     * A cache for user agents if required.
+     * A cache for User-Agents if required.
      */
     private Cache<String, MatchResult> userAgentCache = null;
 
@@ -111,7 +136,7 @@ public class Provider {
     }
 
     /**
-     * @return the percentage of requests for user agents which were not already
+     * @return the percentage of requests for User-Agents which were not already
      * contained in the cache.
      */
     public double getPercentageCacheMisses() {
@@ -123,7 +148,7 @@ public class Provider {
     }
     
     /**
-     * @return the number of times the user agents cache was switched.
+     * @return the number of times the User-Agents cache was switched.
      * 
      * Caching switching is no longer used.
      */
@@ -156,7 +181,7 @@ public class Provider {
     
     /**
      * Creates a new match instance to be used for matching.
-     * @return a match instance ready to be used with the Match methods 
+     * @return a match instance ready to be used with the Match methods.
      */
     public Match createMatch() {
         return new Match(this);
@@ -165,9 +190,10 @@ public class Provider {
     /**
      * For a given collection of HTTP headers returns a match containing
      * information about the capabilities of the device and it's components.
-     * @param headers List of HTTP headers to use for the detection
-     * @return a match for the target headers provided
-     * @throws IOException indicates an I/O exception occurred
+     * 
+     * @param headers List of HTTP headers to use for the detection.
+     * @return {@link Match} object with detection results.
+     * @throws IOException if there was a problem accessing data file.
      */
     public Match match(final Map<String, String> headers) throws IOException {
         return match(headers, createMatch());
@@ -176,10 +202,12 @@ public class Provider {
     /**
      * For a given collection of HTTP headers returns a match containing
      * information about the capabilities of the device and it's components.
-     * @param headers List of HTTP headers to use for the detection
-     * @param match object created to store the results of the match
-     * @return a match for the target headers provided
-     * @throws IOException indicates an I/O exception occurred
+     * 
+     * @param headers List of HTTP headers to use for the detection.
+     * @param match A match object created by a previous match, or via the 
+     * createMatch() method, not null.
+     * @return {@link Match} object with detection results.
+     * @throws IOException if there was a problem accessing data file.
      */
     public Match match(final Map<String, String> headers, Match match) 
             throws IOException {
@@ -230,27 +258,26 @@ public class Provider {
     }
     
     /**
-     * For a given user agent returns a match containing information about the
+     * For a given User-Agent returns a match containing information about the
      * capabilities of the device and it's components.
      *
-     * @param targetUserAgent string representing the user agent to be identified
-     * @return a match result for the target user agent
-     * @throws IOException indicates an I/O exception occurred
+     * @param targetUserAgent User-Agent string to be identified.
+     * @return {@link Match} object with detection results.
+     * @throws IOException if there was a problem accessing data file.
      */
     public Match match(String targetUserAgent) throws IOException {
         return match(targetUserAgent, createMatch());
     }
 
     /**
-     * For a given user agent returns a match containing information about the
+     * For a given User-Agent returns a match containing information about the
      * capabilities of the device and it's components.
      *
-     * @param targetUserAgent The user agent string to use as the target
+     * @param targetUserAgent User-Agent string to be identified.
      * @param match A match object created by a previous match, or via the
      * CreateMatch method.
-     * @return a match containing information about the capabilities of the 
-     * device and it's components
-     * @throws IOException indicates and I/O exception occurred
+     * @return {@link Match} object with detection results.
+     * @throws IOException if there was a problem accessing data file.
      */
     public Match match(String targetUserAgent, Match match) throws IOException {
         match.setResult(match(targetUserAgent, match.state));
@@ -262,10 +289,8 @@ public class Provider {
      * previous match operation.
      * 
      * @param deviceIdArray Byte array representation of the device Id, not null.
-     * @return The match object passed to the method updated with results for 
-     * the device id.
-     * @throws java.io.IOException if a problem was encountered when accessing 
-     * the device data file.
+     * @return {@link Match} object with detection results.
+     * @throws java.io.IOException if there was a problem accessing data file.
      */
     public  Match matchForDeviceId(byte[] deviceIdArray) throws IOException {
         return matchForDeviceId(deviceIdArray, createMatch());
@@ -276,10 +301,8 @@ public class Provider {
      * previous match operation.
      * 
      * @param deviceId String representation of the device Id, not null.
-     * @return The match object passed to the method updated with results for 
-     * the device id.
-     * @throws java.io.IOException if a problem was encountered when accessing 
-     * the device data file.
+     * @return {@link Match} object with detection results.
+     * @throws java.io.IOException if there was a problem accessing data file.
      */
     public Match matchForDeviceId(String deviceId) throws IOException {
         return matchForDeviceId(deviceId, createMatch());
@@ -290,10 +313,8 @@ public class Provider {
      * previous match operation.
      * 
      * @param profileIds List of profile IDs as integers, not null.
-     * @return The match object passed to the method updated with results for 
-     * the device id.
-     * @throws java.io.IOException if a problem was encountered when accessing 
-     * the device data file.
+     * @return {@link Match} object with detection results.
+     * @throws java.io.IOException if there was a problem accessing data file.
      */
     public Match matchForDeviceId(ArrayList<Integer> profileIds) 
                                                             throws IOException {
@@ -307,10 +328,8 @@ public class Provider {
      * @param deviceIdArray Byte array representation of the device Id.
      * @param match A match object created by a previous match, or via the 
      * createMatch() method, not null.
-     * @return The match object passed to the method updated with results for 
-     * the device id.
-     * @throws java.io.IOException if a problem was encountered when accessing 
-     * the device data file.
+     * @return {@link Match} object with detection results.
+     * @throws java.io.IOException if there was a problem accessing data file.
      */
     public Match matchForDeviceId(byte[] deviceIdArray, Match match) 
                                                             throws IOException {
@@ -339,10 +358,8 @@ public class Provider {
      * @param deviceId String representation of the device Id.
      * @param match A match object created by a previous match, or via the 
      * createMatch() method, not null.
-     * @return The match object passed to the method updated with results for 
-     * the device id.
-     * @throws java.io.IOException if a problem was encountered when accessing 
-     * the device data file.
+     * @return {@link Match} object with detection results.
+     * @throws java.io.IOException if there was a problem accessing data file.
      */
     public Match matchForDeviceId(String deviceId, Match match) 
                                                             throws IOException {
@@ -368,10 +385,8 @@ public class Provider {
      * @param profileIds List of profile IDs as integers.
      * @param match A match object created by a previous match, or via the 
      * createMatch() method.
-     * @return The match object passed to the method updated with results for 
-     * the device id.
-     * @throws IOException if a problem was encountered when accessing 
-     * the device data file.
+     * @return {@link Match} object with detection results.
+     * @throws IOException if there was a problem accessing data file.
      */
     public Match matchForDeviceId(ArrayList<Integer> profileIds, Match match) 
                                                             throws IOException {
@@ -394,9 +409,10 @@ public class Provider {
 
     /**
      * Sets the state to the result of the match for the target User-Agent.
-     * @param targetUserAgent User-Agent to be matched
-     * @param state current working state of the matching process
-     * @throws IOException 
+     * 
+     * @param targetUserAgent User-Agent string to be identified.
+     * @param state current working state of the matching process.
+     * @throws IOException if there was a problem accessing data file.
      */
     void matchNoCache(String targetUserAgent, MatchState state) 
             throws IOException {
@@ -426,12 +442,13 @@ public class Provider {
     /**
      * For each of the important HTTP headers provides a mapping to a 
      * match result.
+     * 
      * @param match The single match instance passed into the match method.
      * @param headers The HTTP headers available for matching.
      * @param importantHeaders HTTP header names important to the match process.
      * @return A map of HTTP headers and match instances containing results 
      * for them.
-     * @throws IOException 
+     * @throws IOException if there was a problem accessing data file.
      */
     private Map<String, MatchState> matchForHeaders(
             Match match, Map<String, String> headers, ArrayList<String> importantHeaders)
@@ -451,25 +468,28 @@ public class Provider {
         for (Entry<String, MatchState> m : matches.entrySet()) {
             // At this point we have a collection of the String => Match objects
             // where Match objects are empty. Perform the Match for each String 
-            // hence making all matches correspond to the User Agents.
+            // hence making all matches correspond to the User-Agents.
             match(headers.get(m.getKey()), m.getValue());
         }
         return matches;
     }
 
     /**
-     * For a given user agent returns a match containing information about the
+     * For a given User-Agent returns a match containing information about the
      * capabilities of the device and it's components.
      *
-     * @param targetUserAgent The user agent string to use as the target
+     * @param targetUserAgent The User-Agent string to use as the target
      * @param state information used to process the match
      * @return a match containing information about the capabilities of the 
      * device and it's components
-     * @throws IOException indicates and I/O exception occurred
+     * @throws IOException if there was a problem accessing data file.
      */
     private MatchResult match(String targetUserAgent, MatchState state) 
             throws IOException {
         MatchResult result;
+        if (targetUserAgent == null) {
+            targetUserAgent = "";
+        }
         if (userAgentCache != null) {
             // Fetch the item using the cache.
             result = userAgentCache.get(targetUserAgent, state);
@@ -486,6 +506,7 @@ public class Provider {
      * soon as one matches then stop and don't look at any more. They are 
      * ordered in preferred sequence such that the first item is the most 
      * preferred.
+     * 
      * @param masterState current working state of the matching process
      * @param matches map of HTTP header names and match states
      * @param component component to be retrieved
@@ -512,11 +533,12 @@ public class Provider {
     /**
      * Updates the masterState with the header masterState and returns the 
      * profile for the component requested.
+     * 
      * @param masterState current working state of the matching process
      * @param headerState state for the specific header
      * @param component the profile returned should relate to
      * @return profile related to the component from the header state
-     * @throws IOException 
+     * @throws IOException if there was a problem accessing data file.
      */
     private static Profile processMatchedHeaderProfile(MatchState masterState, 
             MatchState headerState, Component component) 

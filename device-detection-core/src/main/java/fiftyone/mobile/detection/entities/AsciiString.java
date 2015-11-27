@@ -24,15 +24,23 @@ import fiftyone.mobile.detection.Dataset;
 import fiftyone.mobile.detection.readers.BinaryReader;
 
 /**
- * ASCII format strings are the only ones used in the data set. Many native
- * string formats use Unicode format using 2 bytes for every character. This is
- * inefficient when only ASCII values are being stored. The AsciiString class
- * wraps a byte array of ASCII characters and exposes them as a native string
- * type when required. <p> Strings stored as ASCII strings include, the relevant
- * characters from signatures, sub strings longer than 4 characters, property
- * and value names, the descriptions and URLs associated with properties and
- * values. <p> For more information see
- * http://51degrees.mobi/Support/Documentation/Java
+ * ASCII format strings are the only ones used in the data set.
+ * <p>
+ * Many native string formats use UNICODE format using 2 bytes for every 
+ * character. This is inefficient when only ASCII values are being stored. 
+ * The AsciiString class wraps a byte array of ASCII characters and exposes 
+ * them as a native string type when required. 
+ * <p> 
+ * Strings stored as ASCII strings include, the relevant characters from 
+ * signatures, sub strings longer than 4 characters, property and value names, 
+ * the descriptions and URLs associated with properties and values. 
+ * <p>
+ * Objects of this class should not be created directly as they are part of the 
+ * internal logic.
+ * <p>
+ * For more information see: 
+ * <a href="https://51degrees.com/support/documentation/device-detection-data-model">
+ * 51Degrees pattern data model</a>.
  */
 public class AsciiString extends BaseEntity {
 
@@ -43,6 +51,7 @@ public class AsciiString extends BaseEntity {
 
     /**
      * The length of the byte array or string in characters.
+     * 
      * @return length of the byte array or string in characters.
      */
     public int getLength() {
@@ -50,13 +59,14 @@ public class AsciiString extends BaseEntity {
     }
 
     /**
-     * Constructs a new instance of AsciiString
+     * Constructs a new instance of AsciiString.
      *
      * @param dataSet The data set whose strings list the string is contained
-     * within
+     * within.
      * @param offset The offset to the start of the string within the string
-     * data structure
-     * @param reader reader to be used
+     * data structure.
+     * @param reader Reader connected to the source data structure and
+     * positioned to start reading.
      */
     public AsciiString(Dataset dataSet, int offset, BinaryReader reader) {
         super(dataSet, offset);
@@ -67,6 +77,8 @@ public class AsciiString extends BaseEntity {
         // Read the null byte to ensure the file position is at the 
         // expected place for the next string.
         reader.readByte();
+        
+        this.stringValue = null;
     }
 
     /**
@@ -88,5 +100,5 @@ public class AsciiString extends BaseEntity {
         }
         return localStringValue;
     }
-    private volatile String stringValue = null;
+    private volatile String stringValue;
 }

@@ -25,6 +25,11 @@ import fiftyone.mobile.detection.readers.BinaryReader;
 /**
  * Every list contains a standard initial header. This class provides the basic
  * properties needed to access lists irrespective of the storage implementation.
+ * Header includes information like the number of items in the list or the 
+ * length of the list.
+ * <p>
+ * Objects of this class should not be created directly as they are part of the 
+ * internal logic.
  */
 public class Header {
 
@@ -32,7 +37,7 @@ public class Header {
      * Constructs a new instance of Header
      *
      * @param reader Reader connected to the source data structure and
-     * positioned to start reading
+     * positioned to start reading.
      */
     public Header(BinaryReader reader) {
         startPosition = reader.readInt32();

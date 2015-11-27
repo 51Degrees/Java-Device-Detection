@@ -24,15 +24,22 @@ import fiftyone.mobile.detection.Dataset;
 import fiftyone.mobile.detection.readers.BinaryReader;
 
 /**
- * Base class for all entities in the DetectorDataSet. <p> All entities must
- * belong to a data set and contain a unique integer key. This class provides
- * this functionality along with many common methods used by multiple entities.
+ * Base class for all entities in the DetectorDataSet. Contains common 
+ * properties and methods for all data types contained in the data set.
+ * <p> 
+ * All entities must belong to a data set and contain a unique integer key. 
+ * Class provides this functionality along with many common methods used 
+ * by multiple entities.
  * <p>
- *
- * For more information see http://51degrees.com/Support/Documentation/Java
- */
-/**
- * Common properties and methods for all data types contained in the data set.
+ * All entities in this package extend this class. Every entity contains a 
+ * unique integer key.
+ * <p>
+ * Objects of this class should not be created directly as they are part of the 
+ * internal logic.
+ * <p>
+ * For more information see: 
+ * <a href="https://51degrees.com/support/documentation/device-detection-data-model">
+ * 51Degrees pattern data model</a>.
  */
 public class BaseEntity {
 
@@ -53,6 +60,7 @@ public class BaseEntity {
 
     /**
      * Determines if the value is an ASCII numeric value.
+     * 
      * @param value Byte value to be checked.
      * @return True if the value is an ASCII numeric character.
      */
@@ -63,8 +71,8 @@ public class BaseEntity {
     /**
      * Constructs the base item for the data set and index provided.
      *
-     * @param dataSet The data set the item is contained within
-     * @param index The index of the item within the dataset
+     * @param dataSet The data set the item is contained within.
+     * @param offsetOrIndex The index of the item within the dataset.
      */
     BaseEntity(Dataset dataSet, int offsetOrIndex) {
         this.dataSet = dataSet;
@@ -74,8 +82,9 @@ public class BaseEntity {
     /**
      * The unique index of the item in the collection of items, or the unique 
      * offset to the item in the source data structure.
-     * @param offsetOrIndex
-     * @return 
+     * 
+     * @param offsetOrIndex The index of the item within the dataset.
+     * @return integer difference between two offsets.
      */
     public int compareTo(int offsetOrIndex) {
         return index - offsetOrIndex;
@@ -83,6 +92,7 @@ public class BaseEntity {
     
     /**
      * Compares entities based on their Index properties.
+     * 
      * @param other The entity to be compared against.
      * @return The position of one entity over the other.
      */
@@ -96,7 +106,7 @@ public class BaseEntity {
      *
      * @param reader Reader set to the position at the start of the list
      * @param count The number of integers to read to form the array
-     * @return An array of integers
+     * @return An array of integers.
      */
     protected static int[] readIntegerArray(BinaryReader reader, int count) {
         int[] array = new int[count];
@@ -109,6 +119,7 @@ public class BaseEntity {
     /**
      * Returns an integer representation of the characters between start and 
      * end. Assumes that all the characters are numeric characters.
+     * 
      * @param array Array of characters with numeric characters present 
      * between start and end.
      * @param start The first character to use to convert to a number.

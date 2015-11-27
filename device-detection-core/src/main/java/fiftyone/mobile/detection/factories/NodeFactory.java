@@ -28,6 +28,9 @@ import java.io.IOException;
 
 /**
  * Factory class used to create the new instances of Node object.
+ * <p>
+ * Objects of this class should not be created directly as they are part of the 
+ * internal logic.
  */
 public abstract class NodeFactory extends BaseEntityFactory<Node> {
 
@@ -42,7 +45,7 @@ public abstract class NodeFactory extends BaseEntityFactory<Node> {
     /**
      * The basic length of a node for all supported versions.
      * Equivalent of sizeof(short) + sizeof(short) + sizeof(int) + sizeof(int) +
-     * sizeof(short) + sizeof(short) in C#
+     * sizeof(short) + sizeof(short) in C#.
      */
     private static final int BASE_LENGTH = 
             DetectionConstants.SIZE_OF_SHORT + 
@@ -54,12 +57,13 @@ public abstract class NodeFactory extends BaseEntityFactory<Node> {
     
     /**
      * Creates a new instance of Node.
+     * 
      * @param dataSet The data set whose node list the node is contained within.
      * @param index The offset to the start of the node within the string data 
      * structure.
      * @param reader Binary reader positioned at the start of the Node.
      * @return A new instance of a Node.
-     * @throws java.io.IOException if there was a problem reading the data file.
+     * @throws java.io.IOException if there was a problem accessing data file.
      */
     @Override
     public Node create(Dataset dataSet, int index, BinaryReader reader) 
@@ -84,12 +88,13 @@ public abstract class NodeFactory extends BaseEntityFactory<Node> {
     /**
      * Implements the creation of a new instance of Node. Needs to be 
      * implemented in a subclass.
+     * 
      * @param dataSet The data set whose node list the node is contained within.
      * @param index The offset to the start of the node within the string data 
      * structure.
      * @param reader Binary reader positioned at the start of the Node.
      * @return A new instance of a Node.
-     * @throws java.io.IOException
+     * @throws java.io.IOException if there was a problem accessing data file.
      */
     protected abstract Node construct(Dataset dataSet, 
             int index, BinaryReader reader) throws IOException;

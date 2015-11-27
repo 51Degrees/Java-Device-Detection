@@ -27,21 +27,34 @@ import fiftyone.mobile.detection.Dataset;
 import fiftyone.mobile.detection.readers.BinaryReader;
 
 /**
- * Encapsulates all the information about a property including how it's values
- * should be used and what they mean. <p> Some properties are not mandatory and
- * may not always contain values. For example; information concerning features
- * of a television may not be applicable to a mobile phone. The IsMandatory
- * property should be checked before assuming a value will be returned. <p>
- * Properties can return none, one or many values. The IsList property should be
- * referred to to determine the number of values to expect. Properties where
- * IsList is false will only return up to one value. <p> The property also
- * provides other information about the intended use of the property. The
- * Description can be used by UI developers to provide more information about
- * the intended use of the property and it's values. The Category property can
- * be used to group together related properties in configuration UIs. <p> Values
- * are returned in the type Values which includes utility methods to easily
- * extract strongly typed values. <p> For more information see
- * http://51degrees.mobi/Support/Documentation/Java
+ * Encapsulates all the information about a property including how it's 
+ * {@link Value values} should be used and what they mean. 
+ * <p> 
+ * Some properties are not mandatory and may not always contain values. 
+ * For example: information concerning features of a television may not be 
+ * applicable to a mobile phone. The {@link #isMandatory} data member should be 
+ * checked before assuming a value will be returned. 
+ * <p>
+ * Properties can return none, one or many values. The {@link #isList} data 
+ * member should be referred to to determine the number of values to expect. 
+ * Properties where IsList is false will only return up to one value. 
+ * <p> 
+ * The property also provides metadata about the intended use of the property. 
+ * The description can be used by UI developers to provide more information 
+ * about the intended use of the property and it's values. 
+ * The {@link #getCategory()} method can be used to group together related 
+ * properties in configuration UIs. 
+ * <p> 
+ * The {@link Value} results are returned as a set of {@link Values} that 
+ * provide various utility methods.
+ * <p>
+ * Objects of this class should not be created directly as they are part of the 
+ * internal logic. Use the relevant {@link Dataset} method to access these 
+ * objects.
+ * <p>
+ * For more information see: 
+ * <a href="https://51degrees.com/support/documentation/device-detection-data-model">
+ * 51Degrees pattern data model</a>.
  */
 public class Property extends BaseEntity implements Comparable<Property> {
 
@@ -81,7 +94,7 @@ public class Property extends BaseEntity implements Comparable<Property> {
     final int firstValueIndex;
     /**
      * @return an array of maps associated with the property.
-     * @throws java.io.IOException
+     * @throws java.io.IOException if there was a problem accessing data file.
      */
     @SuppressWarnings("DoubleCheckedLocking")
     public String[] getMaps() throws IOException {
@@ -107,9 +120,10 @@ public class Property extends BaseEntity implements Comparable<Property> {
 
     /**
      * The name of the property to use when adding to Javascript as a property 
-     * name. Unacceptable characters such as / are removed.
-     * @return the name of the property when used in javascript.
-     * @throws IOException 
+     * name. Unacceptable characters such as '/' are removed.
+     * 
+     * @return the name of the property when used in Javascript.
+     * @throws IOException if there was a problem accessing data file.
      */
      @SuppressWarnings("DoubleCheckedLocking")
     public String getJavaScriptName() throws IOException {
@@ -134,8 +148,9 @@ public class Property extends BaseEntity implements Comparable<Property> {
     
     /**
      * The name of the property.
-     * @return name of the property
-     * @throws java.io.IOException indicates an I/O exception occurred
+     * 
+     * @return name of the property.
+     * @throws java.io.IOException if there was a problem accessing data file.
      */
     @SuppressWarnings("DoubleCheckedLocking")
     public String getName() throws IOException {
@@ -160,8 +175,10 @@ public class Property extends BaseEntity implements Comparable<Property> {
 
     /**
      * The value the property returns if a strongly type value is not available.
-     * @return value the property returns if a strongly type value is not available
-     * @throws java.io.IOException indicates an I/O exception occurred
+     * 
+     * @return {@link Value} the property returns if a strongly type value is 
+     * not available.
+     * @throws java.io.IOException if there was a problem accessing data file.
      */
     @SuppressWarnings("DoubleCheckedLocking")
     public Value getDefaultValue() throws IOException {
@@ -182,8 +199,9 @@ public class Property extends BaseEntity implements Comparable<Property> {
 
     /**
      * The component the property relates to.
-     * @return component the property relates to
-     * @throws java.io.IOException indicates an I/O exception occurred
+     * 
+     * @return {A@link Component} the property relates to.
+     * @throws java.io.IOException if there was a problem accessing data file.
      */
     @SuppressWarnings("DoubleCheckedLocking")
     public Component getComponent() throws IOException {
@@ -204,8 +222,8 @@ public class Property extends BaseEntity implements Comparable<Property> {
     /**
      * An array of values the property has available.
      *
-     * @return array of values the property has available
-     * @throws IOException indicates an I/O exception occurred
+     * @return array of {@link Values values} the property has available.
+     * @throws IOException if there was a problem accessing data file.
      */
     @SuppressWarnings("DoubleCheckedLocking")
     public Values getValues() throws IOException {
@@ -228,7 +246,7 @@ public class Property extends BaseEntity implements Comparable<Property> {
      *
      * @return description of the property suitable to be displayed to end users 
      * via a user interface.
-     * @throws IOException indicates an I/O exception occurred
+     * @throws IOException if there was a problem accessing data file.
      */
     @SuppressWarnings("DoubleCheckedLocking")
     public String getDescription() throws IOException {
@@ -248,10 +266,11 @@ public class Property extends BaseEntity implements Comparable<Property> {
     private final int descriptionOffset;
 
     /**
-     * The category the property relates to within the data set.
+     * The category the property relates to within the data set. A category is 
+     * not the same as the component.
      *
-     * @return category the property relates to within the data set
-     * @throws IOException indicates an I/O exception occurred
+     * @return name of category the property relates to within the data set.
+     * @throws IOException if there was a problem accessing data file.
      */
     @SuppressWarnings("DoubleCheckedLocking")
     public String getCategory() throws IOException {
@@ -273,8 +292,8 @@ public class Property extends BaseEntity implements Comparable<Property> {
     /**
      * A URL to more information about the property.
      *
-     * @return URL to more information about the property
-     * @throws IOException indicates an I/O exception occurred
+     * @return URL to more information about the property.
+     * @throws IOException if there was a problem accessing data file.
      */
     @SuppressWarnings("DoubleCheckedLocking")
     public URL getUrl() throws IOException {
@@ -308,10 +327,10 @@ public class Property extends BaseEntity implements Comparable<Property> {
     /**
      * Constructs a new instance of Property
      *
-     * @param dataSet data set to construct from
-     * @param index property index
-     * @param reader BinaryReader to be used
-     * @throws IOException indicates an I/O exception occurred
+     * @param dataSet {@link Dataset} to construct from.
+     * @param index property index.
+     * @param reader BinaryReader to be used.
+     * @throws IOException if there was a problem accessing data file.
      */
     public Property(Dataset dataSet, int index, BinaryReader reader) throws IOException {
         super(dataSet, index);
@@ -337,8 +356,10 @@ public class Property extends BaseEntity implements Comparable<Property> {
     /**
      * Initialises the often used lists and references if storing of object
      * references is enabled.
+     * <p>
+     * This method should not be called as it is part of the internal logic.
      *
-     * @throws IOException indicates an I/O exception occurred
+     * @throws IOException if there was a problem accessing data file.
      */
     public void init() throws IOException {
         getValues();
@@ -368,8 +389,8 @@ public class Property extends BaseEntity implements Comparable<Property> {
      * Compares this property to another using the index field if they're in the
      * same list, otherwise the name field.
      *
-     * @param other The property to be compared against
-     * @return Indication of relative value
+     * @param other {@link Property} to be compared against.
+     * @return Indication of relative value.
      */
     @Override
     public int compareTo(Property other) {
@@ -386,7 +407,7 @@ public class Property extends BaseEntity implements Comparable<Property> {
     /**
      * A string representation of the property.
      *
-     * @return the property name as a string
+     * @return the property name as a string.
      */
     @Override
     public String toString() {

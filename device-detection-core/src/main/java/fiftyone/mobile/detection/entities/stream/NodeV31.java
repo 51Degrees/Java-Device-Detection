@@ -30,6 +30,9 @@ import java.io.IOException;
  * NumericChidren and RankedSignatureIndexes are not loaded into memory when 
  * the entity is constructed, they're only loaded from the data source when 
  * requested.
+ * <p>
+ * Objects of this class should not be created directly as they are part of the 
+ * internal logic.
  */
 public class NodeV31 extends Node {
 
@@ -41,11 +44,12 @@ public class NodeV31 extends Node {
     
     /**
      * Constructs a new instance of NodeV31.
+     * 
      * @param dataSet The data set the node is contained within.
      * @param offset The offset in the data structure to the node.
      * @param reader Reader connected to the source data structure and 
      * positioned to start reading.
-     * @throws java.io.IOException
+     * @throws java.io.IOException if there was a problem accessing data file.
      */
     public NodeV31(fiftyone.mobile.detection.entities.stream.Dataset dataSet, 
             int offset, BinaryReader reader) throws IOException {
@@ -61,7 +65,7 @@ public class NodeV31 extends Node {
 
     /**
      * @return An array of the ranked signature indexes for the node.
-     * @throws java.io.IOException
+     * @throws java.io.IOException if there was a problem accessing data file.
      */
     @Override
     @SuppressWarnings("DoubleCheckedLocking")

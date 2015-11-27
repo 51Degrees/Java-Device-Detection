@@ -21,6 +21,7 @@
 package fiftyone.mobile.detection.cache;
 
 import fiftyone.mobile.detection.DetectionTestSupport;
+import fiftyone.mobile.detection.cache.Cache.KeyValuePair;
 import fiftyone.mobile.detection.test.TestType;
 
 import java.io.IOException;
@@ -85,8 +86,7 @@ public class CacheTest extends DetectionTestSupport {
                 source.size(),
                 loader);
         try {
-            cache.get(1);
-            fail("must throw exception");
+            assertTrue(cache.get(1) == null);
         } catch (Exception ignored) {
         }
         assertTrue(cache.getCacheMisses() == 1);
@@ -163,7 +163,8 @@ public class CacheTest extends DetectionTestSupport {
         for (K key : keysFront) {
             Cache.Node expectedLast = cache.linkedList.last;
             assertTrue(cache.get(key) == source.get(key));
-            assertTrue(cache.linkedList.first.item.key == key);
+            KeyValuePair kvp = (KeyValuePair)cache.linkedList.first.item;
+            assertTrue(kvp.key == key);
             assertTrue(expectedLast == null ||
                     expectedLast == cache.linkedList.last);
         }
@@ -175,7 +176,8 @@ public class CacheTest extends DetectionTestSupport {
         for (K key : keysFront) {
             Cache.Node expectedLast = cache.linkedList.last.previous;
             assertTrue(cache.get(key) == source.get(key));
-            assertTrue(cache.linkedList.first.item.key == key);
+            KeyValuePair kvp = (KeyValuePair)cache.linkedList.first.item;
+            assertTrue(kvp.key == key);
             assertTrue(expectedLast == null ||
                     expectedLast == cache.linkedList.last);
         }
@@ -188,7 +190,8 @@ public class CacheTest extends DetectionTestSupport {
         for (K key : keysBack) {
             Cache.Node expectedLast = cache.linkedList.last.previous;
             assertTrue(cache.get(key) == source.get(key));
-            assertTrue(cache.linkedList.first.item.key == key);
+            KeyValuePair kvp = (KeyValuePair)cache.linkedList.first.item;
+            assertTrue(kvp.key == key);
             assertTrue(expectedLast == null ||
                     expectedLast == cache.linkedList.last);
         }
@@ -201,7 +204,8 @@ public class CacheTest extends DetectionTestSupport {
         for (K key : keysBack) {
             Cache.Node expectedLast = cache.linkedList.last.previous;
             assertTrue(cache.get(key) == source.get(key));
-            assertTrue(cache.linkedList.first.item.key == key);
+            KeyValuePair kvp = (KeyValuePair)cache.linkedList.first.item;
+            assertTrue(kvp.key == key);
             assertTrue(expectedLast == null ||
                     expectedLast == cache.linkedList.last);
         }
@@ -214,7 +218,8 @@ public class CacheTest extends DetectionTestSupport {
         for (K key : keysFront) {
             Cache.Node expectedLast = cache.linkedList.last.previous;
             assertTrue(cache.get(key) == source.get(key));
-            assertTrue(cache.linkedList.first.item.key == key);
+            KeyValuePair kvp = (KeyValuePair)cache.linkedList.first.item;
+            assertTrue(kvp.key == key);
             assertTrue(expectedLast == null ||
                     expectedLast == cache.linkedList.last);
         }
@@ -229,9 +234,11 @@ public class CacheTest extends DetectionTestSupport {
         Collections.shuffle(random, new Random(System.nanoTime()));
         for (K key : random) {
             Cache.Node expectedLast = cache.linkedList.last;
+            KeyValuePair kvpExpectedLast = (KeyValuePair)expectedLast.item;
             assertTrue(cache.get(key) == source.get(key));
-            assertTrue(cache.linkedList.first.item.key == key);
-            assertTrue(expectedLast.item.key == key ||
+            KeyValuePair kvp = (KeyValuePair)cache.linkedList.first.item;
+            assertTrue(kvp.key == key);
+            assertTrue(kvpExpectedLast.key == key ||
                     expectedLast == cache.linkedList.last);
         }
         assertTrue(cache.getCacheMisses() == loader.fetches.get());
