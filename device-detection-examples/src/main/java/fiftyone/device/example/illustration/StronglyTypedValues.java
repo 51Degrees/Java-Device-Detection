@@ -34,12 +34,12 @@ import java.io.IOException;
  * shows how to:
  * 
  * <ol>
- *  <li>instantiate 51Degrees detection provider
+ *  <li>Instantiate 51Degrees detection provider
  *  <p><code>provider = new Provider(StreamFactory.create(
  *  Shared.getLitePatternV32(), false));</code>
- *  <li>pass in a single HTTP User-Agent header
+ *  <li>Pass in a single HTTP User-Agent header
  *  <p><code>Match match = provider.match(userAgent);</code>
- *  <li>extract the value of the IsMobile property as boolean
+ *  <li>Extract the value of the IsMobile property as boolean
  *  <p><code>match.getValues("IsMobile").toBool();</code>
  * </ol>
  * 
