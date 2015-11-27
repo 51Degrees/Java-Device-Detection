@@ -24,7 +24,11 @@ import fiftyone.mobile.detection.IClosableIterator;
 import fiftyone.mobile.detection.entities.BaseEntity;
 
 /**
- * used to iterate over the MemoryFixedList.
+ * Used to iterate over the MemoryFixedList.
+ * <p>
+ * Objects of this class should not be created directly as they are part of the 
+ * internal logic.
+ * 
  * @param <T> The type of BaseEntity the list will contain
  */
 public class MemoryFixedListIterator<T extends BaseEntity> 
@@ -44,6 +48,7 @@ public class MemoryFixedListIterator<T extends BaseEntity>
     
     /**
      * Constructs the MemoryFixedListIterator for a given range.
+     * 
      * @param list is the MemoryFixedList to iterate over.
      * @param start at what index to start.
      * @param finish at what index to finish.
@@ -56,6 +61,7 @@ public class MemoryFixedListIterator<T extends BaseEntity>
     
     /**
      * Constructs the MemoryFixedListIterator.
+     * 
      * @param list is the MemoryFixedList to iterate over.
      */
     MemoryFixedListIterator(MemoryFixedList<T> list) {
@@ -66,6 +72,7 @@ public class MemoryFixedListIterator<T extends BaseEntity>
 
     /**
      * Check if there are more entities to iterate over.
+     * 
      * @return true if there are more entities to iterate, false otherwise.
      */
     @Override
@@ -75,6 +82,7 @@ public class MemoryFixedListIterator<T extends BaseEntity>
 
     /**
      * Returns the next entity for retrieval and increments the iteration.
+     * 
      * @return the next entity for retrieval and increments the iteration.
      */
     @Override

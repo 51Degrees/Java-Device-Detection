@@ -73,6 +73,9 @@ public class TriePool implements Closeable {
         readers.add(reader);
     }
 
+    /**
+     * Close the underlying data file channels.
+     */
     @Override
     public void close() {
         source.close();

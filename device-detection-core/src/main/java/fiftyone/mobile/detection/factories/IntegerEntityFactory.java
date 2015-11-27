@@ -26,17 +26,21 @@ import fiftyone.mobile.detection.entities.IntegerEntity;
 import java.io.IOException;
 
 /**
- * Creates a new instance of Integer.
+ * Creates new instances of an Integer entity.
+ * <p>
+ * Objects of this class should not be created directly as they are part of the 
+ * internal logic.
  */
 public class IntegerEntityFactory extends BaseEntityFactory<IntegerEntity> {
 
     /**
      * Creates a new instance of Integer.
+     * 
      * @param dataSet data set whose data structure includes integer values.
-     * @param index index to the start of the Integer within the data structure.
+     * @param index to the start of the Integer within the data structure.
      * @param reader Binary reader positioned at the start of the Integer.
      * @return A new instance of an Integer.
-     * @throws IOException 
+     * @throws IOException if there was a problem accessing data file.
      */
     @Override
     public IntegerEntity create(Dataset dataSet, int index, BinaryReader reader) 
@@ -45,7 +49,8 @@ public class IntegerEntityFactory extends BaseEntityFactory<IntegerEntity> {
     }
     
     /**
-     * Returns the length of the Integer entity
+     * Returns the length of the Integer entity.
+     * 
      * @return Length in bytes of the RankedSignatureIndex.
      */
     @Override

@@ -24,18 +24,23 @@ import fiftyone.mobile.detection.Dataset;
 import fiftyone.mobile.detection.entities.AsciiString;
 import fiftyone.mobile.detection.readers.BinaryReader;
 
-
+/**
+ * Creates new instances of the ASCII string entity.
+ * <p>
+ * Objects of this class should not be created directly as they are part of the 
+ * internal logic.
+ */
 public class AsciiStringFactory extends BaseEntityFactory<AsciiString> {
 
     /**
-     * Creates a new instance of AsciiString
+     * Creates a new instance of AsciiString.
      *
      * @param dataSet The data set whose strings list the string is contained
-     * within
+     * within.
      * @param offset The offset to the start of the string within the string
-     * data structure
-     * @param reader Binary reader positioned at the start of the AsciiString
-     * @return A new instance of an AsciiString
+     * data structure.
+     * @param reader Binary reader positioned at the start of the AsciiString.
+     * @return A new instance of an AsciiString.
      */
     @Override
     public AsciiString create(Dataset dataSet, int offset,
@@ -47,8 +52,8 @@ public class AsciiStringFactory extends BaseEntityFactory<AsciiString> {
      * Returns the length of the AsciiString entity including the 2 bytes for
      * the length and the null terminator not used by java.
      *
-     * @param entity Entity of type AsciiString
-     * @return Length in bytes of the AsciiString
+     * @param entity Entity of type AsciiString.
+     * @return length in bytes of the AsciiString.
      */
     @Override
     public int getLength(AsciiString entity) {

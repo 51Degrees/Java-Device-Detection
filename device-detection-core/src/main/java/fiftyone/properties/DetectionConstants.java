@@ -24,7 +24,7 @@ import fiftyone.mobile.detection.entities.Version;
 import java.util.regex.Pattern;
 
 /**
- * Constants used by the detection routines. *
+ * Constants used by the detection routines.
  */
 public class DetectionConstants {
 
@@ -112,7 +112,7 @@ public class DetectionConstants {
      */
     public static final Pattern LICENSE_KEY_VALIDATION_REGEX = Pattern.compile("^[A-Z\\d]+$");
     /**
-     * HTTP header for the user agent.
+     * HTTP header for the User-Agent.
      */
     public static final String USER_AGENT_HEADER = "User-Agent";
     /**

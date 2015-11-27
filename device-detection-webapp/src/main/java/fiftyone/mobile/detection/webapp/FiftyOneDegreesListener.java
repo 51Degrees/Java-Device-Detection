@@ -33,6 +33,15 @@ import javax.servlet.ServletContextListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Initialises and manages the automatic update and the newer data check timers.
+ * <p>
+ * If a data file was not provided in the Web.xml file the timers will not be 
+ * started. Timers stopped upon servlet termination.
+ * <p>
+ * Objects of this class should not be created directly as they are part of the 
+ * internal logic.
+ */
 public class FiftyOneDegreesListener implements ServletContextListener {
 
     private final static Logger logger = LoggerFactory
@@ -48,6 +57,11 @@ public class FiftyOneDegreesListener implements ServletContextListener {
      */
     private Timer fileUpdateTimer;
 
+    /**
+     * Initialises auto update and new data check timers.
+     * 
+     * @param contextEvent ServletContextEvent.
+     */
     @Override
     public void contextInitialized(ServletContextEvent contextEvent) {
         logger.debug("Starting 51Degrees Listener Initialisation");
@@ -104,7 +118,8 @@ public class FiftyOneDegreesListener implements ServletContextListener {
 
     /**
      * Closes the listener and stops all the update timers.
-     * @param sce 
+     * 
+     * @param sce ServletContextEvent.
      */
     @Override
     public void contextDestroyed(ServletContextEvent sce) {

@@ -31,15 +31,19 @@ import java.util.Map;
 /**
  * A list of properties in memory as a fixed list. Contains an accessor which 
  * can be used to retrieve entries by property name.
+ * <p>
+ * Objects of this class should not be created directly as they are part of the 
+ * internal logic.
  */
 public class PropertiesList extends MemoryFixedList<Property> {
 
     /**
      * Constructs a new instance of PropertiesList.
+     * 
      * @param dataSet The Dataset being created.
      * @param reader Reader connected to the source data structure and 
      * positioned to start reading.
-     * @param entityFactory Used to create new instances of the entity
+     * @param entityFactory Used to create new instances of the entity.
      */
     public PropertiesList(Dataset dataSet, BinaryReader reader, 
             BaseEntityFactory<Property> entityFactory) {
@@ -50,6 +54,7 @@ public class PropertiesList extends MemoryFixedList<Property> {
     /**
      * Returns the properties in the list as a dictionary where the key is the 
      * name of the property. Used to rapidly return this property from the name.
+     * 
      * @return HashMap of Property name -> Property object entries.
      */
     private Map<String, Property> getPropertyNameDictionary() 

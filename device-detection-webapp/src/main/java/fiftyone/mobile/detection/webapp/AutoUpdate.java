@@ -20,6 +20,7 @@
  * ********************************************************************* */
 package fiftyone.mobile.detection.webapp;
 
+import fiftyone.mobile.detection.AutoUpdateStatus;
 import fiftyone.mobile.detection.Dataset;
 import fiftyone.mobile.detection.factories.StreamFactory;
 import java.io.File;
@@ -27,14 +28,23 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.TimerTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class AutoUpdate extends fiftyone.mobile.detection.AutoUpdate {
+/**
+ * Class implements a TimerTask to request automatic update for the existing 
+ * device data file.
+ * <p>
+ * The update requires a "Premium" or "Enterprise" licence key. "Lite" data 
+ * files are currently not eligible for the automatic updates.
+ * <a href="https://51degrees.com/compare-data-options">Get a licence key</a>.
+ */
+public class AutoUpdate extends TimerTask {
 
     private final String masterFilePath;
     private final String[] licenseKeys;
-    final private static Logger logger = LoggerFactory
+    private final static Logger logger = LoggerFactory
             .getLogger(AutoUpdate.class);
 
     public AutoUpdate(
@@ -45,25 +55,43 @@ public class AutoUpdate extends fiftyone.mobile.detection.AutoUpdate {
         this.licenseKeys = licenseKeys.toArray(new String[licenseKeys.size()]);
     }
 
+    /**
+     * Implements the TimerTask by checking if an update is required and if so,
+     * downloading the latest data.
+     * <p>
+     * A check is carried out to verify an update is required first. Then the 
+     * update method of the AutoUpdate class of the core API is invoked to 
+     * retrieve the latest data file. 
+     * A {@link fiftyone.mobile.detection.AutoUpdateStatus status code} is then 
+     * returned. If the code indicates a problem, then the problem gets logged. 
+     * If the auto update completed successfully a message gets logged.
+     * Finally, the {@link WebProvider} gets refreshed with the latest data.
+     */
+    @Override
     public void run() {
         if (shouldUpdate()) {
             try {
-                switch(fiftyone.mobile.detection.AutoUpdate.update(
-                        licenseKeys, masterFilePath)) {
+                AutoUpdateStatus result = 
+                        fiftyone.mobile.detection.AutoUpdate.update(
+                                                            licenseKeys, 
+                                                            masterFilePath);
+                switch(result) {
                     case AUTO_UPDATE_SUCCESS:
-                        SimpleDateFormat dateFormat = new SimpleDateFormat("y-MMM-d");
+                        SimpleDateFormat dateFormat = 
+                                new SimpleDateFormat("y-MMM-d");
                         final File masterFile = new File(masterFilePath);
                         Date fileDate = new Date(masterFile.lastModified());
                         String dateStr = dateFormat.format(fileDate);
                         logger.info(String.format(
-                                "Automatically updated binary data file '%s' with "
-                                + " version published on the '%s'.",
+                                "Automatically updated binary data file '%s' "
+                                + " with version published on the '%s'.",
                                 masterFile,
                                 dateStr));
                         WebProvider.refresh();
                         break;
                     default:
-                        // TODO: Log the warning
+                        logger.info("Could not update 51Degrees data file "
+                                + "reason: " + result);
                         break;
                 }
             } catch (Exception ex) {

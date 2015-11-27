@@ -25,45 +25,43 @@ import java.io.IOException;
 
 import fiftyone.properties.MatchMethods;
 import fiftyone.mobile.detection.entities.Node;
-import java.util.ArrayList;
-import java.util.Collections;
+import fiftyone.mobile.detection.search.SearchResult;
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.List;
 
 /**
- * A single static class which controls the device detection process. 
- * 
+ * A single static class which controls the device detection process.
+ * <p>
  * The process uses 3 steps to determine the properties associated with the 
- * provided user agent. 
- * 
- * Step 1 - each of the character positions of the target user agent are 
+ * provided User-Agent. 
+ * <p>
+ * Step 1 - each of the character positions of the target User-Agent are 
  * checked from right to left to determine if a complete node or substring 
  * is present at that position. For example; the sub string Chrome/11 might 
- * indicate the user agent relates to Chrome version 11 from Google. Once
+ * indicate the User-Agent relates to Chrome version 11 from 'Google'. Once
  * every character position is checked a list of matching nodes will be
  * available. 
- * 
+ * <p>
  * Step 2 - The list of signatures is then searched to determine
  * if the matching nodes relate exactly to an existing signature. Any popular
  * device will be found at this point. The approach is exceptionally fast at
  * identifying popular devices. 
- * 
- * Step 3 - If the target user agent is less popular, or newer than the 
+ * <p>
+ * Step 3 - If the target User-Agent is less popular, or newer than the 
  * creation time of the data set, a small sub set of possible signatures are 
  * identified from the matching nodes. These signatures are evaluated against 
- * the target user agent to determine the different in relevant characters 
+ * the target User-Agent to determine the different in relevant characters 
  * between them. The signature which has the lowest difference and is most 
  * popular is then returned. 
- * 
- * Random user agents will not identify any matching nodes. In these situations 
+ * <p>
+ * Random User-Agents will not identify any matching nodes. In these situations 
  * a default signature is returned.
- * 
+ * <p>
  * The characteristics of the detection data set will determine the accuracy of 
  * the result match. Older data sets that are unaware of the latest devices, 
- * or user agent formats in use will be less accurate.
+ * or User-Agent formats in use will be less accurate.
+ * <p>
  * 
- * For more information see http://51degrees.com/Support/Documentation/Java
  */
 class Controller {
 
@@ -99,11 +97,11 @@ class Controller {
     };
     
     /**
-     * Used to calculate nearest scores between the match and the user agent.
+     * Used to calculate nearest scores between the match and the User-Agent.
      */
     private static final NearestScore nearest = new NearestScore();
     /**
-     * Used to calculate closest scores between the match and the user agent.
+     * Used to calculate closest scores between the match and the User-Agent.
      */
     private static final ClosestScore closest = new ClosestScore();
 
@@ -127,7 +125,7 @@ class Controller {
                     "Data Set has been disposed and can't be used for match");
         }
 
-        // If the user agent is too short then don't try to match and
+        // If the User-Agent is too short then don't try to match and
         // return defaults.
         if (state.getTargetUserAgentArray().length == 0
                 || state.getTargetUserAgentArray().length < state.getDataSet().getMinUserAgentLength()) {
@@ -140,8 +138,7 @@ class Controller {
             evaluate(state);
 
             /// Can a precise match be found based on the nodes?
-            int signatureIndex = state.match.getDataSet().getSignatureSearch().
-                    binarySearch(state.getNodesList());
+            int signatureIndex = getExactSignatureIndex(state);
 
             if (signatureIndex >= 0) {
                 // Yes a precise match was found.
@@ -154,8 +151,7 @@ class Controller {
                 evaluateNumeric(state);
 
                 // Can a precise match be found based on the nodes?
-                signatureIndex = state.match.getDataSet().getSignatureSearch().
-                    binarySearch(state.getNodesList());
+                signatureIndex = getExactSignatureIndex(state);
 
                 if (signatureIndex >= 0) {
                     // Yes a precise match was found.
@@ -193,7 +189,7 @@ class Controller {
     }
 
     /**
-     * Evaluate the target user agent again, but this time look for a numeric 
+     * Evaluate the target User-Agent again, but this time look for a numeric 
      * difference.
      * @param state current working state of the matching process
      * @throws IOException 
@@ -276,8 +272,23 @@ class Controller {
     }
 
     /**
+     * If the nodes of the match correspond exactly to a signature then return
+     * the index of the signature found. Otherwise -1.
+     * @param state of the match process
+     * @return index of the signature or -1
+     * @throws IOException 
+     */
+    private static int getExactSignatureIndex(MatchState state) throws IOException
+    {
+        SearchResult result = state.match.getDataSet().getSignatureSearch().
+            binarySearch(state.getNodesList());
+        state.signaturesRead += result.getIterations();
+        return result.getIndex();
+    }
+    
+    /**
      * Returns a distinct list of signatures which most closely match the target
-     * user agent string. Where a single signature is not present across all the
+     * User-Agent string. Where a single signature is not present across all the
      * nodes the signatures which match the most nodes from the target user
      * agent string are returned.
      * @param state current working state of the matching process
@@ -286,11 +297,9 @@ class Controller {
      */
     private static RankedSignatureIterator getClosestSignatures(
             final MatchState state) throws IOException {
-
+        RankedSignatureIterator result;
         if (state.getNodesList().size() == 1) {
-            state.setClosestSignaturesCount(
-                    state.getNodesList().get(0).getRankedSignatureIndexes().length);
-            return new RankedSignatureIterator() {
+            result = new RankedSignatureIterator() {
                 final int[] rankedSignatureIndexes =
                         state.getNodesList().get(0).getRankedSignatureIndexes();
                 int index = 0;
@@ -298,6 +307,11 @@ class Controller {
                 @Override
                 public boolean hasNext() {
                     return index < rankedSignatureIndexes.length;
+                }
+                
+                @Override
+                public int size() {
+                    return rankedSignatureIndexes.length;
                 }
 
                 @Override
@@ -313,16 +327,19 @@ class Controller {
                 }
             };
         } else {
-            final MostFrequentFilter filter = 
-                    new MostFrequentFilter(state.getNodesList());
-            state.setClosestSignaturesCount(filter.size());            
-            return new RankedSignatureIterator() {
+            final MostFrequentFilter filter = new MostFrequentFilter(state);
+            result = new RankedSignatureIterator() {
                 final List<Integer> rankedSignatureIndexes = filter;
                 int index = 0;
 
                 @Override
                 public boolean hasNext() {
                     return index < rankedSignatureIndexes.size();
+                }
+                
+                @Override
+                public int size() {
+                    return rankedSignatureIndexes.size();
                 }
 
                 @Override
@@ -338,5 +355,7 @@ class Controller {
                 }
             };
         }
+        state.closestSignaturesCount += result.size();
+        return result;
     }
 }

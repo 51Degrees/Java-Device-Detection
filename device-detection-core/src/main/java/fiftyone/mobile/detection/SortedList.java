@@ -22,6 +22,11 @@ package fiftyone.mobile.detection;
 
 import java.util.HashMap;
 
+/**
+ * This class should not be called as it is part of the internal logic.
+ * @param <K> Key.
+ * @param <V> Value.
+ */
 @SuppressWarnings("serial")
 public class SortedList<K, V> extends HashMap<K, V> {
 

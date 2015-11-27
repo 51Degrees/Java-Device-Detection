@@ -26,7 +26,15 @@ import fiftyone.mobile.detection.factories.NodeFactoryShared;
 import fiftyone.mobile.detection.readers.BinaryReader;
 
 /**
- * All data is loaded into memory when the entity is constructed.
+ * All data is loaded into memory when the entity is constructed. Implements 
+ * memory node of version 3.1.
+ * <p>
+ * Objects of this class should not be created directly as they are part of the 
+ * internal logic.
+ * <p>
+ * For more information see:
+ * <a href="https://51degrees.com/support/documentation/pattern">
+ * how Pattern device detection works</a>.
  */
 public class NodeV31 extends Node{
     /**
@@ -36,6 +44,7 @@ public class NodeV31 extends Node{
     
     /**
      * Constructs a new instance of NodeV31.
+     * 
      * @param dataSet The data set the node is contained within.
      * @param offset The offset in the data structure to the node.
      * @param reader Reader connected to the source data structure and 
@@ -58,6 +67,7 @@ public class NodeV31 extends Node{
     
     /**
      * An array of the ranked signature indexes for the node.
+     * 
      * @return An array of the ranked signature indexes for the node.
      */
     @Override

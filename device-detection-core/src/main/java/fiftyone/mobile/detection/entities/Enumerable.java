@@ -24,10 +24,19 @@ import fiftyone.mobile.detection.readers.BinaryReader;
 import java.util.Iterator;
 
 /**
- * Class implements the logic of IEnumerable in C#. When you need to read a 
- * specific number of integer objects from the data file it's best to do so 
- * on the as-needed basis instead of loading everything in to memory. This class 
- * provides a way to read the integers one by one.
+ * Class implements the logic of IEnumerable in C#. 
+ * <p>
+ * When you need to read a specific number of integer objects from the data 
+ * file it's best to do so on the as-needed basis instead of loading 
+ * everything in to memory. This class provides a way to read the integers 
+ * one by one.
+ * <p>
+ * Objects of this class should not be created directly as they are part of the 
+ * internal logic.
+ * <p>
+ * For more information see: 
+ * <a href="https://51degrees.com/support/documentation/device-detection-data-model">
+ * 51Degrees pattern data model</a>.
  */
 public class Enumerable implements Iterator<Integer>, Iterable<Integer> {
     /**
@@ -45,8 +54,9 @@ public class Enumerable implements Iterator<Integer>, Iterable<Integer> {
 
     /**
      * An enumerable that can be used to read through the entries.
+     * 
      * @param reader Reader set to the position at the start of the list.
-     * @param max 
+     * @param max number of elements that can possibly be returned.
      */
     public Enumerable(BinaryReader reader, int max) {
         this.count = 0;
@@ -56,6 +66,7 @@ public class Enumerable implements Iterator<Integer>, Iterable<Integer> {
 
     /**
      * Get the next element.
+     * 
      * @return integer entry.
      */
     public int getNext() {
@@ -70,6 +81,7 @@ public class Enumerable implements Iterator<Integer>, Iterable<Integer> {
 
     /**
      * Returns true if there are more values to read, false otherwise.
+     * 
      * @return true if there are more values to read, false otherwise.
      */
     @Override
@@ -79,6 +91,7 @@ public class Enumerable implements Iterator<Integer>, Iterable<Integer> {
 
     /**
      * Reads the next integer and returns it.
+     * 
      * @return the next integer in a sequence. Null if current > max.
      */
     @Override
@@ -96,6 +109,7 @@ public class Enumerable implements Iterator<Integer>, Iterable<Integer> {
 
     /**
      * Returns this object.
+     * 
      * @return this object.
      */
     @Override

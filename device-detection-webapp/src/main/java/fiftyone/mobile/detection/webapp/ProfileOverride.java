@@ -28,15 +28,29 @@ import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Used with the 51Degrees client side overrides JavaScript snippet.
+ * <p>
+ * Client side overrides provides improved device detection for devices like 
+ * iPhone where the User-Agent on its own is not enough to determine the 
+ * generation of the device, or with features that can only be retrieved using 
+ * JavaScript like the screen orientation.
+ * <p>
+ * Overridden features are available upon upon the second request. This script 
+ * is only available in the Enterprise data file.
+ * <p>
+ * You should not access objects of this class directly or instantiate new 
+ * objects using this class as they are part of the internal logic.
+ */
 class ProfileOverride {
 
-    final private static Logger logger = LoggerFactory.getLogger(ProfileOverride.class);
+    final private static Logger logger = 
+            LoggerFactory.getLogger(ProfileOverride.class);
     private static final String COOKIE_NAME = "51D_ProfileIds";
 
     /**
-     * 
-     * @param request
-     * @return the value of the profile ids cookie from the client.
+     * @param request current HttpServletRequest.
+     * @return the value of the profile IDs cookie from the client.
      */
     private static String getCookieValue(HttpServletRequest request) {
         if (request.getCookies() != null) {
@@ -52,7 +66,8 @@ class ProfileOverride {
     /**
      * Determines if the request includes override information from client
      * JavaScript that will impact the results provided.
-     * @param request
+     * 
+     * @param request current HttpServletRequest.
      * @return true if overrides are available.
      */
     static boolean hasOverrides(HttpServletRequest request) {
@@ -60,9 +75,10 @@ class ProfileOverride {
     }
     
     /**
-     * Returns the javascript for profile override for the requesting device.
-     * @param request
-     * @return 
+     * Returns the JavaScript for profile override for the requesting device.
+     * 
+     * @param request current HttpServletRequest.
+     * @return JavaScript as string.
      */
     static String getJavascript(HttpServletRequest request) throws IOException {
         Map<String, String[]> results = WebProvider.getResult(request);
@@ -74,15 +90,16 @@ class ProfileOverride {
                 for(String snippet : javascript) {
                     sb.append(snippet).append("\r");
                 }
-                sb.append("document.cookie = \"51D_ProfileIds=\" + profileIds.join(\"|\"); }}");
+                sb.append("document.cookie = \"51D_ProfileIds=\" "
+                        + "+ profileIds.join(\"|\"); }}");
                 return sb.toString();
             }
         }
         return null;
     }
-    
 
-    static void override(HttpServletRequest request, Match match) throws IOException {
+    static void override(HttpServletRequest request, Match match) 
+                                                            throws IOException {
         String cookieValue = getCookieValue(request);
         if (cookieValue != null) {
             for(String profileId : cookieValue.split("|")) {

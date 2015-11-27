@@ -28,12 +28,16 @@ import fiftyone.properties.DetectionConstants;
 import java.io.IOException;
 
 /**
- * Factory class used to create the new instances of Node V3.1. object.
+ * Factory class used to create the new instances of Node V3.1 object.
+ * <p>
+ * Objects of this class should not be created directly as they are part of the 
+ * internal logic.
  */
 public class NodeMemoryFactoryV31 extends NodeFactory {
 
     /**
      * Implements the creation of a new instance of Node version 3.1.
+     * 
      * @param dataSet The data set whose node list the node is contained within.
      * @param index The offset to the start of the node within the string data 
      * structure.
@@ -49,12 +53,20 @@ public class NodeMemoryFactoryV31 extends NodeFactory {
     
     /**
      * Returns the length of the NodeV31 entity provided.
+     * 
      * @param entity An entity of type Node who length is required.
      * @return The number of bytes used to store the node.
-     * @throws java.io.IOException
+     * @throws java.io.IOException if there was a problem accessing data file.
      */
     @Override
-    public int getLength(fiftyone.mobile.detection.entities.Node entity) throws IOException {
-        return getBaseLength() + DetectionConstants.SIZE_OF_INT + (entity.getChildrenLength() * NodeFactoryShared.getNodeIndexLengthV31()) + (entity.getNumericChildrenLength() * getNodeNumericIndexLength()) + (entity.getRankedSignatureIndexes().length * DetectionConstants.SIZE_OF_INT);
+    public int getLength(fiftyone.mobile.detection.entities.Node entity) 
+                                                            throws IOException {
+        return getBaseLength() + DetectionConstants.SIZE_OF_INT + 
+                (entity.getChildrenLength() * 
+                    NodeFactoryShared.getNodeIndexLengthV31()) + 
+                (entity.getNumericChildrenLength() * 
+                    getNodeNumericIndexLength()) + 
+                (entity.getRankedSignatureIndexes().length * 
+                    DetectionConstants.SIZE_OF_INT);
     }
 }

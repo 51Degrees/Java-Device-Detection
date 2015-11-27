@@ -46,44 +46,53 @@ import java.io.File;
 import java.util.Date;
 
 /**
- * Factory class used to create a DetectorDataSet from a source data structure.
- * All the entities are held in memory and the source data structure not
+ * Factory class used to create a DataSet from a binary device data file.
+ * All the entities are held in memory and the source data file is not
  * referenced once the data set is created. 
- * 
+ * <p>
  * The memory usage of the resulting data set following initialisation will be 
  * consistent. The performance of the data set will be very fast compared to 
  * the stream based implementation as all required data is loaded into memory 
  * and references between related objects set at initialisation. However 
  * overall memory usage will be higher than the stream based implementation on 
  * lightly loaded environments.
- * 
+ * <p>
  * Initialisation may take several seconds depending on system performance. 
  * Initialisation calculates all the references between entities. 
  * If initialisation is not performed then references will be calculated when 
  * needed. As such avoiding initialisation improves the time taken to create the
  * data set, at the expense of performance for the initial detections. The
  * default setting is not to initialise the data set.
- * 
- * For more information see:
- * http://51degrees.com/Support/Documentation/Java
+ * <p>
+ * Create a fully initialised Dataset:
+ * <code>Dataset ds = MemoryFactory.create("path_to_file", true);</code>
+ * <br />
+ * The resulting dataset can then be used to work with data or used in a 
+ * Provider to perform device detections. Use in provider like:
+ * <code>Provider p = new Provider(ds);</code>
+ * <p>
+ * This is a factory that creates a memory resident version of the 51Degrees 
+ * device data in the form of a Dataset object.
  */
 public class MemoryFactory {
     /**
      * Creates a new Dataset from the byte array.
+     * 
      * @param data Array of bytes to build the data set from.
      * @return A Dataset filled with data from the array.
-     * @throws IOException 
+     * @throws IOException if there was a problem accessing data file.
      */
     public static Dataset create(byte[] data) throws IOException {
         return create(data, false);
     }
     /**
      * Creates a new Dataset from the byte array.
-     * @param data Array of bytes to build the data set from
+     * 
+     * @param data Array of bytes to build the data set from.
      * @param init True to indicate that the data set should be filling 
-     * initialised
+     * initialised..
      * @return filled with data from the array.
-     * @throws IOException 
+     * @throws IOException if there was a problem accessing data file.
      */
     public static Dataset create(byte[] data, boolean init) throws IOException {
         Dataset dataSet = new Dataset(new Date(Long.MIN_VALUE), Modes.MEMORY);
@@ -95,9 +104,10 @@ public class MemoryFactory {
     /**
      * Creates a new DataSet from the file provided. The last modified date of 
      * the data set is the last write time of the data file provided.
+     * 
      * @param filename Uncompressed file containing the data for the data set.
      * @return filled with data from the array.
-     * @throws IOException 
+     * @throws IOException if there was a problem accessing data file.
      */
     public static Dataset create(String filename) throws IOException {
         File f = new File(filename);
@@ -111,11 +121,12 @@ public class MemoryFactory {
     
     /**
      * Creates a new DataSet from the file provided.
+     * 
      * @param filename Uncompressed file containing the data for the data set.
      * @param init True to indicate that the data set should be 
      * fully initialised.
      * @return A DataSet filled with data from the array.
-     * @throws IOException 
+     * @throws IOException if there was a problem accessing data file.
      */
     public static Dataset create(String filename, boolean init) 
                                                             throws IOException {
@@ -130,12 +141,13 @@ public class MemoryFactory {
     
     /**
      * Creates a new Dataset from the file provided.
+     * 
      * @param filename Uncompressed file containing the data for the data set.
      * @param init True to indicate that the data set should be filling 
      * initialised.
      * @param lastModified Date and time the source data was last modified.
      * @return filled with data from the array.
-     * @throws IOException 
+     * @throws IOException if there was a problem accessing data file.
      */
     public static Dataset create(String filename, boolean init,
                                  Date lastModified) throws IOException {
@@ -148,13 +160,14 @@ public class MemoryFactory {
     }
 
     /**
-     * Creates a lazily initialised {@link Dataset} from a {@link FileInputStream}.
+     * Creates a lazily initialised {@link Dataset} from a 
+     * {@link FileInputStream}.
      * <p>
-     * It is the caller's responsibility to close the passed fileInputStream
+     * It is the caller's responsibility to close the passed fileInputStream.
      *
-     * @param fileInputStream Source of data
-     * @return Uninitialised Dataset
-     * @throws IOException on problems with the Stream
+     * @param fileInputStream Source of data.
+     * @return Uninitialised Dataset.
+     * @throws IOException if there was a problem accessing data file.
      */
     public static Dataset create(FileInputStream fileInputStream)
             throws IOException {
@@ -162,17 +175,18 @@ public class MemoryFactory {
     }
 
     /**
-     * Creates an optionally initialised {@link Dataset} from a {@link FileInputStream}.
+     * Creates an optionally initialised {@link Dataset} from a 
+     * {@link FileInputStream}.
      * <p>
      * It is the caller's responsibility to close the passed fileInputStream
      * <p>
      * Initialisation increases load time and initial memory footprint,
      * but improves run time performance.
      *
-     * @param fileInputStream Source of data
-     * @param init preemptive initialise if tue
-     * @return Optionally initialised Dataset
-     * @throws IOException on problems with the Stream
+     * @param fileInputStream Source of data.
+     * @param init preemptive initialise if true.
+     * @return Optionally initialised Dataset.
+     * @throws IOException if there was a problem accessing data file.
      */
     public static Dataset create(FileInputStream fileInputStream, boolean init)
             throws IOException {
@@ -180,18 +194,19 @@ public class MemoryFactory {
     }
 
     /**
-     * Creates an optionally initialised {@link Dataset} from a {@link FileInputStream}.
+     * Creates an optionally initialised {@link Dataset} from a 
+     * {@link FileInputStream}.
      * <p>
      * It is the caller's responsibility to close the passed fileInputStream
      * <p>
      * Initialisation increases load time and initial memory footprint,
      * but improves run time performance.
      *
-     * @param fileInputStream Source of data
-     * @param init preemptive initialise if tue
-     * @param lastModified the date of data update
-     * @return Optionally initialised Dataset
-     * @throws IOException on problems with the Stream
+     * @param fileInputStream Source of data.
+     * @param init preemptive initialise if true.
+     * @param lastModified the date of data update.
+     * @return Optionally initialised Dataset.
+     * @throws IOException if there was a problem accessing data file.
      */
     public static Dataset create(FileInputStream fileInputStream, boolean init,
                 Date lastModified) throws IOException {
@@ -203,7 +218,7 @@ public class MemoryFactory {
 
     /**
      * Creates a new DataSet from the binary reader provided.
-     * 
+     * <p>
      * A DataSet is constructed using the reader to retrieve the 
      * header information. This is then passed to the Read methods to 
      * create the lists before reading the data into memory. Finally it 
@@ -215,7 +230,7 @@ public class MemoryFactory {
      * positioned to start reading.
      * @param init True to indicate that the data set should be fully 
      * initialised.
-     * @throws IOException 
+     * @throws IOException if there was a problem accessing data file.
      */
     @SuppressWarnings("null")
     public static void load(Dataset dataSet, BinaryReader reader, boolean init) 

@@ -32,6 +32,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+/**
+ * Filter used in the 51Degrees servlet.
+ * <p>
+ * Objects of this class should not be created directly as they are part of the 
+ * internal logic.
+ */
 public class FiftyOneDegreesFilter implements Filter {
 
     public FiftyOneDegreesFilter() {

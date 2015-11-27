@@ -27,38 +27,24 @@ import fiftyone.mobile.detection.search.SearchArrays;
 import java.io.IOException;
 
 /**
- * A node in the tree of characters for each character position. <p> Every
- * character position in the string contains a tree of nodes which are evaluated
- * until either a complete node is found, or no nodes are found that match at
- * the character position. <p> The list of Signature entities is in ascending
- * order of the complete nodes which form the sub strings of the signature.
- * Complete nodes are found at detection time for the target user agent and then
- * used to search for a corresponding signature. If one does not exist then
- * Signatures associated with the nodes that were found are evaluated to find
- * one that is closest to the target user agent. <p> Root nodes are the first
- * node at a character position. It's children are based on sequences of
- * characters that if present lead to the next node. A complete node will
- * represent a sub string within the user agent.
- */
-/**
  * A node in the tree of characters for each character position.
- * 
+ * <p>
  * Every character position in the string contains a tree of nodes
  * which are evaluated until either a complete node is found, or 
  * no nodes are found that match at the character position.
- * 
+ * <p>
  * The list of Signature entities is in ascending order of 
  * the complete nodes which form the sub strings of the signature.
- * Complete nodes are found at detection time for the target user agent
+ * Complete nodes are found at detection time for the target User-Agent
  * and then used to search for a corresponding signature. If one does
  * not exist then Signatures associated with the nodes that were found 
- * are evaluated to find one that is closest to the target user agent.
- * 
+ * are evaluated to find one that is closest to the target User-Agent.
+ * <p>
  * Root nodes are the first node at a character position. It's children
  * are based on sequences of characters that if present lead to the 
  * next node. A complete node will represent a sub string within
- * the user agent.
- * 
+ * the User-Agent.
+ * <p>
  * For more information see https://51degrees.com/Support/Documentation/Java
  */
 public abstract class Node extends BaseEntity implements Comparable<Node> {
@@ -89,14 +75,14 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
             new SearchNodeNumericIndex();
     
     /**
-     * The minimum length of a node assuming no node indexes or signatures.
+     * Ranges of numeric values for comparison.
      */
-    public static final int MIN_LENGTH = 20;
     private static final Range[] ranges = new Range[]{
-        new Range((short) 0, (short) 9),
-        new Range((short) 10, (short) 99),
-        new Range((short) 100, (short) 999),
-        new Range((short) 1000, Short.MAX_VALUE)
+        new Range((short) 0, (short) 10),
+        new Range((short) 10, (short) 100),
+        new Range((short) 100, (short) 1000),
+        new Range((short) 1000, (short) 10000),
+        new Range((short) 10000, Short.MAX_VALUE)
     };
     
     /**
@@ -146,7 +132,7 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
     public final short nextCharacterPosition;
     /**
      * The position of the first character the node represents in the signature
-     * or target user agent.
+     * or target User-Agent.
      */
     public final short position;
     /**
@@ -165,9 +151,9 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
     /**
      * Constructs a new instance of Node
      *
-     * @param dataSet The data set the node is contained within
-     * @param offset The offset in the data structure to the node
-     * @param reader BinaryReader object to be used
+     * @param dataSet The data set the node is contained within.
+     * @param offset The offset in the data structure to the node.
+     * @param reader BinaryReader object to be used.
      */
     public Node(Dataset dataSet, int offset, BinaryReader reader) {
         super(dataSet, offset);
@@ -182,8 +168,9 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
     
     /**
      * Returns the root node for this node.
+     * 
      * @return root node for this node
-     * @throws java.io.IOException indicates an I/O exception occurred
+     * @throws java.io.IOException if there was a problem accessing data file.
      */
     @SuppressWarnings("DoubleCheckedLocking")
     public Node getRoot() throws IOException {
@@ -223,14 +210,15 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
      * character position is set.
      */
     boolean isComplete() {
-        return nextCharacterPosition != Short.MIN_VALUE;
+        //return nextCharacterPosition != Short.MIN_VALUE;
+        return characterStringOffset >= 0;
     }
 
     /**
      * Compares one node to another for the purposes of determining the
      * signature the node relates to.
      *
-     * @param other node to be compared
+     * @param other node to be compared.
      * @return -1 if this node is lower than the other, 1 if higher or 0 if
      * equal.
      */
@@ -241,8 +229,9 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
     
     /**
      * Returns the number of characters in the node tree.
+     * 
      * @return number of characters in the node tree
-     * @throws java.io.IOException indicates an I/O exception occurred
+     * @throws java.io.IOException if there was a problem accessing data file.
      */
     public int getLength() throws IOException {
         return getRoot().position - position;
@@ -250,8 +239,9 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
 
     /**
      * Gets an array containing all the characters of the node.
-     * @return array containing all the characters of the node
-     * @throws java.io.IOException indicates an I/O exception occurred
+     * 
+     * @return array containing all the characters of the node.
+     * @throws java.io.IOException if there was a problem accessing data file.
      */
     @SuppressWarnings("DoubleCheckedLocking")
     public byte[] getCharacters() throws IOException {
@@ -271,6 +261,7 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
     /**
      * Used by the constructor to read the variable length list of child
      * indexes that contain numeric values.
+     * 
      * @param dataSet The data set the node is contained within.
      * @param reader Reader connected to the source data structure and 
      * positioned to start reading.
@@ -290,7 +281,7 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
 
     /**
      * @return An array of the ranked signature indexes for the node.
-     * @throws java.io.IOException
+     * @throws java.io.IOException if there was a problem accessing data file.
      */
     public abstract int[] getRankedSignatureIndexes() throws IOException;
     
@@ -310,7 +301,7 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
     
     /**
      * @return an array of all the numeric children.
-     * @throws java.io.IOException
+     * @throws java.io.IOException if there was a problem accessing data file.
      */
     public abstract NodeNumericIndex[] getNumericChildren() throws IOException;
 
@@ -318,9 +309,25 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
      * Called after the entire data set has been loaded to ensure any further
      * initialisation steps that require other items in the data set can be
      * completed.
-     * @throws java.io.IOException indicates an I/O exception occurred
+     * <p>
+     * This method should not be called as it is part of the internal logic.
+     * 
+     * @throws java.io.IOException if there was a problem accessing data file.
      */
     public void init() throws IOException {
+        if (isComplete() && characters == null) {
+            characters = getCharacters();
+        }
+        if (parent == null && parentOffset >= 0) {
+            parent = dataSet.nodes.get(parentOffset);
+        }
+        if (root == null) {
+            root = parent == null ? this : parent.root;
+        }
+        for (NodeIndex child : children) {
+            child.init();
+        }
+        /*
         if (parentOffset >= 0) {
             parent = getDataSet().getNodes().get(parentOffset);
         }
@@ -329,15 +336,17 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
             child.init();
         }
         getCharacters();
+        */
     }
     
     /**
      * Gets a complete node, or if one isn't available exactly the closest 
-     * numeric one to the target user agent at the current position.
+     * numeric one to the target User-Agent at the current position.
+     * 
      * @param state current working state of the matching process
      * @return a complete node, or if one isn't available exactly the closest 
      * numeric one.
-     * @throws IOException 
+     * @throws IOException if there was a problem accessing data file.
      */
     public Node getCompleteNumericNode(MatchState state) throws IOException {
         Node node = null;
@@ -352,19 +361,18 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
         if (node == null && numericChildrenCount > 0) {
             // No. So try each of the numeric matches in ascending order of
             // difference.
-            Integer target = getCurrentPositionAsNumeric(state);
-            if (target != null) {
+            int target = getCurrentPositionAsNumeric(state);
+            if (target >= 0) {
                 NodeNumericIndexIterator iterator = 
-                                                getNumericNodeIterator(target);
+                        getNumericNodeIterator(target);
                 if (iterator != null) {
                     while (iterator.hasNext()) {
                         NodeNumericIndex current = iterator.next();
                         node = current.getNode().getCompleteNumericNode(state);
                         if (node != null) {
                             int difference = 
-                                        Math.abs(target - current.getValue());
-                            state.setLowestScore(
-                                    state.getLowestScore() + difference);
+                                    Math.abs(target - current.getValue());
+                            state.incrLowestScore(difference);
                             break;
                         }
                     }
@@ -381,7 +389,7 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
      * Provides an iterator which provides the closest numeric children to the
      * target is ascending order of difference
      *
-     * @param target value of the sub string in the user agent
+     * @param target value of the sub string in the User-Agent
      * @return an iterator configured to provide numeric children in ascending
      * order of difference
      */
@@ -392,7 +400,7 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
             Range range = getRange(target);
 
             int startIndex = numericChildrenSearch.binarySearch(
-                    getNumericChildren(), target);
+                    getNumericChildren(), target).getIndex();
             if (startIndex < 0) {
                 startIndex = ~startIndex - 1;
             }
@@ -416,7 +424,7 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
                 return range;
             }
         }
-        throw new IllegalArgumentException("target");
+        return ranges[ranges.length - 1];
     }
 
     /**
@@ -426,7 +434,7 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
      * @return Null if there is no numeric characters, otherwise the characters
      * as an integer
      */
-    private Integer getCurrentPositionAsNumeric(MatchState state) {
+    private int getCurrentPositionAsNumeric(MatchState state) {
         // Find the left most numeric character from the current position.
         int i = position;
         while (i >= 0
@@ -446,9 +454,9 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
     /**
      * Returns a complete node for the match object provided.
      *
-     * @param state current working state of the matching process
-     * @return The next child node, or null if there isn't one
-     * @throws IOException indicates an I/O exception occurred
+     * @param state current working state of the matching process.
+     * @return The next child node, or null if there isn't one.
+     * @throws IOException if there was a problem accessing data file.
      */
     public Node getCompleteNode(MatchState state) throws IOException {
         Node node = null;
@@ -469,7 +477,7 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
      * @param state current working state of the matching process
      * @return The next child node, or null if there isn't one
      */
-    Node getNextNode(MatchState state) throws IOException {
+    private Node getNextNode(MatchState state) throws IOException {
         int upper = children.length - 1;
 
         if (upper >= 0) {
@@ -526,7 +534,7 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
      * @param state current working state of the matching process
      * @return true if any of the nodes in the match have overlapping characters
      * with this one.
-     * @throws IOException indicates an I/O exception occurred
+     * @throws IOException if there was a problem accessing data file.
      */
     public boolean getIsOverlap(MatchState state) throws IOException {
         for (Node node : state.getNodesList()) {
@@ -540,8 +548,8 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
     /**
      * Adds the characters for this node to the values array.
      *
-     * @param values array to add characters to
-     * @throws java.io.IOException indicates an I/O exception occurred
+     * @param values array to add characters to.
+     * @throws java.io.IOException if there was a problem accessing data file.
      */
     public void addCharacters(byte[] values) throws IOException {
         if (getParent() != null) {

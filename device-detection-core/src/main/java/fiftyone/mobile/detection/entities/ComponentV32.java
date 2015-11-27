@@ -27,8 +27,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Implementation of Component where HTTP Headers are provided by the data file
- * and are no longer hardcoded like V3.1.
+ * Extends {@link Component} by providing implementation for the 
+ * {@link #getHttpheaders()} method. Headers for version 3.2 are retrieved 
+ * from the data file.
+ * <p>
+ * Objects of this class should not be created directly as they are part of the 
+ * internal logic. Use the relevant {@link Dataset} method to access these 
+ * objects.
+ * <p>
+ * For more information see: 
+ * <a href="https://51degrees.com/support/documentation/device-detection-data-model">
+ * 51Degrees pattern data model</a>.
  */
 public class ComponentV32 extends Component {
 
@@ -40,6 +49,7 @@ public class ComponentV32 extends Component {
     /**
      * Constructs a new instance of Component. Reads the string offsets to the 
      * HTTP Headers during the constructor.
+     * 
      * @param dataSet The Dataset being created.
      * @param index Index of the component within the list.
      * @param reader Reader connected to the source data structure and 
@@ -55,11 +65,11 @@ public class ComponentV32 extends Component {
     }
 
     /**
-     * List of HTTP headers that should be checked in order to perform a 
-     * detection where more headers than User-Agent are available. This data 
-     * is used by methods that can HTTP Header collections.
-     * @return List of HTTP headers as Strings.
-     * @throws java.io.IOException
+     * Implements {@code getHttpheaders()} method. For version 321 a list of 
+     * HTTP headers is retrieved from the data file.
+     * 
+     * @return List of HTTP headers as strings.
+     * @throws java.io.IOException if there was a problem accessing data file.
      */
     @SuppressWarnings("DoubleCheckedLocking")
     @Override
@@ -73,7 +83,8 @@ public class ComponentV32 extends Component {
                     for (int element : httpHeaderOffsets) {
                         tempList.add(dataSet.strings.get(element).toString());
                     }
-                    httpHeaders = localHttpHeaders = tempList.toArray(new String[tempList.size()]);
+                    httpHeaders = localHttpHeaders = 
+                            tempList.toArray(new String[tempList.size()]);
                     tempList.clear();
                 }
             }

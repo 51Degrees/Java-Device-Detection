@@ -44,22 +44,27 @@ import fiftyone.mobile.detection.entities.memory.MemoryFixedList;
 import fiftyone.mobile.detection.entities.memory.PropertiesList;
 import fiftyone.mobile.detection.entities.stream.ICacheList;
 import fiftyone.mobile.detection.search.SearchBase;
+import fiftyone.mobile.detection.search.SearchResult;
 import fiftyone.properties.DetectionConstants;
 import java.io.Closeable;
 
 /**
- * Data set used for device detection created by the reader classes. 
- * 
- * The Memory.Reader and Stream.Reader factories should be used to create 
- * detector data sets. They can not be constructed directly from external code.
- * 
+ * Data set used for device detection and provide methods to work with device 
+ * data. 
+ * <p>
+ * Dataset should not be constructed directly, instead use either 
+ * {@link fiftyone.mobile.detection.factories.StreamFactory} or 
+ * {@link fiftyone.mobile.detection.factories.MemoryFactory}. Stream factory 
+ * returns a {@link fiftyone.mobile.detection.entities.stream.Dataset Stream 
+ * Dataset} which extends the this class and contains data members and methods 
+ * to access the data file on the "as needed" basis.
+ * <p>
  * All information about the detector data set is exposed in this class 
  * including meta data and data used for device detection in the form of lists.
- * 
- * Detector data sets created using the @see Stream#Reader factory using a 
- * file must be disposed of to ensure any readers associated with the file 
- * are closed elegantly. 
- * 
+ * <p>
+ * When you create a data set remember to {@link #close()} it to release 
+ * resources and file locks.
+ * <p>
  * For more information see https://51degrees.com/Support/Documentation/Java
  */
 public class Dataset implements Closeable {
@@ -93,7 +98,7 @@ public class Dataset implements Closeable {
             return item.compareTo(nodes);
         }
         
-        int binarySearch(List<Node> nodes) throws IOException {
+        SearchResult binarySearch(List<Node> nodes) throws IOException {
             return super.binarySearch(signatures, nodes);
         }
     }
@@ -130,7 +135,7 @@ public class Dataset implements Closeable {
             return item.getProfileId() - profileId;
         }
         
-        int binarySearch(Integer profileId) throws IOException {
+        SearchResult binarySearch(Integer profileId) throws IOException {
             return super.binarySearch(profileOffsets, profileId);
         }
     }
@@ -195,7 +200,7 @@ public class Dataset implements Closeable {
     public MemoryFixedList<Map> maps;
     /**
      * The maximum number of signatures that can be checked. Needed to avoid
-     * bogus user agents which deliberately require so many signatures to be
+     * bogus User-Agents which deliberately require so many signatures to be
      * checked that performance is degraded.
      */
     public int maxSignatures;
@@ -205,7 +210,7 @@ public class Dataset implements Closeable {
      */
     public int maxSignaturesClosest;
     /**
-     * The maximum length of a user agent string.
+     * The maximum length of a User-Agent string.
      */
     public short maxUserAgentLength;
     /**
@@ -218,12 +223,12 @@ public class Dataset implements Closeable {
      */
     public volatile int maximumRank;
     /**
-     * The minimum number of times a user agent should have been seen before it
+     * The minimum number of times a User-Agent should have been seen before it
      * was included in the dataset.
      */
     public int minUserAgentCount;
     /**
-     * The minimum length of a user agent string.
+     * The minimum length of a User-Agent string.
      */
     public short minUserAgentLength;
     /**
@@ -269,7 +274,7 @@ public class Dataset implements Closeable {
      */
     public IFixedList<IntegerEntity> rankedSignatureIndexes;
     /**
-     * Nodes for each of the possible character positions in the user agent.
+     * Nodes for each of the possible character positions in the User-Agent.
      */
     public IReadonlyList<Node> rootNodes;
     /**
@@ -332,6 +337,7 @@ public class Dataset implements Closeable {
     
     /**
      * Returns time that has elapsed since the data in the data set was current.
+     * 
      * @return time in seconds between now and when data file was published.
      */
     public long getAge() {
@@ -344,8 +350,9 @@ public class Dataset implements Closeable {
 
     /**
      * The percentage of requests for signatures which were not already
-     * contained in the cache. <p> A value is only returned when operating in
+     * contained in the cache. A value is only returned when operating in
      * Stream mode.
+     * 
      * @return double representing percentage of requests for signatures not 
      * currently in cache, only for Stream Mode.
      */
@@ -357,6 +364,7 @@ public class Dataset implements Closeable {
      * The percentage of requests for nodes which were not already
      * contained in the cache. A value is only returned when operating in 
      * Stream mode.
+     * 
      * @return double representing percentage of requests for nodes not already 
      * in cache. Stream Mode only.
      */
@@ -366,7 +374,8 @@ public class Dataset implements Closeable {
 
     /**
      * The percentage of requests for strings which were not already contained
-     * in the cache. <p> A value is only returned when operating in Stream mode.
+     * in the cache. A value is only returned when operating in Stream mode.
+     * 
      * @return double representing percentage of requests for strings that were 
      * not already in cache.
      */
@@ -376,7 +385,8 @@ public class Dataset implements Closeable {
 
     /**
      * The percentage of requests for profiles which were not already contained
-     * in the cache. <p> A value is only returned when operating in Stream mode.
+     * in the cache. A value is only returned when operating in Stream mode.
+     * 
      * @return double representing percentage of requests for profiles that were 
      * not already in cache.
      */
@@ -386,7 +396,8 @@ public class Dataset implements Closeable {
 
     /**
      * The percentage of requests for values which were not already contained in
-     * the cache. <p> A value is only returned when operating in Stream mode.
+     * the cache. A value is only returned when operating in Stream mode.
+     * 
      * @return double representing percentage of requests for values that were 
      * not already in cache.
      */
@@ -395,7 +406,10 @@ public class Dataset implements Closeable {
     }
 
     /**
-     * The largest rank value that can be returned.
+     * The largest rank value that can be returned. Maximum rank value can be 
+     * useful when working with signature ranks to calculate the rank percentage 
+     * and quickly sort.
+     * 
      * @return The largest rank value that can be returned.
      */
     public int getMaximumRank() {
@@ -413,6 +427,7 @@ public class Dataset implements Closeable {
     
     /**
      * Indicates if the data set has been disposed.
+     * 
      * @return True if dataset has been disposed, False otherwise.
      */
     public boolean getDisposed() {
@@ -421,7 +436,23 @@ public class Dataset implements Closeable {
     private boolean disposed;
 
     /**
-     * The hardware component.
+     * Returns the hardware {@link Component} that contains a set of 
+     * {@Link Property properties} and {@link Profile profiles} related to 
+     * hardware (such as: IsCrawler property).
+     * <p>
+     * Note that for the 'Lite' data file this component returns only three 
+     * properties: IsMobile, ScreenPixelsWidth and ScreenPixelsHeight.
+     * <p>
+     * Premium and Enterprise data files contain considerably more data, meaning 
+     * more accurate detections and access to properties like DeviceType, 
+     * IsTablet, DeviceRAM, HardwareName, PriceBand, ScreenInchesWidth and more.
+     * <a href="https://51degrees.com/compare-data-options">
+     * Compare data options</a>.
+     * <p>
+     * For more information see: 
+     * <a href="https://51degrees.com/support/documentation/device-detection-data-model">
+     * 51Degrees Pattern Data Model</a>
+     * 
      * @return hardware component for the hardware platform
      * @throws IOException signals an I/O exception occurred
      */
@@ -442,9 +473,23 @@ public class Dataset implements Closeable {
     
 
     /**
-     * The software component.
+     * Returns the software {@link Component} that contains a set of 
+     * {@Link Property properties} and {@link Profile profiles} related to 
+     * software. Software component includes properties like: PlatformName and 
+     * PlatformVersion.
+     * <p>
+     * Premium and Enterprise data files contain considerably more data, meaning 
+     * more accurate detections and access to properties like PlatformVendor, 
+     * CLDC and CcppAccept.
+     * <a href="https://51degrees.com/compare-data-options">
+     * Compare data options</a>.
+     * <p>
+     * For more information see: 
+     * <a href="https://51degrees.com/support/documentation/device-detection-data-model">
+     * 51Degrees Pattern Data Model</a>
+     * 
      * @return software component for the software platform
-     * @throws IOException signals an I/O exception occurred
+     * @throws IOException if there was a problem accessing data file.
      */
     @SuppressWarnings("DoubleCheckedLocking")
     public Component getSoftware() throws IOException {
@@ -462,9 +507,22 @@ public class Dataset implements Closeable {
     private volatile Component software;
 
     /**
-     * The browser component.
-     * @return browser component for browser
-     * @throws IOException signals an I/O exception occurred
+     * Returns the browser {@link Component} that contains a set of 
+     * {@link Property properties} and {@link Profile profiles} related to 
+     * browsers.
+     * <p>
+     * Premium and Enterprise data files contain considerably more data, meaning 
+     * more accurate detections and access to properties like AjaxRequestType,
+     * IsWebApp, HtmlVersion and Javascript.
+     * <a href="https://51degrees.com/compare-data-options">
+     * Compare data options</a>.
+     * <p>
+     * For more information see: 
+     * <a href="https://51degrees.com/support/documentation/device-detection-data-model">
+     * 51Degrees Pattern Data Model</a>
+     * 
+     * @return browser {@code Component}.
+     * @throws IOException if there was a problem accessing data file.
      */
     @SuppressWarnings("DoubleCheckedLocking")
     public Component getBrowsers() throws IOException {
@@ -482,7 +540,23 @@ public class Dataset implements Closeable {
     private volatile Component browsers;
 
     /**
-     * The crawler component.
+     * Returns the crawler {@link Component} that contains a set of 
+     * {@Link Property properties} and {@link Profile profiles} related to 
+     * crawlers (such as: IsCrawler property).
+     * <p>
+     * Note that for the 'Lite' data file this component will not return any 
+     * properties. Some profiles will be returned but no properties associated 
+     * with this component will be available.
+     * <p>
+     * Premium and Enterprise data files contain considerably more data, meaning 
+     * more accurate detections and access to the IsCrawler property.
+     * <a href="https://51degrees.com/compare-data-options">
+     * Compare data options</a>.
+     * <p>
+     * For more information see: 
+     * <a href="https://51degrees.com/support/documentation/device-detection-data-model">
+     * 51Degrees Pattern Data Model</a>
+     * 
      * @return crawler component
      * @throws IOException signals an I/O exception has occurred
      */
@@ -502,9 +576,10 @@ public class Dataset implements Closeable {
     private volatile Component crawlers;
 
     /**
-     * The copyright notice associated with the data set.
-     * @return string of text representing copyright notice for the data set
-     * @throws IOException signals an I/O exception occurred
+     * The copyright notice associated with the data file.
+     * 
+     * @return copyright notice for the current data file as a string of text.
+     * @throws IOException if there was a problem accessing data file.
      */
     @SuppressWarnings("DoubleCheckedLocking")
     public String getCopyright() throws IOException {
@@ -513,7 +588,8 @@ public class Dataset implements Closeable {
             synchronized (this) {
                 localCopyright = copyright;
                 if (localCopyright == null) {
-                    copyright = localCopyright = strings.get(copyrightOffset).toString();
+                    copyright = localCopyright = 
+                            strings.get(copyrightOffset).toString();
                 }
             }
         }
@@ -521,9 +597,11 @@ public class Dataset implements Closeable {
     }
 
     /**
-     * The common name of the data set.
-     * @return name of the data set
-     * @throws IOException signals an I/O exception occurred
+     * The common name of the data set such as 'Lite', 'Premium' and 
+     * 'Enterprise'.
+     * 
+     * @return name of the data set as a string.
+     * @throws IOException if there was a problem accessing data file.
      */
     @SuppressWarnings("DoubleCheckedLocking")
     public String getName() throws IOException {
@@ -541,9 +619,10 @@ public class Dataset implements Closeable {
     private volatile String name;
 
     /**
-     * The name of the property map used to create the dataset.
-     * @return name of the property map used to create dataset
-     * @throws IOException signals an I/O exception occurred
+     * Major version of the data file backing the this data set.
+     * 
+     * @return major version of the data file.
+     * @throws IOException if there was a problem accessing data file.
      */
     @SuppressWarnings("DoubleCheckedLocking")
     public String getFormat() throws IOException {
@@ -600,8 +679,14 @@ public class Dataset implements Closeable {
     private volatile SearchProfileOffsetByProfileId profileOffsetSearch;
     
     /**
-     * A list of all the components the data set contains.
-     * @return a read-only list of all components contained in data set
+     * Returns an iterable of all {@link Component Components} in the current 
+     * data file.
+     * 
+     * For more information see: 
+     * <a href="https://51degrees.com/support/documentation/device-detection-data-model">
+     * 51Degrees Pattern Data Model</a>
+     * 
+     * @return iterable of {@code Component} entities in the current data file.
      */
     public IReadonlyList<Component> getComponents() {
         return components;
@@ -609,15 +694,18 @@ public class Dataset implements Closeable {
     
 
     /**
-     * A list of all property maps the data set contains.
-     * @return a read-only list of all maps contained in the data set
+     * Returns an iterable list of maps contained within the data file.
+     * May contain multiple maps with the same name.
+     * 
+     * @return a read-only list of all maps contained in the data set.
      */
     public IReadonlyList<Map> getMaps() {
         return maps;
     }
 
     /**
-     * A list of all properties the data set contains.
+     * A list of all {@link Property properties} the data set contains.
+     * 
      * @return a read-only list of all properties contained in the data set
      */
     public IReadonlyList<Property> getProperties() {
@@ -626,16 +714,25 @@ public class Dataset implements Closeable {
     
 
     /**
-     * A list of all property values the data set contains.
+     * A list of all {@link Value values} the data set contains. A value is 
+     * the specific content of a {@link Property} for a specific {@link Profile}.
+     * For example: IsMobile can have value 'True' for profile A but have a 
+     * value 'False' for profile B.
+     * 
      * @return a read-only list of values contained in the data set
      */
     public IReadonlyList<Value> getValues() {
         return values;
     }
-    
 
     /**
-     * List of signatures the data set contains.
+     * List of {@link Signature signatures} the data set contains. Signatures 
+     * contain one {@link Profile} per {@link Component} and rank values.
+     * <p>
+     * For more information see: 
+     * <a href="https://51degrees.com/support/documentation/device-detection-data-model">
+     * 51Degrees Pattern Data Model</a>
+     * 
      * @return a read-only list of all signatures contained in the data set
      */
     public IReadonlyList<Signature> getSignatures() {
@@ -644,6 +741,7 @@ public class Dataset implements Closeable {
     
     /**
      * List of nodes the data set contains.
+     * 
      * @return a read-only list of nodes contained in the data set
      */
     public IReadonlyList<Node> getNodes() {
@@ -651,7 +749,15 @@ public class Dataset implements Closeable {
     }
 
     /**
-     * A list of all the possible profiles the data set contains.
+     * A list of all the possible {@link Profile profiles} contained in the 
+     * current data set. Profiles contain multiple {@link Value values}. Each 
+     * profile belongs to one {@link Component} and can be assigned to many 
+     * {@link Signature signatures}.
+     * <p>
+     * For more information see: 
+     * <a href="https://51degrees.com/support/documentation/device-detection-data-model">
+     * 51Degrees Pattern Data Model</a>
+     * 
      * @return a read-only list of all profiles contained in the data set
      */
     public IReadonlyList<Profile> getProfiles() {
@@ -659,8 +765,9 @@ public class Dataset implements Closeable {
     }
 
     /**
-     * The minimum length of a user agent string.
-     * @return The minimum length of a user agent string.
+     * The minimum length of a User-Agent string.
+     * 
+     * @return The minimum length of a User-Agent string.
      */
     public short getMinUserAgentLength() {
         return minUserAgentLength;
@@ -668,6 +775,7 @@ public class Dataset implements Closeable {
 
     /**
      * Returns a list of integers that represent signature node offsets.
+     * 
      * @return list of integers that represent signature node offsets.
      */
     public IFixedList<IntegerEntity> getSignatureNodeOffsets() {
@@ -676,6 +784,7 @@ public class Dataset implements Closeable {
     
     /**
      * Returns a list of integers that represent ranked signature indexes.
+     * 
      * @return a list of integers that represent ranked signature indexes.
      */
     public IFixedList<IntegerEntity> getNodeRankedSignatureIndexes() {
@@ -684,8 +793,13 @@ public class Dataset implements Closeable {
     
     /**
      * Creates a list of HTTP headers if one does not already exist.
+     * Most devices can be identified by examining the HTTP User-Agent header 
+     * alone while other devices and (or) browsers sometimes set an extra 
+     * header that can be used to improve detection. This list represents 
+     * the headers that are important to device detection process.
+     * 
      * @return list of HTTP headers as Strings.
-     * @throws java.io.IOException
+     * @throws java.io.IOException if there was a problem accessing data file.
      */
     @SuppressWarnings("DoubleCheckedLocking")
     public String[] getHttpHeaders() throws IOException {
@@ -717,6 +831,8 @@ public class Dataset implements Closeable {
      * Called after the entire data set has been loaded to ensure any further
      * initialisation steps that require other items in the data set can be
      * completed.
+     * <p>
+     * Do not use this method as it is part of the internal logic.
      *
      * @throws IOException signals an I/O exception occurred
      */
@@ -741,8 +857,12 @@ public class Dataset implements Closeable {
 
     /**
      * Preloads signatures to speed retrieval later at the expense of memory.
-     * This method doesn't need to be used if init() has already been called.
-     * @throws java.io.IOException
+     * This method doesn't need to be used if {@code init()} has already been 
+     * called.
+     * <p>
+     * This method should not be called as it is part of the internal logic.
+     * 
+     * @throws java.io.IOException if there was a problem accessing data file.
      */
     public void initSignatures() throws IOException {
         // Initialise any objects that can be pre referenced to speed up
@@ -754,8 +874,12 @@ public class Dataset implements Closeable {
 
     /**
      * Preloads nodes to speed retrieval later at the expense of memory.
-     * This method doesn't need to be used if init() has already been called.
-     * @throws java.io.IOException
+     * This method doesn't need to be used if {@code init()} has already been 
+     * called.
+     * <p>
+     * This method should not be called as it is part of the internal logic.
+     * 
+     * @throws java.io.IOException if there was a problem accessing data file.
      */
     public void initNodes() throws IOException {
         for (Node node : nodes) {
@@ -765,8 +889,12 @@ public class Dataset implements Closeable {
 
     /**
      * Preloads profiles to speed retrieval later at the expense of memory.
-     * This method doesn't need to be used if init() has already been called.
-     * @throws java.io.IOException
+     * This method doesn't need to be used if {@code init()} has already been 
+     * called.
+     * <p>
+     * This method should not be called as it is part of the internal logic.
+     * 
+     * @throws java.io.IOException if there was a problem accessing data file.
      */
     public void initProfiles() throws IOException {
         for (Profile profile : profiles) {
@@ -776,8 +904,12 @@ public class Dataset implements Closeable {
 
     /**
      * Preloads components to speed retrieval later at the expense of memory.
-     * This method doesn't need to be used if init() has already been called.
-     * @throws java.io.IOException
+     * This method doesn't need to be used if {@code init()} has already been 
+     * called.
+     * <p>
+     * This method should not be called as it is part of the internal logic.
+     * 
+     * @throws java.io.IOException if there was a problem accessing data file.
      */
     public void initComponents() throws IOException {
         for (Component component : getComponents()) {
@@ -787,8 +919,12 @@ public class Dataset implements Closeable {
 
     /**
      * Preloads properties to speed retrieval later at the expense of memory.
-     * This method doesn't need to be used if init() has already been called.
-     * @throws java.io.IOException
+     * This method doesn't need to be used if {@code init()} has already been 
+     * called.
+     * <p>
+     * This method should not be called as it is part of the internal logic.
+     * 
+     * @throws java.io.IOException if there was a problem accessing data file.
      */
     public void initProperties() throws IOException {
         for (Property property : getProperties()) {
@@ -798,8 +934,12 @@ public class Dataset implements Closeable {
 
     /**
      * Preloads values to speed retrieval later at the expense of memory.
-     * This method doesn't need to be used if init() has already been called.
-     * @throws java.io.IOException
+     * This method doesn't need to be used if {@code init()} has already been 
+     * called.
+     * <p>
+     * This method should not be called as it is part of the internal logic.
+     * 
+     * @throws java.io.IOException if there was a problem accessing data file.
      */
     public void initValues() throws IOException {
         for (Value value : values) {
@@ -808,11 +948,18 @@ public class Dataset implements Closeable {
     }
 
     /**
-     * Returns the Component associated with the name provided.
+     * Retrieves {@link Component} by name if a component with such name exists.
+     * Method can return null if no component with required name was found; use 
+     * a null check when invoking.
+     * <p>
+     * {@code Component} contains a list of {@link Profile} and {@link Property} 
+     * that are related to this component. For more information see: 
+     * <a href="https://51degrees.com/support/documentation/
+     * device-detection-data-model">51Degrees Pattern Data Model</a>
      *
-     * @param componentName string representing name of the component to retrieve
-     * @return The component matching the name, or null if no component is found
-     * @throws IOException signals an I/O exception occurred
+     * @param componentName name of the required {@code Component} as string.
+     * @return The {@code Component} matching the name, or null.
+     * @throws IOException if there was a problem accessing data file.
      *
      */
     public Component getComponent(String componentName) throws IOException {
@@ -826,8 +973,10 @@ public class Dataset implements Closeable {
 
     /**
      * Method searches for a property with the given name and returns one if 
-     * found.
-     * @param propertyName name of the property to find.
+     * found. Method is capable of returning a null, so add a check for null 
+     * when invoking.
+     * 
+     * @param propertyName name of the property to find, should not be null.
      * @return Property object or null if no property with requested name exists
      * @throws java.io.IOException
      */
@@ -850,7 +999,11 @@ public class Dataset implements Closeable {
     }
 
     /**
-     * Returns the number of profiles each signature can contain.
+     * Returns the number of {@link Profile profiles} each signature can contain. 
+     * The number of profiles should be equal to the number of 
+     * {@link Component components}, in other words: each signature has one 
+     * profile per component.
+     * 
      * @return The number of profiles each signature can contain.
      */
     public int getProfilesCount() {
@@ -860,6 +1013,7 @@ public class Dataset implements Closeable {
     
     /**
      * Returns the number of nodes each signature can contain.
+     * 
      * @return The number of nodes each signature can contain.
      */
     public int getNodesCount() {
@@ -867,22 +1021,22 @@ public class Dataset implements Closeable {
     }
 
     /**
-     * Searches the list of profile Ids and returns the profile if the profile
+     * Searches the list of profile IDs and returns the profile if the profile
      * id is valid.
      *
-     * @param profileId Id of the profile to be found
-     * @return Profile related to the id, or null if none found
+     * @param profileId Id of the profile to be found, not negative.
+     * @return Profile related to the id, or null if none found.
      * @throws IOException signals an I/O exception occurred
      */
     public Profile findProfile(int profileId) throws IOException {
-        int index = getProfileOffsetSearch().binarySearch(profileId);
+        int index = getProfileOffsetSearch().binarySearch(profileId).getIndex();
         return index < 0 ? null : profiles.get(
                 profileOffsets.get(index).getOffset());
     }
 
     /**
-     * Disposes of the data set.
-     * @throws java.io.IOException
+     * Disposes of the data set releasing any file locks.
+     * @throws java.io.IOException if there was a problem accessing data file.
      */
     @Override
     public void close() throws IOException {
@@ -963,6 +1117,7 @@ public class Dataset implements Closeable {
     
     /**
      * Returns a list of signature indexes ordered in ascending order of rank.
+     * 
      * @return A list of signature indexes ordered in ascending order of rank.
      */
     public IFixedList<IntegerEntity> getRankedSignatureIndexes() {
@@ -972,8 +1127,10 @@ public class Dataset implements Closeable {
     /**
      * Number of times the ranked signature cache was switched.
      * A value is only returned when operating in Stream mode.
+     * 
      * @return Number of times the ranked signature cache was switched.
      */
+    @Deprecated
     public long getRankedSignatureCacheSwitches() {
         return getSwitches(rankedSignatureIndexes);
     }

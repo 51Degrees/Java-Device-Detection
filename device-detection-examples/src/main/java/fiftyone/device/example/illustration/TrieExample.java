@@ -29,13 +29,17 @@ import java.io.Closeable;
 import java.io.IOException;
 
 /**
+ * <!-- snippet -->
  * Example of creating a TrieProvider and using it to get a device property.
  * <p>
- * {@link #main}  assumes it is being run with a working directory at root of project or of this module.
+ * {@link #main} assumes it is being run with a working directory at root of 
+ * project or of this module.
+ * <!-- snippet -->
  */
 public class TrieExample implements Closeable {
 
-    private TrieProvider provider;
+    // Trie provider object, created using the Trie factory.
+    private final TrieProvider provider;
 
     public TrieExample() throws IOException {
         //Initialise provider through TrieFactory object.
@@ -43,7 +47,9 @@ public class TrieExample implements Closeable {
     }
 
     /**
-     * Illustrates the basic process of detecting a device and retrieving a property for Trie provider
+     * Illustrates the basic process of detecting a device and retrieving a 
+     * property for Trie provider.
+     * 
      * @param userAgent an HTTP User-Agent header value
      * @return ture if the device has been detected as mobile
      * @throws Exception
@@ -69,7 +75,7 @@ public class TrieExample implements Closeable {
         // set up
         TrieExample trieExample = new TrieExample();
         try {
-            // loop over the provided small sample of HTTP User-Agent header values
+            // loop over provided small sample of HTTP User-Agent header values
             for (String ua: Shared.USERAGENTS) {
                 if (trieExample.isItMobile(ua)) {
                     System.out.println("It's mobile: " + ua);

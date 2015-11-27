@@ -27,6 +27,9 @@ import java.nio.ByteOrder;
 /**
  * Encapsulates a byte array containing the uncompressed data structures 
  * used by the data set.
+ * <p>
+ * Objects of this class should not be created directly as they are part of the 
+ * internal logic.
  */
 public class SourceMemory extends SourceBase {
     
@@ -37,6 +40,7 @@ public class SourceMemory extends SourceBase {
     
     /**
      * Creates the source from the byte array provided.
+     * 
      * @param buffer Byte array source of the data.
      */
     public SourceMemory(byte[] buffer) {
@@ -45,6 +49,7 @@ public class SourceMemory extends SourceBase {
     
     /**
      * Creates a new ByteBuffer from the bytes array.
+     * 
      * @return new ByteBuffer from the bytes array.
      */
     @Override

@@ -22,13 +22,20 @@ package fiftyone.mobile.detection.entities.memory;
 
 import fiftyone.mobile.detection.Dataset;
 import fiftyone.mobile.detection.entities.IntegerEntity;
-import fiftyone.mobile.detection.entities.NodeIndex;
 import fiftyone.mobile.detection.factories.NodeFactoryShared;
 import fiftyone.mobile.detection.readers.BinaryReader;
 import java.io.IOException;
 
 /**
- * All data is loaded into memory when the entity is constructed.
+ * All data is loaded into memory when the entity is constructed. Implements 
+ * memory Node of version 3.2.
+ * <p>
+ * Objects of this class should not be created directly as they are part of the 
+ * internal logic.
+ * <p>
+ * For more information see:
+ * <a href="https://51degrees.com/support/documentation/pattern">
+ * how Pattern device detection works</a>.
  */
 public class NodeV32 extends Node{
 
@@ -42,6 +49,7 @@ public class NodeV32 extends Node{
     
     /**
      * Constructs a new instance of NodeV32.
+     * 
      * @param dataSet The data set the node is contained within.
      * @param offset The offset in the data structure to the node.
      * @param reader Reader connected to the source data structure and 
@@ -64,7 +72,10 @@ public class NodeV32 extends Node{
     
     /**
      * Loads all the ranked signature indexes for the node.
-     * @throws java.io.IOException
+     * <p>
+     * This method should not be called as it is part of the internal logic.
+     * 
+     * @throws java.io.IOException if there was a problem accessing data file.
      */
     @Override
     public void init() throws IOException {
@@ -76,8 +87,9 @@ public class NodeV32 extends Node{
     
     /**
      * Returns ranked signature indexes as array.
+     * 
      * @return ranked signature indexes as array.
-     * @throws IOException 
+     * @throws IOException if there was a problem accessing data file.
      */
     private int[] getRankedSignatureIndexesAsArray() throws IOException {
         int[] rsi = new int[rankedSignatureCount];
@@ -100,19 +112,22 @@ public class NodeV32 extends Node{
     }
 
     /**
-     * Returns the ranked signature indexes. Init method is called if the array 
-     * has not been initialised.
+     * Returns the ranked signature indexes. {@link #init()} method is called 
+     * if the array has not been initialised.
+     * 
      * @return the ranked signature indexes.
-     * @throws java.io.IOException
+     * @throws java.io.IOException if there was a problem accessing data file.
      */
     @Override
+    @SuppressWarnings("DoubleCheckedLocking")
     public int[] getRankedSignatureIndexes() throws IOException {
         int[] localRankedSignatureIndexes = rankedSignatureIndexes;
         if (localRankedSignatureIndexes == null) {
             synchronized(this) {
                 localRankedSignatureIndexes = rankedSignatureIndexes;
                 if (localRankedSignatureIndexes == null) {
-                    rankedSignatureIndexes = localRankedSignatureIndexes = getRankedSignatureIndexesAsArray();
+                    rankedSignatureIndexes = localRankedSignatureIndexes = 
+                            getRankedSignatureIndexesAsArray();
                 }
             }
         }

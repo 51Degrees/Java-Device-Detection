@@ -28,11 +28,13 @@ public class Utilities {
     /**
      * Method joins given number of strings separating each by the specified 
      * separator. Used to construct the update URL.
+     * 
      * @param seperator what separates the strings.
      * @param strings strings to join.
      * @return all of the strings combined in to one and separated by separator.
      */
-    public static String joinString(final String seperator, final String[] strings) {
+    public static String joinString(final String seperator, 
+                                    final String[] strings) {
         final StringBuilder sb = new StringBuilder();
         int size = strings.length;
         for (int i = 0; i < size; i++) {

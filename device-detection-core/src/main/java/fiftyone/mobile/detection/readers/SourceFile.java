@@ -31,6 +31,9 @@ import java.nio.channels.FileChannel;
 /**
  * Encapsulates either a file containing the uncompressed data structures 
  * used by the data set.
+ * <p>
+ * Objects of this class should not be created directly as they are part of the 
+ * internal logic.
  */
 public class SourceFile extends SourceFileBase {
     
@@ -46,10 +49,11 @@ public class SourceFile extends SourceFileBase {
     
     /**
      * Creates the source from the file provided.
+     * 
      * @param fileName File source of the data.
      * @param isTempFile True if the file should be deleted when the source 
      * is disposed.
-     * @throws java.io.FileNotFoundException
+     * @throws java.io.FileNotFoundException if a data file could not be found.
      */
     public SourceFile(String fileName, boolean isTempFile) 
             throws FileNotFoundException {
@@ -60,8 +64,9 @@ public class SourceFile extends SourceFileBase {
 
     /**
      * Creates a new ByteBuffer from the file located on the hard drive.
+     * 
      * @return ByteBuffer ready to read data from the data file on hard drive.
-     * @throws java.io.IOException
+     * @throws java.io.IOException if there was a problem accessing data file.
      */
     @Override
     ByteBuffer createStream() throws IOException {
@@ -74,9 +79,10 @@ public class SourceFile extends SourceFileBase {
     }
     
     /**
-     * Close any file references, release resources and then try to 
-     * delete the underlying file if 
-     * @throws java.io.IOException
+     * Close any file references, release resources and then try to delete the 
+     * underlying file if it was marked as temporary.
+     * 
+     * @throws java.io.IOException if there was a problem accessing data file.
      */
     @Override
     public void close() throws IOException {

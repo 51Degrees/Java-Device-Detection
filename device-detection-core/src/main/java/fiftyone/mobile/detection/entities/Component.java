@@ -28,18 +28,31 @@ import java.util.List;
 
 /**
  * Every device can be split into the major components of hardware, operating
- * system and browser. The properties and values associated with these
- * components are accessed via this class. 
- * 
- * As there are a small number of components they are always held in memory.
- * 
- * For more information see:
- * http://51degrees.com/Support/Documentation/Java
- */
-/**
- * Every device can be split into the major components of hardware, operating
- * system and browser. These the properties and values associated with these
- * components are represented via this class.
+ * system, crawler and browser. Each component has a number of properties and 
+ * profiles assigned to it.
+ * <p>
+ * Components are always held in memory as there is only a small number of them.
+ * <p>
+ * Full list of components in the data set can be retrieved like:
+ * {@code dataSet.getComponents();}. Data set also provides a way to retrieve a 
+ * specific component:
+ * <ul>
+ *  <li>Hardware component: {@code dataSet.getHardware();}
+ *  <li>Software component: {@code dataSet.getSoftware();}
+ *  <li>Browser component: {@code dataSet.getBrowsers();}
+ *  <li>Crawler component: {@code dataSet.getCrawlers();}
+ * </ul>
+ * <p>
+ * Component can be used to retrieve {@link #getProfiles() profiles} and 
+ * {@link #getProperties() properties}.
+ * <p>
+ * Objects of this class should not be created directly as they are part of the 
+ * internal logic. Use the relevant {@link Dataset} method to access these 
+ * objects.
+ * <p>
+ * For more information see: 
+ * <a href="https://51degrees.com/support/documentation/device-detection-data-model">
+ * 51Degrees pattern data model</a>.
  */
 public abstract class Component extends BaseEntity 
                                 implements Comparable<Component> {
@@ -57,9 +70,9 @@ public abstract class Component extends BaseEntity
      * Constructs a new instance of Component
      *
      * @param dataSet The data set whose components list the component is
-     * contained within
-     * @param index Index of the component within the list
-     * @param reader the BinaryReader object to be used
+     * contained within.
+     * @param index Index of the component within the list.
+     * @param reader the BinaryReader object to be used.
      */
     public Component(Dataset dataSet, int index, BinaryReader reader) {
         super(dataSet, index);
@@ -71,8 +84,8 @@ public abstract class Component extends BaseEntity
     /**
      * Compares this component to another using the numeric ComponentId field.
      *
-     * @param other The component to be compared against
-     * @return Indication of relative value based on ComponentId field
+     * @param other The component to be compared against.
+     * @return Indication of relative value based on ComponentId field.
      */
     @Override
     public int compareTo(Component other) {
@@ -81,8 +94,9 @@ public abstract class Component extends BaseEntity
     
     /**
      * The default profile that should be returned for the component.
-     * @return default profile that should be returned for the component
-     * @throws java.io.IOException indicates an I/O exception occurred
+     * 
+     * @return default profile that should be returned for the component.
+     * @throws java.io.IOException If there was a problem accessing data file.
      */
     @SuppressWarnings("DoubleCheckedLocking")
     public Profile getDefaultProfile() throws IOException {
@@ -102,8 +116,9 @@ public abstract class Component extends BaseEntity
     
     /**
      * An array of profiles associated with the component.
-     * @return an array of the profiles.
-     * @throws java.io.IOException indicates an I/O exception occurred
+     * 
+     * @return an array of the {@link Profile profiles}.
+     * @throws java.io.IOException if there was a problem accessing data file.
      */
     @SuppressWarnings("DoubleCheckedLocking")
     public Profile[] getProfiles() throws IOException {
@@ -124,8 +139,8 @@ public abstract class Component extends BaseEntity
     /**
      * Array of properties the component relates to.
      *
-     * @return array of properties the component relates to.
-     * @throws IOException indicates an I/O exception occurred
+     * @return array of {@link Property properties} the component relates to.
+     * @throws IOException if there was a problem accessing data file.
      */
     @SuppressWarnings("DoubleCheckedLocking")
     public Property[] getProperties() throws IOException {
@@ -145,7 +160,9 @@ public abstract class Component extends BaseEntity
     
     /**
      * Initialises the references to profiles.
-     * @throws java.io.IOException indicates an I/O exception occurred
+     * This method should not be called as it is part of the internal logic.
+     * 
+     * @throws java.io.IOException if there was a problem accessing data file.
      */
     public void init() throws IOException {
         if (name == null)
@@ -157,9 +174,10 @@ public abstract class Component extends BaseEntity
     }
     
     /**
-     * The unique name of the component.
-     * @return unique name of the component
-     * @throws java.io.IOException indicates an I/O exception occurred 
+     * The unique name of the component as a string.
+     * 
+     * @return unique name of the component as a string.
+     * @throws java.io.IOException if there was a problem accessing data file.
      */
     @SuppressWarnings("DoubleCheckedLocking")
     public String getName() throws IOException {
@@ -168,7 +186,8 @@ public abstract class Component extends BaseEntity
             synchronized (this) {
                 localName = name;
                 if (localName == null) {
-                    name = localName = getDataSet().strings.get(nameOffset).toString();
+                    name = localName = 
+                            getDataSet().strings.get(nameOffset).toString();
                 }
             }
         }
@@ -206,7 +225,8 @@ public abstract class Component extends BaseEntity
 
     /**
      * The unique Id of the component. Does not change between different data
-     * sets.
+     * sets. Consists of four {@link Profile} IDs.
+     * 
      * @return The unique Id of the component.
      */
     public int getComponentId() {
@@ -216,6 +236,7 @@ public abstract class Component extends BaseEntity
 
     /**
      * Returns the components name.
+     * 
      * @return Returns the components name.
      */
     @Override
@@ -229,11 +250,12 @@ public abstract class Component extends BaseEntity
     
     /**
      * List of HTTP headers that should be checked in order to perform a 
-     * detection where more headers than User-Agent are available. This data 
-     * is used by methods that can HTTP Header collections.
+     * detection where more headers than User-Agent are available. 
+     * This data is used by methods that can HTTP Header collections.
+     * 
      * @return List of HTTP headers that should be checked in order to perform  
-     * detection
-     * @throws java.io.IOException 
+     * detection.
+     * @throws java.io.IOException if there was a problem accessing data file.
      */
     public abstract String[] getHttpheaders() throws IOException;
 }

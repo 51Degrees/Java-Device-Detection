@@ -28,6 +28,13 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import org.apache.commons.codec.binary.Base64;
 
+/**
+ * Implements image cache. An internal mechanism of storing the resized 
+ * versions of an image on disk.
+ * <p>
+ * You should not access objects of this class directly or instantiate new 
+ * objects using this class as they are part of the internal logic.
+ */
 class ImageCache {
 
     /**

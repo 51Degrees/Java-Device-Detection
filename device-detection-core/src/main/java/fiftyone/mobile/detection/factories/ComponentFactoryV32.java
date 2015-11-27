@@ -26,12 +26,16 @@ import fiftyone.mobile.detection.entities.ComponentV32;
 import fiftyone.mobile.detection.readers.BinaryReader;
 
 /**
- * Factory that creates ComponentV32 objects.
+ * Creates new instances of a Component entity for data file of version 3.2.
+ * <p>
+ * Objects of this class should not be created directly as they are part of the 
+ * internal logic.
  */
 public class ComponentFactoryV32 extends ComponentFactory {
     
     /**
      * Creates a new instance of ComponentV32.
+     * 
      * @param dataSet The data set whose components list the component is 
      * contained within.
      * @param index Index of the entity within the list.

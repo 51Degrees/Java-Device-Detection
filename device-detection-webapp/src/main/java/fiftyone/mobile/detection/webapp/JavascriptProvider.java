@@ -1,3 +1,4 @@
+
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
  * Copyright © 2015 51Degrees Mobile Experts Limited, 5 Charlotte Close,
@@ -38,13 +39,21 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.codec.binary.Base64;
 
+/**
+ * Provides a mechanism to send one of the 51Degrees JavaScript scripts as 
+ * a response.
+ * <p>
+ * You should not access objects of this class directly or instantiate new 
+ * objects using this class as they are part of the internal logic.
+ */
 class JavascriptProvider {
 
     private static final int DEFAULT_BUFFER_SIZE = 10240;
 
-    static void sendJavaScript(
-            HttpServletRequest request, HttpServletResponse response, 
-            Dataset dataSet, StringBuilder javascript) throws IOException {
+    static void sendJavaScript(HttpServletRequest request, 
+                               HttpServletResponse response, 
+                               Dataset dataSet, 
+                               StringBuilder javascript) throws IOException {
         
         response.reset();
         response.setContentType("application/x-javascript");
@@ -101,12 +110,14 @@ class JavascriptProvider {
      * @param response
      * @throws IOException 
      */
-    static void sendFeatureJavaScript(HttpServletRequest request, HttpServletResponse response) 
-            throws IOException {
+    static void sendFeatureJavaScript(HttpServletRequest request, 
+                                      HttpServletResponse response) 
+                                                            throws IOException {
         
         StringBuilder javascript = new StringBuilder(
                 "// Copyright 51 Degrees Mobile Experts Limited\r\n");
-        Dataset dataSet = WebProvider.getActiveProvider(request.getServletContext()).dataSet;
+        Dataset dataSet = 
+                WebProvider.getActiveProvider(request.getServletContext()).dataSet;
         final Map<String, String[]> results = WebProvider.getResult(request);
         List<String> features = new ArrayList<String>();
         
