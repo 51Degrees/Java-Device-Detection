@@ -33,12 +33,12 @@ import java.io.IOException;
  * Getting started example of using 51Degrees device detection. The example 
  * shows how to:
  * <ol>
- *  <li> instantiate 51Degrees detection provider
+ *  <li>Instantiate 51Degrees detection provider
  *  <p><code>provider = new Provider(StreamFactory.create(
  *  Shared.getLitePatternV32(), false));</code></p></li>
- *  <li> pass in a single HTTP User-Agent header
+ *  <li>Pass in a single HTTP User-Agent header
  *  <p><code>Match match = provider.match(userAgent);</code></p></li>
- *  <li> extract the value of the IsMobile Property.
+ *  <li>Extract the value of the IsMobile Property
  *  <p><code>match.getValues("IsMobile").toString();</code></p></li>
  * </ol>
  * {@link #main} assumes it is being run with a working directory at root of 

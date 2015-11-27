@@ -34,31 +34,30 @@ import java.io.IOException;
  * Getting started example of using 51Degrees device detection match metrics 
  * information. The example shows how to;
  * <ol>
- *  <li>instantiate 51Degrees detection provider
+ *  <li>Instantiate 51Degrees detection provider
  *  <p><code>provider = new Provider(StreamFactory.create(
  *  Shared.getLitePatternV32(), false));</code>
- *  <li>pass in a single HTTP User-Agent header
+ *  <li>Pass in a single HTTP User-Agent header
  *  <p><code>Match match = provider.match(userAgent);</code>
- *  <li>obtain device Id: consists of four components separated by a hyphen 
+ *  <li>Obtain device Id: consists of four components separated by a hyphen 
  *  symbol: Hardware-Platform-Browser-IsCrawler where each Component is 
  *  represented an ID of the corresponding Profile.
  *  <p><code>match.getDeviceId();</code>
- *  <li>obtain match method: provides information about the 
+ *  <li>Retrieve match method: provides information about the 
  *  algorithm that was used to perform detection for a particular User-Agent. 
  *  For more information on what each method means please see: 
  *  <a href="https://51degrees.com/support/documentation/pattern">
  *  How device detection works</a>
  *  <p><code>match.getMethod();</code>
- *  <li>obtain difference:  used when detection method is not Exact or None. 
+ *  <li>Get difference:  used when detection method is not Exact or None. 
  *  This is an integer value and the larger the value the less confident the 
  *  detector is in this result.
  *  <p><code>match.getDifference();</code>
- *  <li>obtain signature rank: an integer value that indicates how popular 
+ *  <li>Retrieve signature rank: an integer value that indicates how popular 
  *  the device is. The lower the rank the more popular the signature.
  *  <p><code>match.getSignature().getRank();</code>
  * </ol>
  * <p>
- * // TODO: review the wording and styling of sentences.
  * {@link #main} assumes it is being run with a working directory at root of 
  * project or of this module.
  * <!-- snippet -->
