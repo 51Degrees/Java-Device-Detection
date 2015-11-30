@@ -540,8 +540,7 @@ public class Provider {
                 if (headerMatchState.getSignature() != null) {
                     for (Profile profile : 
                             headerMatchState.getSignature().getProfiles()) {
-                        if (profile.getComponent().getName().
-                                equals(component.getName())) {
+                        if (profile.getComponent().equals(component)) {
                             return profile;
                         }
                     }
