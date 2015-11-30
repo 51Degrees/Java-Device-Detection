@@ -20,7 +20,6 @@
  * ********************************************************************* */
 package fiftyone.mobile.detection;
 
-import fiftyone.mobile.detection.entities.Node;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;

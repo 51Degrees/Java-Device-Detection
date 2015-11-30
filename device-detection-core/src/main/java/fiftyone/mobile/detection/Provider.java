@@ -513,21 +513,42 @@ public class Provider {
      * @return Profile for the component provided from the matches for each 
      * header
      */
-    private static Profile getMatchingHeaderProfile(MatchState masterState, 
+    private static Profile getMatchingHeaderProfile(MatchState state, 
             Map<String, MatchState> matches, Component component) 
-            throws IOException {
-        Profile result = null;
-        for (String header : component.getHttpheaders())
-        {
-            MatchState headerState = matches.get(header);
-            if (headerState != null &&
-                headerState.getSignature() != null)
-            {
-                result = processMatchedHeaderProfile(
-                        masterState, headerState, component);
+                                                            throws IOException {
+        
+        for (String header : component.getHttpheaders()) {
+            MatchState headerMatchState;
+            headerMatchState = matches.get(header);
+            
+            if (headerMatchState != null) {
+                state.signaturesCompared += headerMatchState.signaturesCompared;
+                state.signaturesRead += headerMatchState.signaturesRead;
+                state.stringsRead += headerMatchState.stringsRead;
+                state.rootNodesEvaluated += headerMatchState.rootNodesEvaluated;
+                state.nodesEvaluated += headerMatchState.nodesEvaluated;
+                state.elapsed += headerMatchState.elapsed;
+                state.lowestScore += headerMatchState.lowestScore;
+                
+                // If the header match used is worse than the current one
+                // then update the method used for the match returned.
+                if (headerMatchState.method.getMatchMethods() > 
+                        state.method.getMatchMethods()) {
+                    state.method = headerMatchState.method;
+                }
+                
+                if (headerMatchState.getSignature() != null) {
+                    for (Profile profile : 
+                            headerMatchState.getSignature().getProfiles()) {
+                        if (profile.getComponent().equals(component)) {
+                            return profile;
+                        }
+                    }
+                }
             }
         }
-        return result;
+        
+        return null;
     }
     
     /**

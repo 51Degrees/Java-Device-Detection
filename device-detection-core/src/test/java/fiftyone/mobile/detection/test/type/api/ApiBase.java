@@ -75,9 +75,10 @@ public abstract class ApiBase extends DetectionTestSupport {
         for (String header : getDataset().getHttpHeaders()) {
             headers.put(header, null);
         }
-        fetchAllProperties(getProvider().match(headers));
+        Match m = getProvider().match(headers);
+        fetchAllProperties(m);
     }
-    
+
     @Test
     public void duplicateHeaders() throws IOException {
         Map<String, String> headers = new HashMap<String, String>();

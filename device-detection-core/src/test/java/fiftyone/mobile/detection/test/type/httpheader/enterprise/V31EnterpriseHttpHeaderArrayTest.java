@@ -60,5 +60,5 @@ public class V31EnterpriseHttpHeaderArrayTest extends Combinations {
     public void operaMiniIPhone() throws IOException
     {
         super.OperaMini_iPhone();
-    } 
+    }
 }

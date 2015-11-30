@@ -258,4 +258,15 @@ public abstract class Component extends BaseEntity
      * @throws java.io.IOException if there was a problem accessing data file.
      */
     public abstract String[] getHttpheaders() throws IOException;
+    
+    /**
+     * Compares this instance to another using the component Id.
+     * 
+     * @param other The component to be compared against.
+     * @return True if {@link #componentId} of this component is equal to the 
+     *         ComponentId of the other component.
+     */
+    public boolean equals(Component other) {
+        return getComponentId() == other.getComponentId();
+    }
 }
