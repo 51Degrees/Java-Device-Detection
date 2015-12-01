@@ -437,7 +437,7 @@ public class Dataset implements Closeable {
 
     /**
      * Returns the hardware {@link Component} that contains a set of 
-     * {@Link Property properties} and {@link Profile profiles} related to 
+     * {@link Property properties} and {@link Profile profiles} related to 
      * hardware (such as: IsCrawler property).
      * <p>
      * Note that for the 'Lite' data file this component returns only three 
@@ -474,7 +474,7 @@ public class Dataset implements Closeable {
 
     /**
      * Returns the software {@link Component} that contains a set of 
-     * {@Link Property properties} and {@link Profile profiles} related to 
+     * {@link Property properties} and {@link Profile profiles} related to 
      * software. Software component includes properties like: PlatformName and 
      * PlatformVersion.
      * <p>
@@ -541,7 +541,7 @@ public class Dataset implements Closeable {
 
     /**
      * Returns the crawler {@link Component} that contains a set of 
-     * {@Link Property properties} and {@link Profile profiles} related to 
+     * {@link Property properties} and {@link Profile profiles} related to 
      * crawlers (such as: IsCrawler property).
      * <p>
      * Note that for the 'Lite' data file this component will not return any 
@@ -954,8 +954,8 @@ public class Dataset implements Closeable {
      * <p>
      * {@code Component} contains a list of {@link Profile} and {@link Property} 
      * that are related to this component. For more information see: 
-     * <a href="https://51degrees.com/support/documentation/
-     * device-detection-data-model">51Degrees Pattern Data Model</a>
+     * <a href="https://51degrees.com/support/documentation/device-detection-data-model">
+     * 51Degrees Pattern Data Model</a>
      *
      * @param componentName name of the required {@code Component} as string.
      * @return The {@code Component} matching the name, or null.
@@ -978,7 +978,7 @@ public class Dataset implements Closeable {
      * 
      * @param propertyName name of the property to find, should not be null.
      * @return Property object or null if no property with requested name exists
-     * @throws java.io.IOException
+     * @throws java.io.IOException if there was a problem accessing data file.
      */
     public Property get(String propertyName) throws IOException {
         return this.properties.get(propertyName);
@@ -991,7 +991,7 @@ public class Dataset implements Closeable {
      * Property if found. Returns null otherwise.
      * @param propertyName name of the property to find as a string.
      * @return Property object or null if no property with requested name exists
-     * @throws IOException 
+     * @throws IOException if there was a problem accessing data file.
      */
     @Deprecated
     public Property getPropertyByName(String propertyName) throws IOException {

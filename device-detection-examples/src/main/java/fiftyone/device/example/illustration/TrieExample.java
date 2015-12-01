@@ -52,7 +52,7 @@ public class TrieExample implements Closeable {
      * 
      * @param userAgent an HTTP User-Agent header value
      * @return ture if the device has been detected as mobile
-     * @throws Exception
+     * @throws Exception if there was a problem accessing data file.
      */
     public boolean isItMobile(String userAgent) throws Exception {
 

@@ -148,8 +148,8 @@ public class AutoUpdate {
      * @param licenseKey the licence key to submit to the server
      * @param dataFilePath path to the device data file
      * @return the result of the update to enable user reporting
-     * @throws java.io.FileNotFoundException
-     * @throws java.security.NoSuchAlgorithmException
+     * @throws java.io.FileNotFoundException if a file could not be found.
+     * @throws java.security.NoSuchAlgorithmException if MD5 not available.
      */
     public static AutoUpdateStatus update(
             final String licenseKey, 
@@ -167,8 +167,8 @@ public class AutoUpdate {
      * @param licenseKeys the licence key to use for the update request.
      * @param binaryFilePath where the original data file is located.
      * @return the result of the update to enable user reporting
-     * @throws java.io.FileNotFoundException 
-     * @throws java.security.NoSuchAlgorithmException 
+     * @throws java.io.FileNotFoundException if a file could not be found.
+     * @throws java.security.NoSuchAlgorithmException if MD5 is not available.
      */
     public static AutoUpdateStatus update(
             final String[] licenseKeys, 

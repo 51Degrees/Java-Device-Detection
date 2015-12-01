@@ -28,7 +28,6 @@ import java.io.*;
 
 /**
  * Interface defines three phase processing of a set of User-Agent Header Values:
- * <p/>
  * <ul>
  *     <li>Process the headers {@link #process()}</li>
  *     <li>Print statistics relating the the last run of {@link #process()}</li>
@@ -39,7 +38,7 @@ public interface UaProcessor {
 
     /**
      * Process the set of UA Headers
-     * @throws Exception
+     * @throws Exception if there was a problem accessing data file.
      */
     void process() throws Exception;
 
@@ -52,7 +51,7 @@ public interface UaProcessor {
     /**
      * Writes results (for each UA string) of detection test
      * @param writer a {@link BufferedWriter} to write the results to
-     * @throws IOException
+     * @throws IOException if there was a problem accessing data file.
      */
     void writeResults(BufferedWriter writer) throws IOException;
 
@@ -94,8 +93,8 @@ public interface UaProcessor {
 
         /**
          * Utility for descendants to write a set of headers relating to a match
-         * @param writer a writer to wrtie to
-         * @throws IOException
+         * @param writer a writer to write to
+         * @throws IOException if there was a problem accessing data file.
          */
         protected static void writeHeaders(BufferedWriter writer) throws IOException {
             writer.write("UserAgent" + "\t"
@@ -120,10 +119,14 @@ public interface UaProcessor {
 
         /**
          * Utility for descendants to write details relating to a match
-         * @param writer a writer to wrtie to
-         * @throws IOException
+         * @param writer a writer to write to
+         * @param s string to write.
+         * @param time timestamp.
+         * @param match Match object with results.
+         * @throws IOException if there was a problem accessing data file.
          */
-        protected static void writeMatch(BufferedWriter writer, String s, long time, Match match) throws IOException {
+        protected static void writeMatch(BufferedWriter writer, String s, 
+                                    long time, Match match) throws IOException {
             writer.write(s + "\t" + time + "\t" + match.getMethod() + "\t"
                     + getValue(match, "PlatformName") + "\t"
                     + getValue(match, "PlatformVersion") + "\t"
