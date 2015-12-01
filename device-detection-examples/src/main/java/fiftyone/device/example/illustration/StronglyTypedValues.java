@@ -29,7 +29,7 @@ import java.io.Closeable;
 import java.io.IOException;
 
 /**
- * <!-- snippet -->
+ * <!-- tutorial -->
  * Getting started example of using 51Degrees device detection. The example 
  * shows how to:
  * 
@@ -45,10 +45,10 @@ import java.io.IOException;
  * 
  * {@link #main} assumes it is being run with a working directory at root of 
  * project or of this module.
- * <!-- snippet -->
+ * <!-- tutorial -->
  */
 public class StronglyTypedValues implements Closeable {
-    
+    // Snippet Start
     // Device detection provider which takes User-Agents and returns matches.
     protected final Provider provider;
     
@@ -97,20 +97,6 @@ public class StronglyTypedValues implements Closeable {
     }
     
     /**
-     * Closes the {@link fiftyone.mobile.detection.Dataset} by releasing data 
-     * file readers and freeing the data file from locks. This method should 
-     * only be used when the {@code Dataset} is no longer required, i.e. when 
-     * device detection functionality is no longer required, or the data file 
-     * needs to be freed.
-     * 
-     * @throws IOException if there is a problem accessing the data file.
-     */
-    @Override
-    public void close() throws IOException {
-        provider.dataSet.close();
-    }
-    
-    /**
      * Main entry point for this example. For each of the User-Agents defined 
      * in this class: 
      * <ol> 
@@ -148,4 +134,19 @@ public class StronglyTypedValues implements Closeable {
             gs.close();
         }
     }
+     
+     /**
+     * Closes the {@link fiftyone.mobile.detection.Dataset} by releasing data 
+     * file readers and freeing the data file from locks. This method should 
+     * only be used when the {@code Dataset} is no longer required, i.e. when 
+     * device detection functionality is no longer required, or the data file 
+     * needs to be freed.
+     * 
+     * @throws IOException if there is a problem accessing the data file.
+     */
+    @Override
+    public void close() throws IOException {
+        provider.dataSet.close();
+    }
+    // Snippet End
 }

@@ -31,7 +31,7 @@ import java.io.Closeable;
 import java.io.IOException;
 
 /**
- * <!-- snippet -->
+ * <!-- tutorial -->
  * Example of listing properties and possible values from a Dataset
  * <p>
  * The example illustrates:
@@ -54,10 +54,10 @@ import java.io.IOException;
  * <p>
  * {@link #main} assumes it is being run with a working directory at root of 
  * project or of this module.
- * <!-- snippet -->
+ * <!-- tutorial -->
  */
 public class MetadataExample implements Closeable {
-
+    // Snippet Start
     // Dataset created from 51Degrees data fiel.
     private final Dataset dataset;
 
@@ -136,4 +136,5 @@ public class MetadataExample implements Closeable {
             example.close();
         }
     }
+    // Snippet End
 }
