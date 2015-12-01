@@ -89,7 +89,7 @@ public class SignatureV31 extends Signature {
     /**
      * The number of characters in the signature.
      * @return The number of characters in the signature.
-     * @throws java.io.IOException
+     * @throws java.io.IOException if there was a problem accessing data file.
      */
     @Override
     protected int getSignatureLength() throws IOException {

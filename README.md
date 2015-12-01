@@ -1,4 +1,4 @@
-![51Degrees](https://51degrees.com/Portals/0/Logo.png "THE Fasstest and Most Accurate Device Detection")**Device Detection for Java**
+![51Degrees](https://51degrees.com/Portals/0/Logo.png "THE Fastest and Most Accurate Device Detection")**Device Detection for Java**
 
 [Recent Changes](#recent-changes "Review recent major changes") | [Supported Databases](https://51degrees.com/compare-data-options?utm_source=github&utm_medium=repository&utm_content=home-menu&utm_campaign=java-open-source "Different device databases which can be used with 51Degrees device detection") | [Java Developer Documention](https://51degrees.com/support/documentation/java?utm_source=github&utm_medium=repository&utm_content=home-menu&utm_campaign=java-open-source "Full getting started guide and advanced developer documentation") | [Available Properties](https://51degrees.com/resources/property-dictionary?utm_source=github&utm_medium=repository&utm_content=home-menu&utm_campaign=java-open-source "View all available properties and values")
 
@@ -7,14 +7,14 @@
 **Server Side and Offline projects:** Initialize detector like...
 
 ```java
-Provider p new Provider();
-Match match = p.match("User agnet string");
+Provider p new Provider(StreamFactory.create("path_to_data_file", false));
+Match match = p.match("HTTP User-Agent string");
 ```
 
 Use like...
 
 ```java
-boolean isMobile = match.getValues("IsTablet").toBool();
+boolean isTablet = match.getValues("IsTablet").toBool();
 ```
 
 or 
@@ -54,7 +54,7 @@ boolean isMobile = Boolean.parseBoolean(getProperty(request,"IsMobile"));
 or
 
 ```java
-boolean isMobile = Boolean.parseBoolean(getProperty(request,"IsTablet"));
+boolean isTablet = Boolean.parseBoolean(getProperty(request,"IsTablet"));
 ```
 
 ... to add device detection to your servlet.
@@ -67,12 +67,27 @@ The simplest method of deploying 51Degrees device detection to a Java project is
 
 This GitHub repository and Maven include 51Degrees free Lite device database. The Lite data is updated monthly by our professional team of analysts. 
 
-Data files which are updated weekly and daily, automatically, and with more properties and device combinationsare also available.
+Data files which are updated weekly and daily, automatically, and with more properties and device combinations are also available.
 
 **[Compare Device Databases](https://51degrees.com/compare-data-options?utm_source=github&utm_medium=repository&utm_content=home-menu&utm_campaign=java-open-source "Compare different data file options for 51Degrees device detection")**
 
 
 ## Recent Changes
+
+### Version 3.2.2.20 Changes:
+Project structure has been changed to Maven project.
+
+The IDisposable interface has been removed, all classes that provide methods to free resources implement Closeable instead.
+
+Provider supports retrieving match results using device IDs generated from previous matches.
+
+Automatic update has been re-designed to be more efficient and resilient. Returns an update status instead of a boolean.
+
+The cache has been upgraded to use a least recently used (LRU) design. This removes the need to service the cache in a background thread, and results in a more predictable performance under load.
+
+Duplicate code has been consolidated with a focus on improving documentation and implementing recommendations from code analysis and peer reviews. Testing coverage has been included with initial unit tests for new features.
+
+Consistent examples have been added in parallel with APIs in other languages. The examples are designed to highlight a specific use case for the API. They relate to example specific documentation on the 51Degrees web site under Support -> Documentation -> Java.
 
 ### Version 3.2.1.9 Changes:
 Automatic update function no longer uses the memory to store data downloaded 
