@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app id="FiftyOneDegreesExampleWebApp" version="3.0" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
+    <display-name>ExampleV3WebSite</display-name>
+    <welcome-file-list>
+        <welcome-file>/index.jsp</welcome-file>
+    </welcome-file-list>
+    <context-param>
+        <description>True to load the device database into memory to improve performance at the expense of memory usage.</description>
+        <param-name>MEMORY_MODE</param-name>
+        <param-value>false</param-value>
+    </context-param>
+    <context-param>
+        <description>The name of the device database if the embedded version should not be used.</description>
+        <param-name>BINARY_FILE_PATH</param-name>
+        <param-value>51Degrees.dat</param-value>
+    </context-param>
+    <!--
+
+  Uncomment this section to enable image optimiser limits.
+
+  <context-param>
+    <param-name>IMAGE_MAX_WIDTH</param-name>
+    <param-value>200</param-value>
+  </context-param>
+   <context-param>
+    <param-name>IMAGE_MAX_HEIGHT</param-name>
+    <param-value>200</param-value>
+  </context-param> 
+  <context-param>
+    <param-name>IMAGE_FACTOR</param-name>
+    <param-value>10</param-value>
+  </context-param>-->
+    <!--<context-param>
+    <param-name>IMAGE_WIDTH_PARAM</param-name>
+    <param-value>w</param-value>
+  </context-param>
+  <context-param>
+    <param-name>IMAGE_HEIGHT_PARAM</param-name>
+    <param-value>h</param-value>
+  </context-param>
+  <context-param>
+    <param-name>IMAGE_DEFAULT_AUTO</param-name>
+    <param-value>50</param-value>
+  </context-param>
+  -->
+    <listener>
+        <listener-class>fiftyone.mobile.detection.webapp.FiftyOneDegreesListener</listener-class>
+    </listener>
+    <filter>
+        <display-name>FiftyOneDegreesFilter</display-name>
+        <filter-name>FiftyOneDegreesFilter</filter-name>
+        <filter-class>fiftyone.mobile.detection.webapp.FiftyOneDegreesFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>FiftyOneDegreesFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    <servlet>
+        <description>51Degrees Servlet</description>
+        <display-name>FiftyOneDegreesServlet</display-name>
+        <servlet-name>FiftyOneDegreesServlet</servlet-name>
+        <servlet-class>fiftyone.mobile.detection.webapp.FiftyOneDegreesServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <description>Example Device Detection</description>
+        <display-name>Example</display-name>
+        <servlet-name>Example</servlet-name>
+        <servlet-class>fiftyone.mobile.example.servlet.Example</servlet-class>
+    </servlet>
+    <servlet>
+        <description>Example Image Gallery</description>
+        <display-name>Gallery</display-name>
+        <servlet-name>Gallery</servlet-name>
+        <servlet-class>fiftyone.mobile.example.servlet.Gallery</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>FiftyOneDegreesServlet</servlet-name>
+        <url-pattern>/51D/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>Gallery</servlet-name>
+        <url-pattern>/Gallery</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>Example</servlet-name>
+        <url-pattern>/Example</url-pattern>
+    </servlet-mapping>
+</web-app>
