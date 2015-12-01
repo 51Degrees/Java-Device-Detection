@@ -29,15 +29,15 @@ import java.io.Closeable;
 import java.io.IOException;
 
 /**
- * <!-- snippet -->
+ * <!-- tutorial -->
  * Example of creating a TrieProvider and using it to get a device property.
  * <p>
  * {@link #main} assumes it is being run with a working directory at root of 
  * project or of this module.
- * <!-- snippet -->
+ * <!-- tutorial -->
  */
 public class TrieExample implements Closeable {
-
+    // Snippet Start
     // Trie provider object, created using the Trie factory.
     private final TrieProvider provider;
 
@@ -87,4 +87,5 @@ public class TrieExample implements Closeable {
             trieExample.close();
         }
     }
+    // Snippet End
 }
