@@ -30,7 +30,7 @@ import fiftyone.mobile.detection.factories.StreamFactory;
 import java.io.*;
 
 /**
- * <!-- snippet -->
+ * <!-- tutorial -->
  * Example of using 51Degrees Pattern Detection to process a file containing 
  * User-Agent header values and output a CSV file containing the same header 
  * values with various properties detected by 51Degrees.
@@ -63,10 +63,10 @@ import java.io.*;
  * <p>
  * {@link #main} assumes it is being run with a working directory at root of 
  * project or of this module.
- * <!-- snippet -->
+ * <!-- tutorial -->
  */
 public class OfflineProcessingExample implements Closeable {
-
+    // Snippet Start
     // output file in current working directory
     public String outputFilePath = "batch-processing-example-results.csv";
     // pattern detection matching provider
@@ -185,4 +185,5 @@ public class OfflineProcessingExample implements Closeable {
             offlineProcessingExample.close();
         }
     }
+    // Snippet End
 }
