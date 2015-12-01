@@ -30,7 +30,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 /**
- * <!-- snippet -->
+ * <!-- tutorial -->
  * Example shows how to use an existing 51Degrees device Id to obtain a Match 
  * object with relevant properties and values.
  * <p>
@@ -64,10 +64,10 @@ import java.util.ArrayList;
  * the most efficient of the three options demonstrated as it only requires 
  * enough space to store the number of integers corresponding to the number of 
  * profiles (one profile per component).
- * <!-- snippet -->
+ * <!-- tutorial -->
  */
 public class MatchForDeviceId {
-    
+    // Snippet Start
     // Device detection provider which takes User-Agents and returns matches.
     protected final Provider provider;
     
@@ -194,4 +194,5 @@ public class MatchForDeviceId {
     public void close() throws IOException {
         provider.dataSet.close();
     }
+    // Snippet End
 }

@@ -31,7 +31,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 /**
- * <!-- snippet -->
+ * <!-- tutorial -->
  * Example of filtering signatures to obtain a subset based on one or more 
  * property : value condition. Example starts with a full set of signatures 
  * available in the data file and narrows them down to only leave signatures 
@@ -68,10 +68,10 @@ import java.util.ArrayList;
  * Dynamic filtering can be useful in a number of cases. For example: when 
  * creating an interdependent menu where one choice narrows down the options 
  * in a subsequent choice.
- * <!-- snippet -->
+ * <!-- tutorial -->
  */
 public class DynamicFilters {
-    
+    // Snippet Start
     // Dataset that holds device data information.
     protected Dataset dataset;
     // Full list of signatures.
@@ -213,4 +213,5 @@ public class DynamicFilters {
     public void close() throws IOException {
         dataset.close();
     }
+    // Snippet End
 }

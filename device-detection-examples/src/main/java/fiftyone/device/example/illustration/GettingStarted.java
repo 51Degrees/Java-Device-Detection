@@ -29,7 +29,7 @@ import java.io.Closeable;
 import java.io.IOException;
 
 /**
- * <!-- snippet -->
+ * <!-- tutorial -->
  * Getting started example of using 51Degrees device detection. The example 
  * shows how to:
  * <ol>
@@ -43,10 +43,10 @@ import java.io.IOException;
  * </ol>
  * {@link #main} assumes it is being run with a working directory at root of 
  * project or of this module.
- * <!-- snippet -->
+ * <!-- tutorial -->
  */
 public class GettingStarted implements Closeable {
-    
+    // Snippet Start
     // Device detection provider which takes User-Agents and returns matches.
     protected final Provider provider;
  
@@ -79,33 +79,19 @@ public class GettingStarted implements Closeable {
     }
     
     /**
-     * Matches provided User-Agent string and returns the IsMobile property value.
+     * Matches provided User-Agent string and returns IsMobile property value.
      * Detection initiated by invoking {@link Provider#match(java.lang.String)}.
      * Detection results are then stored in the {@link Match} object and can be 
      * accessed using the {@code Match.getValues("PropertyName")} method.
      * 
      * @param userAgent HTTP User-Agent string.
-     * @return String with value for the IsMobile property for a given User-Agent.
+     * @return String with value for IsMobile property for a given User-Agent.
      * @throws IOException if there is a problem accessing the data file.
      */
     public String detect(String userAgent) throws IOException {
         Match match = provider.match(userAgent);
         return match.getValues("IsMobile").toString();
-    }
-    
-    /**
-     * Closes the {@link fiftyone.mobile.detection.Dataset} by releasing data 
-     * file readers and freeing the data file from locks. This method should 
-     * only be used when the {@code Dataset} is no longer required, i.e. when 
-     * device detection functionality is no longer required, or the data file 
-     * needs to be freed.
-     * 
-     * @throws IOException if there is a problem accessing the data file.
-     */
-    @Override
-    public void close() throws IOException {
-        provider.dataSet.close();
-    }   
+    }  
            
     /**
      * Main entry point for this example. For each of the User-Agents defined 
@@ -136,4 +122,19 @@ public class GettingStarted implements Closeable {
             gs.close();
         }
     }
+    
+    /**
+     * Closes the {@link fiftyone.mobile.detection.Dataset} by releasing data 
+     * file readers and freeing the data file from locks. This method should 
+     * only be used when the {@code Dataset} is no longer required, i.e. when 
+     * device detection functionality is no longer required, or the data file 
+     * needs to be freed.
+     * 
+     * @throws IOException if there is a problem accessing the data file.
+     */
+    @Override
+    public void close() throws IOException {
+        provider.dataSet.close();
+    }
+    // Snippet End
 }
