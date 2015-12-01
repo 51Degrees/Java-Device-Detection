@@ -93,8 +93,8 @@ public class MatchForDeviceId {
      * Three match objects with different references but same device Id and 
      * IsMobile values are generated to demonstrate that all three methods of 
      * storing device Id produce the same result.
-     * @param args
-     * @throws IOException 
+     * @param args command line arguments.
+     * @throws IOException if there was a problem accessing data file.
      */
     public static void main(String[] args) throws IOException {
         MatchForDeviceId device = new MatchForDeviceId();

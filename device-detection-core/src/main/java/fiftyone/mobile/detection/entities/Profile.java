@@ -69,7 +69,6 @@ public abstract class Profile extends BaseEntity implements Comparable<Profile> 
     
     /**
      * An array of the signature indexes associated with the profile.
-     * @abstract
      */
     @SuppressWarnings("VolatileArrayField")
     protected volatile int[] signatureIndexes;
@@ -81,7 +80,6 @@ public abstract class Profile extends BaseEntity implements Comparable<Profile> 
     
     /**
      * A list of the indexes of the values associated with the profile.
-     * @abstract
      */
     @SuppressWarnings("VolatileArrayField")
     protected volatile int[] valueIndexes;

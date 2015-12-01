@@ -51,9 +51,9 @@ import java.util.ArrayList;
  *      <li>Performs null checks
  *      <li>Retrieves Property object based on provided property name.
  *      <li>For each signature <code>for (Signature sig : listToFilter) {</code>
- *      <br />Gets values for specified property: 
+ *      <br>Gets values for specified property: 
  *      <code>Values vals = sig.getValues(property);</code>
- *      <br />Checks if signature in question contains provided property values:
+ *      <br>Checks if signature in question contains provided property values:
  *      <code>if (vals.get(propertyValue) != null)</code>, and if so, adds the 
  *      signature to the temporary list: <code>filterResults.add(sig);</code>
  *      <li>Temporary list is then returned.
@@ -92,7 +92,7 @@ public class DynamicFilters {
     /**
      * Instantiates this class and launches the demo.
      * 
-     * @param args 
+     * @param args command line arguments
      * @throws java.io.IOException if there was a problem accessing data file.
      */
     public static void main (String[] args) throws IOException {
@@ -189,7 +189,7 @@ public class DynamicFilters {
      * Converts Iterable list of 51Degrees signatures to an ArrayList of 
      * signatures.
      * 
-     * @param <E> 
+     * @param <E> generic.
      * @param iter Iterable to convert to ArrayList.
      * @return ArrayList of 51Degrees signatures.
      */

@@ -66,7 +66,7 @@ import java.util.Date;
  * <p>
  * Create a fully initialised Dataset:
  * <code>Dataset ds = MemoryFactory.create("path_to_file", true);</code>
- * <br />
+ * <br>
  * The resulting dataset can then be used to work with data or used in a 
  * Provider to perform device detections. Use in provider like:
  * <code>Provider p = new Provider(ds);</code>
