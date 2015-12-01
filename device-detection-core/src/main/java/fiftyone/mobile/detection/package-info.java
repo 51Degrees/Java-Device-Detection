@@ -23,21 +23,21 @@
  * data.
  * <p>
  * Use like:
- * <br />
+ * <br>
  * <code>Provider p = new Provider(StreamFactory.create("path_to_file", false));
- * <br />Match m = p.match("User-Agent string here");
- * <br />System.out.println(m.getValues("IsMobile"));
+ * <br>Match m = p.match("User-Agent string here");
+ * <br>System.out.println(m.getValues("IsMobile"));
  * </code>
- * <br />Where {@code StreamFactory.create} initialises a 
+ * <br>Where {@code StreamFactory.create} initialises a 
  * {@link fiftyone.mobile.detection.Dataset Dataset} object which is responsible 
  * for interacting with device data.
  * <p>
  * Two factories are available: Stream and Memory.
- * <br />{@link fiftyone.mobile.detection.factories.StreamFactory Stream} 
+ * <br>{@link fiftyone.mobile.detection.factories.StreamFactory Stream} 
  * factory creates a Dataset object that maintains a pool of binary readers. 
  * Each reader maintains an open channel to the data file and is used to look 
  * up device data when required.
- * <br />{@link fiftyone.mobile.detection.factories.MemoryFactory Memory} 
+ * <br>{@link fiftyone.mobile.detection.factories.MemoryFactory Memory} 
  * factory creates a Dataset where the data file is loaded into memory as 
  * either an array of bytes or a complete set of entities. Whether the data 
  * file is loaded fully or as an array of bytes is controlled by the boolean 

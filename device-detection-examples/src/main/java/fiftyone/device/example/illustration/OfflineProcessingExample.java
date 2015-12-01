@@ -169,7 +169,7 @@ public class OfflineProcessingExample implements Closeable {
      * {@link #processCsv(java.lang.String, java.lang.String)} with default 
      * parameters.
      * 
-     * @param args
+     * @param args command line arguments.
      * @throws IOException if there was a problem accessing the data file.
      */
     public static void main(String[] args) throws IOException {

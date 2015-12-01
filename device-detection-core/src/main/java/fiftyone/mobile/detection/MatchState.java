@@ -170,7 +170,7 @@ public class MatchState extends MatchResult
      * the profiles associated with a Signature if available, or provides an
      * empty list for profiles to be added to.
      * @return profiles associated with the match state.
-     * @throws java.io.IOException
+     * @throws java.io.IOException if there was a problem accessing data file.
      */
     @SuppressWarnings("DoubleCheckedLocking")
     public ArrayList<Profile> getExplicitProfiles() throws IOException {
@@ -197,7 +197,7 @@ public class MatchState extends MatchResult
 
     /**
      * @return Array of profiles associated with the device that was found.
-     * @throws IOException 
+     * @throws IOException if there was a problem accessing data file.
      */    
     @Override
     public Profile[] getProfiles() throws IOException {

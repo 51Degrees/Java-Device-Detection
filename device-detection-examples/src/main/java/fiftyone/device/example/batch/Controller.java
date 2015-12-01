@@ -63,22 +63,21 @@ import java.util.Date;
  * want to add command line options then e.g. <code>mvn exec:java@batch -Dexec.args="--cache=0 --iterations=10"</code>
  * <p>
  * In the following command line options can be abbreviated e.g. --cache=1000000 is the same as -c1000000
- * <p>
  * <pre>
    Option                  Description
    ------                  -----------
- --useragents &lt;File>       file path of useragents file (default: ../data/20000 User Agents.csv)
- --detection &lt;File>        file path of detection file (default: ../data/51Degrees-LiteV3.2.dat)
- --results &lt;File>          file path for results file (default: results-&lt;iso date time of test>.txt)
- --cache &lt;Integer>         size of detection cache in bytes (default: 50000)
- --iterations &lt;Integer>    number of times to do the detection (default: 6)                        
- --limit &lt;Integer>         max lines to read from source file (default: Integer.MAX_VALUE)
- --mode &lt;Controller$Mode>  memory or stream mode processing (default: memory)                   
- --preinit &lt;Boolean>       warm up the detection engine on load if mode = memory (default: false)
- --sleep &lt;Integer>         time to sleep between iterations in msec (default: 1000)
- --threads &lt;Integer>       number of threads to use when doing the detections (default: 2)         
- --wait &lt;Integer>          time to wait after initialization and before starting the tests in msec (default: 0)
-                              increase if you want e.g. to run JConsole after starting the process
+ --useragents &lt;File&gt;      file path of useragents file (default: ../data/20000 User Agents.csv)
+ --detection &lt;File&gt;       file path of detection file (default: ../data/51Degrees-LiteV3.2.dat)
+ --results &lt;File&gt;         file path for results file (default: results-&lt;iso date time of test&gt;.txt)
+ --cache &lt;Integer&gt;        size of detection cache in bytes (default: 50000)
+ --iterations &lt;Integer&gt;   number of times to do the detection (default: 6)                        
+ --limit &lt;Integer&gt;        max lines to read from source file (default: Integer.MAX_VALUE)
+ --mode &lt;Controller$Mode&gt; memory or stream mode processing (default: memory)                   
+ --preinit &lt;Boolean&gt;      warm up the detection engine on load if mode = memory (default: false)
+ --sleep &lt;Integer&gt;        time to sleep between iterations in msec (default: 1000)
+ --threads &lt;Integer&gt;      number of threads to use when doing the detections (default: 2)         
+ --wait &lt;Integer&gt;         time to wait after initialization and before starting the tests in msec (default: 0)
+                                increase if you want e.g. to run JConsole after starting the process
  </pre>
  *
  */
@@ -104,9 +103,8 @@ public class Controller {
     private static final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH-mm-ss");
 
     /**
-     *
-     * @param args Command line args as explained above
-     * @throws IOException
+     * @param args Command line arguments as explained above
+     * @throws IOException if there was a problem accessing data file.
      */
     public static void main(String[] args) throws Exception {
 

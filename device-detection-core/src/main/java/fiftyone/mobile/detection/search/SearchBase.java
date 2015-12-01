@@ -26,6 +26,7 @@ import java.io.IOException;
  * Used to search ordered lists where the overhead of creating an item to
  * use with the Java binarySearch method is unnecessary. The base class is 
  * generic to support both arrays and lists.
+ * 
  * @param <T> type of items held in the list
  * @param <K> type of the keys used to search the list
  * @param <L> type of the list containing the items
@@ -34,6 +35,7 @@ public abstract class SearchBase<T, K, L> {
 
     /**
      * Gets the count of items in the list.
+     * 
      * @param list whose is to be returned
      * @return the number of elements in the list
      */
@@ -41,19 +43,21 @@ public abstract class SearchBase<T, K, L> {
 
     /**
      * Used to access list values by index in the list.
+     * 
      * @param list whose value is to be returned
      * @param index of the value to return
      * @return the value from the list at the index provided.
-     * @throws java.io.IOException
+     * @throws java.io.IOException if there was a problem accessing data file.
      */
     protected abstract T getValue(L list, int index) throws IOException;
     
     /**
      * Compares the key to the item.
-     * @param item to be compared against the key
-     * @param key to compare to the item
-     * @return
-     * @throws IOException 
+     * 
+     * @param item to be compared against the key.
+     * @param key to compare to the item.
+     * @return integer difference.
+     * @throws IOException if there was a problem accessing data file.
      */
     protected abstract int compareTo(T item, K key) throws IOException;
 
@@ -62,7 +66,7 @@ public abstract class SearchBase<T, K, L> {
      * @param list list ordered in ascending key value
      * @param key to be found in the list
      * @return the index of the key, or ones complement if not found
-     * @throws IOException 
+     * @throws IOException if there was a problem accessing data file.
      */
     public SearchResult binarySearch(L list, K key) throws IOException {
         SearchResult results = new SearchResult();

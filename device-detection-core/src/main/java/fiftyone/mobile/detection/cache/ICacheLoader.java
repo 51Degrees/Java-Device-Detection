@@ -37,7 +37,7 @@ public interface ICacheLoader<K,V> {
      * 
      * @param key for the value required
      * @return Value associated with the key
-     * @throws java.io.IOException
+     * @throws java.io.IOException if there was a problem accessing data file.
      */
     abstract V fetch(K key) throws IOException;
 }

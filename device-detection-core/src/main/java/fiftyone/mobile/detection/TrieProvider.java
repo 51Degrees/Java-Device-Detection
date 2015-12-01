@@ -249,7 +249,7 @@ public abstract class TrieProvider implements Closeable {
      * are ignored.
      * @param headers Collection of HTTP headers and values.
      * @return Collection of headers and device indexes for each one.
-     * @throws java.io.IOException
+     * @throws java.io.IOException if there was a problem accessing data file.
      */
     public Map<String, Integer> getDeviceIndexes( 
                                     final Map<String, String> headers ) throws 
@@ -351,7 +351,7 @@ public abstract class TrieProvider implements Closeable {
      * @param headers Collection of HTTP headers and values.
      * @param propertyName Name of the property required.
      * @return The value of the property for the given user agent.
-     * @throws java.lang.Exception
+     * @throws java.lang.Exception if there was a problem accessing data file.
      */
     public String getPropertyValueWithMultiHeaders( Map<String, String> headers, 
                                                     String propertyName ) throws 
@@ -364,7 +364,7 @@ public abstract class TrieProvider implements Closeable {
      * @param userAgent User agent of the request.
      * @param propertyname Name of the property required.
      * @return The value of the property for the given user agent.
-     * @throws Exception 
+     * @throws Exception if there was a problem accessing data file.
      */
     public String getPropertyValue(String userAgent, String propertyname) throws Exception {
         return getPropertyValue(getDeviceIndex(userAgent), propertyname);
@@ -381,8 +381,8 @@ public abstract class TrieProvider implements Closeable {
     /**
      * Returns the String at the offset provided.
      *
-     * @param offset
-     * @return 
+     * @param offset integer offset.
+     * @return value as a string.
      */
     protected String getStringValue(int offset) {
         int index = 0;
