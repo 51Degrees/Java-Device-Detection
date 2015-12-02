@@ -38,30 +38,44 @@ import java.io.*;
  * The example illustrates:
  * <ol>
  *  <li>Loading a Provider from a Disk-based (Stream) Pattern Dataset
- *  <p><code>provider = new Provider(StreamFactory.create
- *  (Shared.getLitePatternV32(), false));</code>
+ *  <code><pre class="prettyprint lang-java">
+ *      provider = new Provider(StreamFactory.create
+ *      (Shared.getLitePatternV32(), false));
+ *  </pre></code>
  *  <li>Matching a User-Agent header value
  *  <ol>
  *      <li>By creating a match and using it repeatedly (for efficiency)
- *      <p><code>Match match = provider.createMatch();</code><br>
- *      <code>provider.match(userAgentString, match);</code>
+ *      <code><pre class="prettyprint lang-java">
+ *          Match match = provider.createMatch();
+ *      </pre></code>
+ *      <code><pre class="prettyprint lang-java">
+ *          provider.match(userAgentString, match);
+ *      </pre></code>
  *      <li>By having the provider create a new Match for each detection
- *      <p><code>Match match = provider.match(userAgentString);</code>
+ *      <code><pre class="prettyprint lang-java">
+ *          Match match = provider.match(userAgentString);
+ *      </pre></code>
  *  </ol>
  *  <li>Getting the values for some properties of the matched User-Agent header
- *  <p><code>Values isMobile = match.getValues("IsMobile");</code>
- *  <p>A property may have multiple values. Helper methods convert the list of 
+ *  <code><pre class="prettyprint lang-java">
+ *      Values isMobile = match.getValues("IsMobile");
+ *  </pre></code>
+ *  <p>
+ *  A property may have multiple values. Helper methods convert the list of 
  *  values into a Boolean, Double etc.
- *  For example <br><code>isMobile.toBool()</code>
+ *  For example: 
+ *  <code><pre class="prettyprint lang-java">
+ *      isMobile.toBool();
+ *  </pre></code>
  * </ol>
  * The <a href="https://51degrees.com/resources/property-dictionary">
  * 51 Degrees Property Dictionary</a> contains a description of each of the 
  * properties and the editions in which they are available.
  * <p>
  * You can run {@link MetadataExample#main} for a listing of which properties 
- * are available in the dataset supplied with this distribution
+ * are available in the dataset supplied with this distribution.
  * <p>
- * {@link #main} assumes it is being run with a working directory at root of 
+ * main assumes it is being run with a working directory at root of 
  * project or of this module.
  * <!-- tutorial -->
  */
@@ -169,7 +183,7 @@ public class OfflineProcessingExample implements Closeable {
      * {@link #processCsv(java.lang.String, java.lang.String)} with default 
      * parameters.
      * 
-     * @param args
+     * @param args command line arguments.
      * @throws IOException if there was a problem accessing the data file.
      */
     public static void main(String[] args) throws IOException {

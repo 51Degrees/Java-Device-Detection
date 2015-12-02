@@ -56,13 +56,14 @@ import java.nio.ByteBuffer;
  * Match also provides various metrics properties: device Id, method used, 
  * difference and rank.
  * <ul>
- *  <li>Device id consists of four {@link Component components} where each 
+ *  <li>Device id consists of four 
+ *  {@link fiftyone.mobile.detection.entities.Component components} where each 
  *  component is the Id of the {@link Profile} matched by the detector. 
  *  Access like:
  *  {@code match.getDeviceId();}
  *  <li>Detection method refers to the algorithm used for this match. Use like: 
  *  {@code match.getMethod();}
- *  <br />For more information on the detection methods see: 
+ *  <p>For more information on the detection methods see: 
  *  <a href="https://51degrees.com/support/documentation/pattern">
  *  how Pattern device detection works</a>.
  *  <li>Difference indicates the level of confidence in the current detection 
@@ -134,7 +135,7 @@ public class Match {
     }
     
     /**
-     * Returns a {@list Signature} that best fits the provided User-Agent string.
+     * Returns a {@link Signature} that best fits the provided User-Agent string.
      * A signature can be used to retrieve {@link Profile profiles} and rank.
      * 
      * @return {@link Signature} with best match to the User-Agent provided.
@@ -147,7 +148,6 @@ public class Match {
      * Returns the detection method used to obtain this object. Method used 
      * reflects the confidence of the detector in the accuracy of the current 
      * match.
-     * <p>
      * <ul>
      *  <li>"Exact" means the detector is confident the results are accurate. 
      *  <li>"None" means the User-Agent provided is fake.
@@ -283,7 +283,8 @@ public class Match {
     /**
      * The unique id of the device represented by the match. Id is composed of 
      * several {@link Profile profiles} separated by hyphen symbol. One profile 
-     * is chosen per each {@link Component component}.
+     * is chosen per each {@link fiftyone.mobile.detection.entities.Component 
+     * component}.
      * <p>
      * Device Id can be stored for future use and the relevant 
      * {@link Property properties} and {@link Value values} restored using the 
@@ -348,7 +349,7 @@ public class Match {
      * 
      * @return the results of the match as a sorted list of property names 
      * and values.
-     * @throws IOException
+     * @throws IOException if there was a problem accessing data file.
      * @deprecated use getValues methods
      */
     @Deprecated
