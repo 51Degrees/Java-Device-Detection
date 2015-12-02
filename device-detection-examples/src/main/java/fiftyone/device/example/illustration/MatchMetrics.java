@@ -35,31 +35,43 @@ import java.io.IOException;
  * information. The example shows how to;
  * <ol>
  *  <li>Instantiate 51Degrees detection provider
- *  <p><code>provider = new Provider(StreamFactory.create(
- *  Shared.getLitePatternV32(), false));</code>
+ *  <code><pre class="prettyprint lang-java">
+ *      provider = new Provider(StreamFactory.create(
+ *      Shared.getLitePatternV32(), false));
+ *  </pre></code>
  *  <li>Pass in a single HTTP User-Agent header
- *  <p><code>Match match = provider.match(userAgent);</code>
+ *  <code><pre class="prettyprint lang-java">
+ *      Match match = provider.match(userAgent);
+ *  </pre></code>
  *  <li>Obtain device Id: consists of four components separated by a hyphen 
  *  symbol: Hardware-Platform-Browser-IsCrawler where each Component is 
  *  represented an ID of the corresponding Profile.
- *  <p><code>match.getDeviceId();</code>
+ *  <code><pre class="prettyprint lang-java">
+ *      match.getDeviceId();
+ *  </pre></code>
  *  <li>Retrieve match method: provides information about the 
  *  algorithm that was used to perform detection for a particular User-Agent. 
  *  For more information on what each method means please see: 
  *  <a href="https://51degrees.com/support/documentation/pattern">
  *  How device detection works</a>
- *  <p><code>match.getMethod();</code>
+ *  <code><pre class="prettyprint lang-java">
+ *      match.getMethod();
+ *  </pre></code>
  *  <li>Get difference:  used when detection method is not Exact or None. 
  *  This is an integer value and the larger the value the less confident the 
  *  detector is in this result.
- *  <p><code>match.getDifference();</code>
+ *  <code><pre class="prettyprint lang-java">
+ *      match.getDifference();
+ *  </pre></code>
  *  <li>Retrieve signature rank: an integer value that indicates how popular 
  *  the device is. The lower the rank the more popular the signature.
- *  <p><code>match.getSignature().getRank();</code>
+ *  <code><pre class="prettyprint lang-java">
+ *      match.getSignature().getRank();
+ *  </pre></code>
  * </ol>
  * <p>
- * {@link #main} assumes it is being run with a working directory at root of 
- * project or of this module.
+ * main assumes it is being run with a working directory at root of project 
+ * or of this module.
  * <!-- tutorial -->
  */
 public class MatchMetrics implements Closeable {

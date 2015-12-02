@@ -32,7 +32,7 @@ import java.io.IOException;
  * <!-- tutorial -->
  * Example of creating a TrieProvider and using it to get a device property.
  * <p>
- * {@link #main} assumes it is being run with a working directory at root of 
+ * main assumes it is being run with a working directory at root of 
  * project or of this module.
  * <!-- tutorial -->
  */
