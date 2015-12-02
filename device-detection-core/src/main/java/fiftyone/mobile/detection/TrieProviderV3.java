@@ -39,7 +39,7 @@ public class TrieProviderV3 extends TrieProvider {
      * @param nodesLength The length of the node data.
      * @param nodesOffset The position of the start of the nodes in the 
      * file provided.
-     * @param pool >Pool connected to the data source.
+     * @param pool Pool connected to the data source.
      * @throws FileNotFoundException 
      */
     public TrieProviderV3(String copyright, byte[] strings, byte[] properties, 

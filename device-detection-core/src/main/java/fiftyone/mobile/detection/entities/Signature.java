@@ -288,7 +288,7 @@ public abstract class Signature extends BaseEntity
     /**
      * Returns an array of nodes associated with the signature.
      * @return an array of nodes associated with the signature.
-     * @throws java.io.IOException
+     * @throws java.io.IOException if there was a problem accessing data file.
      */
     protected Node[] doGetNodes() throws IOException {
         Node[] nodesLocal = new Node[getNodeOffsets().length];
@@ -543,7 +543,7 @@ public abstract class Signature extends BaseEntity
     /**
      * The number of characters in the signature.
      * @return The number of characters in the signature.
-     * @throws java.io.IOException
+     * @throws java.io.IOException if there was a problem accessing data file.
      */
     protected abstract int getSignatureLength() throws IOException;
     

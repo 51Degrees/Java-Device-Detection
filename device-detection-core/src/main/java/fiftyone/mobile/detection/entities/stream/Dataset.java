@@ -75,7 +75,7 @@ public class Dataset extends fiftyone.mobile.detection.Dataset {
      * 
      * @param data array of bytes to read from.
      * @param mode The mode of operation the data set will be using.
-     * @throws IOException 
+     * @throws IOException if there was a problem accessing data file.
      */
     public Dataset(byte[] data, Modes mode) throws IOException {
         super(new Date(Long.MIN_VALUE), mode);

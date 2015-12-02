@@ -56,7 +56,8 @@ import java.util.concurrent.atomic.AtomicLong;
  * You can access the underlying data set like: 
  * {@code provider.dataset.publised} to retrieve various meta information like 
  * the published date and the next update date as well as the list of various 
- * entities like {@link Profile profiles} and {@link Property properties}.
+ * entities like {@link fiftyone.mobile.detection.entities.Profile 
+ * profiles} and {@link fiftyone.mobile.detection.entities.Property properties}.
  * <p>
  * Remember to {@link Dataset#close() close} the underlying data set when 
  * program finishes to release resources and remove file lock.

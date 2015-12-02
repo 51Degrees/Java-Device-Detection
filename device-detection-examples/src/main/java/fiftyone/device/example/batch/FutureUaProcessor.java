@@ -40,7 +40,6 @@ import java.util.concurrent.*;
  * <p>
  * All results are stored in memory, so while this class is fast to execute it cannot carry
  * out large numbers of detections. It's fine for the 20k HTTP User-Agents distributed as a sample.
- * <p>
  */
 public class FutureUaProcessor extends UaProcessor.Base {
 
@@ -63,7 +62,10 @@ public class FutureUaProcessor extends UaProcessor.Base {
     final static ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();
     final static boolean cpuTimeSupported = threadMXBean.isThreadCpuTimeSupported();
 
-    /** Get CPU time in nanoseconds. The run time may not support resolutions finer than microseconds*/
+    /** 
+     * Get CPU time in nanoseconds. The run time may not support resolutions finer than microsecond
+     * @return CPU time as long.
+     */
     public static long getCpuTime( ) {
         return cpuTimeSupported ? threadMXBean.getCurrentThreadCpuTime( ) : 0L;
     }

@@ -50,7 +50,7 @@ public class TrieProviderV32 extends TrieProvider {
      * @param nodesLength The length of the node data.
      * @param nodesOffset The position of the start of the nodes in the file provided.
      * @param pool Pool connected to the data source.
-     * @throws FileNotFoundException 
+     * @throws FileNotFoundException if a file could not be found.
      */
     public TrieProviderV32(String copyright, byte[] strings, byte[] httpHeaders, byte[] properties, byte[] devices, short[] lookupList, long nodesLength, long nodesOffset, TriePool pool) throws FileNotFoundException {
         super(copyright, strings, properties, devices, lookupList, nodesLength, nodesOffset, pool);

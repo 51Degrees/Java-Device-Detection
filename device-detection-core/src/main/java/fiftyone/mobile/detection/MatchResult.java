@@ -67,7 +67,7 @@ public class MatchResult {
 
     /**
      * The signature with the closest match to the target User-Agent provided.
-     * @return 
+     * @return {@link Signature} for the current match.
      */    
     public Signature getSignature() {
         return signature;
@@ -138,7 +138,7 @@ public class MatchResult {
 
     /**
      * @return Array of profiles associated with the device that was found.
-     * @throws java.io.IOException
+     * @throws java.io.IOException if there was a problem accessing data file.
      */    
     public Profile[] getProfiles() throws IOException {
         return profiles;
