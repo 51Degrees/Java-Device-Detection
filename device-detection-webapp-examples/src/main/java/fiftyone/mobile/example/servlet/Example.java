@@ -37,123 +37,100 @@ import fiftyone.mobile.detection.webapp.BaseServlet;
 import java.util.ArrayList;
 
 /**
- * A simple Servlet example, using 51Degrees to detect incoming devices.
+ * <!-- tutorial -->
+ * Returns a page with predefined properties, match metrics information and 
+ * a list of the relevant HTTP headers used for the detection.
+ * <p>
+ * Device detection functionality becomes available upon extending the 
+ * 51Degrees BaseServlet from the WebApp module.
+ * <code><pre class="prettyprint lang-java">
+ *  public class Example extends BaseServlet {
+ * </pre></code>
+ * <p>
+ * This example servlet outputs a similar page to that of the other 51Degrees 
+ * APIs.
+ * <p>
+ * WebApp module provides access to the WebProvider which extends the Core 
+ * Provider, hence allowing access to the same set of features you can use for 
+ * offline device detection. To access property:
+ * <code><pre class="prettyprint lang-java">
+ *  Property pr = super.getProvider(request).dataSet.get("IsMobile");
+ * </pre></code>
+ * <p>
+ * WebProvider's role is to manage the temporary data files as in the Servlet 
+ * environment it is not always possible to stop detection to update the data 
+ * file, hence using temporary files allows to keep the master file free of 
+ * write locks.
+ * <p>
+ * Since version 3.2 the Lite data file is no longer embedded into the API, so 
+ * please remember to specify the BINARY_FILE_PATH in the Web.xml and place 
+ * the data file at that path.
+ * <!-- tutorial -->
  */
 @SuppressWarnings("serial")
 @WebServlet(name = "Example", urlPatterns = {"/Example"})
+// Snippet Start
 public class Example extends BaseServlet {
     
     /**
      * A pre-defined list of properties to display in the results list.
      */
-    private final static String[] PROPERTIES = {"BrowserName", 
-                                                "BrowserVendor",
-                                                "BrowserVersion", 
-                                                "DeviceType", 
-                                                "HardwareVendor", 
-                                                "IsTablet", 
-                                                "IsMobile", 
-                                                "IsCrawler", 
-                                                "ScreenInchesDiagonal",
-                                                "ScreenPixelsWidth"};
+    private final static String[] PROPERTIES = {"BrowserName", "BrowserVendor", 
+        "BrowserVersion", "DeviceType", "HardwareVendor", "IsTablet", 
+        "IsMobile", "IsCrawler", "ScreenInchesDiagonal","ScreenPixelsWidth"};
     /**
      * Location of the CSS.
      */
-    private static final String CSS_INCLUDE = "https://51degrees.com/Demos/examples.css";
+    private static final String CSS_INCLUDE = 
+            "https://51degrees.com/Demos/examples.css";
     /**
      * Logger to log exceptions.
      */
-    private final static Logger logger = LoggerFactory.getLogger(Example.class);
+    private final static Logger logger = 
+            LoggerFactory.getLogger(Example.class);
     
     /**
      * Processes requests for both HTTP
      * <code>GET</code> and
      * <code>POST</code> methods.
      *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @param request servlet request.
+     * @param response servlet response.
+     * @throws ServletException if a servlet-specific error occurs.
+     * @throws IOException if an I/O error occurs.
      */
     protected void processRequest(  HttpServletRequest request, 
                                     HttpServletResponse response)
-                                    throws ServletException, IOException, Exception {
+                            throws ServletException, IOException, Exception {
         response.setContentType("text/html;charset=UTF-8");
-
         PrintWriter out = response.getWriter();
-
         // Start writing HTML code
         out.println("<html>");
         out.println("<head>");
-        out.println("<meta name=\"viewport\" content=\"width=device-width, initial-scale=1, maximum-scale=1\">");
+        out.println("<meta name=\"viewport\" content=\"width=device-width, "
+                + "initial-scale=1, maximum-scale=1\">");
         out.println("<title>51Degrees Pattern Example Servlet</title>");
         out.println("<link rel=\"stylesheet\" type=\"text/css\" "
                 + "href=\""+CSS_INCLUDE+"\" class=\"inline\"/>");
-        
         out.println("</head>");
         out.println("<body>");
         out.println("<div class=\"content\">");
-
         out.println("<img src=\""
                 + getURL("image")
-                + "\" alt=\"51Degrees logo\">");
-        
+                + "\" alt=\"51Degrees logo\">");  
         out.println("<h1>Java Pattern - Device Detection Example</h1>");
         // Print dataset information like published date or device combinations.
         printDatasetInformation(out, request);
         // Print a table of HTTP headers and values.
         printHeadersTable(out, request, null);
         // Print a table with match metrics and a list of properties.
-        printProperties(out, request);
-        
+        printProperties(out, request); 
         out.println("</div>");
         out.println("</body>");
         out.println("</html>");
         out.close();
     }
 
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-    /**
-     * Handles the HTTP
-     * <code>GET</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-
-            try {
-                processRequest(request, response);
-            } catch (Exception ex) {
-                
-            }
-    }
-
-    /**
-     * Handles the HTTP
-     * <code>POST</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    @Override
-    protected void doPost(  HttpServletRequest request, 
-                            HttpServletResponse response)
-                            throws ServletException, IOException {
-        try {
-            processRequest(request, response);
-        } catch (Exception ex) {
-            logger.debug(ex.getMessage());
-        }
-
-    }
-    
     /**
      * Method prints HTML table with the list of HTTP headers that are 
      * important for device detection and values for HTTP headers that had a 
@@ -199,7 +176,9 @@ public class Example extends BaseServlet {
                 out.println("<tr>");
                 out.println("<td>"+filteredHeaders[i]+"</td>");
                 if (request.getHeader(filteredHeaders[i]) != null) {
-                    out.println("<td>"+request.getHeader(filteredHeaders[i])+"</td>");
+                    out.println("<td>" + 
+                            request.getHeader(filteredHeaders[i]) + 
+                            "</td>");
                 } else {
                     out.println("<td>header not set</td>");
                 }
@@ -283,7 +262,8 @@ public class Example extends BaseServlet {
             if (pr != null) {
                 if (pr.valueType != PropertyValueType.JAVASCRIPT) {
                     if (super.getResult(request).containsKey(pr.getName())) {
-                        String[] values = super.getResult(request).get(pr.getName());
+                        String[] values = 
+                                super.getResult(request).get(pr.getName());
                         int current = 0;
                         out.println("<td>");
                         for (String value : values) {
@@ -369,27 +349,37 @@ public class Example extends BaseServlet {
         
         out.println("<tr>");
         out.println("<td>Dataset published: </td>");
-        out.println("<td>"+super.getProvider(request).dataSet.published+"</td>");
+        out.println("<td>" + 
+                super.getProvider(request).dataSet.published + 
+                "</td>");
         out.println("</tr>");
         
         out.println("<tr>");
         out.println("<td>Dataset next update: </td>");
-        out.println("<td>"+super.getProvider(request).dataSet.nextUpdate+"</td>");
+        out.println("<td>" + 
+                super.getProvider(request).dataSet.nextUpdate + 
+                "</td>");
         out.println("</tr>");
         
         out.println("<tr>");
         out.println("<td>Dataset version: </td>");
-        out.println("<td>"+super.getProvider(request).dataSet.version+"</td>");
+        out.println("<td>" + 
+                super.getProvider(request).dataSet.version + 
+                "</td>");
         out.println("</tr>");
         
         out.println("<tr>");
         out.println("<td>Dataset name: </td>");
-        out.println("<td>"+super.getProvider(request).dataSet.getName()+"</td>");
+        out.println("<td>" + 
+                super.getProvider(request).dataSet.getName() + 
+                "</td>");
         out.println("</tr>");
         
         out.println("<tr>");
         out.println("<td>Dataset device combinations: </td>");
-        out.println("<td>"+super.getProvider(request).dataSet.deviceCombinations+"</td>");
+        out.println("<td>" + 
+                super.getProvider(request).dataSet.deviceCombinations + 
+                "</td>");
         out.println("</tr>");
         
         out.println("</tbody>");
@@ -442,6 +432,49 @@ public class Example extends BaseServlet {
      */
     @Override
     public String getServletInfo() {
-        return "An example of 51degrees.mobi's Java device detection solution";
-    }// </editor-fold>
+        return "51Degrees API extending BaseServlet example.";
+    }
+    
+    /**
+     * Handles the HTTP
+     * <code>POST</code> method.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
+    @Override
+    protected void doPost(  HttpServletRequest request, 
+                            HttpServletResponse response)
+                            throws ServletException, IOException {
+        try {
+            processRequest(request, response);
+        } catch (Exception ex) {
+            logger.debug(ex.getMessage());
+        }
+
+    }
+    
+    /**
+     * Handles the HTTP
+     * <code>GET</code> method.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
+    @Override
+    protected void doGet(HttpServletRequest request, 
+                         HttpServletResponse response)
+            throws ServletException, IOException {
+
+            try {
+                processRequest(request, response);
+            } catch (Exception ex) {
+                
+            }
+    }
 }
+// Snippet End
