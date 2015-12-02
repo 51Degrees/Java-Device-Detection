@@ -39,7 +39,7 @@ public abstract class SourceBase implements Closeable {
     /**
      * Creates a new reader and stores a reference to it.
      * @return A reader open for read access to the stream
-     * @throws java.io.IOException
+     * @throws java.io.IOException if there was a problem accessing data file.
      */
     public BinaryReader createReader() throws IOException {
         return new BinaryReader(createStream());

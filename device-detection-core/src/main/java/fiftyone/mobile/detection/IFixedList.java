@@ -37,7 +37,7 @@ public interface IFixedList<T extends BaseEntity> extends IReadonlyList<T> {
      * @param index Start index in the fixed list.
      * @param count Number of iterations to perform.
      * @return An enumerable to iterate over the range specified.
-     * @throws java.io.IOException
+     * @throws java.io.IOException if there was a problem accessing data file.
      */
     public abstract IClosableIterator<T> getRange(int index, int count) 
                                                             throws IOException;
