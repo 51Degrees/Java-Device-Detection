@@ -42,20 +42,34 @@ import java.util.ArrayList;
  * Example covers:
  * <ul>
  *  <li>Creating a dataset without provider
- *  <p><code>Dataset dataset = MemoryFactory.create(
- *      Shared.getLitePatternV32(), true);</code>
+ *  <code><pre class="prettyprint lang-java">
+ *      Dataset dataset = MemoryFactory.create(
+ *      Shared.getLitePatternV32(), true);
+ *  </pre></code>
  *  <li>Converting an Iterable to ArrayList using:
- *  <p><code>iterableToArrayList(dataset.getSignatures())</code>
+ *  <code><pre class="prettyprint lang-java">
+ *      iterableToArrayList(dataset.getSignatures())
+ *  </pre></code>
  *  <li>Using the <code>filterBy</code> method, that:
  *  <ol>
  *      <li>Performs null checks
  *      <li>Retrieves Property object based on provided property name.
- *      <li>For each signature <code>for (Signature sig : listToFilter) {</code>
+ *      <li>For each signature 
+ *      <code><pre class="prettyprint lang-java">
+ *          for (Signature sig : listToFilter) {
+ *      </pre></code>
  *      <br>Gets values for specified property: 
- *      <code>Values vals = sig.getValues(property);</code>
+ *      <code><pre class="prettyprint lang-java">
+ *          Values vals = sig.getValues(property);
+ *      </pre></code>
  *      <br>Checks if signature in question contains provided property values:
- *      <code>if (vals.get(propertyValue) != null)</code>, and if so, adds the 
- *      signature to the temporary list: <code>filterResults.add(sig);</code>
+ *      <code><pre class="prettyprint lang-java">
+ *          if (vals.get(propertyValue) != null)
+ *      </pre></code>
+ *      , and if so, adds the signature to the temporary list: 
+ *      <code><pre class="prettyprint lang-java">
+ *          filterResults.add(sig);
+ *      </pre></code>
  *      <li>Temporary list is then returned.
  *  </ol>
  *  <li>Accessing deviceId and rank via signature object.
@@ -68,6 +82,9 @@ import java.util.ArrayList;
  * Dynamic filtering can be useful in a number of cases. For example: when 
  * creating an interdependent menu where one choice narrows down the options 
  * in a subsequent choice.
+ * <p>
+ * main assumes it is being run with a working directory at root of 
+ * project or of this module.
  * <!-- tutorial -->
  */
 public class DynamicFilters {
