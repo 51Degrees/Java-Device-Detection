@@ -10,3 +10,5 @@
 */target/*
 nb-configuration.xml
 *.lic
+.idea/
+*.iml

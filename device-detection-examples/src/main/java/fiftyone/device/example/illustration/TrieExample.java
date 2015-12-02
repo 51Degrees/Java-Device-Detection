@@ -32,7 +32,7 @@ import java.io.IOException;
  * <!-- tutorial -->
  * Example of creating a TrieProvider and using it to get a device property.
  * <p>
- * {@link #main} assumes it is being run with a working directory at root of 
+ * main assumes it is being run with a working directory at root of 
  * project or of this module.
  * <!-- tutorial -->
  */
@@ -52,7 +52,7 @@ public class TrieExample implements Closeable {
      * 
      * @param userAgent an HTTP User-Agent header value
      * @return ture if the device has been detected as mobile
-     * @throws Exception
+     * @throws Exception if there was a problem accessing data file.
      */
     public boolean isItMobile(String userAgent) throws Exception {
 

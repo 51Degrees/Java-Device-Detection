@@ -92,7 +92,7 @@ public class Enumerable implements Iterator<Integer>, Iterable<Integer> {
     /**
      * Reads the next integer and returns it.
      * 
-     * @return the next integer in a sequence. Null if current > max.
+     * @return the next integer in a sequence. Null if current greater than max.
      */
     @Override
     public Integer next() {

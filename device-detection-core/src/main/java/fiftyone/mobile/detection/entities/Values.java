@@ -31,8 +31,8 @@ import fiftyone.properties.DetectionConstants;
  * helper methods to make consuming the data set easier.
  * <p>
  * Objects of this class should not be created directly as they are part of the 
- * internal logic. Use the relevant {@link Dataset} method to access these 
- * objects.
+ * internal logic. Use the relevant {@link fiftyone.mobile.detection.Dataset} 
+ * method to access these objects.
  * <p>
  * For more information see: 
  * <a href="https://51degrees.com/support/documentation/device-detection-data-model">
