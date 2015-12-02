@@ -37,22 +37,31 @@ import java.io.IOException;
  * The example illustrates:
  * <ol>
  *  <li>Loading a memory-resident Pattern Dataset
- *  <p><code>dataset = MemoryFactory.create(Shared.getLitePatternV32(), true);
- *  </code>
+ *  <code><pre class="prettyprint lang-java">
+ *      dataset = MemoryFactory.create(Shared.getLitePatternV32(), true);
+ *  </pre></code>
  *  <li>Enumerating properties contained in the dataset loaded
- *  <p><code>for(Property property : dataset.getProperties()) {</code>
+ *  <code><pre class="prettyprint lang-java">
+ *      for(Property property : dataset.getProperties()) {
+ *  </pre></code>
  *  <li>Accessing description for each property.
- *  <p><code>property.getDescription()</code>
+ *  <code><pre class="prettyprint lang-java">
+ *      property.getDescription();
+ *  </pre></code>
  *  <li>Enumerating values that the property may have
- *  <p><code>for (Value value : property.getValues().getAll()) {</code>
+ *  <code><pre class="prettyprint lang-java">
+ *      for (Value value : property.getValues().getAll()) {
+ *  </pre></code>
  *  <li>Accessing description of each value
- *  <p><code>if (value.getDescription() != null) {</code>
+ *  <code><pre class="prettyprint lang-java">
+ *      if (value.getDescription() != null) {
+ *  </pre></code>
  * </ol>
  * The <a href="https://51degrees.com/resources/property-dictionary">
  * 51 Degrees Property Dictionary</a> contains a description of each of the 
  * properties and the editions in which they are available.
  * <p>
- * {@link #main} assumes it is being run with a working directory at root of 
+ * main assumes it is being run with a working directory at root of 
  * project or of this module.
  * <!-- tutorial -->
  */
