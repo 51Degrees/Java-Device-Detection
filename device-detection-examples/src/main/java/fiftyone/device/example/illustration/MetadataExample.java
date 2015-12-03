@@ -67,7 +67,7 @@ import java.io.IOException;
  */
 public class MetadataExample implements Closeable {
     // Snippet Start
-    // Dataset created from 51Degrees data fiel.
+    // Dataset created from 51Degrees data file.
     private final Dataset dataset;
 
     /**
