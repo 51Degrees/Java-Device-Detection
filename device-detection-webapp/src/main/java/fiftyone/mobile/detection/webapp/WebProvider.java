@@ -113,6 +113,8 @@ public class WebProvider extends Provider implements Closeable {
 
     /**
      * Disposes of the data set created by the WebProvider.
+     * 
+     * @throws java.io.IOException if there was a problem accessing data file.
      */
     @Override
     public void close() throws IOException {
@@ -401,7 +403,7 @@ public class WebProvider extends Provider implements Closeable {
      * 
      * @param request HttpServletRequest containing HTTP headers.
      * @return FiftyOne Match object with detection results.
-     * @throws IOException 
+     * @throws IOException if there was a problem accessing data file.
      */
     public Match match(HttpServletRequest request) throws IOException {
         HashMap headers = new HashMap<String, String>();

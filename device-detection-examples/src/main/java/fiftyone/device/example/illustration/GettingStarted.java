@@ -47,9 +47,9 @@ import java.io.IOException;
  *  match.getValues("IsMobile").toString();
  *  </pre></code>
  * </ol>
+ * <!-- tutorial -->
  * main assumes it is being run with a working directory at root of 
  * project or of this module.
- * <!-- tutorial -->
  */
 public class GettingStarted implements Closeable {
     // Snippet Start

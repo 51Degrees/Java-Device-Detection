@@ -57,14 +57,14 @@ import java.util.ArrayList;
  *  Property pr = super.getProvider(request).dataSet.get("IsMobile");
  * </pre></code>
  * <p>
- * WebProvider's role is to manage the temporary data files as in the Servlet 
- * environment it is not always possible to stop detection to update the data 
- * file, hence using temporary files allows to keep the master file free of 
+ * The WebProvider’s role is to manage the temporary data files. In the Servlet 
+ * environment it is not always possible to stop device detection to update the 
+ * data file, by using temporary files the master file can be kept free of 
  * write locks.
  * <p>
- * Since version 3.2 the Lite data file is no longer embedded into the API, so 
- * please remember to specify the BINARY_FILE_PATH in the Web.xml and place 
- * the data file at that path.
+ * As of version 3.2 the Lite data file is no longer embedded in the API. 
+ * Please remember to specify the BINARY_FILE_PATH in the Web.xml and ensure 
+ * the data file is placed there.
  * <!-- tutorial -->
  */
 @SuppressWarnings("serial")
