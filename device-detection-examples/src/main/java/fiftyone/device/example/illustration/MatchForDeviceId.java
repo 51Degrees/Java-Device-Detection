@@ -37,40 +37,58 @@ import java.util.ArrayList;
  * Example illustrates:
  * <ul>
  *  <li>Loading a Provider from a Disk-based (Stream) Pattern Dataset
- *  <code><pre class="prettyprint lang-java">
+ *  <pre class="prettyprint lang-java">
+ *  <code>
  *      provider = new Provider(StreamFactory.create
  *      (Shared.getLitePatternV32(), false));
- *  </pre></code>
+ *  </code>
+ *  </pre>
  *  <li>Matching a User-Agent string header value
- *  <code><pre class="prettyprint lang-java">
+ *  <pre class="prettyprint lang-java">
+ *  <code>
  *      provider.match(mobileUserAgent);
- *  </pre></code>
+ *  </code>
+ *  </pre>
  *  <li>Using the match object to retrieve and store deviceId
- *  <code><pre class="prettyprint lang-java">
+ *  <pre class="prettyprint lang-java">
+ *  <code>
  *      Match matchFromUA;
- *  </pre></code>
+ *  </code>
+ *  </pre>
  *  <p>as a string: 
- *  <code><pre class="prettyprint lang-java">
+ *  <pre class="prettyprint lang-java">
+ *  <code>
  *      matchFromUA.getDeviceId();
- *  </pre></code>
+ *  </code>
+ *  </pre>
  *  <p>as byte array: 
- *  <code><pre class="prettyprint lang-java">
+ *  <pre class="prettyprint lang-java">
+ *  <code>
  *      matchFromUA.getDeviceIdAsByteArray();
- *  </pre></code>
+ *  </code>
+ *  </pre>
  *  <p>as list of profile IDs: 
- *  <code><pre class="prettyprint lang-java">
+ *  <pre class="prettyprint lang-java">
+ *  <code>
  *      for (Profile profile : matchFromUA.getProfiles()) {
- *  </pre></code>
+ *  </code>
+ *  </pre>
  *  <li>Creating a match object from deviceId
- *  <code><pre class="prettyprint lang-java">
+ *  <pre class="prettyprint lang-java">
+ *  <code>
  *      device.matchForDeviceIdArray(deviceIdByteArray);
- *  </pre></code>
- *  <code><pre class="prettyprint lang-java">
+ *  </code>
+ *  </pre>
+ *  <pre class="prettyprint lang-java">
+ *  <code>
  *      device.matchForDeviceIdString(deviceIdString);
- *  </pre></code>
- *  <code><pre class="prettyprint lang-java">
+ *  </code>
+ *  </pre>
+ *  <pre class="prettyprint lang-java">
+ *  <code>
  *      device.matchForDeviceIdList(deviceIdList);
- *  </pre></code>
+ *  </code>
+ *  </pre>
  * </ul>
  * <p>
  * At the end a short console message will be printed containing a hash code of 

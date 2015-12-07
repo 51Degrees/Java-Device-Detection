@@ -37,25 +37,35 @@ import java.io.IOException;
  * The example illustrates:
  * <ol>
  *  <li>Loading a memory-resident Pattern Dataset
- *  <code><pre class="prettyprint lang-java">
+ *  <pre class="prettyprint lang-java">
+ *  <code>
  *      dataset = MemoryFactory.create(Shared.getLitePatternV32(), true);
- *  </pre></code>
+ *  </code>
+ *  </pre>
  *  <li>Enumerating properties contained in the dataset loaded
- *  <code><pre class="prettyprint lang-java">
+ *  <pre class="prettyprint lang-java">
+ *  <code>
  *      for(Property property : dataset.getProperties()) {
- *  </pre></code>
+ *  </code>
+ *  </pre>
  *  <li>Accessing description for each property.
- *  <code><pre class="prettyprint lang-java">
+ *  <pre class="prettyprint lang-java">
+ *  <code>
  *      property.getDescription();
- *  </pre></code>
+ *  </code>
+ *  </pre>
  *  <li>Enumerating values that the property may have
- *  <code><pre class="prettyprint lang-java">
+ *  <pre class="prettyprint lang-java">
+ *  <code>
  *      for (Value value : property.getValues().getAll()) {
- *  </pre></code>
+ *  </code>
+ *  </pre>
  *  <li>Accessing description of each value
- *  <code><pre class="prettyprint lang-java">
+ *  <pre class="prettyprint lang-java">
+ *  <code>
  *      if (value.getDescription() != null) {
- *  </pre></code>
+ *  </code>
+ *  </pre>
  * </ol>
  * <!-- tutorial -->
  * The <a href="https://51degrees.com/resources/property-dictionary">

@@ -35,39 +35,51 @@ import java.io.IOException;
  * information. The example shows how to;
  * <ol>
  *  <li>Instantiate 51Degrees detection provider
- *  <code><pre class="prettyprint lang-java">
+ *  <pre class="prettyprint lang-java">
+ *  <code>
  *      provider = new Provider(StreamFactory.create(
  *      Shared.getLitePatternV32(), false));
- *  </pre></code>
+ *  </code>
+ *  </pre>
  *  <li>Pass in a single HTTP User-Agent header
- *  <code><pre class="prettyprint lang-java">
+ *  <pre class="prettyprint lang-java">
+ *  <code>
  *      Match match = provider.match(userAgent);
- *  </pre></code>
+ *  </code>
+ *  </pre>
  *  <li>Obtain device Id: consists of four components separated by a hyphen 
  *  symbol: Hardware-Platform-Browser-IsCrawler where each Component is 
  *  represented an ID of the corresponding Profile.
- *  <code><pre class="prettyprint lang-java">
+ *  <pre class="prettyprint lang-java">
+ *  <code>
  *      match.getDeviceId();
- *  </pre></code>
+ *  </code>
+ *  </pre>
  *  <li>Retrieve match method: provides information about the 
  *  algorithm that was used to perform detection for a particular User-Agent. 
  *  For more information on what each method means please see: 
  *  <a href="https://51degrees.com/support/documentation/pattern">
  *  How device detection works</a>
- *  <code><pre class="prettyprint lang-java">
+ *  <pre class="prettyprint lang-java">
+ *  <code>
  *      match.getMethod();
- *  </pre></code>
+ *  </code>
+ *  </pre>
  *  <li>Get difference:  used when detection method is not Exact or None. 
  *  This is an integer value and the larger the value the less confident the 
  *  detector is in this result.
- *  <code><pre class="prettyprint lang-java">
+ *  <pre class="prettyprint lang-java">
+ *  <code>
  *      match.getDifference();
- *  </pre></code>
+ *  </code>
+ *  </pre>
  *  <li>Retrieve signature rank: an integer value that indicates how popular 
  *  the device is. The lower the rank the more popular the signature.
- *  <code><pre class="prettyprint lang-java">
+ *  <pre class="prettyprint lang-java">
+ *  <code>
  *      match.getSignature().getRank();
- *  </pre></code>
+ *  </code>
+ *  </pre>
  * </ol>
  * <!-- tutorial -->
  * <p>

@@ -38,35 +38,47 @@ import java.io.*;
  * The example illustrates:
  * <ol>
  *  <li>Loading a Provider from a Disk-based (Stream) Pattern Dataset
- *  <code><pre class="prettyprint lang-java">
+ *  <pre class="prettyprint lang-java">
+ *  <code>
  *      provider = new Provider(StreamFactory.create
  *      (Shared.getLitePatternV32(), false));
- *  </pre></code>
+ *  </code>
+ *  </pre>
  *  <li>Matching a User-Agent header value
  *  <ol>
  *      <li>By creating a match and using it repeatedly (for efficiency)
- *      <code><pre class="prettyprint lang-java">
+ *      <pre class="prettyprint lang-java">
+ *      <code>
  *          Match match = provider.createMatch();
- *      </pre></code>
- *      <code><pre class="prettyprint lang-java">
+ *      </code>
+ *      </pre>
+ *      <pre class="prettyprint lang-java">
+ *      <code>
  *          provider.match(userAgentString, match);
- *      </pre></code>
+ *      </code>
+ *      </pre>
  *      <li>By having the provider create a new Match for each detection
- *      <code><pre class="prettyprint lang-java">
+ *      <pre class="prettyprint lang-java">
+ *      <code>
  *          Match match = provider.match(userAgentString);
- *      </pre></code>
+ *      </code>
+ *      </pre>
  *  </ol>
  *  <li>Getting the values for some properties of the matched User-Agent header
- *  <code><pre class="prettyprint lang-java">
+ *  <pre class="prettyprint lang-java">
+ *  <code>
  *      Values isMobile = match.getValues("IsMobile");
- *  </pre></code>
+ *  </code>
+ *  </pre>
  *  <p>
  *  A property may have multiple values. Helper methods convert the list of 
  *  values into a Boolean, Double etc.
  *  For example: 
- *  <code><pre class="prettyprint lang-java">
+ *  <pre class="prettyprint lang-java">
+ *  <code>
  *      isMobile.toBool();
- *  </pre></code>
+ *  </code>
+ *  </pre>
  * </ol>
  * You can run {@link MetadataExample#main} for a listing of which properties 
  * are available in the dataset supplied with this distribution.
