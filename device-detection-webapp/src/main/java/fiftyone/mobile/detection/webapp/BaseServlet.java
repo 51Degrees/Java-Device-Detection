@@ -32,11 +32,11 @@ import javax.servlet.http.HttpServletRequest;
  * configuration.
  * <p>
  * If you wish to use the 51Degrees servlet all you need to do is extend this 
- * class in your Servlet implementation:
+ * class in your servlet implementation:
  * <code>public class MyServlet extends BaseServlet</code>
  * <p>
- * Extending this class grants you access to image optimiser, core and feature 
- * JavaScript functionality.
+ * Extending this class enables your servlet to access device detection 
+ * functionality.
  */
 @SuppressWarnings("serial")
 public class BaseServlet extends HttpServlet {
@@ -69,13 +69,14 @@ public class BaseServlet extends HttpServlet {
      *
      * @param request the request property results are for.
      * @param propertyName name of the property required expressed as a string.
-     * @return value of the requested property for current request as a string.
+     * @return value of the requested property for current request as a string, 
+     *         or null.
      * @throws javax.servlet.ServletException 
      * @throws IOException if there was a problem accessing data file.
      */
-    protected String getProperty(
-            final HttpServletRequest request,
-            final String propertyName) throws ServletException, IOException {
+    protected String getProperty(final HttpServletRequest request,
+                                 final String propertyName) 
+                                 throws ServletException, IOException {
         final Map<String, String[]> result = getResult(request);
         if (result != null) {
             String[] values = result.get(propertyName);
