@@ -57,13 +57,13 @@ import java.io.IOException;
  *      if (value.getDescription() != null) {
  *  </pre></code>
  * </ol>
+ * <!-- tutorial -->
  * The <a href="https://51degrees.com/resources/property-dictionary">
  * 51 Degrees Property Dictionary</a> contains a description of each of the 
  * properties and the editions in which they are available.
  * <p>
  * main assumes it is being run with a working directory at root of 
  * project or of this module.
- * <!-- tutorial -->
  */
 public class MetadataExample implements Closeable {
     // Snippet Start

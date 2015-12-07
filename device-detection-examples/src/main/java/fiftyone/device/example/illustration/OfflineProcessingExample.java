@@ -68,16 +68,16 @@ import java.io.*;
  *      isMobile.toBool();
  *  </pre></code>
  * </ol>
+ * You can run {@link MetadataExample#main} for a listing of which properties 
+ * are available in the dataset supplied with this distribution.
+ * <!-- tutorial -->
+ * <p>
  * The <a href="https://51degrees.com/resources/property-dictionary">
  * 51 Degrees Property Dictionary</a> contains a description of each of the 
  * properties and the editions in which they are available.
  * <p>
- * You can run {@link MetadataExample#main} for a listing of which properties 
- * are available in the dataset supplied with this distribution.
- * <p>
  * main assumes it is being run with a working directory at root of 
  * project or of this module.
- * <!-- tutorial -->
  */
 public class OfflineProcessingExample implements Closeable {
     // Snippet Start

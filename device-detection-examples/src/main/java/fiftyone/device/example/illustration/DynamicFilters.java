@@ -33,11 +33,11 @@ import java.util.ArrayList;
 /**
  * <!-- tutorial -->
  * Example of filtering signatures to obtain a subset based on one or more 
- * property : value condition. Example starts with a full set of signatures 
+ * property : value condition. The example starts with a full set of signatures 
  * available in the data file and narrows them down to only leave signatures 
- * that correspond to mobile devices running Android OS that use Chrome browser.
- * Example then prints out a list of device IDs for the remaining signatures 
- * and the rank for each signature.
+ * that correspond to mobile devices running Android OS that use the Chrome 
+ * browser. The example then prints out a list of device IDs for the remaining 
+ * signatures and the rank for each signature.
  * <p>
  * Example covers:
  * <ul>
@@ -82,10 +82,10 @@ import java.util.ArrayList;
  * Dynamic filtering can be useful in a number of cases. For example: when 
  * creating an interdependent menu where one choice narrows down the options 
  * in a subsequent choice.
+ * <!-- tutorial -->
  * <p>
  * main assumes it is being run with a working directory at root of 
  * project or of this module.
- * <!-- tutorial -->
  */
 public class DynamicFilters {
     // Snippet Start

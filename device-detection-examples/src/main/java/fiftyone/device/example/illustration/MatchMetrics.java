@@ -69,10 +69,10 @@ import java.io.IOException;
  *      match.getSignature().getRank();
  *  </pre></code>
  * </ol>
+ * <!-- tutorial -->
  * <p>
  * main assumes it is being run with a working directory at root of project 
  * or of this module.
- * <!-- tutorial -->
  */
 public class MatchMetrics implements Closeable {
     // Snippet Start
