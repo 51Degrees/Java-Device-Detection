@@ -6,7 +6,8 @@
         <title>51Degrees Java Web Site</title>
     </head>
     <body>
-        <p><a href="Example">Device Detection</a></p>
+        <p><a href="Example">Example Page</a></p>
         <p><a href="Gallery">Image Gallery</a></p>
+        <p><a href="UsingDetection">Using Detection</a></p>
     </body>
 </html>
