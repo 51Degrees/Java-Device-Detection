@@ -36,18 +36,24 @@ import javax.servlet.http.HttpServletResponse;
  * Example covers:
  * <ul>
  *  <li>Extending 51Degrees BaseServlet
- *  <code><pre class="prettyprint lang-java">
- *  public class UsingDetection extends BaseServlet {
- *  </pre></code>
+ *  <pre class="prettyprint lang-java">
+ *  <code>
+ *      public class UsingDetection extends BaseServlet {
+ *  </code>
+ *  </pre>
  *  <li>Accessing the dataset of the provider to retrieve a list of properties 
  *  available in the current data file.
- *  <code><pre class="prettyprint lang-java">
- *  super.getProvider(request).dataSet.getProperties();
- *  </pre></code>
+ *  <pre class="prettyprint lang-java">
+ *  <code>
+ *      super.getProvider(request).dataSet.getProperties();
+ *  </code>
+ *  </pre>
  *  <li>Retrieving value for a specific property for the current request
- *  <code><pre class="prettyprint lang-java">
- *  String value = super.getProperty(request, propertyNameString);
- *  </pre></code>
+ *  <pre class="prettyprint lang-java">
+ *  <code>
+ *      String value = super.getProperty(request, propertyNameString);
+ *  </code>
+ *  </pre>
  * </ul>
  * This is a complete servlet example using 51Degrees device detection. 
  * Remember to place the 51Degrees data file into the 'WEB-INF/51Degrees.dat' 

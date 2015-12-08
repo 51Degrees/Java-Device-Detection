@@ -43,9 +43,11 @@ import java.util.ArrayList;
  * <p>
  * Device detection functionality becomes available upon extending the 
  * 51Degrees BaseServlet from the WebApp module.
- * <code><pre class="prettyprint lang-java">
+ * <pre class="prettyprint lang-java">
+ * <code>
  *  public class Example extends BaseServlet {
- * </pre></code>
+ * </code>
+ * </pre>
  * <p>
  * This example servlet outputs a similar page to that of the other 51Degrees 
  * APIs.
@@ -53,9 +55,11 @@ import java.util.ArrayList;
  * WebApp module provides access to the WebProvider which extends the Core 
  * Provider, hence allowing access to the same set of features you can use for 
  * offline device detection. To access property:
- * <code><pre class="prettyprint lang-java">
+ * <pre class="prettyprint lang-java">
+ * <code>
  *  Property pr = super.getProvider(request).dataSet.get("IsMobile");
- * </pre></code>
+ * </code>
+ * </pre>
  * <p>
  * The WebProvider’s role is to manage the temporary data files. In the Servlet 
  * environment it is not always possible to stop device detection to update the 

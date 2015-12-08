@@ -34,18 +34,24 @@ import java.io.IOException;
  * shows how to:
  * <ol>
  *  <li>Instantiate 51Degrees detection provider
- *  <code><pre class="prettyprint lang-java">
+ *  <pre class="prettyprint lang-java">
+ *  <code>
  *      provider = new Provider(StreamFactory.create(
  *      Shared.getLitePatternV32(), false));
- *  </pre></code>
+ *  </code>
+ *  </pre>
  *  <li>Pass in a single HTTP User-Agent header
- *  <code><pre class="prettyprint lang-java">
+ *  <pre class="prettyprint lang-java">
+ *  <code>
  *      Match match = provider.match(userAgent);
- *  </pre></code>
+ *  </code>
+ *  </pre>
  *  <li>Extract the value of the IsMobile property as boolean
- *  <code><pre class="prettyprint lang-java">
+ *  <pre class="prettyprint lang-java">
+ *  <code>
  *      match.getValues("IsMobile").toBool();
- *  </pre></code>
+ *  </code>
+ *  </pre>
  * </ol>
  * <!-- tutorial -->
  * main assumes it is being run with a working directory at root of 
