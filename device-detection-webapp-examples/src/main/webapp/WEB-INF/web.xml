@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app id="FiftyOneDegreesExampleWebApp" version="3.0" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
     <display-name>ExampleV3WebSite</display-name>
+    <servlet-mapping>
+        <servlet-name>UsingDetection</servlet-name>
+        <url-pattern>/UsingDetection</url-pattern>
+    </servlet-mapping>
     <welcome-file-list>
         <welcome-file>/index.jsp</welcome-file>
     </welcome-file-list>
@@ -72,6 +76,10 @@
         <display-name>Gallery</display-name>
         <servlet-name>Gallery</servlet-name>
         <servlet-class>fiftyone.mobile.example.servlet.Gallery</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>UsingDetection</servlet-name>
+        <servlet-class>fiftyone.mobile.example.servlet.UsingDetection</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>FiftyOneDegreesServlet</servlet-name>
