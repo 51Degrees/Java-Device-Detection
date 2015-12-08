@@ -31,62 +31,80 @@ import java.util.ArrayList;
 
 /**
  * <!-- tutorial -->
- * Example shows how to use an existing 51Degrees device Id to obtain a Match 
+ * Example shows how to use an existing 51Degrees deviceId to obtain a Match 
  * object with relevant properties and values.
  * <p>
  * Example illustrates:
  * <ul>
  *  <li>Loading a Provider from a Disk-based (Stream) Pattern Dataset
- *  <code><pre class="prettyprint lang-java">
+ *  <pre class="prettyprint lang-java">
+ *  <code>
  *      provider = new Provider(StreamFactory.create
  *      (Shared.getLitePatternV32(), false));
- *  </pre></code>
+ *  </code>
+ *  </pre>
  *  <li>Matching a User-Agent string header value
- *  <code><pre class="prettyprint lang-java">
+ *  <pre class="prettyprint lang-java">
+ *  <code>
  *      provider.match(mobileUserAgent);
- *  </pre></code>
- *  <li>Using the match object to retrieve and store device ID
- *  <code><pre class="prettyprint lang-java">
+ *  </code>
+ *  </pre>
+ *  <li>Using the match object to retrieve and store deviceId
+ *  <pre class="prettyprint lang-java">
+ *  <code>
  *      Match matchFromUA;
- *  </pre></code>
+ *  </code>
+ *  </pre>
  *  <p>as a string: 
- *  <code><pre class="prettyprint lang-java">
+ *  <pre class="prettyprint lang-java">
+ *  <code>
  *      matchFromUA.getDeviceId();
- *  </pre></code>
+ *  </code>
+ *  </pre>
  *  <p>as byte array: 
- *  <code><pre class="prettyprint lang-java">
+ *  <pre class="prettyprint lang-java">
+ *  <code>
  *      matchFromUA.getDeviceIdAsByteArray();
- *  </pre></code>
+ *  </code>
+ *  </pre>
  *  <p>as list of profile IDs: 
- *  <code><pre class="prettyprint lang-java">
+ *  <pre class="prettyprint lang-java">
+ *  <code>
  *      for (Profile profile : matchFromUA.getProfiles()) {
- *  </pre></code>
+ *  </code>
+ *  </pre>
  *  <li>Creating a match object from deviceId
- *  <code><pre class="prettyprint lang-java">
+ *  <pre class="prettyprint lang-java">
+ *  <code>
  *      device.matchForDeviceIdArray(deviceIdByteArray);
- *  </pre></code>
- *  <code><pre class="prettyprint lang-java">
+ *  </code>
+ *  </pre>
+ *  <pre class="prettyprint lang-java">
+ *  <code>
  *      device.matchForDeviceIdString(deviceIdString);
- *  </pre></code>
- *  <code><pre class="prettyprint lang-java">
+ *  </code>
+ *  </pre>
+ *  <pre class="prettyprint lang-java">
+ *  <code>
  *      device.matchForDeviceIdList(deviceIdList);
- *  </pre></code>
+ *  </code>
+ *  </pre>
  * </ul>
  * <p>
  * At the end a short console message will be printed containing a hash code of 
- * the object, device Id and the value for the IsMobile property. Notice that 
+ * the object, deviceId and the value for the IsMobile property. Notice that 
  * all three objects are different as demonstrated by hash value but have the 
- * same device Id and value for the IsMobile property.
+ * same deviceId and value for the IsMobile property.
  * <p>
- * Storing device Id as opposed to the individual properties is a much more 
+ * Storing deviceId as opposed to the individual properties is a much more 
  * efficient way of retaining device information for future use. Byte array is 
  * the most efficient of the three options demonstrated as it only requires 
  * enough space to store the number of integers corresponding to the number of 
  * profiles (one profile per component).
  * <p>
+ * <!-- tutorial -->
  * main assumes it is being run with a working directory at root of 
  * project or of this module.
- * <!-- tutorial -->
  */
 public class MatchForDeviceId {
     // Snippet Start
@@ -112,15 +130,15 @@ public class MatchForDeviceId {
      * shows how to use the Id to get a Match object. The Id can be stored as a 
      * byte array, string or a list of integers corresponding to profiles.
      * <p>
-     * Three match objects with different references but same device Id and 
+     * Three match objects with different references but same deviceId and 
      * IsMobile values are generated to demonstrate that all three methods of 
-     * storing device Id produce the same result.
+     * storing deviceId produce the same result.
      * @param args command line arguments.
      * @throws IOException if there was a problem accessing data file.
      */
     public static void main(String[] args) throws IOException {
         MatchForDeviceId device = new MatchForDeviceId();
-        // Get device Id for some User-Agent.
+        // Get deviceId for some User-Agent.
         Match matchFromUA = device.matchForUserAgent(device.mobileUserAgent);
         // Store for future use.
         String deviceIdString = matchFromUA.getDeviceId();
@@ -166,10 +184,10 @@ public class MatchForDeviceId {
     }
     
     /**
-     * Returns a Match object corresponding to the provided string device Id.
-     * String device id derived by: <code>match.getDeviceId();</code>
+     * Returns a Match object corresponding to the provided string deviceId.
+     * String deviceId derived by: <code>match.getDeviceId();</code>
      * 
-     * @param deviceId String representation of the device Id.
+     * @param deviceId String representation of the deviceId.
      * @return Match object with detection results.
      * @throws IOException if there was a problem accessing the data file.
      */
@@ -182,7 +200,7 @@ public class MatchForDeviceId {
      * Byte array id is retrieved by: 
      * <code>match.getDeviceIdAsByteArray();</code>
      * 
-     * @param deviceId byte array representation of device Id.
+     * @param deviceId byte array representation of deviceId.
      * @return Match object with detection results.
      * @throws IOException if there was a problem accessing the data file.
      */
