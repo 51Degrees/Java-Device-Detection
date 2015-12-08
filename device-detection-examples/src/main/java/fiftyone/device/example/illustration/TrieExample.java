@@ -31,10 +31,10 @@ import java.io.IOException;
 /**
  * <!-- tutorial -->
  * Example of creating a TrieProvider and using it to get a device property.
+ * <!-- tutorial -->
  * <p>
  * main assumes it is being run with a working directory at root of 
  * project or of this module.
- * <!-- tutorial -->
  */
 public class TrieExample implements Closeable {
     // Snippet Start

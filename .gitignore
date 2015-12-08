@@ -12,3 +12,4 @@ nb-configuration.xml
 *.lic
 .idea/
 *.iml
+/target/

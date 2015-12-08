@@ -33,43 +33,55 @@ import java.util.ArrayList;
 /**
  * <!-- tutorial -->
  * Example of filtering signatures to obtain a subset based on one or more 
- * property : value condition. Example starts with a full set of signatures 
+ * property : value condition. The example starts with a full set of signatures 
  * available in the data file and narrows them down to only leave signatures 
- * that correspond to mobile devices running Android OS that use Chrome browser.
- * Example then prints out a list of device IDs for the remaining signatures 
- * and the rank for each signature.
+ * that correspond to mobile devices running Android OS that use the Chrome 
+ * browser. The example then prints out a list of device IDs for the remaining 
+ * signatures and the rank for each signature.
  * <p>
  * Example covers:
  * <ul>
  *  <li>Creating a dataset without provider
- *  <code><pre class="prettyprint lang-java">
+ *  <pre class="prettyprint lang-java">
+ *  <code>
  *      Dataset dataset = MemoryFactory.create(
  *      Shared.getLitePatternV32(), true);
- *  </pre></code>
+ *  </code>
+ *  </pre>
  *  <li>Converting an Iterable to ArrayList using:
- *  <code><pre class="prettyprint lang-java">
+ *  <pre class="prettyprint lang-java">
+ *  <code>
  *      iterableToArrayList(dataset.getSignatures())
- *  </pre></code>
+ *  </code>
+ *  </pre>
  *  <li>Using the <code>filterBy</code> method, that:
  *  <ol>
  *      <li>Performs null checks
  *      <li>Retrieves Property object based on provided property name.
  *      <li>For each signature 
- *      <code><pre class="prettyprint lang-java">
+ *      <pre class="prettyprint lang-java">
+ *      <code>
  *          for (Signature sig : listToFilter) {
- *      </pre></code>
+ *      </code>
+ *      </pre>
  *      <br>Gets values for specified property: 
- *      <code><pre class="prettyprint lang-java">
+ *      <pre class="prettyprint lang-java">
+ *      <code>
  *          Values vals = sig.getValues(property);
- *      </pre></code>
+ *      </code>
+ *      </pre>
  *      <br>Checks if signature in question contains provided property values:
- *      <code><pre class="prettyprint lang-java">
+ *      <pre class="prettyprint lang-java">
+ *      <code>
  *          if (vals.get(propertyValue) != null)
- *      </pre></code>
+ *      </code>
+ *      </pre>
  *      , and if so, adds the signature to the temporary list: 
- *      <code><pre class="prettyprint lang-java">
+ *      <pre class="prettyprint lang-java">
+ *      <code>
  *          filterResults.add(sig);
- *      </pre></code>
+ *      </code>
+ *      </pre>
  *      <li>Temporary list is then returned.
  *  </ol>
  *  <li>Accessing deviceId and rank via signature object.
@@ -82,10 +94,10 @@ import java.util.ArrayList;
  * Dynamic filtering can be useful in a number of cases. For example: when 
  * creating an interdependent menu where one choice narrows down the options 
  * in a subsequent choice.
+ * <!-- tutorial -->
  * <p>
  * main assumes it is being run with a working directory at root of 
  * project or of this module.
- * <!-- tutorial -->
  */
 public class DynamicFilters {
     // Snippet Start
