@@ -16,7 +16,7 @@
   <property name="webAppJavaDoc" location="javadoc/webapp"/>
   <property name="servletsJavaDoc" location="javadoc/servlets"/>
   <property name="cdatdest" location="build/core"/>
-  <property name="version" value="3.2.1.9-beta"/>
+  <property name="version" value="3.2.2.20-beta"/>
 
   <target name="init">
     <!-- Create the time stamp -->
