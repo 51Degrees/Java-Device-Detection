@@ -4,12 +4,12 @@
 
 **Maven**
 
-As of version 3.2.2.20-beta the Maven coordinates for the Core package have changed:
+As of version 3.2.2.20-beta the Maven coordinates for the WebApp package have changed:
 
 ```xml
 <dependency>
     <groupId>com.51degrees</groupId>
-    <artifactId>device-detection-core</artifactId>
+    <artifactId>device-detection-webapp</artifactId>
     <version>3.2.2.20-beta</version>
 </dependency>
 ```
@@ -18,6 +18,14 @@ Please remember to update your project POM files to reflect the change.
 
 **Summary**
 
-This package contains the implementation of device detection and provides access to classes and methods for working with the 51Degrees device data nd device detection.
+This package implements classes that should be used in a Web server environment.
+
+To add device detection functionality to your servlet extend the BaseServlet like:
+
+```java
+public class MyServlet extends BaseServlet {
+```
+
+To configure the API and add listeners for the image optimiser and automatic data updates see the [Configuration Documentation](https://51degrees.com/Support/Documentation/APIs/Java-V32/Web-Apps/Configuration/Webxml?utm_source=github&utm_medium=repository&utm_content=source-code&utm_campaign=java-open-source).
 
 For usage examples see the [Tutorials](https://51degrees.com/Support/Documentation/APIs/Java-V32/Tutorials?utm_source=github&utm_medium=repository&utm_content=source-code&utm_campaign=java-open-source) section of the documentation.
