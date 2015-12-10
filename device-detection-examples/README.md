@@ -4,20 +4,16 @@
 
 **Maven**
 
-As of version 3.2.2.20-beta the Maven coordinates for the Core package have changed:
+As of 3.2.2.20-beta this package is available on Maven.
 
 ```xml
 <dependency>
     <groupId>com.51degrees</groupId>
-    <artifactId>device-detection-core</artifactId>
+    <artifactId>device-detection-examples</artifactId>
     <version>3.2.2.20-beta</version>
 </dependency>
 ```
 
-Please remember to update your project POM files to reflect the change.
-
 **Summary**
 
-This package contains the implementation of device detection and provides access to classes and methods for working with the 51Degrees device data nd device detection.
-
-For usage examples see the [Tutorials](https://51degrees.com/Support/Documentation/APIs/Java-V32/Tutorials?utm_source=github&utm_medium=repository&utm_content=source-code&utm_campaign=java-open-source) section of the documentation.
+This package contains ready to run examples and tutorials. For a list of examples with descriptions and result explanations on the [Tutorials](https://51degrees.com/Support/Documentation/APIs/Java-V32/Tutorials?utm_source=github&utm_medium=repository&utm_content=source-code&utm_campaign=java-open-source) page.
