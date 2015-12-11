@@ -248,7 +248,7 @@ public class Results {
             try {
                 for (Future<Boolean> outcome: outcomes) {
                     assertTrue("A detection did not complete before timeout",
-                            outcome.get(1500, TimeUnit.MILLISECONDS));
+                            outcome.get(6000, TimeUnit.MILLISECONDS));
                 }
             } catch (Exception e1) {
                 fail("Submitted tasks did not complete " + e1.getClass().getName());

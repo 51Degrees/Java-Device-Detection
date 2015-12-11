@@ -34,6 +34,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.io.IOException;
+import org.junit.After;
 
 @Category({TestType.DataSetPremium.class, TestType.TypeMemory.class})
 public class V31PremiumMemoryArrayTest extends MemoryBase {
@@ -48,7 +49,7 @@ public class V31PremiumMemoryArrayTest extends MemoryBase {
 
     @BeforeClass
     public static void setUp() throws IOException {
-        if (fileExists(filename)) dataset = MemoryFactory.create(readAllBytes(filename));
+        dataset = getInitialisedDataset(filename, false, 110, readAllBytes(filename), false);
     }
 
     @Before
@@ -60,6 +61,12 @@ public class V31PremiumMemoryArrayTest extends MemoryBase {
     public static void tearDown() throws IOException {
         if (dataset != null) dataset.close();
         dataset = null;
+    }
+    
+    @After
+    public void resetCache() {
+        dataset.resetCache();
+        System.gc();
     }
 
     @Test

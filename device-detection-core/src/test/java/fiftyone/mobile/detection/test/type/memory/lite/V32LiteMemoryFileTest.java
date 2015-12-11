@@ -34,6 +34,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.io.IOException;
+import org.junit.After;
 
 @Category({TestType.DataSetLite.class, TestType.TypeMemory.class})
 public class V32LiteMemoryFileTest extends MemoryBase {
@@ -43,12 +44,19 @@ public class V32LiteMemoryFileTest extends MemoryBase {
 
     @BeforeClass
     public static void setUp() throws IOException {
-        if (fileExists(filename)) dataset = StreamFactory.create(filename, false);
+        
+        dataset = getInitialisedDataset(filename, false, 20, null, false);
     }
 
     @Before
     public void checkFileExists() {
         assertFileExists(filename);
+    }
+    
+    @After
+    public void resetCache() {
+        dataset.resetCache();
+        System.gc();
     }
 
     @AfterClass
