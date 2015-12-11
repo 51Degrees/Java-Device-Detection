@@ -49,7 +49,7 @@ public class V32PremiumMemoryArrayTest extends MemoryBase {
 
     @BeforeClass
     public static void setUp() throws IOException {
-        dataset = getDataset2(false, filename, 110, readAllBytes(filename));
+        dataset = getInitialisedDataset(filename, false, 110, readAllBytes(filename), false);
     }
 
     @Before

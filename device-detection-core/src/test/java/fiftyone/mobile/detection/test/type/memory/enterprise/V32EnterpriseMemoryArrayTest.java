@@ -44,7 +44,7 @@ public class V32EnterpriseMemoryArrayTest extends MemoryBase {
 
     @BeforeClass
     public static void setUp() throws IOException {
-        dataset = getDataset2(false, filename, 200, readAllBytes(filename));
+        dataset = getInitialisedDataset(filename, false, 200, readAllBytes(filename), false);
     }
 
     @Before

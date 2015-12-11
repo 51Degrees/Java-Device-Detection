@@ -48,7 +48,7 @@ public class V32LiteMemoryMemoryTest extends MemoryBase {
 
     @BeforeClass
     public static void setUp() throws IOException {
-        dataset = getDataset2(true, filename, 200, null);
+        dataset = getInitialisedDataset(filename, true, 200, null, false);
     }
 
     @Before

@@ -49,7 +49,7 @@ public class V32PremiumMemoryMemoryTest extends MemoryBase {
     @BeforeClass
     public static void setUp() throws IOException {
         if (fileExists(filename)) dataset = MemoryFactory.create(filename, false);
-        dataset = getDataset2(true, filename, 800, null);
+        dataset = getInitialisedDataset(filename, true, 800, null, false);
     }
 
     @Before

@@ -49,7 +49,7 @@ public class V32EnterpriseMemoryFileTest extends MemoryBase {
 
     @BeforeClass
     public static void setUp() throws IOException {
-        dataset = getDataset2(false, filename, 30, null);
+        dataset = getInitialisedDataset(filename, false, 30, null, false);
     }
 
     @Before

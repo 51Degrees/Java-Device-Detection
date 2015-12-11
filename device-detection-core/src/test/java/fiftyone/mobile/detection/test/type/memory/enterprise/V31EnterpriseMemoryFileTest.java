@@ -50,7 +50,7 @@ public class V31EnterpriseMemoryFileTest extends MemoryBase {
     @BeforeClass
     public static void setUp() throws IOException {
         if (fileExists(filename)) dataset = StreamFactory.create(filename, false);
-        dataset = getDataset2(false, filename, 30, null);
+        dataset = getInitialisedDataset(filename, false, 30, null, false);
     }
 
     @Before

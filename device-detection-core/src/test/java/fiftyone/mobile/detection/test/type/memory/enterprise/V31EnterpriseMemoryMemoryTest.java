@@ -48,7 +48,7 @@ public class V31EnterpriseMemoryMemoryTest extends MemoryBase {
 
     @BeforeClass
     public static void setUp() throws IOException {
-        dataset = getDataset2(true, filename, 1200, null);
+        dataset = getInitialisedDataset(filename, true, 1200, null, false);
     }
 
     @Before
