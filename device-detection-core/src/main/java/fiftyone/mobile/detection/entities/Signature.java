@@ -30,6 +30,9 @@ import fiftyone.mobile.detection.SortedList;
 import fiftyone.mobile.detection.WrappedIOException;
 import fiftyone.mobile.detection.readers.BinaryReader;
 import fiftyone.properties.DetectionConstants;
+import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Signature of a User-Agent - the relevant characters from a User-Agent 
@@ -83,8 +86,15 @@ public abstract class Signature extends BaseEntity
      */
     public Signature(Dataset dataSet, int index, BinaryReader reader) {
         super(dataSet, index);
-        profileOffsets = readOffsets(dataSet, reader, 
+        // This has been changed as readOffsets no longer returns an array.
+        // TODO: verify logic.
+        List<Integer> t = readOffsets(dataSet, reader, 
                                     dataSet.signatureProfilesCount);
+        profileOffsets = new int[t.size()];
+        Iterator<Integer> iter = t.iterator();
+        for (int i = 0; iter.hasNext(); i++) {
+            profileOffsets[i] = iter.next();
+        }
     }
     
     /**
@@ -250,7 +260,9 @@ public abstract class Signature extends BaseEntity
      * @throws IOException if there was a problem accessing data file.
      */
     @SuppressWarnings("DoubleCheckedLocking")
-    public Value[] getValues() throws IOException {
+    public Iterator<Value> getValues() throws IOException {
+        // TODO: validate.
+        /*
         Value[] localValues = values;
         if (localValues == null) {
             synchronized (this) {
@@ -261,10 +273,10 @@ public abstract class Signature extends BaseEntity
             }
         }
         return localValues;
+        */
+        return new ValueIterator(this);
     }
-    @SuppressWarnings("VolatileArrayField")
-    private volatile Value[] values;
-    
+
     /**
      * The length in bytes of the signature.
      *
@@ -291,9 +303,9 @@ public abstract class Signature extends BaseEntity
      * @throws java.io.IOException if there was a problem accessing data file.
      */
     protected Node[] doGetNodes() throws IOException {
-        Node[] nodesLocal = new Node[getNodeOffsets().length];
-        for (int i = 0; i < getNodeOffsets().length; i++) {
-            nodesLocal[i] = dataSet.nodes.get(getNodeOffsets()[i]);
+        Node[] nodesLocal = new Node[getNodeOffsets().size()];
+        for (int i = 0; i < getNodeOffsets().size(); i++) {
+            nodesLocal[i] = dataSet.nodes.get(getNodeOffsets().get(i));
         }
         return nodesLocal;
     }
@@ -330,10 +342,9 @@ public abstract class Signature extends BaseEntity
      * @param length The number of offsets to read in
      * @return An array of the offsets as integers read from the reader
      */
-    protected static int[] readOffsets(
-            Dataset dataSet, 
-            BinaryReader reader, 
-            int length) {
+    protected static List<Integer> readOffsets(Dataset dataSet, 
+                                       BinaryReader reader, 
+                                       int length) {
         reader.list.clear();
         for (int i = 0; i < length; i++) {
             int profileIndex = reader.readInt32();
@@ -341,11 +352,15 @@ public abstract class Signature extends BaseEntity
                 reader.list.add(profileIndex);
             }
         }
+        // TODO: validate logic.
+        /*
         int[] array = new int[reader.list.size()];
         for (int i = 0; i < array.length; i++) {
             array[i] = reader.list.get(i);
         }
         return array;
+        */
+        return reader.list;
     }
 
     /**
@@ -360,8 +375,6 @@ public abstract class Signature extends BaseEntity
             nodes = getNodes();
         if (profiles == null)
             profiles = getProfiles();
-        if (values == null)
-            values = getValues();
         if (deviceId == null)
             deviceId = getDeviceId();
         if (length == 0) {
@@ -392,15 +405,24 @@ public abstract class Signature extends BaseEntity
                                                         throws IOException {
         // Initialise the HashMap with the known number of values and 1 as the 
         // threshold to avoid the need to rehash it.
-        int numberOfValues = getValues().length;
         SortedList<String, List<String>> list = 
-                new SortedList<String, List<String>>(numberOfValues, 1);
+                new SortedList<String, List<String>>();
+        while (getValues().hasNext()) {
+            Value v = getValues().next();
+            if (!list.containsKey(v.getProperty().getName())) {
+                list.add(v.getProperty().getName(), new ArrayList<String>());
+            }
+            list.get(v.getProperty().getName()).add(v.getName());
+        }
+        
+        /*
         for (Value value : getValues()) {
             if (!list.containsKey(value.getProperty().getName())) {
                 list.add(value.getProperty().getName(), new ArrayList<String>());
             }
             list.get(value.getProperty().getName()).add(value.getName());
         }
+        */
         return list;
     }
 
@@ -445,19 +467,19 @@ public abstract class Signature extends BaseEntity
      * @throws java.io.IOException if there was a problem accessing data file.
      */
     public int compareTo(List<Node> nodes) throws IOException {
-        int tempLength = Math.min(getNodeOffsets().length, nodes.size());
+        int tempLength = Math.min(getNodeOffsets().size(), nodes.size());
 
         for (int i = 0; i < tempLength; i++) {
-            int difference = getNodeOffsets()[i] - nodes.get(i).getIndex();
+            int difference = getNodeOffsets().get(i) - nodes.get(i).getIndex();
             if (difference != 0) {
                 return difference;
             }
         }
 
-        if (getNodeOffsets().length < nodes.size()) {
+        if (getNodeOffsets().size() < nodes.size()) {
             return -1;
         }
-        if (getNodeOffsets().length > nodes.size()) {
+        if (getNodeOffsets().size() > nodes.size()) {
             return 1;
         }
 
@@ -474,19 +496,20 @@ public abstract class Signature extends BaseEntity
     @Override
     public int compareTo(Signature other) {
         try {
-            int tempLength = Math.min(  getNodeOffsets().length, 
-                                        other.getNodeOffsets().length); 
+            int tempLength = Math.min(  getNodeOffsets().size(), 
+                                        other.getNodeOffsets().size()); 
             for (int i = 0; i < tempLength; i++) {
-                int difference = getNodeOffsets()[i] - other.getNodeOffsets()[i];
+                int difference = getNodeOffsets().get(i) - 
+                        other.getNodeOffsets().get(i);
                 if (difference != 0) {
                     return difference;
                 }
             }
             
-            if (getNodeOffsets().length < other.getNodeOffsets().length) {
+            if (getNodeOffsets().size() < other.getNodeOffsets().size()) {
                 return -1;
             }
-            if (getNodeOffsets().length > other.getNodeOffsets().length) {
+            if (getNodeOffsets().size() > other.getNodeOffsets().size()) {
                 return 1;
             }
         } catch (IOException ex) {
@@ -538,7 +561,7 @@ public abstract class Signature extends BaseEntity
      * @return Array of node offsets associated with the signature.
      * @throws java.io.IOException if there was a problem accessing data file.
      */
-    public abstract int[] getNodeOffsets() throws IOException;
+    public abstract List<Integer> getNodeOffsets() throws IOException;
     
     /**
      * The number of characters in the signature.
@@ -555,4 +578,53 @@ public abstract class Signature extends BaseEntity
      * @throws java.io.IOException if there was a problem accessing data file.
      */
     public abstract int getRank() throws IOException;
+    
+    /**
+     * 
+     * @param <T> 
+     */
+    public class ValueIterator implements Iterator<Value> {
+        
+        private final Signature signature;
+        int currentProfile;
+        int currentValue;
+        
+        public ValueIterator(Signature signature) {
+            this.signature = signature;
+            this.currentProfile = 0;
+            this.currentValue = 0;
+        }
+
+        @Override
+        public boolean hasNext() {
+            try {
+                if (currentProfile < signature.getProfiles().length && 
+                    currentValue < signature.getProfiles()[currentProfile]
+                                                        .getValues().length) {
+                    return true;
+                }
+            } catch (IOException ex) {
+                throw new ArrayIndexOutOfBoundsException("");
+            }
+            return false;
+        }
+
+        @Override
+        public Value next() {
+            try {
+                Value v = signature.getProfiles()[currentProfile]
+                                                    .getValues()[currentValue];
+                currentProfile++;
+                if (currentValue >= signature.getProfiles()[currentProfile]
+                                                        .getValues().length) {
+                    currentValue = 0;
+                    currentProfile++;
+                }
+                return v;
+            } catch(Exception ex) {
+                return null;
+            }
+        }
+        
+    }
 }

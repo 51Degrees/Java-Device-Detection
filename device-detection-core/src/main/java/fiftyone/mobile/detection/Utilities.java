@@ -20,6 +20,10 @@
  * ********************************************************************* */
 package fiftyone.mobile.detection;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * Utility methods shared across 51Degrees packages.
  */
@@ -44,5 +48,16 @@ public class Utilities {
             }
         }
         return sb.toString();
+    }
+    
+    public static List<Integer> arrayToList(int[] array) {
+        List<Integer> list = null;
+        if (array.length > 0) {
+            list = new ArrayList<Integer>();
+            for (int i = 0; i < array.length; i++) {
+                list.add(array[i]);
+            }
+        }
+        return list;
     }
 }

@@ -250,7 +250,7 @@ public class Dataset implements Closeable {
     /**
      * List of integers that represent ranked signature indexes.
      */
-    public IFixedList<IntegerEntity> nodeRankedSignatureIndexes;
+    public ISimpleList nodeRankedSignatureIndexes;
     /**
      * A list of all the possible profiles the data set contains.
      */
@@ -272,7 +272,7 @@ public class Dataset implements Closeable {
      * the node ranked signature indexes lists to identify the corresponding 
      * signature.
      */
-    public IFixedList<IntegerEntity> rankedSignatureIndexes;
+    public ISimpleList rankedSignatureIndexes;
     /**
      * Nodes for each of the possible character positions in the User-Agent.
      */
@@ -284,7 +284,7 @@ public class Dataset implements Closeable {
      /**
      * List of integers that represent signature node offsets.
      */
-    public IFixedList<IntegerEntity> signatureNodeOffsets;
+    public ISimpleList signatureNodeOffsets;
     /**
      * The number of profiles each signature can contain.
      */
@@ -778,7 +778,7 @@ public class Dataset implements Closeable {
      * 
      * @return list of integers that represent signature node offsets.
      */
-    public IFixedList<IntegerEntity> getSignatureNodeOffsets() {
+    public ISimpleList getSignatureNodeOffsets() {
         return signatureNodeOffsets;
     }
     
@@ -787,7 +787,7 @@ public class Dataset implements Closeable {
      * 
      * @return a list of integers that represent ranked signature indexes.
      */
-    public IFixedList<IntegerEntity> getNodeRankedSignatureIndexes() {
+    public ISimpleList getNodeRankedSignatureIndexes() {
         return nodeRankedSignatureIndexes;
     }
     
@@ -983,20 +983,6 @@ public class Dataset implements Closeable {
     public Property get(String propertyName) throws IOException {
         return this.properties.get(propertyName);
     }
-    
-    /**
-     * Method is deprecated and should not be used. Use get( StringpropertyName)
-     * instead.
-     * Method searches for a property with the given name and returns the 
-     * Property if found. Returns null otherwise.
-     * @param propertyName name of the property to find as a string.
-     * @return Property object or null if no property with requested name exists
-     * @throws IOException if there was a problem accessing data file.
-     */
-    @Deprecated
-    public Property getPropertyByName(String propertyName) throws IOException {
-        return this.properties.get(propertyName);
-    }
 
     /**
      * Returns the number of {@link Profile profiles} each signature can contain. 
@@ -1036,11 +1022,90 @@ public class Dataset implements Closeable {
 
     /**
      * Disposes of the data set releasing any file locks.
+     * 
      * @throws java.io.IOException if there was a problem accessing data file.
      */
     @Override
     public void close() throws IOException {
+        if (values != null) {
+            values.close();
+        }
+        if (signatures != null) {
+            signatures.close();
+        }
+        if (profileOffsets != null) {
+            profileOffsets.close();
+        }
+        if (profiles != null) {
+            profiles.close();
+        }
+        if (nodes != null) {
+            nodes.close();
+        }
+        if (rootNodes != null) {
+            rootNodes.close();
+        }
+        if (strings != null) {
+            strings.close();
+        }
         disposed = true;
+    }
+
+    /**
+     * Returns a list of signature indexes ordered in ascending order of rank.
+     * 
+     * @return A list of signature indexes ordered in ascending order of rank.
+     */
+    public ISimpleList getRankedSignatureIndexes() {
+        return rankedSignatureIndexes;
+    } 
+
+    /**
+     * Returns the percentage of requests that weren't serviced by the cache.
+     * @param list a Cache object to get percentage from.
+     * @return 0 if object is not Cache, percentage otherwise.
+     */
+    private static double getPercentageMisses(Object list) {
+        if (list instanceof ICacheList) {
+            ICacheList c = (ICacheList)list;
+            return c.getPercentageMisses();
+        }
+        return -1;
+    }
+
+    /**
+     * If there are cached lists being used the states are reset for them.
+     */
+    public void resetCache() {
+        //Do nothing in this implementation.
+    }
+    
+    // <editor-fold defaultstate="collapsed" desc="Deprecated methods">
+    /**
+     * Returns the number of times the cache lists were switched.
+     * Note: The LRU does not require switching and this method has been 
+     * deprecated.
+     * @param list a Cache object to get percentage from.
+     * @return 0 if object is not Cache, percentage otherwise.
+     */
+    @Deprecated
+    private static long getSwitches(Object list) {
+        if (list instanceof ICacheList) {
+            ICacheList c = (ICacheList)list;
+            return c.getSwitches();
+        }
+        return -1;
+    }
+    
+    /**
+     * Number of times the ranked signature cache was switched.
+     * A value is only returned when operating in Stream mode.
+     * 
+     * @return Number of times the ranked signature cache was switched.
+     */
+    @Deprecated
+    public long getRankedSignatureCacheSwitches() {
+        return getSwitches(rankedSignatureIndexes);
     }
     
     /**
@@ -1064,7 +1129,7 @@ public class Dataset implements Closeable {
      */
     @Deprecated
     public long getSignatureCacheSwitches() {
-        return getSwitches(signatures);
+        return 0;
     }
     
     /**
@@ -1116,58 +1181,17 @@ public class Dataset implements Closeable {
     }
     
     /**
-     * Returns a list of signature indexes ordered in ascending order of rank.
-     * 
-     * @return A list of signature indexes ordered in ascending order of rank.
-     */
-    public IFixedList<IntegerEntity> getRankedSignatureIndexes() {
-        return rankedSignatureIndexes;
-    } 
-    
-    /**
-     * Number of times the ranked signature cache was switched.
-     * A value is only returned when operating in Stream mode.
-     * 
-     * @return Number of times the ranked signature cache was switched.
+     * Method is deprecated and should not be used. Use get( StringpropertyName)
+     * instead.
+     * Method searches for a property with the given name and returns the 
+     * Property if found. Returns null otherwise.
+     * @param propertyName name of the property to find as a string.
+     * @return Property object or null if no property with requested name exists
+     * @throws IOException if there was a problem accessing data file.
      */
     @Deprecated
-    public long getRankedSignatureCacheSwitches() {
-        return getSwitches(rankedSignatureIndexes);
+    public Property getPropertyByName(String propertyName) throws IOException {
+        return this.properties.get(propertyName);
     }
-    
-    /**
-     * Returns the percentage of requests that weren't serviced by the cache.
-     * @param list a Cache object to get percentage from.
-     * @return 0 if object is not Cache, percentage otherwise.
-     */
-    private static double getPercentageMisses(Object list) {
-        if (list instanceof ICacheList) {
-            ICacheList c = (ICacheList)list;
-            return c.getPercentageMisses();
-        }
-        return -1;
-    }
-    
-    /**
-     * Returns the number of times the cache lists were switched.
-     * Note: The LRU does not require switching and this method has been 
-     * deprecated.
-     * @param list a Cache object to get percentage from.
-     * @return 0 if object is not Cache, percentage otherwise.
-     */
-    @Deprecated
-    private static long getSwitches(Object list) {
-        if (list instanceof ICacheList) {
-            ICacheList c = (ICacheList)list;
-            return c.getSwitches();
-        }
-        return -1;
-    }
-    
-    /**
-     * If there are cached lists being used the states are reset for them.
-     */
-    public void resetCache() {
-        //Do nothing in this implementation.
-    }
+    //</editor-fold>
 }

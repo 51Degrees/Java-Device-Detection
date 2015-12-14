@@ -24,7 +24,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 
 import fiftyone.mobile.detection.Dataset;
-import fiftyone.mobile.detection.IFixedList;
 import fiftyone.mobile.detection.entities.AsciiString;
 import fiftyone.mobile.detection.entities.Component;
 import fiftyone.mobile.detection.entities.IntegerEntity;

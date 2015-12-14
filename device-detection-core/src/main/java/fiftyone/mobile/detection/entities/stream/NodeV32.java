@@ -26,6 +26,8 @@ import fiftyone.mobile.detection.factories.NodeFactoryShared;
 import fiftyone.mobile.detection.readers.BinaryReader;
 import fiftyone.properties.DetectionConstants;
 import java.io.IOException;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Represents a Node which can be used with the Stream data set. NumericChidren 
@@ -117,12 +119,17 @@ public class NodeV32 extends Node {
                     // If the count is greater than one then the value is the 
                     // index of the first ranked signature index in the merged 
                     // list.
-                    IClosableIterator<IntegerEntity> range;
-                    range = dataSet.getNodeRankedSignatureIndexes()
+                    List<Integer> range = dataSet.getNodeRankedSignatureIndexes()
                         .getRange(rankedSignatureIndex, rankedSignatureCount);
+                    rsi = new int[rankedSignatureCount];
+                    for (int i = 0; i < range.size(); i++) {
+                        rsi[i] = range.get(i);
+                    }
+                        
+                        /*
                     try {
                         int currentIndex = 0;
-                        rsi = new int[rankedSignatureCount];
+                        
                         while (range.hasNext()) {
                             rsi[currentIndex] = range.next().getValue();
                             currentIndex++;
@@ -130,6 +137,7 @@ public class NodeV32 extends Node {
                     } finally {
                         range.close();
                     }
+                                */
                 }
             } finally {
                 if (reader != null) {

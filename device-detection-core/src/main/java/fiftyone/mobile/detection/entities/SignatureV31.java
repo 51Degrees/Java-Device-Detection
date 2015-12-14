@@ -23,6 +23,7 @@ package fiftyone.mobile.detection.entities;
 import fiftyone.mobile.detection.Dataset;
 import fiftyone.mobile.detection.readers.BinaryReader;
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Extends {@link Signature} to provide implementation for the abstract methods.
@@ -81,10 +82,10 @@ public class SignatureV31 extends Signature {
      * offset of the node.
      */
     @Override
-    public int[] getNodeOffsets() {
+    public List<Integer> getNodeOffsets() {
         return nodeOffsets;
     }
-    private final int[] nodeOffsets;
+    private final List<Integer> nodeOffsets;
 
     /**
      * The number of characters in the signature.
@@ -93,7 +94,7 @@ public class SignatureV31 extends Signature {
      */
     @Override
     protected int getSignatureLength() throws IOException {
-        Node lastNode = dataSet.nodes.get(nodeOffsets[nodeOffsets.length - 1]);
+        Node lastNode = dataSet.nodes.get(nodeOffsets.get(nodeOffsets.size() - 1));
         return lastNode.position + lastNode.getLength() + 1;
     }
     
@@ -106,7 +107,7 @@ public class SignatureV31 extends Signature {
         for (int tempRank = 0; 
                 tempRank < dataSet.rankedSignatureIndexes.size(); 
                 tempRank++) {
-            if (dataSet.rankedSignatureIndexes.get(tempRank).value == this.index)
+            if (dataSet.rankedSignatureIndexes.get(tempRank) == this.index)
                 return tempRank;
         }
         return Integer.MAX_VALUE;

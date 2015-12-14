@@ -25,6 +25,7 @@ import fiftyone.mobile.detection.MatchState;
 import fiftyone.mobile.detection.readers.BinaryReader;
 import fiftyone.mobile.detection.search.SearchArrays;
 import java.io.IOException;
+import java.util.List;
 
 /**
  * A node in the tree of characters for each character position.

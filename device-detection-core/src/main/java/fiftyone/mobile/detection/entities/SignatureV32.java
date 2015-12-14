@@ -24,6 +24,7 @@ import fiftyone.mobile.detection.Dataset;
 import fiftyone.mobile.detection.IClosableIterator;
 import fiftyone.mobile.detection.readers.BinaryReader;
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Extends {@link Signature} to provide implementation for the abstract methods.
@@ -42,8 +43,7 @@ public class SignatureV32 extends Signature {
      * List of the node offsets the signature relates to ordered by 
      * offset of the node.
      */
-    @SuppressWarnings("VolatileArrayField")
-    private volatile int[] nodeOffsets;
+    private volatile List<Integer> nodeOffsets;
     
     /**
      * The rank of the signature.
@@ -106,12 +106,16 @@ public class SignatureV32 extends Signature {
      */
     @Override
     @SuppressWarnings("DoubleCheckedLocking")
-    public int[] getNodeOffsets() throws IOException {
-        int[] localNodeOffsets = this.nodeOffsets;
+    public List<Integer> getNodeOffsets() throws IOException {
+        List<Integer> localNodeOffsets = this.nodeOffsets;
         if (localNodeOffsets == null) {
             synchronized(this) {
                 localNodeOffsets = this.nodeOffsets;
                 if (localNodeOffsets == null) {
+                    localNodeOffsets = this.nodeOffsets =
+                            dataSet.getSignatureNodeOffsets().getRange(
+                                            firstNodeOffsetIndex, nodeCount);
+                    /*
                     int[] tempNodeOffsets = new int[nodeCount];
                     IClosableIterator<IntegerEntity> iterator;
                     iterator = dataSet.signatureNodeOffsets.getRange(   
@@ -121,6 +125,7 @@ public class SignatureV32 extends Signature {
                     }
                     iterator.close();
                     this.nodeOffsets = localNodeOffsets = tempNodeOffsets;
+                    */
                 }
             }
         }
@@ -136,7 +141,7 @@ public class SignatureV32 extends Signature {
     protected int getSignatureLength() {
         try {
             Node lastNode = dataSet.nodes.get(dataSet.signatureNodeOffsets
-                            .get(nodeCount + firstNodeOffsetIndex - 1).value);
+                            .get(nodeCount + firstNodeOffsetIndex - 1));
             return lastNode.position + lastNode.getLength() + 1;
         } catch (IOException ex) {
             return -1;

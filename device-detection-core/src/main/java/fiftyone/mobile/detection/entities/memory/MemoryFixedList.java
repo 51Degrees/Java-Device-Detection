@@ -22,7 +22,7 @@ package fiftyone.mobile.detection.entities.memory;
 
 import fiftyone.mobile.detection.Dataset;
 import fiftyone.mobile.detection.IClosableIterator;
-import fiftyone.mobile.detection.IFixedList;
+import fiftyone.mobile.detection.IReadonlyList;
 import fiftyone.mobile.detection.entities.BaseEntity;
 import fiftyone.mobile.detection.factories.BaseEntityFactory;
 import fiftyone.mobile.detection.readers.BinaryReader;
@@ -52,7 +52,7 @@ import java.io.IOException;
  *
  */
 public class MemoryFixedList<T extends BaseEntity> extends MemoryBaseList<T> 
-                                                   implements IFixedList<T> {
+                                                   implements IReadonlyList<T> {
 
     /**
      * Constructs a new instance of MemoryFixedList.
@@ -100,8 +100,12 @@ public class MemoryFixedList<T extends BaseEntity> extends MemoryBaseList<T>
      * @param count finish at this element.
      * @return the MemoryFixedListIterator for specific range.
      */
-    @Override
-    public IClosableIterator<T> getRange(int index, int count) {
-        return new MemoryFixedListIterator<T>(this, index, count);
+    public T[] getRange(int index, int count) {
+        //Java forbids generic array creation
+        //http://stackoverflow.com/questions/18581002/how-to-create-a-generic-array
+        // TODO: questionable logic.
+        T[] ts = null;
+        return array.subList(index, index).toArray(ts);
+        //return new MemoryFixedListIterator<T>(this, index, count);
     }
 }

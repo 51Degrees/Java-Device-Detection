@@ -61,7 +61,7 @@ abstract class BaseScore {
                count < state.getDataSet().maxSignatures) {
             rankedSignatureIndex = closestSignatures.next();
             signatureIndex = state.getDataSet().rankedSignatureIndexes.get(
-                    rankedSignatureIndex).getValue();
+                    rankedSignatureIndex);
             evaluateSignature(
                     state,
                     state.getDataSet().signatures.get(signatureIndex),
