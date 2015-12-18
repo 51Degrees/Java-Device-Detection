@@ -21,7 +21,6 @@
 package fiftyone.mobile.detection.entities;
 
 import fiftyone.mobile.detection.Dataset;
-import fiftyone.mobile.detection.IClosableIterator;
 import fiftyone.mobile.detection.readers.BinaryReader;
 import java.io.IOException;
 import java.util.List;
@@ -74,7 +73,7 @@ public class SignatureV32 extends Signature {
      * @param dataSet the {@link Dataset} the signature is contained within.
      * @param index the index in the data structure to the signature.
      * @param reader Reader connected to the source data structure and 
-     * positioned to start reading.
+     *               positioned to start reading.
      */
     public SignatureV32(Dataset dataSet, int index, BinaryReader reader) {
         super(dataSet, index, reader);
@@ -88,8 +87,8 @@ public class SignatureV32 extends Signature {
      * Gets the rank, where a lower number means the signature is more popular, 
      * of the signature compared to other signatures.
      * 
-     * @return Gets the rank, where a lower number means the signature is 
-     * more popular, of the signature compared to other signatures.
+     * @return rank, where a lower number means the signature is more popular,
+     *         of the signature compared to other signatures.
      */
     @Override
     public int getRank() {
@@ -101,7 +100,7 @@ public class SignatureV32 extends Signature {
      * offset of the node.
      * 
      * @return List of the node offsets the signature relates to ordered by 
-     * offset of the node.
+     *              offset of the node.
      * @throws java.io.IOException if there was a problem accessing data file.
      */
     @Override
@@ -115,17 +114,6 @@ public class SignatureV32 extends Signature {
                     localNodeOffsets = this.nodeOffsets =
                             dataSet.getSignatureNodeOffsets().getRange(
                                             firstNodeOffsetIndex, nodeCount);
-                    /*
-                    int[] tempNodeOffsets = new int[nodeCount];
-                    IClosableIterator<IntegerEntity> iterator;
-                    iterator = dataSet.signatureNodeOffsets.getRange(   
-                               firstNodeOffsetIndex, nodeCount);
-                    for (int i = 0; i < nodeCount; i++) {
-                        tempNodeOffsets[i] = iterator.next().value;
-                    }
-                    iterator.close();
-                    this.nodeOffsets = localNodeOffsets = tempNodeOffsets;
-                    */
                 }
             }
         }
@@ -146,6 +134,5 @@ public class SignatureV32 extends Signature {
         } catch (IOException ex) {
             return -1;
         }
-    }
-    
+    } 
 }

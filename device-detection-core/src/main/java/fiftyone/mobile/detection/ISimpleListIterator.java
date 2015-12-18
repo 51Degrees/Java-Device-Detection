@@ -21,8 +21,8 @@
 
 package fiftyone.mobile.detection;
 
-import fiftyone.mobile.detection.ISimpleList.ArrayRange;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * Implements an Iterator for a provided ArrayRange. Iterating through a 
@@ -38,9 +38,9 @@ public class ISimpleListIterator<T> implements Iterator{
 
     private int current;
     private final int max;
-    private final ArrayRange<T> list;
+    private final List<T> list;
     
-    ISimpleListIterator(int max, int current, ArrayRange<T> list) {
+    ISimpleListIterator(int max, int current, List<T> list) {
         this.current = current;
         this.max = max;
         this.list = list;

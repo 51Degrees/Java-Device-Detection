@@ -31,8 +31,6 @@ import fiftyone.mobile.detection.WrappedIOException;
 import fiftyone.mobile.detection.readers.BinaryReader;
 import fiftyone.properties.DetectionConstants;
 import java.util.Iterator;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Signature of a User-Agent - the relevant characters from a User-Agent 
@@ -77,17 +75,15 @@ public abstract class Signature extends BaseEntity
     private final int[] profileOffsets;
     
     /**
-     * Constructs a new instance of Signature
+     * Constructs a new instance of Signature.
      *
      * @param dataSet the {@link Dataset} the signature is contained within.
      * @param index the index in the data structure to the signature.
-     * @param reader Reader connected to the source data structure and
-     * positioned to start reading.
+     * @param reader BinaryReader connected to the source data structure and
+     *               positioned to start reading.
      */
     public Signature(Dataset dataSet, int index, BinaryReader reader) {
         super(dataSet, index);
-        // This has been changed as readOffsets no longer returns an array.
-        // TODO: verify logic.
         List<Integer> t = readOffsets(dataSet, reader, 
                                     dataSet.signatureProfilesCount);
         profileOffsets = new int[t.size()];
@@ -96,51 +92,6 @@ public abstract class Signature extends BaseEntity
             profileOffsets[i] = iter.next();
         }
     }
-    
-    /**
-     * A hash map relating the index of a property to the values returned 
-     * by the signature. Used to speed up subsequent data processing.
-     * @return dictionary relating the index of a property to the values returned 
-     * by the signature.
-     */
-    @SuppressWarnings("DoubleCheckedLocking")
-    private SortedList<Integer, Values> getPropertyIndexToValues() {
-        SortedList<Integer, Values> localPropertyIndexToValues;
-        localPropertyIndexToValues = propertyIndexToValues;
-        if (localPropertyIndexToValues == null) {
-            synchronized (this) {
-                localPropertyIndexToValues = propertyIndexToValues;
-                if (localPropertyIndexToValues == null) {
-                    propertyIndexToValues = localPropertyIndexToValues = 
-                            new SortedList<Integer, Values>();
-                }
-            }
-        }
-        return localPropertyIndexToValues;
-    }
-    private volatile SortedList<Integer, Values> propertyIndexToValues;
-    
-    /**
-     * A hash map relating the name of a property to the values returned by 
-     * the signature. Used to speed up subsequent data processing.
-     * @return a hash map with values mapped to specific property.
-     */
-    @SuppressWarnings("DoubleCheckedLocking")
-    private SortedList<String, Values> getPropertyNameToValues() {
-        SortedList<String, Values> localPropertyNameToValues;
-        localPropertyNameToValues = propertyNameToValues;
-        if (localPropertyNameToValues == null) {
-            synchronized (this) {
-                localPropertyNameToValues = propertyNameToValues;
-                if (localPropertyNameToValues == null) {
-                    propertyNameToValues = localPropertyNameToValues = 
-                            new SortedList<String, Values>();
-                }
-            }
-        }
-        return localPropertyNameToValues;
-    }
-    private volatile SortedList<String, Values> propertyNameToValues;
     
     /**
      * List of the profiles the signature relates to.
@@ -210,7 +161,8 @@ public abstract class Signature extends BaseEntity
     /**
      * Gets the values associated with the property name.
      * 
-     * @param propertyName name of the {@link Property} whose values are required.
+     * @param propertyName name of the {@link Property} whose values are 
+     *                     required.
      * @return {@link Values} associated with the property, or null if the 
      * property does not exist.
      * @throws java.io.IOException if there was a problem accessing data file.
@@ -234,46 +186,12 @@ public abstract class Signature extends BaseEntity
     }
     
     /**
-     * Gets the values associated with the property for this signature.
-     * @param property Property to be returned.
-     * @return  Array of values associated with the property and signature, or 
-     * an empty array if property not found.
-     * @throws IOException 
-     */
-    private Values getPropertyValues(Property property) throws IOException {
-        Profile profileForProperty = null;
-        for (Profile localProfile : profiles) {
-            if (property.getComponent().getComponentId() == 
-                    localProfile.getComponent().getComponentId()) {
-                profileForProperty = localProfile;
-                break;
-            }
-        }
-        return profileForProperty != null ? 
-                profileForProperty.getValues(property) :
-                null;
-    }
-    
-    /**
-     * @return an array of {@link Value value} objects associated with this 
-     * signature.
+     * @return an Iterator for the {@link Value values} associated with this 
+     *         signature.
      * @throws IOException if there was a problem accessing data file.
      */
     @SuppressWarnings("DoubleCheckedLocking")
     public Iterator<Value> getValues() throws IOException {
-        // TODO: validate.
-        /*
-        Value[] localValues = values;
-        if (localValues == null) {
-            synchronized (this) {
-                localValues = values;
-                if (localValues == null) {
-                    values = localValues = initGetValues();
-                }
-            }
-        }
-        return localValues;
-        */
         return new ValueIterator(this);
     }
 
@@ -298,7 +216,6 @@ public abstract class Signature extends BaseEntity
     private volatile int length;
 
     /**
-     * Returns an array of nodes associated with the signature.
      * @return an array of nodes associated with the signature.
      * @throws java.io.IOException if there was a problem accessing data file.
      */
@@ -338,7 +255,7 @@ public abstract class Signature extends BaseEntity
      *
      * @param dataSet The data set the node is contained within
      * @param reader Reader connected to the source data structure and
-     * positioned to start reading
+     *               positioned to start reading
      * @param length The number of offsets to read in
      * @return An array of the offsets as integers read from the reader
      */
@@ -352,14 +269,6 @@ public abstract class Signature extends BaseEntity
                 reader.list.add(profileIndex);
             }
         }
-        // TODO: validate logic.
-        /*
-        int[] array = new int[reader.list.size()];
-        for (int i = 0; i < array.length; i++) {
-            array[i] = reader.list.get(i);
-        }
-        return array;
-        */
         return reader.list;
     }
 
@@ -367,6 +276,9 @@ public abstract class Signature extends BaseEntity
      * Called after the entire data set has been loaded to ensure any further
      * initialisation steps that require other items in the data set can be
      * completed.
+     * <p>
+     * Do not reference this method directly as it is part of the internal 
+     * logic.
      *
      * @throws IOException if there was a problem accessing data file.
      */
@@ -380,19 +292,6 @@ public abstract class Signature extends BaseEntity
         if (length == 0) {
             length = getSignatureLength();
         }
-    }
-
-    private String initGetDeviceId() throws IOException {
-        // Turn them into a string separated by hyphens.
-        StringBuilder builder = new StringBuilder();
-        for (int i = 0; i < getProfiles().length; i++) {
-            builder.append(getProfiles()[i].profileId);
-            if (i < getProfiles().length - 1) {
-                builder.append(DetectionConstants.PROFILE_SEPARATOR);
-            }
-        }
-
-        return builder.toString();
     }
 
     /**
@@ -414,50 +313,8 @@ public abstract class Signature extends BaseEntity
             }
             list.get(v.getProperty().getName()).add(v.getName());
         }
-        
-        /*
-        for (Value value : getValues()) {
-            if (!list.containsKey(value.getProperty().getName())) {
-                list.add(value.getProperty().getName(), new ArrayList<String>());
-            }
-            list.get(value.getProperty().getName()).add(value.getName());
-        }
-        */
         return list;
     }
-
-    /**
-     * Returns an array of values associated with the signature.
-     * @return an array of values associated with the signature.
-     * @throws IOException
-     */
-    private Value[] initGetValues() throws IOException {
-        List<Value> result = new ArrayList<Value>();
-
-        for (Profile profile : getProfiles()) {
-            result.addAll(Arrays.asList(profile.getValues()));
-        }
-
-        return result.toArray(new Value[result.size()]);
-    }
-
-    /**
-     * Returns an array of profiles associated with the signature.
-     *
-     * @param profileIndexes
-     * @return an array of profiles associated with the signature.
-     * @throws IOException
-     */
-    private Profile[] getProfiles(int[] profileIndexes) throws IOException {
-        List<Profile> prof = new ArrayList<Profile>();
-
-        for (int profileIndex : profileIndexes) {
-            prof.add(getDataSet().getProfiles().get(profileIndex));
-        }
-        return prof.toArray(new Profile[prof.size()]);
-    }
-    @SuppressWarnings("VolatileArrayField")
-    private volatile Profile[] profiles;
 
     /**
      * Compares this signature to a list of node offsets.
@@ -475,14 +332,12 @@ public abstract class Signature extends BaseEntity
                 return difference;
             }
         }
-
         if (getNodeOffsets().size() < nodes.size()) {
             return -1;
         }
         if (getNodeOffsets().size() > nodes.size()) {
             return 1;
         }
-
         return 0;
     }
 
@@ -555,6 +410,124 @@ public abstract class Signature extends BaseEntity
     }
     private volatile String stringValue;
     
+    // <editor-fold defaultstate="collapsed" desc="Private methods">
+    /**
+     * Returns an array of profiles associated with the signature.
+     *
+     * @param profileIndexes an array of profile indexes as integers.
+     * @return an array of profiles associated with the signature.
+     * @throws IOException if there was a problem accessing data file.
+     */
+    private Profile[] getProfiles(int[] profileIndexes) throws IOException {
+        List<Profile> prof = new ArrayList<Profile>();
+
+        for (int profileIndex : profileIndexes) {
+            prof.add(getDataSet().getProfiles().get(profileIndex));
+        }
+        return prof.toArray(new Profile[prof.size()]);
+    }
+    @SuppressWarnings("VolatileArrayField")
+    private volatile Profile[] profiles;
+    
+    /**
+     * A hash map relating the index of a property to the values returned 
+     * by the signature. Used to speed up subsequent data processing.
+     * 
+     * @return dictionary relating the index of a property to the values 
+     *         returned by the signature.
+     */
+    @SuppressWarnings("DoubleCheckedLocking")
+    private SortedList<Integer, Values> getPropertyIndexToValues() {
+        SortedList<Integer, Values> localPropertyIndexToValues;
+        localPropertyIndexToValues = propertyIndexToValues;
+        if (localPropertyIndexToValues == null) {
+            synchronized (this) {
+                localPropertyIndexToValues = propertyIndexToValues;
+                if (localPropertyIndexToValues == null) {
+                    propertyIndexToValues = localPropertyIndexToValues = 
+                            new SortedList<Integer, Values>();
+                }
+            }
+        }
+        return localPropertyIndexToValues;
+    }
+    private volatile SortedList<Integer, Values> propertyIndexToValues;
+    
+    /**
+     * A hash map relating the name of a property to the values returned by 
+     * the signature. Used to speed up subsequent data processing.
+     * @return a hash map with values mapped to specific property.
+     */
+    @SuppressWarnings("DoubleCheckedLocking")
+    private SortedList<String, Values> getPropertyNameToValues() {
+        SortedList<String, Values> localPropertyNameToValues;
+        localPropertyNameToValues = propertyNameToValues;
+        if (localPropertyNameToValues == null) {
+            synchronized (this) {
+                localPropertyNameToValues = propertyNameToValues;
+                if (localPropertyNameToValues == null) {
+                    propertyNameToValues = localPropertyNameToValues = 
+                            new SortedList<String, Values>();
+                }
+            }
+        }
+        return localPropertyNameToValues;
+    }
+    private volatile SortedList<String, Values> propertyNameToValues;
+    
+    /**
+     * Gets the values associated with the property for this signature.
+     * 
+     * @param property Property to be returned.
+     * @return array of values associated with the property and signature, or 
+     *         an empty array if property not found.
+     * @throws IOException if there was a problem accessing data file.
+     */
+    private Values getPropertyValues(Property property) throws IOException {
+        Profile profileForProperty = null;
+        for (Profile localProfile : profiles) {
+            if (property.getComponent().getComponentId() == 
+                    localProfile.getComponent().getComponentId()) {
+                profileForProperty = localProfile;
+                break;
+            }
+        }
+        return profileForProperty != null ? 
+                profileForProperty.getValues(property) :
+                null;
+    }
+    
+    /**
+     * @return device ID as string.
+     * @throws IOException if there was a problem accessing data file.
+     */
+    private String initGetDeviceId() throws IOException {
+        // Turn them into a string separated by hyphens.
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < getProfiles().length; i++) {
+            builder.append(getProfiles()[i].profileId);
+            if (i < getProfiles().length - 1) {
+                builder.append(DetectionConstants.PROFILE_SEPARATOR);
+            }
+        }
+
+        return builder.toString();
+    }
+    
+    /**
+     * @return an array of values associated with the signature.
+     * @throws IOException if there was a problem accessing data file.
+     */
+    private Value[] initGetValues() throws IOException {
+        List<Value> result = new ArrayList<Value>();
+        for (Profile profile : getProfiles()) {
+            result.addAll(Arrays.asList(profile.getValues()));
+        }
+        return result.toArray(new Value[result.size()]);
+    }
+    // </editor-fold>
+    
+    // <editor-fold defaultstate="collapsed" desc="Abstract methods">
     /**
      * Array of node offsets associated with the signature.
      * 
@@ -578,10 +551,14 @@ public abstract class Signature extends BaseEntity
      * @throws java.io.IOException if there was a problem accessing data file.
      */
     public abstract int getRank() throws IOException;
+    // </editor-fold>
     
+    // <editor-fold defaultstate="collapsed" desc="Iterator for values of signature">
     /**
-     * 
-     * @param <T> 
+     * Provides a way to iterate over the values of a provided signature.
+     * <p>
+     * Avoids loading the signatures in Stream mode regardless of whether they 
+     * are used or not.
      */
     public class ValueIterator implements Iterator<Value> {
         
@@ -589,6 +566,11 @@ public abstract class Signature extends BaseEntity
         int currentProfile;
         int currentValue;
         
+        /**
+         * Creates a new value iterator for a signature.
+         * 
+         * @param signature {@link Signature} for which to return an iterator.
+         */
         public ValueIterator(Signature signature) {
             this.signature = signature;
             this.currentProfile = 0;
@@ -625,6 +607,6 @@ public abstract class Signature extends BaseEntity
                 return null;
             }
         }
-        
     }
+    // </editor-fold>
 }

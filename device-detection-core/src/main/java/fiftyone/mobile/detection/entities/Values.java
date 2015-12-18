@@ -40,13 +40,6 @@ import fiftyone.properties.DetectionConstants;
  */
 @SuppressWarnings("serial")
 public class Values {
-
-    private static class SearchValuesByName extends SearchArrays<Value, String> {
-        @Override
-        public int compareTo(Value item, String key) {
-            return item.compareTo(key);
-        }
-    }
     
     /**
      * Used to find values based on name.
@@ -162,8 +155,6 @@ public class Values {
     }
     
     /**
-     * Returns the backing array of values.
-     * 
      * @return entire array of {@link Value} objects.
      */
     public Value[] getAll() {
@@ -179,7 +170,7 @@ public class Values {
      * @throws java.io.IOException if there was a problem accessing data file.
      */
     public Value get(String valueName) throws IOException {
-        int index = valuesNameSearch.binarySearch(values, valueName).getIndex();
+        int index = valuesNameSearch.binarySearch(values, valueName);
         return index >= 0 ? get(index) : null;
     }
     
@@ -234,5 +225,15 @@ public class Values {
         return values.length;
     }
     
-    
+    // <editor-fold defaultstate="collapsed" desc="Private static class for binary search access.">
+    /**
+     * Provides access to the binary search and overrides the compareTo method.
+     */
+    private static class SearchValuesByName extends SearchArrays<Value, String> {
+        @Override
+        public int compareTo(Value item, String key) {
+            return item.compareTo(key);
+        }
+    }
+    // </editor-fold>
 }

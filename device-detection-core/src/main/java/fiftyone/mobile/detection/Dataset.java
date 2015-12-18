@@ -30,7 +30,6 @@ import java.util.concurrent.TimeUnit;
 import fiftyone.mobile.detection.entities.AsciiString;
 import fiftyone.mobile.detection.entities.Component;
 import fiftyone.mobile.detection.entities.Guid;
-import fiftyone.mobile.detection.entities.IntegerEntity;
 import fiftyone.mobile.detection.entities.Map;
 import fiftyone.mobile.detection.entities.Modes;
 import fiftyone.mobile.detection.entities.Node;
@@ -68,78 +67,7 @@ import java.io.Closeable;
  * For more information see https://51degrees.com/Support/Documentation/Java
  */
 public class Dataset implements Closeable {
-    
-    /**
-     * Used to search for a signature from a list of nodes.
-     */
-    static class SearchSignatureByNodes 
-        extends SearchBase<Signature, List<Node>, IReadonlyList<Signature>> {
 
-        private final IReadonlyList<Signature> signatures;
-        
-        SearchSignatureByNodes(IReadonlyList<Signature> signatures) {
-            this.signatures = signatures;
-        }
-        
-        @Override
-        protected int getCount(IReadonlyList<Signature> list) {
-            return list.size();
-        }
-
-        @Override
-        protected Signature getValue(IReadonlyList<Signature> list, int index) 
-                throws IOException {
-            return list.get(index);
-        }
-
-        @Override
-        protected int compareTo(Signature item, List<Node> nodes) 
-                throws IOException {
-            return item.compareTo(nodes);
-        }
-        
-        SearchResult binarySearch(List<Node> nodes) throws IOException {
-            return super.binarySearch(signatures, nodes);
-        }
-    }
-    
-    /**
-     * Used to search for a profile offset from a profile id.
-     */
-    private static class SearchProfileOffsetByProfileId 
-        extends SearchBase<ProfileOffset, Integer, IReadonlyList<ProfileOffset>> {
-
-        private final IReadonlyList<ProfileOffset> profileOffsets;
-        
-        SearchProfileOffsetByProfileId(
-                IReadonlyList<ProfileOffset> profileOffsets) {
-            this.profileOffsets = profileOffsets;
-        }
-        
-        @Override
-        protected int getCount(IReadonlyList<ProfileOffset> list) {
-            return list.size();
-        }
-
-        @Override
-        protected ProfileOffset getValue(
-                IReadonlyList<ProfileOffset> list, 
-                int index) 
-                throws IOException {
-            return list.get(index);
-        }
-
-        @Override
-        protected int compareTo(ProfileOffset item, Integer profileId) 
-                throws IOException {
-            return item.getProfileId() - profileId;
-        }
-        
-        SearchResult binarySearch(Integer profileId) throws IOException {
-            return super.binarySearch(profileOffsets, profileId);
-        }
-    }
-    
     /**
      * Age of the data in months when exported.
      */
@@ -157,8 +85,8 @@ public class Dataset implements Closeable {
      */
     public int copyrightOffset;
     /**
-     * The number of bytes to allocate to a buffer returning CSV format data for
-     * a match.
+     * The number of bytes to allocate to a buffer returning CSV format data 
+     * for a match.
      */
     public int csvBufferLength;
     /**
@@ -205,8 +133,8 @@ public class Dataset implements Closeable {
      */
     public int maxSignatures;
     /**
-     * The maximum number of signatures that could possibly be returned during a
-     * closest match.
+     * The maximum number of signatures that could possibly be returned during 
+     * a closest match.
      */
     public int maxSignaturesClosest;
     /**
@@ -1015,7 +943,7 @@ public class Dataset implements Closeable {
      * @throws IOException signals an I/O exception occurred
      */
     public Profile findProfile(int profileId) throws IOException {
-        int index = getProfileOffsetSearch().binarySearch(profileId).getIndex();
+        int index = getProfileOffsetSearch().binarySearch(profileId);
         return index < 0 ? null : profiles.get(
                 profileOffsets.get(index).getOffset());
     }
@@ -1027,27 +955,6 @@ public class Dataset implements Closeable {
      */
     @Override
     public void close() throws IOException {
-        if (values != null) {
-            values.close();
-        }
-        if (signatures != null) {
-            signatures.close();
-        }
-        if (profileOffsets != null) {
-            profileOffsets.close();
-        }
-        if (profiles != null) {
-            profiles.close();
-        }
-        if (nodes != null) {
-            nodes.close();
-        }
-        if (rootNodes != null) {
-            rootNodes.close();
-        }
-        if (strings != null) {
-            strings.close();
-        }
         disposed = true;
     }
 
@@ -1062,6 +969,7 @@ public class Dataset implements Closeable {
 
     /**
      * Returns the percentage of requests that weren't serviced by the cache.
+     * 
      * @param list a Cache object to get percentage from.
      * @return 0 if object is not Cache, percentage otherwise.
      */
@@ -1078,6 +986,77 @@ public class Dataset implements Closeable {
      */
     public void resetCache() {
         //Do nothing in this implementation.
+    }
+    
+    /**
+     * Used to search for a signature from a list of nodes.
+     */
+    static class SearchSignatureByNodes 
+        extends SearchBase<Signature, List<Node>, IReadonlyList<Signature>> {
+
+        private final IReadonlyList<Signature> signatures;
+        
+        SearchSignatureByNodes(IReadonlyList<Signature> signatures) {
+            this.signatures = signatures;
+        }
+        
+        @Override
+        protected int getCount(IReadonlyList<Signature> list) {
+            return list.size();
+        }
+
+        @Override
+        protected Signature getValue(IReadonlyList<Signature> list, int index) 
+                throws IOException {
+            return list.get(index);
+        }
+
+        @Override
+        protected int compareTo(Signature item, List<Node> nodes) 
+                throws IOException {
+            return item.compareTo(nodes);
+        }
+        
+        SearchResult binarySearchResults(List<Node> nodes) throws IOException {
+            return super.binarySearchResults(signatures, nodes);
+        }
+    }
+    
+    /**
+     * Used to search for a profile offset from a profile id.
+     */
+    private static class SearchProfileOffsetByProfileId 
+        extends SearchBase<ProfileOffset, Integer, IReadonlyList<ProfileOffset>> {
+
+        private final IReadonlyList<ProfileOffset> profileOffsets;
+        
+        SearchProfileOffsetByProfileId(
+                IReadonlyList<ProfileOffset> profileOffsets) {
+            this.profileOffsets = profileOffsets;
+        }
+        
+        @Override
+        protected int getCount(IReadonlyList<ProfileOffset> list) {
+            return list.size();
+        }
+
+        @Override
+        protected ProfileOffset getValue(
+                IReadonlyList<ProfileOffset> list, 
+                int index) 
+                throws IOException {
+            return list.get(index);
+        }
+
+        @Override
+        protected int compareTo(ProfileOffset item, Integer profileId) 
+                throws IOException {
+            return item.getProfileId() - profileId;
+        }
+        
+        int binarySearch(Integer profileId) throws IOException {
+            return super.binarySearch(profileOffsets, profileId);
+        }
     }
     
     // <editor-fold defaultstate="collapsed" desc="Deprecated methods">

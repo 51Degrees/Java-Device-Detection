@@ -93,11 +93,11 @@ public class V31EnterpriseMemoryFileTest extends MemoryBase {
 
     @Test
     public void badUserAgentsMulti() throws IOException {
-        super.userAgentsMulti(UserAgentGenerator.getBadUserAgents(), 80);
+        super.userAgentsMulti(UserAgentGenerator.getBadUserAgents(), 55);
     }
 
     @Test
     public void badUserAgentsSingle() throws IOException {
-        super.userAgentsSingle(UserAgentGenerator.getBadUserAgents(), 80);
+        super.userAgentsSingle(UserAgentGenerator.getBadUserAgents(), 55);
     }
 }

@@ -44,7 +44,7 @@ public class SignatureV31 extends Signature {
      * @param ds the {@link Dataset} the signature is contained within.
      * @param index The index in the data structure to the signature.
      * @param reader Reader connected to the source data structure and 
-     * positioned to start reading.
+     *               positioned to start reading.
      */
     public SignatureV31(Dataset ds, int index, BinaryReader reader) {
         super(ds, index, reader);
@@ -89,19 +89,22 @@ public class SignatureV31 extends Signature {
 
     /**
      * The number of characters in the signature.
+     * 
      * @return The number of characters in the signature.
      * @throws java.io.IOException if there was a problem accessing data file.
      */
     @Override
     protected int getSignatureLength() throws IOException {
-        Node lastNode = dataSet.nodes.get(nodeOffsets.get(nodeOffsets.size() - 1));
+        Node lastNode = 
+                dataSet.nodes.get(nodeOffsets.get(nodeOffsets.size() - 1));
         return lastNode.position + lastNode.getLength() + 1;
     }
     
     /**
      * Gets the signature rank by iterating through the list of signature ranks.
+     * 
      * @return Rank compared to other signatures starting at 0.
-     * @throws IOException 
+     * @throws IOException if there was a problem accessing data file.
      */
     private int getSignatureRank() throws IOException {
         for (int tempRank = 0; 

@@ -22,7 +22,6 @@
 package fiftyone.mobile.detection.test.type.memory.premium;
 
 import fiftyone.mobile.detection.Dataset;
-import fiftyone.mobile.detection.factories.MemoryFactory;
 import fiftyone.mobile.detection.Filename;
 import fiftyone.mobile.detection.test.TestType;
 import fiftyone.mobile.detection.test.common.UserAgentGenerator;
@@ -39,8 +38,9 @@ import org.junit.After;
 @Category({TestType.DataSetPremium.class, TestType.TypeMemory.class})
 public class V32PremiumMemoryArrayTest extends MemoryBase {
 
-    private static String filename = Filename.PREMIUM_PATTERN_V32;
+    private static final String filename = Filename.PREMIUM_PATTERN_V32;
     private static Dataset dataset;
+    private static final double FILE_SIZE_MULTIPLIER = 1.6;
 
     @Override
     protected Dataset getDataset() {
@@ -72,31 +72,37 @@ public class V32PremiumMemoryArrayTest extends MemoryBase {
     @Test
     @Category({TestType.DataSetPremium.class, TestType.TypeMemory.class})
     public void uniqueUserAgentsMulti() throws IOException {
-        super.userAgentsMulti(UserAgentGenerator.getUniqueUserAgents(), 110);
+        super.userAgentsMulti(UserAgentGenerator.getUniqueUserAgents(), 
+                getExpectedMemoryUsage(FILE_SIZE_MULTIPLIER, filename));
     }
 
     @Test
     public void uniqueUserAgentsSingle() throws IOException {
-        super.userAgentsSingle(UserAgentGenerator.getUniqueUserAgents(), 110);
+        super.userAgentsSingle(UserAgentGenerator.getUniqueUserAgents(), 
+                getExpectedMemoryUsage(FILE_SIZE_MULTIPLIER, filename));
     }
 
     @Test
     public void randomUserAgentsMulti() throws IOException {
-        super.userAgentsMulti(UserAgentGenerator.getRandomUserAgents(), 110);
+        super.userAgentsMulti(UserAgentGenerator.getRandomUserAgents(), 
+                getExpectedMemoryUsage(FILE_SIZE_MULTIPLIER, filename));
     }
 
     @Test
     public void randomUserAgentsSingle() throws IOException {
-        super.userAgentsSingle(UserAgentGenerator.getRandomUserAgents(), 110);
+        super.userAgentsSingle(UserAgentGenerator.getRandomUserAgents(), 
+                getExpectedMemoryUsage(FILE_SIZE_MULTIPLIER, filename));
     }
 
     @Test
     public void badUserAgentsMulti() throws IOException {
-        super.userAgentsMulti(UserAgentGenerator.getBadUserAgents(), 110);
+        super.userAgentsMulti(UserAgentGenerator.getBadUserAgents(), 
+                getExpectedMemoryUsage(FILE_SIZE_MULTIPLIER, filename));
     }
 
     @Test
     public void badUserAgentsSingle() throws IOException {
-        super.userAgentsSingle(UserAgentGenerator.getBadUserAgents(), 110);
+        super.userAgentsSingle(UserAgentGenerator.getBadUserAgents(), 
+                getExpectedMemoryUsage(FILE_SIZE_MULTIPLIER, filename));
     }
 }

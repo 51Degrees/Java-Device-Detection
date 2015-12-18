@@ -82,6 +82,7 @@ public class Results {
         Results results = new Results();
         provider.dataSet.resetCache();
         PatternDetector patternDetector = new PatternDetector(processor, provider, results);
+        
         for(String userAgent : userAgents) {
             try {
                 if (!patternDetector.newDetector(userAgent).call()){

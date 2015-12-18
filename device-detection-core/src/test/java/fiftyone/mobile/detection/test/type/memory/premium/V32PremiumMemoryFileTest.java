@@ -39,7 +39,7 @@ import org.junit.After;
 @Category({TestType.DataSetPremium.class, TestType.TypeMemory.class})
 public class V32PremiumMemoryFileTest extends MemoryBase {
 
-    private static String filename = Filename.PREMIUM_PATTERN_V32;
+    private static final String filename = Filename.PREMIUM_PATTERN_V32;
     private static Dataset dataset;
 
     @Override
@@ -73,31 +73,31 @@ public class V32PremiumMemoryFileTest extends MemoryBase {
     @Test
     @Category({TestType.DataSetPremium.class, TestType.TypeMemory.class})
     public void uniqueUserAgentsMulti() throws IOException {
-        super.userAgentsMulti(UserAgentGenerator.getUniqueUserAgents(), 20);
+        super.userAgentsMulti(UserAgentGenerator.getUniqueUserAgents(), 60);
     }
 
     @Test
     public void uniqueUserAgentsSingle() throws IOException {
-        super.userAgentsSingle(UserAgentGenerator.getUniqueUserAgents(), 20);
+        super.userAgentsSingle(UserAgentGenerator.getUniqueUserAgents(), 30);
     }
 
     @Test
     public void randomUserAgentsMulti() throws IOException {
-        super.userAgentsMulti(UserAgentGenerator.getRandomUserAgents(), 20);
+        super.userAgentsMulti(UserAgentGenerator.getRandomUserAgents(), 60);
     }
 
     @Test
     public void randomUserAgentsSingle() throws IOException {
-        super.userAgentsSingle(UserAgentGenerator.getRandomUserAgents(), 20);
+        super.userAgentsSingle(UserAgentGenerator.getRandomUserAgents(), 31);
     }
 
     @Test
     public void badUserAgentsMulti() throws IOException {
-        super.userAgentsMulti(UserAgentGenerator.getBadUserAgents(), 70);
+        super.userAgentsMulti(UserAgentGenerator.getBadUserAgents(), 68);
     }
 
     @Test
     public void badUserAgentsSingle() throws IOException {
-        super.userAgentsSingle(UserAgentGenerator.getBadUserAgents(), 70);
+        super.userAgentsSingle(UserAgentGenerator.getBadUserAgents(), 68);
     }
 }

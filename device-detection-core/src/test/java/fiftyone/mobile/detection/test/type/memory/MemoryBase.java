@@ -30,6 +30,7 @@ import fiftyone.mobile.detection.factories.MemoryFactory;
 import fiftyone.mobile.detection.factories.StreamFactory;
 import fiftyone.mobile.detection.test.common.MemoryMeasurementProcessor;
 import fiftyone.mobile.detection.test.common.Results;
+import java.io.File;
 import org.junit.After;
 import org.junit.Before;
 
@@ -90,6 +91,11 @@ public abstract class MemoryBase extends DetectionTestSupport {
             logger.error(message);
         }
         assertTrue(message, memory.getAverageMemoryUsed() < maxAllowedMemory);
+    }
+    
+    public double getExpectedMemoryUsage(double fileSizeMultiplier, String fileName) {
+        //(file size in bytes * multiplier) / bytes in Mb
+        return (new File(fileName).length() * fileSizeMultiplier) / (1024 * 1024);
     }
     
     /**
