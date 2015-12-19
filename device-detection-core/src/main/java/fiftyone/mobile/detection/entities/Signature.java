@@ -607,6 +607,11 @@ public abstract class Signature extends BaseEntity
                 return null;
             }
         }
+
+        @Override
+        public void remove() {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
     }
     // </editor-fold>
 }

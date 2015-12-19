@@ -26,10 +26,9 @@ import static fiftyone.mobile.detection.AutoUpdateStatus.AUTO_UPDATE_SUCCESS;
 import fiftyone.mobile.detection.Dataset;
 import fiftyone.mobile.detection.factories.MemoryFactory;
 import fiftyone.mobile.detection.test.TestType;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.security.NoSuchAlgorithmException;
 import org.junit.After;
 import static org.junit.Assert.fail;
@@ -64,7 +63,12 @@ public class AutoUpdateTest extends AutoUpdateBase {
     @Test
     @Category(TestType.DataSetPremium.class)
     public void testDownloadNew() throws FileNotFoundException, NoSuchAlgorithmException, IOException, Exception {
-        Files.deleteIfExists(Paths.get(super.getTestDataFile()));
+        File f = new File(super.getTestDataFile());
+        if (f.exists()) {
+            if (f.delete() == false) {
+                fail("Could not delete existing file");
+            }
+        }
         update();
     }
     
