@@ -23,6 +23,8 @@ package fiftyone.mobile.detection.entities;
 import fiftyone.mobile.detection.Dataset;
 import fiftyone.mobile.detection.readers.BinaryReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -48,7 +50,14 @@ public class SignatureV31 extends Signature {
      */
     public SignatureV31(Dataset ds, int index, BinaryReader reader) {
         super(ds, index, reader);
-        nodeOffsets = Signature.readOffsets(ds, reader, ds.signatureNodesCount);
+        List<Integer> list = readPositiveAndZeroIntegers(
+                reader, 
+                dataSet.signatureNodesCount);
+        nodeOffsets = new ArrayList<Integer>(list.size());
+        Iterator<Integer> iter = list.iterator();
+        for (int i = 0; iter.hasNext(); i++) {
+            nodeOffsets.add(iter.next());
+        }        
     }
 
     /**

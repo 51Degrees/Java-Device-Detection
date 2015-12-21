@@ -184,8 +184,7 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
     Node getParent() throws IOException {
         Node localParent = parent;
         if (parentOffset >= 0 && localParent == null) {
-            
-            {
+            synchronized (this) {
                 localParent = parent;
                 if (localParent == null) {
                     parent = localParent = getDataSet().getNodes().get(parentOffset);

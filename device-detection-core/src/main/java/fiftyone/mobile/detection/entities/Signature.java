@@ -84,10 +84,11 @@ public abstract class Signature extends BaseEntity
      */
     public Signature(Dataset dataSet, int index, BinaryReader reader) {
         super(dataSet, index);
-        List<Integer> t = readOffsets(dataSet, reader, 
-                                    dataSet.signatureProfilesCount);
-        profileOffsets = new int[t.size()];
-        Iterator<Integer> iter = t.iterator();
+        List<Integer> list = readPositiveAndZeroIntegers(
+                reader, 
+                dataSet.signatureProfilesCount);
+        profileOffsets = new int[list.size()];
+        Iterator<Integer> iter = list.iterator();
         for (int i = 0; iter.hasNext(); i++) {
             profileOffsets[i] = iter.next();
         }
@@ -250,20 +251,22 @@ public abstract class Signature extends BaseEntity
     private volatile Node[] nodes;
 
     /**
-     * Uses the offsets list which must be locked to read in the arrays of nodes
-     * or profiles that relate to the signature.
+     * Populates the list provided with the positive values upto the number of 
+     * items defined by count. The list returned is a reference to the binary
+     * reader's list to improve memory usage. The caller should use this to
+     * avoid creating lists with capacity larger than needed to improve memory
+     * usage.
      *
-     * @param dataSet The data set the node is contained within
      * @param reader Reader connected to the source data structure and
      *               positioned to start reading
-     * @param length The number of offsets to read in
-     * @return An array of the offsets as integers read from the reader
+     * @param count The number of offsets to read in
+     * @return a reference to the binary reader's list
      */
-    protected static List<Integer> readOffsets(Dataset dataSet, 
-                                       BinaryReader reader, 
-                                       int length) {
+    protected static List<Integer> readPositiveAndZeroIntegers(
+            BinaryReader reader, 
+            int count) {
         reader.list.clear();
-        for (int i = 0; i < length; i++) {
+        for (int i = 0; i < count; i++) {
             int profileIndex = reader.readInt32();
             if (profileIndex >= 0) {
                 reader.list.add(profileIndex);
