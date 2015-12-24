@@ -66,12 +66,12 @@ public class V32LiteMemoryFileTest extends MemoryBase {
     
     @Test
     public void badUserAgentsSingle() throws IOException {
-        super.userAgentsSingle(UserAgentGenerator.getBadUserAgents(), 50);
+        super.userAgentsSingle(UserAgentGenerator.getBadUserAgents(), 60);
     }
     
     @Test
     public void badUserAgentsMulti() throws IOException {
-        super.userAgentsMulti(UserAgentGenerator.getBadUserAgents(), 50);
+        super.userAgentsMulti(UserAgentGenerator.getBadUserAgents(), 60);
     }
     
     @Test
@@ -81,18 +81,18 @@ public class V32LiteMemoryFileTest extends MemoryBase {
     
     @Test
     public void randomUserAgentsMulti() throws IOException {
-        super.userAgentsMulti(UserAgentGenerator.getRandomUserAgents(), 40);
+        super.userAgentsMulti(UserAgentGenerator.getRandomUserAgents(), 50);
     }
 
     @Test
     public void uniqueUserAgentsSingle() throws IOException {
-        super.userAgentsSingle(UserAgentGenerator.getUniqueUserAgents(), 27);
+        super.userAgentsSingle(UserAgentGenerator.getUniqueUserAgents(), 28);
     }
 
     @Test
     @Category({TestType.DataSetLite.class, TestType.TypeMemory.class})
     public void uniqueUserAgentsMulti() throws IOException {
-        super.userAgentsMulti(UserAgentGenerator.getUniqueUserAgents(), 40);
+        super.userAgentsMulti(UserAgentGenerator.getUniqueUserAgents(), 45);
     }
     
     @Override

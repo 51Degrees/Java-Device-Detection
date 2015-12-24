@@ -73,7 +73,7 @@ public class V32PremiumMemoryFileTest extends MemoryBase {
     @Test
     @Category({TestType.DataSetPremium.class, TestType.TypeMemory.class})
     public void uniqueUserAgentsMulti() throws IOException {
-        super.userAgentsMulti(UserAgentGenerator.getUniqueUserAgents(), 60);
+        super.userAgentsMulti(UserAgentGenerator.getUniqueUserAgents(), 62);
     }
 
     @Test
@@ -93,7 +93,7 @@ public class V32PremiumMemoryFileTest extends MemoryBase {
 
     @Test
     public void badUserAgentsMulti() throws IOException {
-        super.userAgentsMulti(UserAgentGenerator.getBadUserAgents(), 68);
+        super.userAgentsMulti(UserAgentGenerator.getBadUserAgents(), 76);
     }
 
     @Test

@@ -71,31 +71,31 @@ public class V31PremiumMemoryFileTest extends MemoryBase {
     @Test
     @Category({TestType.DataSetPremium.class, TestType.TypeMemory.class})
     public void uniqueUserAgentsMulti() throws IOException {
-        super.userAgentsMulti(UserAgentGenerator.getUniqueUserAgents(), 25);
+        super.userAgentsMulti(UserAgentGenerator.getUniqueUserAgents(), 58);
     }
 
     @Test
     public void uniqueUserAgentsSingle() throws IOException {
-        super.userAgentsSingle(UserAgentGenerator.getUniqueUserAgents(), 25);
+        super.userAgentsSingle(UserAgentGenerator.getUniqueUserAgents(), 29);
     }
 
     @Test
     public void randomUserAgentsMulti() throws IOException {
-        super.userAgentsMulti(UserAgentGenerator.getRandomUserAgents(), 25);
+        super.userAgentsMulti(UserAgentGenerator.getRandomUserAgents(), 58);
     }
 
     @Test
     public void randomUserAgentsSingle() throws IOException {
-        super.userAgentsSingle(UserAgentGenerator.getRandomUserAgents(), 25);
+        super.userAgentsSingle(UserAgentGenerator.getRandomUserAgents(), 29);
     }
 
     @Test
     public void badUserAgentsMulti() throws IOException {
-        super.userAgentsMulti(UserAgentGenerator.getBadUserAgents(), 50);
+        super.userAgentsMulti(UserAgentGenerator.getBadUserAgents(), 75);
     }
 
     @Test
     public void badUserAgentsSingle() throws IOException {
-        super.userAgentsSingle(UserAgentGenerator.getBadUserAgents(), 50);
+        super.userAgentsSingle(UserAgentGenerator.getBadUserAgents(), 65);
     }
 }

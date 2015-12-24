@@ -66,32 +66,32 @@ public class V31LiteMemoryFileTest extends MemoryBase {
     @Test
     @Category({TestType.DataSetLite.class, TestType.TypeMemory.class})
     public void uniqueUserAgentsMulti() throws IOException {
-        super.userAgentsMulti(UserAgentGenerator.getUniqueUserAgents(), 25);
+        super.userAgentsMulti(UserAgentGenerator.getUniqueUserAgents(), 45);
     }
 
     @Test
     public void uniqueUserAgentsSingle() throws IOException {
-        super.userAgentsSingle(UserAgentGenerator.getUniqueUserAgents(), 25);
+        super.userAgentsSingle(UserAgentGenerator.getUniqueUserAgents(), 28);
     }
 
     @Test
     public void randomUserAgentsMulti() throws IOException {
-        super.userAgentsMulti(UserAgentGenerator.getRandomUserAgents(), 25);
+        super.userAgentsMulti(UserAgentGenerator.getRandomUserAgents(), 45);
     }
 
     @Test
     public void randomUserAgentsSingle() throws IOException {
-        super.userAgentsSingle(UserAgentGenerator.getRandomUserAgents(), 25);
+        super.userAgentsSingle(UserAgentGenerator.getRandomUserAgents(), 28);
     }
 
     @Test
     public void badUserAgentsMulti() throws IOException {
-        super.userAgentsMulti(UserAgentGenerator.getBadUserAgents(), 40);
+        super.userAgentsMulti(UserAgentGenerator.getBadUserAgents(), 58);
     }
 
     @Test
     public void badUserAgentsSingle() throws IOException {
-        super.userAgentsSingle(UserAgentGenerator.getBadUserAgents(), 40);
+        super.userAgentsSingle(UserAgentGenerator.getBadUserAgents(), 50);
     }
 
     @Override

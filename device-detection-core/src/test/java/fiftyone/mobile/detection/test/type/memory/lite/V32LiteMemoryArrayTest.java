@@ -40,7 +40,7 @@ public class V32LiteMemoryArrayTest extends MemoryBase {
 
     private static final String filename = Filename.LITE_PATTERN_V32;
     private static Dataset dataset;
-    private static final double FILE_SIZE_MULTIPLIER = 2.2;
+    private static final double FILE_SIZE_MULTIPLIER = 2.5;
 
     @BeforeClass
     public static void setUp() throws IOException {

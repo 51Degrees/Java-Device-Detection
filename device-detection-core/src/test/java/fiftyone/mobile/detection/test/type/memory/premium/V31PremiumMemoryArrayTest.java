@@ -40,7 +40,7 @@ public class V31PremiumMemoryArrayTest extends MemoryBase {
 
     private static final String filename = Filename.PREMIUM_PATTERN_V31;
     private static Dataset dataset;
-    private static final double FILE_SIZE_MULTIPLIER = 1.5;
+    private static final double FILE_SIZE_MULTIPLIER = 1.8;
     
 
     @Override

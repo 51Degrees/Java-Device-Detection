@@ -40,7 +40,7 @@ public class V32EnterpriseMemoryArrayTest extends MemoryBase {
 
     private static final String filename = Filename.ENTERPRISE_PATTERN_V32;
     private static Dataset dataset;
-    private static final double FILE_SIZE_MULTIPLIER = 1.5;
+    private static final double FILE_SIZE_MULTIPLIER = 1.7;
 
     @BeforeClass
     public static void setUp() throws IOException {
