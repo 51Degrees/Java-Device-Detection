@@ -104,7 +104,7 @@ public class V31LitePerformanceMemoryTest extends MemoryBase {
     @Test
     public void uniqueUserAgentsSingleAll() throws IOException
     {
-        super.uniqueUserAgentsSingle(super.dataSet.properties, 1);
+        super.uniqueUserAgentsSingle(super.dataSet.properties, 2);
     }
 
     @Test

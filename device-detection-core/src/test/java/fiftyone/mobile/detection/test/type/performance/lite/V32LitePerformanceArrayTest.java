@@ -36,7 +36,7 @@ public class V32LitePerformanceArrayTest extends ArrayBase {
     
     @Override
     protected int getMaxSetupTime() {
-        return 500;
+        return 1000;
     }
     
     @Test
