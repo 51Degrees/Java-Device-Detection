@@ -71,7 +71,7 @@ public class Provider {
 
     /**
      * True if the detection time should be recorded in the Elapsed property
-     * of the DetectionMatch object.      * 
+     * of the DetectionMatch object.
      */
     private final boolean recordDetectionTime;
     
@@ -133,7 +133,8 @@ public class Provider {
         this.methodCounts.add(MatchMethods.EXACT, 0l);
         this.methodCounts.add(MatchMethods.NONE, 0l);
         
-        userAgentCache = cacheSize > 0 ? new Cache<String, MatchResult>(cacheSize) : null;
+        userAgentCache = 
+                cacheSize > 0 ? new Cache<String, MatchResult>(cacheSize) : null;
     }
 
     /**
@@ -236,12 +237,14 @@ public class Provider {
                 match(headers.get(importantHeaders.get(0)), match);
             } else {
                 // Create matches for each of the headers.
-                Map<String, MatchState> matches = matchForHeaders(match, headers, importantHeaders);
+                Map<String, MatchState> matches = 
+                        matchForHeaders(match, headers, importantHeaders);
                 
                 // Set the profile for each component from the headers provided.
                 for(Component component : dataSet.components) {
                     // Get the profile for the component.                    
-                    Profile profile = getMatchingHeaderProfile(match.state, matches, component);
+                    Profile profile = 
+                            getMatchingHeaderProfile(match.state, matches, component);
                     
                     // Add the profile found, or the default one if not found.
                     match.state.getExplicitProfiles().add(profile == null ? 
@@ -451,9 +454,10 @@ public class Provider {
      * for them.
      * @throws IOException if there was a problem accessing data file.
      */
-    private Map<String, MatchState> matchForHeaders(
-            Match match, Map<String, String> headers, ArrayList<String> importantHeaders)
-            throws IOException {
+    private Map<String, MatchState> matchForHeaders(Match match, 
+                                                    Map<String, String> headers, 
+                                                    ArrayList<String> importantHeaders)
+                                                    throws IOException {
         // Relates HTTP header names to match resutls.
         Map<String, MatchState> matches = new HashMap<String, MatchState>();
         
@@ -580,8 +584,7 @@ public class Provider {
                 result = profiles[profileIndex];
             }
             profileIndex++;
-        }    
-        
+        }
         return result;
     }    
 }

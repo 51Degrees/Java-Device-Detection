@@ -23,6 +23,9 @@ package fiftyone.mobile.detection.entities;
 import fiftyone.mobile.detection.Dataset;
 import fiftyone.mobile.detection.readers.BinaryReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Extends {@link Signature} to provide implementation for the abstract methods.
@@ -43,11 +46,18 @@ public class SignatureV31 extends Signature {
      * @param ds the {@link Dataset} the signature is contained within.
      * @param index The index in the data structure to the signature.
      * @param reader Reader connected to the source data structure and 
-     * positioned to start reading.
+     *               positioned to start reading.
      */
     public SignatureV31(Dataset ds, int index, BinaryReader reader) {
         super(ds, index, reader);
-        nodeOffsets = Signature.readOffsets(ds, reader, ds.signatureNodesCount);
+        List<Integer> list = readPositiveAndZeroIntegers(
+                reader, 
+                dataSet.signatureNodesCount);
+        nodeOffsets = new ArrayList<Integer>(list.size());
+        Iterator<Integer> iter = list.iterator();
+        for (int i = 0; iter.hasNext(); i++) {
+            nodeOffsets.add(iter.next());
+        }        
     }
 
     /**
@@ -81,32 +91,35 @@ public class SignatureV31 extends Signature {
      * offset of the node.
      */
     @Override
-    public int[] getNodeOffsets() {
+    public List<Integer> getNodeOffsets() {
         return nodeOffsets;
     }
-    private final int[] nodeOffsets;
+    private final List<Integer> nodeOffsets;
 
     /**
      * The number of characters in the signature.
+     * 
      * @return The number of characters in the signature.
      * @throws java.io.IOException if there was a problem accessing data file.
      */
     @Override
     protected int getSignatureLength() throws IOException {
-        Node lastNode = dataSet.nodes.get(nodeOffsets[nodeOffsets.length - 1]);
+        Node lastNode = 
+                dataSet.nodes.get(nodeOffsets.get(nodeOffsets.size() - 1));
         return lastNode.position + lastNode.getLength() + 1;
     }
     
     /**
      * Gets the signature rank by iterating through the list of signature ranks.
+     * 
      * @return Rank compared to other signatures starting at 0.
-     * @throws IOException 
+     * @throws IOException if there was a problem accessing data file.
      */
     private int getSignatureRank() throws IOException {
         for (int tempRank = 0; 
                 tempRank < dataSet.rankedSignatureIndexes.size(); 
                 tempRank++) {
-            if (dataSet.rankedSignatureIndexes.get(tempRank).value == this.index)
+            if (dataSet.rankedSignatureIndexes.get(tempRank) == this.index)
                 return tempRank;
         }
         return Integer.MAX_VALUE;

@@ -229,7 +229,7 @@ public class Match {
      * and {@link Value values}.
      * 
      * @return array of {@link Profile profiles} associated with the device 
-     *  that was found.
+     * that was found.
      * @throws IOException if there was a problem accessing data file.
      */
     public Profile[] getProfiles() throws IOException {
@@ -245,7 +245,7 @@ public class Match {
      * of MatchResult are not altered when overriding profiles.
      * 
      * @return profiles set specifically for this match.
-     * @throws IOException 
+     * @throws IOException if there was a problem accessing data file.
      */
     @SuppressWarnings("DoubleCheckedLocking")
     Profile[] getOverriddenProfiles() throws IOException {

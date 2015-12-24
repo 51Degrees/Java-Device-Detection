@@ -1,8 +1,34 @@
-![51Degrees](https://51degrees.com/Portals/0/Logo.png "THE Fastest and Most Accurate Device Detection")**Device Detection for Java**
+![51Degrees](https://51degrees.com/DesktopModules/FiftyOne/Distributor/Logo.ashx?utm_source=github&utm_medium=repository&utm_content=home&utm_campaign=java-open-source "THE Fastest and Most Accurate Device Detection")**Device Detection for Java**
 
 [Recent Changes](#recent-changes "Review recent major changes") | [Supported Databases](https://51degrees.com/compare-data-options?utm_source=github&utm_medium=repository&utm_content=home-menu&utm_campaign=java-open-source "Different device databases which can be used with 51Degrees device detection") | [Java Developer Documention](https://51degrees.com/support/documentation/java?utm_source=github&utm_medium=repository&utm_content=home-menu&utm_campaign=java-open-source "Full getting started guide and advanced developer documentation") | [Available Properties](https://51degrees.com/resources/property-dictionary?utm_source=github&utm_medium=repository&utm_content=home-menu&utm_campaign=java-open-source "View all available properties and values")
 
 <sup>Need [C](https://github.com/51Degrees/Device-Detection "THE Fastest and most Accurate device detection for C") | [.NET](https://github.com/51Degrees/.NET-Device-Detection "THE Fastest and most Accurate device detection for .NET") | [PHP](https://github.com/51Degrees/Device-Detection) | [Python](https://github.com/51Degrees/Device-Detection "THE Fastest and most Accurate device detection for Python") | [Perl](https://github.com/51Degrees/Device-Detection "THE Fastest and most Accurate device detection for Perl") | [Node.js](https://github.com/51Degrees/Device-Detection "THE Fastest and most Accurate device detection for Node.js")?</sup>
+
+**Important**
+
+As of version 3.2.2.20-beta the Maven coordinates for the 51Degrees Java API have changed:
+
+***Core***
+
+```xml
+<dependency>
+    <groupId>com.51degrees</groupId>
+    <artifactId>device-detection-core</artifactId>
+    <version>3.2.2.20-beta</version>
+</dependency>
+```
+
+***WebApp***
+
+```xml
+<dependency>
+    <groupId>com.51degrees</groupId>
+    <artifactId>device-detection-webapp</artifactId>
+    <version>3.2.2.20-beta</version>
+</dependency>
+```
+
+You can also get a package with examples and a package with WebApp example servlets. For more details see [Maven Central Repository](http://search.maven.org/#search|ga|1|g%3A%22com.51degrees%22).
 
 **Server Side and Offline projects:** Initialize detector like...
 
@@ -289,4 +315,3 @@ This is most useful for clients without javascript that should still be served
 images, such as search crawlers. Defaults to 50.
 
 Added a useragent detection cache.
-

@@ -20,7 +20,7 @@
  * ********************************************************************* */
 package fiftyone.mobile.detection.entities.stream;
 
-import fiftyone.mobile.detection.IFixedList;
+import fiftyone.mobile.detection.IReadonlyList;
 import fiftyone.mobile.detection.entities.BaseEntity;
 import fiftyone.mobile.detection.factories.BaseEntityFactory;
 import fiftyone.mobile.detection.readers.BinaryReader;
@@ -41,7 +41,7 @@ import java.util.Iterator;
  * @param <T> The type of BaseEntity the list will contain.
  */
 public class StreamFixedList<T extends BaseEntity> extends StreamBaseList<T> 
-                                                    implements IFixedList<T> {
+                                                    implements IReadonlyList<T> {
     /**
      * Constructs a new instance of StreamBaseList{T} ready to 
      * read entities from the source.
@@ -63,7 +63,6 @@ public class StreamFixedList<T extends BaseEntity> extends StreamBaseList<T>
      * @return An enumerator for the list.
      * @throws java.io.IOException if there was a problem accessing data file.
      */
-    @Override
     public StreamFixedListRangeIterator<T> getRange(int index, int count) 
                                                             throws IOException {
         return new StreamFixedListRangeIterator<T>(
