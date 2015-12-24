@@ -56,7 +56,7 @@ public class V31PremiumPerformanceMemoryTest extends MemoryBase {
     @Test
     public void badUserAgentsSingle() throws IOException
     {
-        super.badUserAgentsSingle(null, 1);
+        super.badUserAgentsSingle(null, 3);
     }
 
     @Test
@@ -92,7 +92,7 @@ public class V31PremiumPerformanceMemoryTest extends MemoryBase {
     @Test
     public void badUserAgentsSingleAll() throws IOException
     {
-        super.badUserAgentsSingle(super.dataSet.properties, 2);
+        super.badUserAgentsSingle(super.dataSet.properties, 3);
     }
 
     @Test

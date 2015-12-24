@@ -24,10 +24,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 
 import fiftyone.mobile.detection.Dataset;
-import fiftyone.mobile.detection.IFixedList;
 import fiftyone.mobile.detection.entities.AsciiString;
 import fiftyone.mobile.detection.entities.Component;
-import fiftyone.mobile.detection.entities.IntegerEntity;
 import fiftyone.mobile.detection.entities.Map;
 import fiftyone.mobile.detection.entities.Modes;
 import fiftyone.mobile.detection.entities.Node;
@@ -36,6 +34,7 @@ import fiftyone.mobile.detection.entities.ProfileOffset;
 import fiftyone.mobile.detection.entities.Signature;
 import fiftyone.mobile.detection.entities.Value;
 import fiftyone.mobile.detection.entities.memory.MemoryFixedList;
+import fiftyone.mobile.detection.entities.memory.MemoryIntegerList;
 import fiftyone.mobile.detection.entities.memory.MemoryVariableList;
 import fiftyone.mobile.detection.entities.memory.PropertiesList;
 import fiftyone.mobile.detection.factories.memory.NodeMemoryFactoryV31;
@@ -90,7 +89,7 @@ public class MemoryFactory {
      * 
      * @param data Array of bytes to build the data set from.
      * @param init True to indicate that the data set should be filling 
-     * initialised..
+     *             initialised..
      * @return filled with data from the array.
      * @throws IOException if there was a problem accessing data file.
      */
@@ -124,7 +123,7 @@ public class MemoryFactory {
      * 
      * @param filename Uncompressed file containing the data for the data set.
      * @param init True to indicate that the data set should be 
-     * fully initialised.
+     *             fully initialised.
      * @return A DataSet filled with data from the array.
      * @throws IOException if there was a problem accessing data file.
      */
@@ -144,7 +143,7 @@ public class MemoryFactory {
      * 
      * @param filename Uncompressed file containing the data for the data set.
      * @param init True to indicate that the data set should be filling 
-     * initialised.
+     *             initialised.
      * @param lastModified Date and time the source data was last modified.
      * @return filled with data from the array.
      * @throws IOException if there was a problem accessing data file.
@@ -226,10 +225,10 @@ public class MemoryFactory {
      * and stored.
      * 
      * @param dataSet The data set to be loaded with data from the reader.
-     * @param reader Reader connected to the source data structure and 
-     * positioned to start reading.
+     * @param reader BinaryReader connected to the source data structure and 
+     *               positioned to start reading.
      * @param init True to indicate that the data set should be fully 
-     * initialised.
+     *             initialised.
      * @throws IOException if there was a problem accessing data file.
      */
     @SuppressWarnings("null")
@@ -262,8 +261,8 @@ public class MemoryFactory {
                 dataSet, reader, new ProfileMemoryFactory());
         
         MemoryFixedList<Signature> signatures = null;
-        MemoryFixedList<IntegerEntity> signatureNodeOffsets = null;
-        MemoryFixedList<IntegerEntity> nodeRankedSignatureIndexes = null;
+        MemoryIntegerList signatureNodeOffsets = null;
+        MemoryIntegerList nodeRankedSignatureIndexes = null;
         switch(dataSet.versionEnum) {
             case PatternV31:
                 signatures = new MemoryFixedList<Signature>(
@@ -272,16 +271,11 @@ public class MemoryFactory {
             case PatternV32:
                 signatures = new MemoryFixedList<Signature>(
                         dataSet, reader, new SignatureFactoryV32(dataSet));
-                signatureNodeOffsets = new MemoryFixedList<IntegerEntity>(
-                        dataSet, reader, new IntegerEntityFactory());
-                nodeRankedSignatureIndexes = new MemoryFixedList<IntegerEntity>(
-                        dataSet, reader, new IntegerEntityFactory());
+                signatureNodeOffsets = new MemoryIntegerList(reader);
+                nodeRankedSignatureIndexes = new MemoryIntegerList(reader);
                 break;
         }
-        
-        MemoryFixedList<IntegerEntity> rankedSignatureIndexes =
-                new MemoryFixedList<IntegerEntity>(
-                dataSet, reader, new IntegerEntityFactory());
+        MemoryIntegerList rankedSignatureIndexes = new MemoryIntegerList(reader);
         
         MemoryVariableList<Node> nodes = null;
         switch (dataSet.versionEnum) {
@@ -308,13 +302,12 @@ public class MemoryFactory {
         dataSet.values = values;
         dataSet.profiles = profiles;
         dataSet.signatures = signatures;
-        dataSet.rankedSignatureIndexes = (IFixedList)rankedSignatureIndexes;
+        dataSet.rankedSignatureIndexes = rankedSignatureIndexes;
         
         switch(dataSet.versionEnum) {
             case PatternV32:
-                dataSet.signatureNodeOffsets = (IFixedList)signatureNodeOffsets;
-                dataSet.nodeRankedSignatureIndexes = 
-                        (IFixedList)nodeRankedSignatureIndexes;
+                dataSet.signatureNodeOffsets = signatureNodeOffsets;
+                dataSet.nodeRankedSignatureIndexes = nodeRankedSignatureIndexes;
                 break;
         }
         

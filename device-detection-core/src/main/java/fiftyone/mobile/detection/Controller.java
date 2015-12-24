@@ -32,27 +32,42 @@ import java.util.List;
 /**
  * A single static class which controls the device detection process.
  * <p>
- * The process uses 3 steps to determine the properties associated with the 
- * provided User-Agent. 
+ * The process uses several steps to determine the properties associated with 
+ * the provided User-Agent. 
  * <p>
  * Step 1 - each of the character positions of the target User-Agent are 
- * checked from right to left to determine if a complete node or substring 
- * is present at that position. For example; the sub string Chrome/11 might 
- * indicate the User-Agent relates to Chrome version 11 from 'Google'. Once
- * every character position is checked a list of matching nodes will be
- * available. 
+ * checked from right to left to determine if a complete node or sub string is 
+ * present at that position. For example; the sub string Chrome/11 might 
+ * indicate the User-Agent relates to Chrome version 11 from Google. Once every 
+ * character position is checked a list of matching nodes will be available.
  * <p>
- * Step 2 - The list of signatures is then searched to determine
- * if the matching nodes relate exactly to an existing signature. Any popular
- * device will be found at this point. The approach is exceptionally fast at
- * identifying popular devices. 
+ * Step 2 - The list of signatures is then searched to determine if the 
+ * matching nodes relate exactly to an existing signature. Any popular device 
+ * will be found at this point. The approach is exceptionally fast at 
+ * identifying popular devices. This is termed the Exact match method.
  * <p>
- * Step 3 - If the target User-Agent is less popular, or newer than the 
+ * Step 3 - If a match has not been found exactly then the target User-Agent is 
+ * evaluated to find nodes that have the smallest numeric difference. For 
+ * example if Chrome/40 were in the target User-Agent at the same position as 
+ * Chrome/32 in the signature then Chrome/32 with a numeric difference score of 
+ * 8 would be used. If a signature can then be matched exactly against the new 
+ * set of nodes this will be returned. This is termed the Numeric match method.
+ * <p>
+ * Step 4 - If the target User-Agent is less popular, or newer than the 
  * creation time of the data set, a small sub set of possible signatures are 
- * identified from the matching nodes. These signatures are evaluated against 
- * the target User-Agent to determine the different in relevant characters 
- * between them. The signature which has the lowest difference and is most 
- * popular is then returned. 
+ * identified from the matched nodes. The sub set is limited to the most 
+ * popular 200 signatures.
+ * <p>
+ * Step 5 - The sub strings of the signatures from Step 4 are then evaluated to 
+ * determine if they exist in the target User-Agent. For example if Chrome/32 
+ * in the target appears one character to the left of Chrome/32 in the 
+ * signature then a difference of 1 would be returned between the signature 
+ * and the target. This is termed the Nearest match method.
+ * <p>
+ * Step 6 - The signatures from Step 4 are evaluated against the target 
+ * User-Agent to determine the difference in relevant characters between them. 
+ * The signature with the lowest difference in ASCII character values with the 
+ * target is returned. This is termed the Closest match method.
  * <p>
  * Random User-Agents will not identify any matching nodes. In these situations 
  * a default signature is returned.
@@ -61,19 +76,21 @@ import java.util.List;
  * the result match. Older data sets that are unaware of the latest devices, 
  * or User-Agent formats in use will be less accurate.
  * <p>
- * 
+ * This class is part of the internal logic and should not be referenced 
+ * directly.
  */
 class Controller {
 
     /**
      * Comparator used to order the nodes by length with the shortest first.
      */
-    private static final Comparator<Node> nodeComparator = new Comparator<Node>() {
+    private static final Comparator<Node> nodeComparator = 
+                                                    new Comparator<Node>() {
         @Override
         public int compare(Node o1, Node o2) {
             try {
-                int l0 = o1.getRankedSignatureIndexes().length;
-                int l1 = o2.getRankedSignatureIndexes().length;
+                int l0 = o1.getRankedSignatureIndexes().size();
+                int l1 = o2.getRankedSignatureIndexes().size();
                 if (l0 < l1) {
                     return -1;
                 }
@@ -108,10 +125,10 @@ class Controller {
     /**
      * Entry point to the detection process. Provided with a Match instance
      * configured with the information about the request. 
-     * 
+     * <p>
      * The dataSet may be used by other threads in parallel and is not assumed 
      * to be used by only one detection process at a time. 
-     * 
+     * <p>
      * The memory implementation of the data set will always perform fastest 
      * but does consume more memory.
      *
@@ -124,11 +141,11 @@ class Controller {
             throw new IllegalStateException(
                     "Data Set has been disposed and can't be used for match");
         }
-
         // If the User-Agent is too short then don't try to match and
         // return defaults.
         if (state.getTargetUserAgentArray().length == 0
-                || state.getTargetUserAgentArray().length < state.getDataSet().getMinUserAgentLength()) {
+                || state.getTargetUserAgentArray().length < 
+                   state.getDataSet().getMinUserAgentLength()) {
             // Set the default values.
             matchDefault(state);
         } else {
@@ -136,13 +153,14 @@ class Controller {
             // set recording matched nodes. Continue until all character
             // positions have been checked.
             evaluate(state);
-
+            
             /// Can a precise match be found based on the nodes?
             int signatureIndex = getExactSignatureIndex(state);
 
             if (signatureIndex >= 0) {
                 // Yes a precise match was found.
-                state.setSignature(state.getDataSet().signatures.get(signatureIndex));
+                state.setSignature(state.getDataSet().signatures.
+                        get(signatureIndex));
                 state.setMethod(MatchMethods.EXACT);
                 state.setLowestScore(0);
             } else {
@@ -155,7 +173,8 @@ class Controller {
 
                 if (signatureIndex >= 0) {
                     // Yes a precise match was found.
-                    state.setSignature(state.getDataSet().signatures.get(signatureIndex));
+                    state.setSignature(state.getDataSet().signatures.
+                            get(signatureIndex));
                     state.setMethod(MatchMethods.NUMERIC);
                 } else if (state.getNodesList().size() > 0) {
 
@@ -163,12 +182,13 @@ class Controller {
                     RankedSignatureIterator closestSignatures =
                             getClosestSignatures(state);
 
-                    // Try finding a signature with identical nodes just not in exactly the 
-                    // same place.
+                    // Try finding a signature with identical nodes just not in 
+                    // exactly the same place.
                     nearest.evaluateSignatures(state, closestSignatures);
 
                     if (state.getSignature() != null) {
-                        // All the sub strings matched, just in different character positions.
+                        // All the sub strings matched, just in different 
+                        // character positions.
                         state.setMethod(MatchMethods.NEAREST);
                     } else {
                         // Find the closest signatures and compare them
@@ -191,8 +211,9 @@ class Controller {
     /**
      * Evaluate the target User-Agent again, but this time look for a numeric 
      * difference.
+     * 
      * @param state current working state of the matching process
-     * @throws IOException 
+     * @throws IOException if there was a problem accessing data file.
      */
     private static void evaluateNumeric(MatchState state) throws IOException {
         state.resetNextCharacterPositionIndex();
@@ -202,7 +223,8 @@ class Controller {
                     || state.getNodesList().get(existingNodeIndex).getRoot().position
                     < state.nextCharacterPositionIndex) {
                 state.incrRootNodesEvaluated();
-                Node node = state.getDataSet().rootNodes.get(state.nextCharacterPositionIndex).
+                Node node = state.getDataSet().rootNodes.
+                        get(state.nextCharacterPositionIndex).
                         getCompleteNumericNode(state);
                 if (node != null
                         && node.getIsOverlap(state) == false) {
@@ -220,7 +242,8 @@ class Controller {
             } else {
                 // The next position to evaluate should be to the left
                 // of the existing node already in the list.
-                state.nextCharacterPositionIndex = state.getNodesList().get(existingNodeIndex).position;
+                state.nextCharacterPositionIndex = state.getNodesList().
+                        get(existingNodeIndex).position;
 
                 // Swap the existing node for the next one in the list.
                 existingNodeIndex--;
@@ -230,8 +253,9 @@ class Controller {
 
     /**
      * The detection failed and a default match needs to be returned.
+     * 
      * @param state current working state of the matching process
-     * @throws IOException
+     * @throws IOException if there was a problem accessing data file.
      */
     static void matchDefault(MatchState state) throws IOException {
         state.setMethod(MatchMethods.NONE);
@@ -244,8 +268,9 @@ class Controller {
     /**
      * Evaluates the match at the current character position until there are no
      * more characters left to evaluate.
+     * 
      * @param state Information about the detection
-     * @throws IOException
+     * @throws IOException if there was a problem accessing data file.
      */
     private static void evaluate(MatchState state) throws IOException {
 
@@ -255,11 +280,11 @@ class Controller {
             state.incrRootNodesEvaluated();
 
             // See if a leaf node will match from this list.
-            Node node = state.getDataSet().rootNodes.get(state.nextCharacterPositionIndex).getCompleteNode(state);
+            Node node = state.getDataSet().rootNodes.
+                    get(state.nextCharacterPositionIndex).getCompleteNode(state);
 
             if (node != null) {
                 state.getNodesList().add(0, node);
-
                 // Check from the next root node that can be positioned to 
                 // the left of this one.
                 state.nextCharacterPositionIndex = node.nextCharacterPosition;
@@ -274,14 +299,15 @@ class Controller {
     /**
      * If the nodes of the match correspond exactly to a signature then return
      * the index of the signature found. Otherwise -1.
+     * 
      * @param state of the match process
      * @return index of the signature or -1
-     * @throws IOException 
+     * @throws IOException if there was a problem accessing data file.
      */
-    private static int getExactSignatureIndex(MatchState state) throws IOException
-    {
+    private static int getExactSignatureIndex(MatchState state) 
+                                                            throws IOException {
         SearchResult result = state.match.getDataSet().getSignatureSearch().
-            binarySearch(state.getNodesList());
+            binarySearchResults(state.getNodesList());
         state.signaturesRead += result.getIterations();
         return result.getIndex();
     }
@@ -291,32 +317,33 @@ class Controller {
      * User-Agent string. Where a single signature is not present across all the
      * nodes the signatures which match the most nodes from the target user
      * agent string are returned.
+     * 
      * @param state current working state of the matching process
      * @return An enumeration of closest signatures.
-     * @throws IOException
+     * @throws IOException if there was a problem accessing data file.
      */
     private static RankedSignatureIterator getClosestSignatures(
             final MatchState state) throws IOException {
         RankedSignatureIterator result;
         if (state.getNodesList().size() == 1) {
             result = new RankedSignatureIterator() {
-                final int[] rankedSignatureIndexes =
-                        state.getNodesList().get(0).getRankedSignatureIndexes();
+                List<Integer> rankedSignatureIndexes = state.getNodesList().
+                        get(0).getRankedSignatureIndexes();
                 int index = 0;
 
                 @Override
                 public boolean hasNext() {
-                    return index < rankedSignatureIndexes.length;
+                    return index < rankedSignatureIndexes.size();
                 }
                 
                 @Override
                 public int size() {
-                    return rankedSignatureIndexes.length;
+                    return rankedSignatureIndexes.size();
                 }
 
                 @Override
                 public int next() {
-                    int value = rankedSignatureIndexes[index];
+                    int value = rankedSignatureIndexes.get(index);
                     index++;
                     return value;
                 }

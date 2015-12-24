@@ -21,10 +21,11 @@
 package fiftyone.mobile.detection.entities.memory;
 
 import fiftyone.mobile.detection.Dataset;
-import fiftyone.mobile.detection.entities.IntegerEntity;
 import fiftyone.mobile.detection.factories.NodeFactoryShared;
 import fiftyone.mobile.detection.readers.BinaryReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * All data is loaded into memory when the entity is constructed. Implements 
@@ -43,7 +44,7 @@ public class NodeV32 extends Node{
      * Array of ranked signature indexes for the node.
      */
     @SuppressWarnings("VolatileArrayField")
-    private volatile int[] rankedSignatureIndexes;
+    private volatile List<Integer> rankedSignatureIndexes;
     
     private int nodeRankedSignatureValue;
     
@@ -53,7 +54,7 @@ public class NodeV32 extends Node{
      * @param dataSet The data set the node is contained within.
      * @param offset The offset in the data structure to the node.
      * @param reader Reader connected to the source data structure and 
-     * positioned to start reading.
+     *               positioned to start reading.
      */
     public NodeV32(Dataset dataSet, int offset, BinaryReader reader) {
         super(dataSet, offset, reader);
@@ -91,22 +92,21 @@ public class NodeV32 extends Node{
      * @return ranked signature indexes as array.
      * @throws IOException if there was a problem accessing data file.
      */
-    private int[] getRankedSignatureIndexesAsArray() throws IOException {
-        int[] rsi = new int[rankedSignatureCount];
-        if (rankedSignatureCount == 1) {
+    private List<Integer> getRankedSignatureIndexesAsArray() throws IOException {
+        List<Integer> rsi = null;
+        if (rankedSignatureCount == 0) {
+            rsi = new ArrayList<Integer>();
+        } else if (rankedSignatureCount == 1) {
+            rsi = new ArrayList<Integer>();
             // The value of _nodeRankedSignatureIndex is the ranked signature
             // index when the node only relates to 1 signature.
-            rsi[0] = nodeRankedSignatureValue;
+            rsi.add(nodeRankedSignatureValue);
         } else if (rankedSignatureCount > 1) {
             // Where the node relates to multiple signatures the 
             // _nodeRankedSignatureIndex relates to the first ranked signature 
             // index in DataSet.NodeRankedSignatureIndexes.
-            for (int i = 0; i < rankedSignatureCount; i++) {
-                IntegerEntity ie = (IntegerEntity)dataSet.
-                        nodeRankedSignatureIndexes.
-                        get(nodeRankedSignatureValue + i);
-                rsi[i] = ie.getValue();
-            }
+            rsi = dataSet.nodeRankedSignatureIndexes.
+                    getRange(nodeRankedSignatureValue, rankedSignatureCount);
         }
         return rsi;
     }
@@ -120,8 +120,8 @@ public class NodeV32 extends Node{
      */
     @Override
     @SuppressWarnings("DoubleCheckedLocking")
-    public int[] getRankedSignatureIndexes() throws IOException {
-        int[] localRankedSignatureIndexes = rankedSignatureIndexes;
+    public List<Integer> getRankedSignatureIndexes() throws IOException {
+        List<Integer> localRankedSignatureIndexes = rankedSignatureIndexes;
         if (localRankedSignatureIndexes == null) {
             synchronized(this) {
                 localRankedSignatureIndexes = rankedSignatureIndexes;
@@ -133,5 +133,4 @@ public class NodeV32 extends Node{
         }
         return localRankedSignatureIndexes;
     }
-    
 }

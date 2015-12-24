@@ -22,7 +22,6 @@
 package fiftyone.mobile.detection.test.type.memory.premium;
 
 import fiftyone.mobile.detection.Dataset;
-import fiftyone.mobile.detection.factories.StreamFactory;
 import fiftyone.mobile.detection.Filename;
 import fiftyone.mobile.detection.test.TestType;
 import fiftyone.mobile.detection.test.common.UserAgentGenerator;
@@ -34,11 +33,12 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.io.IOException;
+import org.junit.After;
 
 @Category({TestType.DataSetPremium.class, TestType.TypeMemory.class})
 public class V31PremiumMemoryFileTest extends MemoryBase {
 
-    private static String filename = Filename.PREMIUM_PATTERN_V31;
+    private static final String filename = Filename.PREMIUM_PATTERN_V31;
     private static Dataset dataset;
 
     @Override
@@ -48,7 +48,7 @@ public class V31PremiumMemoryFileTest extends MemoryBase {
 
     @BeforeClass
     public static void setUp() throws IOException {
-        if (fileExists(filename)) dataset = StreamFactory.create(filename, false);
+        dataset = getInitialisedDataset(filename, false, 20, null, false);
     }
 
     @Before
@@ -61,35 +61,41 @@ public class V31PremiumMemoryFileTest extends MemoryBase {
         if (dataset != null) dataset.close();
         dataset = null;
     }
+    
+    @After
+    public void resetCache() {
+        dataset.resetCache();
+        System.gc();
+    }
 
     @Test
     @Category({TestType.DataSetPremium.class, TestType.TypeMemory.class})
     public void uniqueUserAgentsMulti() throws IOException {
-        super.userAgentsMulti(UserAgentGenerator.getUniqueUserAgents(), 20);
+        super.userAgentsMulti(UserAgentGenerator.getUniqueUserAgents(), 58);
     }
 
     @Test
     public void uniqueUserAgentsSingle() throws IOException {
-        super.userAgentsSingle(UserAgentGenerator.getUniqueUserAgents(), 20);
+        super.userAgentsSingle(UserAgentGenerator.getUniqueUserAgents(), 29);
     }
 
     @Test
     public void randomUserAgentsMulti() throws IOException {
-        super.userAgentsMulti(UserAgentGenerator.getRandomUserAgents(), 20);
+        super.userAgentsMulti(UserAgentGenerator.getRandomUserAgents(), 58);
     }
 
     @Test
     public void randomUserAgentsSingle() throws IOException {
-        super.userAgentsSingle(UserAgentGenerator.getRandomUserAgents(), 20);
+        super.userAgentsSingle(UserAgentGenerator.getRandomUserAgents(), 29);
     }
 
     @Test
     public void badUserAgentsMulti() throws IOException {
-        super.userAgentsMulti(UserAgentGenerator.getBadUserAgents(), 70);
+        super.userAgentsMulti(UserAgentGenerator.getBadUserAgents(), 75);
     }
 
     @Test
     public void badUserAgentsSingle() throws IOException {
-        super.userAgentsSingle(UserAgentGenerator.getBadUserAgents(), 70);
+        super.userAgentsSingle(UserAgentGenerator.getBadUserAgents(), 65);
     }
 }

@@ -25,13 +25,14 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
+import java.io.OutputStream;
 import java.util.ArrayList;
+import static org.junit.Assert.fail;
 
 /**
  * Base methods used to test the auto update functionality.
@@ -52,10 +53,35 @@ public class AutoUpdateBase extends DetectionTestSupport{
         String templateFile = System.getProperty("user.dir") 
                 + "\\..\\data\\51Degrees-LiteV3.2.dat";
         // Delete existing file in case it's already of the latest version.
-        Files.deleteIfExists(Paths.get(getTestDataFile()));
-        Files.copy(Paths.get(templateFile), Paths.get(getTestDataFile()), REPLACE_EXISTING);  
+        File f = new File(getTestDataFile());
+        if (f.exists()) {
+            if (f.delete() == false) {
+                fail("Could not delete existing file");
+            }
+        }
+        copyFileUsingStream(new File(templateFile), f);
+        System.gc();
         logger.debug(getTestDataFile());
     }
+    
+    private static void copyFileUsingStream(File source, File dest) throws IOException {
+    InputStream is = null;
+    OutputStream os = null;
+    try {
+        is = new FileInputStream(source);
+        os = new FileOutputStream(dest);
+        byte[] buffer = new byte[1024];
+        int length;
+        while ((length = is.read(buffer)) > 0) {
+            os.write(buffer, 0, length);
+        }
+    } finally {
+        if (is != null)
+            is.close();
+        if (os != null)
+            os.close();
+    }
+}
     
     /**
      * @return the test data file.

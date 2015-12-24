@@ -54,13 +54,6 @@ import java.util.Collections;
  * 51Degrees pattern data model</a>.
  */
 public class Value extends BaseEntity {
-
-    private static class SearchValues extends SearchArrays<Value, Integer> {
-        @Override
-        public int compareTo(Value item, Integer key) {
-            return item.compareTo(key);
-        }
-    }
     
     /**
      * The value as an integer. Integer object instead of integer primitive 
@@ -101,7 +94,7 @@ public class Value extends BaseEntity {
 
     /**
      * @return array containing the {@link Signature signatures} that the value 
-     * is associated with.
+     *         is associated with.
      * @throws IOException if there was a problem accessing data file.
      */
     @SuppressWarnings("DoubleCheckedLocking")
@@ -121,8 +114,8 @@ public class Value extends BaseEntity {
     private volatile Signature[] signatures;
 
     /**
-     * @return Array containing the {@link Profile profiles} this value is 
-     * associated with.
+     * @return array containing the {@link Profile profiles} this value is 
+     *         associated with.
      * @throws IOException if there was a problem accessing data file.
      */
     @SuppressWarnings("DoubleCheckedLocking")
@@ -170,8 +163,8 @@ public class Value extends BaseEntity {
     }
 
     /**
-     * @return A description of the value suitable to be displayed to end users
-     * via a user interface.
+     * @return a description of the value suitable to be displayed to end users
+     *         via a user interface.
      * @throws IOException if there was a problem accessing data file.
      */
     @SuppressWarnings("DoubleCheckedLocking")
@@ -218,7 +211,7 @@ public class Value extends BaseEntity {
      * @param dataSet the {@link Dataset} the value is contained within.
      * @param index the index in the data structure to the value.
      * @param reader Reader connected to the source data structure and
-     * positioned to start reading.
+     *        positioned to start reading.
      */
     public Value(Dataset dataSet, int index, BinaryReader reader) {
         super(dataSet, index);
@@ -257,51 +250,6 @@ public class Value extends BaseEntity {
     }
 
     /**
-     * Gets all the profiles associated with the value.
-     *
-     * @return Returns the profiles from the component that relate to this value
-     * @throws IOException
-     */
-    private Profile[] doGetProfiles() throws IOException {
-        List<Profile> list = new ArrayList<Profile>();
-
-        for (Profile profile : getComponent().getProfiles()) {
-            if (valuesIndexSearch.binarySearch(
-                    profile.getValues(), 
-                    getIndex()).getIndex() >= 0) {
-                list.add(profile);
-            }
-        }
-
-        return list.toArray(new Profile[list.size()]);
-    }
-
-    /**
-     * Gets all the signatures associated with the value.
-     *
-     * @return Returns the signatures associated with the value
-     * @throws IOException
-     */
-    private Signature[] doGetSignatures() throws IOException {
-        // Get a distinct list of signature indexes.
-        List<Integer> list = new ArrayList<Integer>();
-        for (Profile profile : getProfiles()) {
-            for (Integer signatureIndex : profile.getSignatureIndexes()) {
-                int localIndex = Collections.binarySearch(list, signatureIndex);
-                if (localIndex < 0) {
-                    list.add(~localIndex, signatureIndex);
-                }
-            }
-        }
-        // Turn that list into an array of signatures.
-        Signature[] result = new Signature[list.size()];
-        for (int i = 0; i < result.length; i++) {
-            result[i] = getDataSet().getSignatures().get(list.get(i));
-        }
-        return result;
-    }
-
-    /**
      * Compares two values by name.
      * 
      * @param value name of value to compare the current value against.
@@ -334,8 +282,6 @@ public class Value extends BaseEntity {
     }
 
     /**
-     * Returns the value as a string.
-     *
      * @return the value name as a string.
      */
     @Override
@@ -400,7 +346,7 @@ public class Value extends BaseEntity {
      * property has no null value false is always returned.
      *
      * @return true if the value is the null value for the property. If the
-     * property has no null value false is always returned.
+     *         property has no null value false is always returned.
      * @throws IOException if there was a problem accessing data file.
      */
     public boolean getIsDefault() throws IOException {
@@ -415,8 +361,8 @@ public class Value extends BaseEntity {
      * Returns the value as an integer.
      * 
      * @return If the value can not convert to an integer and the value is not 
-     * equal to the null value then the null value for the property will be 
-     * used. If no conversion is possible 0 is returned.
+     *         equal to the null value then the null value for the property 
+     *         will be used. If no conversion is possible 0 is returned.
      * @throws java.io.IOException if there was a problem accessing data file.
      */
     @SuppressWarnings("DoubleCheckedLocking")
@@ -433,4 +379,63 @@ public class Value extends BaseEntity {
         }
         return localAsInt;
     }
+    
+    // <editor-fold defaultstate="collapsed" desc="Private methods">
+    /**
+     * Gets all the profiles associated with the value.
+     *
+     * @return the profiles from the component that relate to this value
+     * @throws IOException if there was a problem accessing data file.
+     */
+    private Profile[] doGetProfiles() throws IOException {
+        List<Profile> list = new ArrayList<Profile>();
+
+        for (Profile profile : getComponent().getProfiles()) {
+            if (valuesIndexSearch.binarySearch(
+                    profile.getValues(), 
+                    getIndex()) >= 0) {
+                list.add(profile);
+            }
+        }
+
+        return list.toArray(new Profile[list.size()]);
+    }
+    
+    /**
+     * Gets all the signatures associated with the value.
+     *
+     * @return Returns the signatures associated with the value
+     * @throws IOException if there was a problem accessing data file.
+     */
+    private Signature[] doGetSignatures() throws IOException {
+        // Get a distinct list of signature indexes.
+        List<Integer> list = new ArrayList<Integer>();
+        for (Profile profile : getProfiles()) {
+            for (Integer signatureIndex : profile.getSignatureIndexes()) {
+                int localIndex = Collections.binarySearch(list, signatureIndex);
+                if (localIndex < 0) {
+                    list.add(~localIndex, signatureIndex);
+                }
+            }
+        }
+        // Turn that list into an array of signatures.
+        Signature[] result = new Signature[list.size()];
+        for (int i = 0; i < result.length; i++) {
+            result[i] = getDataSet().getSignatures().get(list.get(i));
+        }
+        return result;
+    }
+    // </editor-fold>
+    
+    // <editor-fold defaultstate="collapsed" desc="Private static class for binary search access.">
+    /**
+     * Provides access to binary search and overrides the compareTo method.
+     */
+    private static class SearchValues extends SearchArrays<Value, Integer> {
+        @Override
+        public int compareTo(Value item, Integer key) {
+            return item.compareTo(key);
+        }
+    }
+    // </editor-fold>
 }

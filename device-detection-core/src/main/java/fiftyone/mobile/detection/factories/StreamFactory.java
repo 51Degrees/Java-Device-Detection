@@ -23,7 +23,6 @@ package fiftyone.mobile.detection.factories;
 import fiftyone.mobile.detection.entities.stream.Dataset;
 import fiftyone.mobile.detection.entities.AsciiString;
 import fiftyone.mobile.detection.entities.Component;
-import fiftyone.mobile.detection.entities.IntegerEntity;
 import fiftyone.mobile.detection.entities.Map;
 import fiftyone.mobile.detection.entities.Modes;
 import fiftyone.mobile.detection.entities.Node;
@@ -34,7 +33,7 @@ import fiftyone.mobile.detection.entities.Value;
 import fiftyone.mobile.detection.entities.memory.MemoryFixedList;
 import fiftyone.mobile.detection.entities.memory.PropertiesList;
 import fiftyone.mobile.detection.entities.stream.FixedCacheList;
-import fiftyone.mobile.detection.entities.stream.StreamFixedList;
+import fiftyone.mobile.detection.entities.stream.IntegerList;
 import fiftyone.mobile.detection.entities.stream.StreamVariableList;
 import fiftyone.mobile.detection.factories.stream.NodeStreamFactoryV31;
 import fiftyone.mobile.detection.factories.stream.NodeStreamFactoryV32;
@@ -94,12 +93,13 @@ public final class StreamFactory {
      * 
      * @param filePath Uncompressed file containing the data for the data set.
      * @param isTempFile True if the file should be deleted when the source is 
-     * disposed
+     *                   disposed
      * @return A DataSet configured to read entities from the file path when 
-     * required.
+     *         required.
      * @throws IOException if there was a problem accessing data file.
      */
-    public static Dataset create(String filePath, boolean isTempFile) throws IOException {
+    public static Dataset create(String filePath, boolean isTempFile) 
+                                                            throws IOException {
         return create(filePath, 
                 new Date(new File(filePath).lastModified()), 
                 isTempFile);
@@ -117,7 +117,8 @@ public final class StreamFactory {
      */
     public static Dataset create(String filepath, Date lastModified, 
             boolean isTempFile) throws IOException {
-        Dataset dataSet = new Dataset(filepath, lastModified, Modes.FILE, isTempFile);
+        Dataset dataSet = 
+                new Dataset(filepath, lastModified, Modes.FILE, isTempFile);
         load(dataSet);
         return dataSet;
     }
@@ -184,16 +185,13 @@ public final class StreamFactory {
                     dataSet.signatures = new FixedCacheList<Signature>(
                             dataSet, reader, new SignatureFactoryV32(dataSet), 
                             DetectionConstants.SIGNATURES_CACHE_SIZE);
-                    dataSet.signatureNodeOffsets = new StreamFixedList<IntegerEntity>(
-                            dataSet, reader, new IntegerEntityFactory());
-                    dataSet.nodeRankedSignatureIndexes = new StreamFixedList<IntegerEntity>(
-                           dataSet, reader, new IntegerEntityFactory());
+                    dataSet.signatureNodeOffsets = 
+                            new IntegerList(dataSet, reader);
+                    dataSet.nodeRankedSignatureIndexes = 
+                            new IntegerList(dataSet, reader);
                     break;
             }
-            
-            dataSet.rankedSignatureIndexes = new FixedCacheList<IntegerEntity>(
-                    dataSet, reader, new IntegerEntityFactory(), 
-                    DetectionConstants.RANKED_SIGNATURE_CACHE_SIZE);
+            dataSet.rankedSignatureIndexes = new IntegerList(dataSet, reader);
             
             switch (dataSet.versionEnum) {
                 case PatternV31:

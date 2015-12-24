@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>device-detection</artifactId>
+        <groupId>com.51degrees</groupId>
+        <version>3.2.3-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>device-detection-webapp-examples</artifactId>
+    <name>51Degrees :: Device Detection :: Web Examples</name>
+    <packaging>war</packaging>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.51degrees</groupId>
+            <artifactId>device-detection-webapp</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
+</project>
