@@ -21,8 +21,7 @@
 package fiftyone.mobile.detection.entities.memory;
 
 import fiftyone.mobile.detection.Dataset;
-import fiftyone.mobile.detection.IClosableIterator;
-import fiftyone.mobile.detection.IFixedList;
+import fiftyone.mobile.detection.IReadonlyList;
 import fiftyone.mobile.detection.entities.BaseEntity;
 import fiftyone.mobile.detection.factories.BaseEntityFactory;
 import fiftyone.mobile.detection.readers.BinaryReader;
@@ -52,16 +51,16 @@ import java.io.IOException;
  *
  */
 public class MemoryFixedList<T extends BaseEntity> extends MemoryBaseList<T> 
-                                                   implements IFixedList<T> {
+                                                   implements IReadonlyList<T> {
 
     /**
      * Constructs a new instance of MemoryFixedList.
      * 
      * @param dataSet The DataSet being created.
-     * @param reader Reader connected to the source data structure and
-     * positioned to start reading.
-     * @param entityFactory Interface implementation used to create new entities
-     * of type T.
+     * @param reader BinaryReader connected to the source data structure and
+     *               positioned to start reading.
+     * @param entityFactory Interface implementation used to create new 
+     *                      entities of type T.
      */
     public MemoryFixedList(Dataset dataSet, BinaryReader reader,
             BaseEntityFactory<T> entityFactory) {
@@ -71,8 +70,8 @@ public class MemoryFixedList<T extends BaseEntity> extends MemoryBaseList<T>
     /**
      * Reads the list into memory.
      * 
-     * @param reader Reader connected to the source data structure and
-     * positioned to start reading.
+     * @param reader BinaryReader connected to the source data structure and
+     *               positioned to start reading.
      * @throws java.io.IOException if there was a problem accessing data file.
      */
     @Override
@@ -91,17 +90,5 @@ public class MemoryFixedList<T extends BaseEntity> extends MemoryBaseList<T>
     @Override
     public T get(int i) {
         return array.get(i);
-    }
-
-    /**
-     * Returns the MemoryFixedListIterator for specific range.
-     * 
-     * @param index start at this element.
-     * @param count finish at this element.
-     * @return the MemoryFixedListIterator for specific range.
-     */
-    @Override
-    public IClosableIterator<T> getRange(int index, int count) {
-        return new MemoryFixedListIterator<T>(this, index, count);
     }
 }

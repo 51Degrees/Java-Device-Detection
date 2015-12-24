@@ -53,7 +53,61 @@ import java.util.List;
  */
 public class MemoryVariableList<T extends BaseEntity> extends 
         MemoryBaseList<T> {
+    
+    private final SearchVariableList search = new SearchVariableList();
+    
+    /**
+     * Constructs a new instance of VariableList of type T.
+     *
+     * @param dataSet The DetectorDataSet being created.
+     * @param reader BinaryReader connected to the source data structure and
+     *               positioned to start reading.
+     * @param entityFactory Interface implementation used to create and size new
+     *                      entities of type T.
+     */
+    public MemoryVariableList(Dataset dataSet, BinaryReader reader,
+            BaseEntityFactory<T> entityFactory) {
+        super(dataSet, reader, entityFactory);
+    }
 
+    /**
+     * Reads the list into memory.
+     * 
+     * @param reader BinaryReader connected to the source data structure and
+     *               positioned to start reading.
+     * @throws java.io.IOException if there was a problem accessing data file.
+     */
+    @Override
+    public void read(BinaryReader reader) throws IOException {
+        int offset = 0;
+        for (int index = 0; index < header.getCount(); index++) {
+            T entity = (T)entityFactory.create(dataSet, offset, reader);
+            super.array.add(entity);
+            offset += entityFactory.getLength(entity);
+        }
+    }
+
+    /**
+     * Accessor for the variable list.
+     * <p>
+     * As all the entities are held in memory and in ascending order of 
+     * offset a BinarySearch can be used to determine the one that relates to 
+     * the given offset rapidly.
+     *
+     * @param offset the offset position in the data structure to the entity to
+     *               be returned from the list.
+     * @return Entity at the offset requested.
+     * @throws java.io.IOException if there was a problem accessing data file.
+     */
+    @Override
+    public T get(int offset) throws IOException {
+        int index = search.binarySearch(offset);
+        if (index >= 0)
+            return array.get(index);
+        return null;
+    }
+    
+    // <editor-fold defaultstate="collapsed" desc="Private static class for binary search access.">
     /**
      * Used to search the list using the offset key for the items.
      */
@@ -75,59 +129,8 @@ public class MemoryVariableList<T extends BaseEntity> extends
         }
         
         int binarySearch(Integer offset) throws IOException {
-            return super.binarySearch(array, offset).getIndex();
+            return super.binarySearch(array, offset);
         }
     }
-    
-    private final SearchVariableList search = new SearchVariableList();
-    
-    /**
-     * Constructs a new instance of VariableList of type T.
-     *
-     * @param dataSet The DetectorDataSet being created.
-     * @param reader Reader connected to the source data structure and
-     * positioned to start reading.
-     * @param entityFactory Interface implementation used to create and size new
-     * entities of type T.
-     */
-    public MemoryVariableList(Dataset dataSet, BinaryReader reader,
-            BaseEntityFactory<T> entityFactory) {
-        super(dataSet, reader, entityFactory);
-    }
-
-    /**
-     * Reads the list into memory.
-     * 
-     * @param reader Reader connected to the source data structure and
-     * positioned to start reading.
-     * @throws java.io.IOException if there was a problem accessing data file.
-     */
-    @Override
-    public void read(BinaryReader reader) throws IOException {
-        int offset = 0;
-        for (int index = 0; index < header.getCount(); index++) {
-            T entity = (T)entityFactory.create(dataSet, offset, reader);
-            super.array.add(entity);
-            offset += entityFactory.getLength(entity);
-        }
-    }
-
-    /**
-     * Accessor for the variable list.
-     * <p> As all the entities are held in memory and in ascending order of 
-     * offset a BinarySearch can be used to determine the one that relates to 
-     * the given offset rapidly.
-     *
-     * @param offset The offset position in the data structure to the entity to
-     * be returned from the list.
-     * @return Entity at the offset requested.
-     * @throws java.io.IOException if there was a problem accessing data file.
-     */
-    @Override
-    public T get(int offset) throws IOException {
-        int index = search.binarySearch(offset);
-        if (index >= 0)
-            return array.get(index);
-        return null;
-    }
+    // </editor-fold>
 }

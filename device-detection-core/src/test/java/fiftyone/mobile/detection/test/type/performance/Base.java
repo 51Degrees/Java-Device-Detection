@@ -147,7 +147,7 @@ public abstract class Base extends DetectionTestSupport {
             String.format("Average time of '%d' ms exceeded guidance time of '%d' ms",
                 results.getAverageTime(),
                 guidanceTime),
-            results.getAverageTime() < guidanceTime);
+            results.getAverageTime() <= guidanceTime);
         return results;
     }
 
@@ -158,7 +158,7 @@ public abstract class Base extends DetectionTestSupport {
             String.format("Average time of '%d' ms exceeded guidance time of '%d' ms",
                 results.getAverageTime(),
                 guidanceTime),
-            results.getAverageTime() < guidanceTime);
+            results.getAverageTime() <= guidanceTime);
         return results;
     }    
         

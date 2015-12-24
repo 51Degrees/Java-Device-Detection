@@ -20,12 +20,12 @@
  * ********************************************************************* */
 package fiftyone.mobile.detection.entities.stream;
 
-import fiftyone.mobile.detection.IClosableIterator;
-import fiftyone.mobile.detection.entities.IntegerEntity;
 import fiftyone.mobile.detection.factories.NodeFactoryShared;
 import fiftyone.mobile.detection.readers.BinaryReader;
 import fiftyone.properties.DetectionConstants;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Represents a Node which can be used with the Stream data set. NumericChidren 
@@ -41,7 +41,7 @@ public class NodeV32 extends Node {
      * A list of all the signature indexes that relate to this node.
      */
     @SuppressWarnings("VolatileArrayField")
-    private volatile int[] rankedSignatureIndexes;
+    private volatile List<Integer> rankedSignatureIndexes;
     
     /**
      * Constructs a new instance of NodeV32.
@@ -70,8 +70,8 @@ public class NodeV32 extends Node {
      */
     @Override
     @SuppressWarnings("DoubleCheckedLocking")
-    public int[] getRankedSignatureIndexes() throws IOException {
-        int[] localRankedSignatureIndexes = rankedSignatureIndexes;
+    public List<Integer> getRankedSignatureIndexes() throws IOException {
+        List<Integer> localRankedSignatureIndexes = rankedSignatureIndexes;
         if (localRankedSignatureIndexes == null) {
             synchronized (this) {
                 localRankedSignatureIndexes = rankedSignatureIndexes;
@@ -84,59 +84,44 @@ public class NodeV32 extends Node {
         return localRankedSignatureIndexes;
     }
     
+    // <editor-fold defaultstate="collapsed" desc="Private methods.">
+    private int getRankedSignatureIndexValue() throws IOException {
+        BinaryReader reader = pool.getReader();
+        try {
+            // Position the reader after the numeric children.
+            reader.setPos(numericChildrenPosition + (
+                    ( DetectionConstants.SIZE_OF_SHORT + 
+                      DetectionConstants.SIZE_OF_INT ) * 
+                    getNumericChildrenLength()));
+            return reader.readInt32();
+        } finally {
+            pool.release(reader);
+        }
+    }
+    
     /**
      * Gets the ranked signature indexes array for the node.
      * 
      * @return An array of length _rankedSignatureCount filled with ranked 
      * signature indexes.
      */
-    private int[] getRankedSignatureIndexesAsArray() throws IOException {
-        int[] rsi = null;
+    private List<Integer> getRankedSignatureIndexesAsArray() throws IOException {
+        // RankedSignatureIndexes (RSI).
+        List<Integer> rsi = null;
         if (rankedSignatureCount == 0) {
-            rsi = new int[0];
+            rsi = new ArrayList<Integer>(0);
         } else {
-            BinaryReader reader = null;
-            try {
-                reader = pool.getReader();
-                
-                // Position the reader after the numeric children.
-                reader.setPos(numericChildrenPosition + ((
-                        DetectionConstants.SIZE_OF_SHORT + 
-                        DetectionConstants.SIZE_OF_INT) * 
-                        getNumericChildrenLength()));
-                
-                // Read the index.
-                int rankedSignatureIndex = reader.readInt32();
-                
-                if (rankedSignatureCount == 1) {
-                    // If the count is one then the value is the 
-                    // ranked signature index.
-                    rsi = new int[rankedSignatureCount];
-                    rsi[0] = rankedSignatureIndex;
-                } else {
-                    // If the count is greater than one then the value is the 
-                    // index of the first ranked signature index in the merged 
-                    // list.
-                    IClosableIterator<IntegerEntity> range;
-                    range = dataSet.getNodeRankedSignatureIndexes()
-                        .getRange(rankedSignatureIndex, rankedSignatureCount);
-                    try {
-                        int currentIndex = 0;
-                        rsi = new int[rankedSignatureCount];
-                        while (range.hasNext()) {
-                            rsi[currentIndex] = range.next().getValue();
-                            currentIndex++;
-                        }
-                    } finally {
-                        range.close();
-                    }
-                }
-            } finally {
-                if (reader != null) {
-                    pool.release(reader);
-                }
+            int rankedSignatureValue = getRankedSignatureIndexValue();
+
+            if (rankedSignatureCount == 1) {
+                rsi = new ArrayList<Integer>();
+                rsi.add(rankedSignatureValue);
+            } else {
+                rsi = dataSet.getNodeRankedSignatureIndexes().getRange(
+                        rankedSignatureValue, rankedSignatureCount);
             }
         }
         return rsi;
     }
+    // </editor-fold>
 }

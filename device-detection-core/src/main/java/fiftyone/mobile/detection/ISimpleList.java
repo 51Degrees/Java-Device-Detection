@@ -6,7 +6,7 @@
  * This Source Code Form is the subject of the following patent 
  * applications, owned by 51Degrees Mobile Experts Limited of 5 Charlotte
  * Close, Caversham, Reading, Berkshire, United Kingdom RG4 7BY: 
- * European Patent Application No. 13192291.6; and
+ * European Patent Application No. 13192291.6; and 
  * United States Patent Application Nos. 14/085,223 and 14/085,301.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -15,30 +15,41 @@
  * If a copy of the MPL was not distributed with this file, You can obtain
  * one at http://mozilla.org/MPL/2.0/.
  * 
- * This Source Code Form is "Incompatible With Secondary Licenses", as
+ * This Source Code Form is “Incompatible With Secondary Licenses”, as
  * defined by the Mozilla Public License, v. 2.0.
  * ********************************************************************* */
+
 package fiftyone.mobile.detection;
 
-import java.io.IOException;
-
-import fiftyone.mobile.detection.entities.BaseEntity;
+import java.util.List;
 
 /**
  * Provides the ability to efficiently retrieve the items from the list using 
- * a ranged enumerable.
- * 
- * @param <T> Type of entity the list contains.
+ * a ranged enumerable. This list can be used with types that are returned from 
+ * the BinaryReader implementation where a factory is not required to construct 
+ * the entity.
  */
-public interface IFixedList<T extends BaseEntity> extends IReadonlyList<T> {
+public interface ISimpleList {
+    
     /**
-     * Returns an enumerable starting at the index provided until count number 
-     * of iterations have been performed.
-     * @param index Start index in the fixed list.
-     * @param count Number of iterations to perform.
-     * @return An enumerable to iterate over the range specified.
-     * @throws java.io.IOException if there was a problem accessing data file.
+     * Returns the values in the list starting at the index provided.
+     * 
+     * @param index first index of the range required.
+     * @param count number of elements to return.
+     * @return A list of the items in the range requested.
      */
-    public abstract IClosableIterator<T> getRange(int index, int count) 
-                                                            throws IOException;
+    public List<Integer> getRange(int index, int count);
+    
+    /**
+     * Returns the value in the list at the index provided.
+     * 
+     * @param index of the value required.
+     * @return Value at the index requested.
+     */
+    public int get(int index);
+    
+    /**
+     * @return the number of items in the list.
+     */
+    public int size();
 }

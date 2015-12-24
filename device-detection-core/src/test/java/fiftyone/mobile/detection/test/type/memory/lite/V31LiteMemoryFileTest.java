@@ -22,7 +22,6 @@
 package fiftyone.mobile.detection.test.type.memory.lite;
 
 import fiftyone.mobile.detection.Dataset;
-import fiftyone.mobile.detection.factories.StreamFactory;
 import fiftyone.mobile.detection.Filename;
 import fiftyone.mobile.detection.test.TestType;
 import fiftyone.mobile.detection.test.common.UserAgentGenerator;
@@ -39,7 +38,7 @@ import org.junit.After;
 @Category({TestType.DataSetLite.class, TestType.TypeMemory.class})
 public class V31LiteMemoryFileTest extends MemoryBase {
 
-    private static String filename = Filename.LITE_PATTERN_V31;
+    private static final String filename = Filename.LITE_PATTERN_V31;
     private static Dataset dataset;
 
     @BeforeClass
@@ -67,27 +66,27 @@ public class V31LiteMemoryFileTest extends MemoryBase {
     @Test
     @Category({TestType.DataSetLite.class, TestType.TypeMemory.class})
     public void uniqueUserAgentsMulti() throws IOException {
-        super.userAgentsMulti(UserAgentGenerator.getUniqueUserAgents(), 20);
+        super.userAgentsMulti(UserAgentGenerator.getUniqueUserAgents(), 45);
     }
 
     @Test
     public void uniqueUserAgentsSingle() throws IOException {
-        super.userAgentsSingle(UserAgentGenerator.getUniqueUserAgents(), 20);
+        super.userAgentsSingle(UserAgentGenerator.getUniqueUserAgents(), 28);
     }
 
     @Test
     public void randomUserAgentsMulti() throws IOException {
-        super.userAgentsMulti(UserAgentGenerator.getRandomUserAgents(), 20);
+        super.userAgentsMulti(UserAgentGenerator.getRandomUserAgents(), 45);
     }
 
     @Test
     public void randomUserAgentsSingle() throws IOException {
-        super.userAgentsSingle(UserAgentGenerator.getRandomUserAgents(), 20);
+        super.userAgentsSingle(UserAgentGenerator.getRandomUserAgents(), 28);
     }
 
     @Test
     public void badUserAgentsMulti() throws IOException {
-        super.userAgentsMulti(UserAgentGenerator.getBadUserAgents(), 50);
+        super.userAgentsMulti(UserAgentGenerator.getBadUserAgents(), 58);
     }
 
     @Test
