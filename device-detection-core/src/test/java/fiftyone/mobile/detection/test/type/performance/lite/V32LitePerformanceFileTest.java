@@ -50,7 +50,7 @@ public class V32LitePerformanceFileTest extends FileBase {
     @Test
     public void badUserAgentsMulti() throws IOException
     {
-        super.badUserAgentsMulti(null, 1);
+        super.badUserAgentsMulti(null, 3);
     }
 
     @Test
@@ -86,13 +86,13 @@ public class V32LitePerformanceFileTest extends FileBase {
     @Test
     public void badUserAgentsMultiAll() throws IOException
     {
-        super.badUserAgentsMulti(super.dataSet.properties, 1);
+        super.badUserAgentsMulti(super.dataSet.properties, 5);
     }
 
     @Test
     public void badUserAgentsSingleAll() throws IOException
     {
-        super.badUserAgentsSingle(super.dataSet.properties, 4);
+        super.badUserAgentsSingle(super.dataSet.properties, 6);
     }
 
     @Test

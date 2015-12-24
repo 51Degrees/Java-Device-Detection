@@ -20,11 +20,13 @@
  * ********************************************************************* */
 package fiftyone.mobile.detection;
 
+import fiftyone.mobile.detection.search.SearchLists;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 
 /**
  * Used to filter multiple lists of ordered ranked signature indexes so that 
@@ -34,6 +36,30 @@ import java.util.Comparator;
  */
 class MostFrequentFilter extends ArrayList<Integer> {
     
+    // <editor-fold defaultstate="collapsed" desc="Private static classes">
+    private static class OrderedListComparator implements 
+                                                Comparator<OrderedList> {
+        @Override
+        public int compare(OrderedList o1, OrderedList o2) {
+            return o1.items.size() - o2.items.size();
+        }
+    }
+    
+    private static class OrderedListSearch 
+        extends SearchLists<Integer, Integer> {
+        
+        @Override
+        public int compareTo(Integer item, Integer key) {
+            return item.compareTo(key);
+        }
+    } 
+    // </editor-fold>
+    
+    private static final OrderedListSearch search = 
+            new OrderedListSearch();
+    private static final OrderedListComparator comparator = 
+            new OrderedListComparator();
+    
     /**
      * Constructor used for unit testing.
      * 
@@ -41,10 +67,11 @@ class MostFrequentFilter extends ArrayList<Integer> {
      * @param maxResults the maximum number of results to return.
      * @throws IOException if there was a problem accessing data file.
      */
-    MostFrequentFilter(int[][] lists, int maxResults) {
-        OrderedList[] localLists = new OrderedList[lists.length];
-        for (int i = 0; i < lists.length; i++) {
-            localLists[i] = new OrderedList(lists[i]);
+    MostFrequentFilter(List<List<Integer>> lists, int maxResults) 
+                                                            throws IOException {
+        OrderedList[] localLists = new OrderedList[lists.size()];
+        for (int i = 0; i < lists.size(); i++) {
+            localLists[i] = new OrderedList(lists.get(i));
         }
         Init(localLists, maxResults);
     }
@@ -75,23 +102,18 @@ class MostFrequentFilter extends ArrayList<Integer> {
      * @param lists array of OrderedList to check.
      * @param maxResults upper limit.
      */
-    private void Init(OrderedList[] lists, int maxResults) {
+    private void Init(OrderedList[] lists, int maxResults) throws IOException {
         int topCount = 0;
         if (lists.length == 1) {
-            if (lists[0].items.length < maxResults) {
-                maxResults = lists[0].items.length;
+            if (lists[0].items.size() < maxResults) {
+                maxResults = lists[0].items.size();
             }
             for (int i = 0; i < maxResults; i++) {
-                add(lists[0].items[i]);
+                add(lists[0].items.get(i));
             }
         } else if (lists.length > 1) {
-            Arrays.sort(lists, new Comparator<OrderedList>() {
-                @Override
-                public int compare(OrderedList o1, OrderedList o2) {
-                return o1.items.length - o2.items.length;
-                }
-            });
-            for (int listIndex = 0; 
+            Arrays.sort(lists, comparator);
+            for (int listIndex = 0;
                     listIndex < lists.length && 
                     (lists.length - listIndex) >= topCount; 
                     listIndex++) {
@@ -125,10 +147,11 @@ class MostFrequentFilter extends ArrayList<Integer> {
      * 
      * @param lists OrderedList array being filtered.
      * @param index Index of the list whose current value should be checked in 
-     * prior lists.
+     *      prior lists.
      * @return True if the value has been processed, otherwise false.
      */
-    private boolean getHasProcessed(OrderedList[] lists, int index) {
+    private boolean getHasProcessed(OrderedList[] lists, int index) 
+                                                            throws IOException {
         for (int i = (index - 1); i >= 0; i--) {
             if (lists[i].contains(lists[index].current())) {
                 return true;
@@ -144,9 +167,10 @@ class MostFrequentFilter extends ArrayList<Integer> {
      * @param index of the list whose current value should be counted.
      * @param topCount highest count so far.
      * @return Number of lists that contain the value held by the list at the 
-     * index.
+     *      index.
      */
-    private int getCount(OrderedList[] lists, int index, int topCount) {
+    private int getCount(OrderedList[] lists, int index, int topCount) 
+                                                            throws IOException {
         int count = 1;
         for (int i = index + 1; 
                 i < lists.length && 
@@ -164,7 +188,7 @@ class MostFrequentFilter extends ArrayList<Integer> {
      * lists that are being filtered.
      */
     private class OrderedList {
-        private final int[] items;
+        private final List<Integer> items;
         private int nextStartIndex;
         private int currentIndex;
         
@@ -173,7 +197,7 @@ class MostFrequentFilter extends ArrayList<Integer> {
          * 
          * @param items Array of integers to include in the list.
          */
-        OrderedList(int[] items) {
+        OrderedList(List<Integer> items) {
             this.items = items;
             this.nextStartIndex = 0;
             this.currentIndex = -1;
@@ -187,12 +211,11 @@ class MostFrequentFilter extends ArrayList<Integer> {
          * @param value integer to be checked in the list.
          * @return True if the list contains the value, otherwise false.
          */
-        boolean contains(int value) {
-            int itemIndex = Arrays.binarySearch(
-                    this.items, 
-                    this.nextStartIndex, 
-                    this.items.length, 
-                    value);
+        boolean contains(int value) throws IOException {
+            int itemIndex = 
+                    search.binarySearch(items, value, this.nextStartIndex, 
+                                        items.size() - 1);
+
             if (itemIndex < 0) {
                 this.nextStartIndex = ~itemIndex;
             }
@@ -206,7 +229,7 @@ class MostFrequentFilter extends ArrayList<Integer> {
          * @return item at current index.
          */
         int current() {
-            return this.items[this.currentIndex];
+            return this.items.get(this.currentIndex);
         }
         
         /**
@@ -219,7 +242,7 @@ class MostFrequentFilter extends ArrayList<Integer> {
          */
         boolean moveNext() {
             this.currentIndex++;
-            return this.currentIndex < this.items.length;
+            return this.currentIndex < this.items.size();
         }
         
         /**

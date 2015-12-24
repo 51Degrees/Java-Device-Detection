@@ -40,7 +40,7 @@ public class NodeMemoryFactoryV31 extends NodeFactory {
      * 
      * @param dataSet The data set whose node list the node is contained within.
      * @param index The offset to the start of the node within the string data 
-     * structure.
+     *              structure.
      * @param reader Binary reader positioned at the start of the Node.
      * @return A new instance of a Node.
      */
@@ -66,7 +66,7 @@ public class NodeMemoryFactoryV31 extends NodeFactory {
                     NodeFactoryShared.getNodeIndexLengthV31()) + 
                 (entity.getNumericChildrenLength() * 
                     getNodeNumericIndexLength()) + 
-                (entity.getRankedSignatureIndexes().length * 
+                (entity.getRankedSignatureIndexes().size() * 
                     DetectionConstants.SIZE_OF_INT);
     }
 }

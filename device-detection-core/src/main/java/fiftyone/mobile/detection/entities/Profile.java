@@ -126,7 +126,8 @@ public abstract class Profile extends BaseEntity implements Comparable<Profile> 
             synchronized (this) {
                 localComponent = component;
                 if (localComponent == null) {
-                    component = localComponent = getDataSet().getComponents().get(componentIndex);
+                    component = localComponent = 
+                            getDataSet().getComponents().get(componentIndex);
                 }
             }
         }
@@ -159,6 +160,7 @@ public abstract class Profile extends BaseEntity implements Comparable<Profile> 
     /**
      * Returns an array of properties the profile relates to. Used by the 
      * getProperties method.
+     * 
      * @return Returns an array of properties the profile relates to.
      */
     private Property[] doGetProperties() throws IOException {
@@ -219,6 +221,7 @@ public abstract class Profile extends BaseEntity implements Comparable<Profile> 
     
     /**
      * Gets the values associated with the property for this profile.
+     * 
      * @param property Property to be returned.
      * @return Array of values associated with the property and profile.
      */
@@ -226,9 +229,8 @@ public abstract class Profile extends BaseEntity implements Comparable<Profile> 
         // Work out the start and end index in the values associated
         // with the profile that relate to this property.
         Value[] result;
-        //Arrays.sort(getValueIndexes());
-        //int start = getValuesIndex(property.firstValueIndex, 0);
-        int start = Arrays.binarySearch(getValueIndexes(), property.firstValueIndex);
+        int start = 
+                Arrays.binarySearch(getValueIndexes(), property.firstValueIndex);
         
         // If the start is negative then the first value doesn't exist.
         // Take the complement and use this as the first index which will 
@@ -238,7 +240,6 @@ public abstract class Profile extends BaseEntity implements Comparable<Profile> 
             start = ~start;
         }
         
-        //int end = getValuesIndex(property.getLastIndexValue(), start);
         int end = Arrays.binarySearch(getValueIndexes(), 
                 start, 
                 (getValueIndexes().length), 
@@ -366,11 +367,13 @@ public abstract class Profile extends BaseEntity implements Comparable<Profile> 
     /**
      * A hash map relating the index of a property to the values returned 
      * by the profile. Used to speed up subsequent data processing.
+     * 
      * @return a hash map with property indexes mapped to corresponding values.
      */
     @SuppressWarnings("DoubleCheckedLocking")
     private SortedList<Integer, Values> getPropertyIndexToValues() {
-        SortedList<Integer, Values> localPropertyIndexToValues = propertyIndexToValues;
+        SortedList<Integer, Values> localPropertyIndexToValues = 
+                propertyIndexToValues;
         if (localPropertyIndexToValues == null) {
             synchronized(this) {
                 localPropertyIndexToValues = propertyIndexToValues;
@@ -422,10 +425,12 @@ public abstract class Profile extends BaseEntity implements Comparable<Profile> 
                             }
                             stringValue = localStringValue = sb.toString();
                         } else {
-                            stringValue = localStringValue = String.valueOf(profileId);
+                            stringValue = 
+                                    localStringValue = String.valueOf(profileId);
                         }
                     } catch (IOException e) {
-                        stringValue = localStringValue = String.valueOf(profileId);
+                        stringValue = 
+                                localStringValue = String.valueOf(profileId);
                     }
                 }
             }

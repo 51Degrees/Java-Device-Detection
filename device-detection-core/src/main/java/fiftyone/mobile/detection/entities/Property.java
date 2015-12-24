@@ -159,7 +159,8 @@ public class Property extends BaseEntity implements Comparable<Property> {
             synchronized (this) {
                 localName = name;
                 if (localName == null) {
-                    name = localName = getDataSet().strings.get(nameOffset).toString();
+                    name = localName = 
+                            getDataSet().strings.get(nameOffset).toString();
                 }
             }
         }
@@ -188,7 +189,8 @@ public class Property extends BaseEntity implements Comparable<Property> {
             synchronized (this) {
                 localDefaultValue = defaultValue;
                 if (localDefaultValue == null) {
-                    defaultValue = localDefaultValue = getDataSet().getValues().get(defaultValueIndex);
+                    defaultValue = localDefaultValue = 
+                            getDataSet().getValues().get(defaultValueIndex);
                 }
             }
         }
@@ -210,7 +212,8 @@ public class Property extends BaseEntity implements Comparable<Property> {
             synchronized (this) {
                 localComponent = component;
                 if (localComponent == null) {
-                    component = localComponent = getDataSet().components.get(componentIndex);
+                    component = localComponent = 
+                            getDataSet().components.get(componentIndex);
                 }
             }
         }
@@ -255,8 +258,8 @@ public class Property extends BaseEntity implements Comparable<Property> {
             synchronized (this) {
                 localDescription = description;
                 if (localDescription == null) {
-                    description = localDescription = getDataSet().strings
-                            .get(descriptionOffset).toString();
+                    description = localDescription = 
+                            getDataSet().strings.get(descriptionOffset).toString();
                 }
             }
         }
@@ -279,8 +282,8 @@ public class Property extends BaseEntity implements Comparable<Property> {
             synchronized (this) {
                 localCategory = category;
                 if (localCategory == null) {
-                    category = localCategory = getDataSet().strings.get(categoryOffset)
-                            .toString();
+                    category = localCategory = 
+                            getDataSet().strings.get(categoryOffset).toString();
                 }
             }
         }
@@ -303,8 +306,9 @@ public class Property extends BaseEntity implements Comparable<Property> {
                 localUrl = url;
                 if (localUrl == null) {
                     try {
-                        url = localUrl = new URL(getDataSet().strings.get(urlOffset)
-                                .toString());
+                        url = localUrl = 
+                                new URL(getDataSet().strings.get(urlOffset).
+                                toString());
                     } catch (MalformedURLException e) {
                         url = localUrl = null;
                     }
@@ -332,7 +336,8 @@ public class Property extends BaseEntity implements Comparable<Property> {
      * @param reader BinaryReader to be used.
      * @throws IOException if there was a problem accessing data file.
      */
-    public Property(Dataset dataSet, int index, BinaryReader reader) throws IOException {
+    public Property(Dataset dataSet, int index, BinaryReader reader) 
+                                                            throws IOException {
         super(dataSet, index);
         this.componentIndex = reader.readByte();
         this.displayOrder = reader.readByte();

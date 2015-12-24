@@ -34,6 +34,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.io.IOException;
+import org.junit.After;
 
 @Category({TestType.DataSetEnterprise.class, TestType.TypeMemory.class})
 public class V31EnterpriseMemoryFileTest extends MemoryBase {
@@ -49,6 +50,7 @@ public class V31EnterpriseMemoryFileTest extends MemoryBase {
     @BeforeClass
     public static void setUp() throws IOException {
         if (fileExists(filename)) dataset = StreamFactory.create(filename, false);
+        dataset = getInitialisedDataset(filename, false, 30, null, false);
     }
 
     @Before
@@ -61,26 +63,32 @@ public class V31EnterpriseMemoryFileTest extends MemoryBase {
         if (dataset != null) dataset.close();
         dataset = null;
     }
+    
+    @After
+    public void resetCache() {
+        dataset.resetCache();
+        System.gc();
+    }
 
     @Test
     @Category({TestType.DataSetEnterprise.class, TestType.TypeMemory.class})
     public void uniqueUserAgentsMulti() throws IOException {
-        super.userAgentsMulti(UserAgentGenerator.getUniqueUserAgents(), 30);
+        super.userAgentsMulti(UserAgentGenerator.getUniqueUserAgents(), 65);
     }
 
     @Test
     public void uniqueUserAgentsSingle() throws IOException {
-        super.userAgentsSingle(UserAgentGenerator.getUniqueUserAgents(), 30);
+        super.userAgentsSingle(UserAgentGenerator.getUniqueUserAgents(), 31);
     }
 
     @Test
     public void randomUserAgentsMulti() throws IOException {
-        super.userAgentsMulti(UserAgentGenerator.getRandomUserAgents(), 30);
+        super.userAgentsMulti(UserAgentGenerator.getRandomUserAgents(), 65);
     }
 
     @Test
     public void randomUserAgentsSingle() throws IOException {
-        super.userAgentsSingle(UserAgentGenerator.getRandomUserAgents(), 30);
+        super.userAgentsSingle(UserAgentGenerator.getRandomUserAgents(), 35);
     }
 
     @Test
@@ -90,6 +98,6 @@ public class V31EnterpriseMemoryFileTest extends MemoryBase {
 
     @Test
     public void badUserAgentsSingle() throws IOException {
-        super.userAgentsSingle(UserAgentGenerator.getBadUserAgents(), 80);
+        super.userAgentsSingle(UserAgentGenerator.getBadUserAgents(), 78);
     }
 }

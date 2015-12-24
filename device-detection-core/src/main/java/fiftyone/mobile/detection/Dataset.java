@@ -30,7 +30,6 @@ import java.util.concurrent.TimeUnit;
 import fiftyone.mobile.detection.entities.AsciiString;
 import fiftyone.mobile.detection.entities.Component;
 import fiftyone.mobile.detection.entities.Guid;
-import fiftyone.mobile.detection.entities.IntegerEntity;
 import fiftyone.mobile.detection.entities.Map;
 import fiftyone.mobile.detection.entities.Modes;
 import fiftyone.mobile.detection.entities.Node;
@@ -68,78 +67,7 @@ import java.io.Closeable;
  * For more information see https://51degrees.com/Support/Documentation/Java
  */
 public class Dataset implements Closeable {
-    
-    /**
-     * Used to search for a signature from a list of nodes.
-     */
-    static class SearchSignatureByNodes 
-        extends SearchBase<Signature, List<Node>, IReadonlyList<Signature>> {
 
-        private final IReadonlyList<Signature> signatures;
-        
-        SearchSignatureByNodes(IReadonlyList<Signature> signatures) {
-            this.signatures = signatures;
-        }
-        
-        @Override
-        protected int getCount(IReadonlyList<Signature> list) {
-            return list.size();
-        }
-
-        @Override
-        protected Signature getValue(IReadonlyList<Signature> list, int index) 
-                throws IOException {
-            return list.get(index);
-        }
-
-        @Override
-        protected int compareTo(Signature item, List<Node> nodes) 
-                throws IOException {
-            return item.compareTo(nodes);
-        }
-        
-        SearchResult binarySearch(List<Node> nodes) throws IOException {
-            return super.binarySearch(signatures, nodes);
-        }
-    }
-    
-    /**
-     * Used to search for a profile offset from a profile id.
-     */
-    private static class SearchProfileOffsetByProfileId 
-        extends SearchBase<ProfileOffset, Integer, IReadonlyList<ProfileOffset>> {
-
-        private final IReadonlyList<ProfileOffset> profileOffsets;
-        
-        SearchProfileOffsetByProfileId(
-                IReadonlyList<ProfileOffset> profileOffsets) {
-            this.profileOffsets = profileOffsets;
-        }
-        
-        @Override
-        protected int getCount(IReadonlyList<ProfileOffset> list) {
-            return list.size();
-        }
-
-        @Override
-        protected ProfileOffset getValue(
-                IReadonlyList<ProfileOffset> list, 
-                int index) 
-                throws IOException {
-            return list.get(index);
-        }
-
-        @Override
-        protected int compareTo(ProfileOffset item, Integer profileId) 
-                throws IOException {
-            return item.getProfileId() - profileId;
-        }
-        
-        SearchResult binarySearch(Integer profileId) throws IOException {
-            return super.binarySearch(profileOffsets, profileId);
-        }
-    }
-    
     /**
      * Age of the data in months when exported.
      */
@@ -157,8 +85,8 @@ public class Dataset implements Closeable {
      */
     public int copyrightOffset;
     /**
-     * The number of bytes to allocate to a buffer returning CSV format data for
-     * a match.
+     * The number of bytes to allocate to a buffer returning CSV format data 
+     * for a match.
      */
     public int csvBufferLength;
     /**
@@ -205,8 +133,8 @@ public class Dataset implements Closeable {
      */
     public int maxSignatures;
     /**
-     * The maximum number of signatures that could possibly be returned during a
-     * closest match.
+     * The maximum number of signatures that could possibly be returned during 
+     * a closest match.
      */
     public int maxSignaturesClosest;
     /**
@@ -250,7 +178,7 @@ public class Dataset implements Closeable {
     /**
      * List of integers that represent ranked signature indexes.
      */
-    public IFixedList<IntegerEntity> nodeRankedSignatureIndexes;
+    public ISimpleList nodeRankedSignatureIndexes;
     /**
      * A list of all the possible profiles the data set contains.
      */
@@ -272,7 +200,7 @@ public class Dataset implements Closeable {
      * the node ranked signature indexes lists to identify the corresponding 
      * signature.
      */
-    public IFixedList<IntegerEntity> rankedSignatureIndexes;
+    public ISimpleList rankedSignatureIndexes;
     /**
      * Nodes for each of the possible character positions in the User-Agent.
      */
@@ -284,7 +212,7 @@ public class Dataset implements Closeable {
      /**
      * List of integers that represent signature node offsets.
      */
-    public IFixedList<IntegerEntity> signatureNodeOffsets;
+    public ISimpleList signatureNodeOffsets;
     /**
      * The number of profiles each signature can contain.
      */
@@ -321,8 +249,9 @@ public class Dataset implements Closeable {
     
     /**
      * Constructs a new data set ready to have lists of data assigned to it.
+     * 
      * @param lastModified The date and time the source of the data was 
-     * last modified.
+     *                     last modified.
      * @param mode The mode of operation the data set will be using.
      * @throws java.io.IOException signals an I/O exception occurred
      */
@@ -640,6 +569,7 @@ public class Dataset implements Closeable {
     
     /**
      * Used to search for a signature from a list of nodes.
+     * 
      * @return search instance connected to the list of signatures
      */
     @SuppressWarnings("DoubleCheckedLocking")
@@ -659,7 +589,6 @@ public class Dataset implements Closeable {
     private volatile SearchSignatureByNodes sigantureSearch;
 
     /**
-     *
      * @return an instance of the profile offset search.
      */
     @SuppressWarnings("DoubleCheckedLocking")
@@ -778,7 +707,7 @@ public class Dataset implements Closeable {
      * 
      * @return list of integers that represent signature node offsets.
      */
-    public IFixedList<IntegerEntity> getSignatureNodeOffsets() {
+    public ISimpleList getSignatureNodeOffsets() {
         return signatureNodeOffsets;
     }
     
@@ -787,7 +716,7 @@ public class Dataset implements Closeable {
      * 
      * @return a list of integers that represent ranked signature indexes.
      */
-    public IFixedList<IntegerEntity> getNodeRankedSignatureIndexes() {
+    public ISimpleList getNodeRankedSignatureIndexes() {
         return nodeRankedSignatureIndexes;
     }
     
@@ -983,20 +912,6 @@ public class Dataset implements Closeable {
     public Property get(String propertyName) throws IOException {
         return this.properties.get(propertyName);
     }
-    
-    /**
-     * Method is deprecated and should not be used. Use get( StringpropertyName)
-     * instead.
-     * Method searches for a property with the given name and returns the 
-     * Property if found. Returns null otherwise.
-     * @param propertyName name of the property to find as a string.
-     * @return Property object or null if no property with requested name exists
-     * @throws IOException if there was a problem accessing data file.
-     */
-    @Deprecated
-    public Property getPropertyByName(String propertyName) throws IOException {
-        return this.properties.get(propertyName);
-    }
 
     /**
      * Returns the number of {@link Profile profiles} each signature can contain. 
@@ -1029,18 +944,148 @@ public class Dataset implements Closeable {
      * @throws IOException signals an I/O exception occurred
      */
     public Profile findProfile(int profileId) throws IOException {
-        int index = getProfileOffsetSearch().binarySearch(profileId).getIndex();
+        int index = getProfileOffsetSearch().binarySearch(profileId);
         return index < 0 ? null : profiles.get(
                 profileOffsets.get(index).getOffset());
     }
 
     /**
      * Disposes of the data set releasing any file locks.
+     * 
      * @throws java.io.IOException if there was a problem accessing data file.
      */
     @Override
     public void close() throws IOException {
         disposed = true;
+    }
+
+    /**
+     * Returns a list of signature indexes ordered in ascending order of rank.
+     * 
+     * @return A list of signature indexes ordered in ascending order of rank.
+     */
+    public ISimpleList getRankedSignatureIndexes() {
+        return rankedSignatureIndexes;
+    } 
+
+    /**
+     * Returns the percentage of requests that weren't serviced by the cache.
+     * 
+     * @param list a Cache object to get percentage from.
+     * @return 0 if object is not Cache, percentage otherwise.
+     */
+    private static double getPercentageMisses(Object list) {
+        if (list instanceof ICacheList) {
+            ICacheList c = (ICacheList)list;
+            return c.getPercentageMisses();
+        }
+        return -1;
+    }
+
+    /**
+     * If there are cached lists being used the states are reset for them.
+     */
+    public void resetCache() {
+        //Do nothing in this implementation.
+    }
+    
+    /**
+     * Used to search for a signature from a list of nodes.
+     */
+    static class SearchSignatureByNodes 
+        extends SearchBase<Signature, List<Node>, IReadonlyList<Signature>> {
+
+        private final IReadonlyList<Signature> signatures;
+        
+        SearchSignatureByNodes(IReadonlyList<Signature> signatures) {
+            this.signatures = signatures;
+        }
+        
+        @Override
+        protected int getCount(IReadonlyList<Signature> list) {
+            return list.size();
+        }
+
+        @Override
+        protected Signature getValue(IReadonlyList<Signature> list, int index) 
+                throws IOException {
+            return list.get(index);
+        }
+
+        @Override
+        protected int compareTo(Signature item, List<Node> nodes) 
+                throws IOException {
+            return item.compareTo(nodes);
+        }
+        
+        SearchResult binarySearchResults(List<Node> nodes) throws IOException {
+            return super.binarySearchResults(signatures, nodes);
+        }
+    }
+    
+    /**
+     * Used to search for a profile offset from a profile id.
+     */
+    private static class SearchProfileOffsetByProfileId 
+        extends SearchBase<ProfileOffset, Integer, IReadonlyList<ProfileOffset>> {
+
+        private final IReadonlyList<ProfileOffset> profileOffsets;
+        
+        SearchProfileOffsetByProfileId(
+                IReadonlyList<ProfileOffset> profileOffsets) {
+            this.profileOffsets = profileOffsets;
+        }
+        
+        @Override
+        protected int getCount(IReadonlyList<ProfileOffset> list) {
+            return list.size();
+        }
+
+        @Override
+        protected ProfileOffset getValue(
+                IReadonlyList<ProfileOffset> list, 
+                int index) 
+                throws IOException {
+            return list.get(index);
+        }
+
+        @Override
+        protected int compareTo(ProfileOffset item, Integer profileId) 
+                throws IOException {
+            return item.getProfileId() - profileId;
+        }
+        
+        int binarySearch(Integer profileId) throws IOException {
+            return super.binarySearch(profileOffsets, profileId);
+        }
+    }
+    
+    // <editor-fold defaultstate="collapsed" desc="Deprecated methods">
+    /**
+     * Returns the number of times the cache lists were switched.
+     * Note: The LRU does not require switching and this method has been 
+     * deprecated.
+     * @param list a Cache object to get percentage from.
+     * @return 0 if object is not Cache, percentage otherwise.
+     */
+    @Deprecated
+    private static long getSwitches(Object list) {
+        if (list instanceof ICacheList) {
+            ICacheList c = (ICacheList)list;
+            return c.getSwitches();
+        }
+        return -1;
+    }
+    
+    /**
+     * Number of times the ranked signature cache was switched.
+     * A value is only returned when operating in Stream mode.
+     * 
+     * @return Number of times the ranked signature cache was switched.
+     */
+    @Deprecated
+    public long getRankedSignatureCacheSwitches() {
+        return getSwitches(rankedSignatureIndexes);
     }
     
     /**
@@ -1064,7 +1109,7 @@ public class Dataset implements Closeable {
      */
     @Deprecated
     public long getSignatureCacheSwitches() {
-        return getSwitches(signatures);
+        return 0;
     }
     
     /**
@@ -1116,58 +1161,17 @@ public class Dataset implements Closeable {
     }
     
     /**
-     * Returns a list of signature indexes ordered in ascending order of rank.
-     * 
-     * @return A list of signature indexes ordered in ascending order of rank.
-     */
-    public IFixedList<IntegerEntity> getRankedSignatureIndexes() {
-        return rankedSignatureIndexes;
-    } 
-    
-    /**
-     * Number of times the ranked signature cache was switched.
-     * A value is only returned when operating in Stream mode.
-     * 
-     * @return Number of times the ranked signature cache was switched.
+     * Method is deprecated and should not be used. Use get( StringpropertyName)
+     * instead.
+     * Method searches for a property with the given name and returns the 
+     * Property if found. Returns null otherwise.
+     * @param propertyName name of the property to find as a string.
+     * @return Property object or null if no property with requested name exists
+     * @throws IOException if there was a problem accessing data file.
      */
     @Deprecated
-    public long getRankedSignatureCacheSwitches() {
-        return getSwitches(rankedSignatureIndexes);
+    public Property getPropertyByName(String propertyName) throws IOException {
+        return this.properties.get(propertyName);
     }
-    
-    /**
-     * Returns the percentage of requests that weren't serviced by the cache.
-     * @param list a Cache object to get percentage from.
-     * @return 0 if object is not Cache, percentage otherwise.
-     */
-    private static double getPercentageMisses(Object list) {
-        if (list instanceof ICacheList) {
-            ICacheList c = (ICacheList)list;
-            return c.getPercentageMisses();
-        }
-        return -1;
-    }
-    
-    /**
-     * Returns the number of times the cache lists were switched.
-     * Note: The LRU does not require switching and this method has been 
-     * deprecated.
-     * @param list a Cache object to get percentage from.
-     * @return 0 if object is not Cache, percentage otherwise.
-     */
-    @Deprecated
-    private static long getSwitches(Object list) {
-        if (list instanceof ICacheList) {
-            ICacheList c = (ICacheList)list;
-            return c.getSwitches();
-        }
-        return -1;
-    }
-    
-    /**
-     * If there are cached lists being used the states are reset for them.
-     */
-    public void resetCache() {
-        //Do nothing in this implementation.
-    }
+    //</editor-fold>
 }

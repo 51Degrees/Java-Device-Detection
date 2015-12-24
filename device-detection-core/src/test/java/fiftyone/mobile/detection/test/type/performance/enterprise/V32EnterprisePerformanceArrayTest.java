@@ -36,7 +36,7 @@ public class V32EnterprisePerformanceArrayTest extends ArrayBase {
     
     @Override
     protected int getMaxSetupTime() {
-        return 500;
+        return 1000;
     }
     
     @Test
@@ -50,13 +50,13 @@ public class V32EnterprisePerformanceArrayTest extends ArrayBase {
     @Test
     public void badUserAgentsMulti() throws IOException
     {
-        super.badUserAgentsMulti(null, 1);
+        super.badUserAgentsMulti(null, 4);
     }
 
     @Test
     public void badUserAgentsSingle() throws IOException
     {
-        super.badUserAgentsSingle(null, 1);
+        super.badUserAgentsSingle(null, 6);
     }
 
     @Test
@@ -86,13 +86,13 @@ public class V32EnterprisePerformanceArrayTest extends ArrayBase {
     @Test
     public void badUserAgentsMultiAll() throws IOException
     {
-        super.badUserAgentsMulti(super.dataSet.properties, 1);
+        super.badUserAgentsMulti(super.dataSet.properties, 4);
     }
 
     @Test
     public void badUserAgentsSingleAll() throws IOException
     {
-        super.badUserAgentsSingle(super.dataSet.properties, 1);
+        super.badUserAgentsSingle(super.dataSet.properties, 7);
     }
 
     @Test

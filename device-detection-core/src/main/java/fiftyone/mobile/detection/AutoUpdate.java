@@ -222,7 +222,8 @@ public class AutoUpdate {
             
             // Download the device data, decompress, check validity and finally
             // replace the existing data file if all okay.
-            HttpURLConnection client = (HttpsURLConnection)fullUrl(licenceKeys).openConnection();
+            HttpURLConnection client = 
+                    (HttpsURLConnection)fullUrl(licenceKeys).openConnection();
             result = downloadFile(binaryFile, compressedTempFile, client);
             client.disconnect();
             
@@ -422,7 +423,7 @@ public class AutoUpdate {
         return status;
     }    
     
-        /**
+    /**
      * Method represents the final stage of the auto update process. The 
      * uncompressed file is swapped in place of the existing master file.
      * @param client HttpURLConnection object to get the Last-Modified HTTP 
@@ -504,7 +505,8 @@ public class AutoUpdate {
      * @param binaryFile path to a binary data file uncompressed
      * @return data set with header data only loaded
      */
-    private static Dataset getDataSetWithHeaderPopulated(File binaryFile) throws IOException {
+    private static Dataset getDataSetWithHeaderPopulated(File binaryFile) 
+                                                            throws IOException {
         Dataset dataSet = null; 
         if (binaryFile.exists()) {
             dataSet = new Dataset(
@@ -602,7 +604,7 @@ public class AutoUpdate {
     /**
      * Method initialises path to the a temporary file used during the auto 
      * update process.
-     * 
+     * <p>
      * The original data file does not have to exist, but the directory provided 
      * must exist and the path should not be a directory.
      * 
@@ -620,7 +622,7 @@ public class AutoUpdate {
     
     /**
      * Renames the source file to the destination file.
-     * 
+     * <p>
      * Sometimes the source file may still be locked by a previous memory
      * mapped file operation. In such instances the file can not be renamed. 
      * The method will try to rename the file 10 times forcing garbage 

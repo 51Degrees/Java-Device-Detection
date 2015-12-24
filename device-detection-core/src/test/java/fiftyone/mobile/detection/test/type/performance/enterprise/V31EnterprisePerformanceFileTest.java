@@ -50,13 +50,13 @@ public class V31EnterprisePerformanceFileTest extends FileBase {
     @Test
     public void badUserAgentsMulti() throws IOException
     {
-        super.badUserAgentsMulti(null, 1);
+        super.badUserAgentsMulti(null, 6);
     }
 
     @Test
     public void badUserAgentsSingle() throws IOException
     {
-        super.badUserAgentsSingle(null, 6);
+        super.badUserAgentsSingle(null, 10);
     }
 
     @Test
@@ -86,19 +86,19 @@ public class V31EnterprisePerformanceFileTest extends FileBase {
     @Test
     public void badUserAgentsMultiAll() throws IOException
     {
-        super.badUserAgentsMulti(super.dataSet.properties, 1);
+        super.badUserAgentsMulti(super.dataSet.properties, 7);
     }
 
     @Test
     public void badUserAgentsSingleAll() throws IOException
     {
-        super.badUserAgentsSingle(super.dataSet.properties, 4);
+        super.badUserAgentsSingle(super.dataSet.properties, 12);
     }
 
     @Test
     public void uniqueUserAgentsMultiAll() throws IOException
     {
-        super.uniqueUserAgentsMulti(super.dataSet.properties, 1);
+        super.uniqueUserAgentsMulti(super.dataSet.properties, 3);
     }
 
     @Test

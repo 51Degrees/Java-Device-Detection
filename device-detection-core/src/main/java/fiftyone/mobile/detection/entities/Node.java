@@ -25,6 +25,7 @@ import fiftyone.mobile.detection.MatchState;
 import fiftyone.mobile.detection.readers.BinaryReader;
 import fiftyone.mobile.detection.search.SearchArrays;
 import java.io.IOException;
+import java.util.List;
 
 /**
  * A node in the tree of characters for each character position.
@@ -48,15 +49,6 @@ import java.io.IOException;
  * For more information see https://51degrees.com/Support/Documentation/Java
  */
 public abstract class Node extends BaseEntity implements Comparable<Node> {
-    
-    private static class SearchNodeNumericIndex 
-        extends SearchArrays<NodeNumericIndex, Integer> {
-        
-        @Override
-        public int compareTo(NodeNumericIndex item, Integer key) {
-            return item.compareTo(key);
-        }
-    } 
     
     /**
      * The length of a node index.
@@ -111,8 +103,6 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
      * A list of all the child node indexes.
      */
     protected NodeIndex[] children;
-   
-
     
     /**
      * The parent index for this node.
@@ -194,8 +184,7 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
     Node getParent() throws IOException {
         Node localParent = parent;
         if (parentOffset >= 0 && localParent == null) {
-            
-            {
+            synchronized (this) {
                 localParent = parent;
                 if (localParent == null) {
                     parent = localParent = getDataSet().getNodes().get(parentOffset);
@@ -210,7 +199,6 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
      * character position is set.
      */
     boolean isComplete() {
-        //return nextCharacterPosition != Short.MIN_VALUE;
         return characterStringOffset >= 0;
     }
 
@@ -271,6 +259,9 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
      */
     public NodeNumericIndex[] readNodeNumericIndexes(Dataset dataSet, 
                                             BinaryReader reader, short count) {
+        if (count <= 0) {
+            return new NodeNumericIndex[0];
+        }
         NodeNumericIndex[] array = new NodeNumericIndex[count];
         for (int i = 0; i < array.length; i++) {
             array[i] = new NodeNumericIndex(dataSet, 
@@ -278,12 +269,6 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
         }
         return array;
     }
-
-    /**
-     * @return An array of the ranked signature indexes for the node.
-     * @throws java.io.IOException if there was a problem accessing data file.
-     */
-    public abstract int[] getRankedSignatureIndexes() throws IOException;
     
     /**
      * @return number of elements in the children array.
@@ -298,12 +283,6 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
     public int getNumericChildrenLength() {
         return numericChildrenCount;
     }
-    
-    /**
-     * @return an array of all the numeric children.
-     * @throws java.io.IOException if there was a problem accessing data file.
-     */
-    public abstract NodeNumericIndex[] getNumericChildren() throws IOException;
 
     /**
      * Called after the entire data set has been loaded to ensure any further
@@ -327,16 +306,6 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
         for (NodeIndex child : children) {
             child.init();
         }
-        /*
-        if (parentOffset >= 0) {
-            parent = getDataSet().getNodes().get(parentOffset);
-        }
-        root = getParent() == null ? this : getParent().getRoot();
-        for (NodeIndex child : children) {
-            child.init();
-        }
-        getCharacters();
-        */
     }
     
     /**
@@ -386,72 +355,6 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
     }
 
     /**
-     * Provides an iterator which provides the closest numeric children to the
-     * target is ascending order of difference
-     *
-     * @param target value of the sub string in the User-Agent
-     * @return an iterator configured to provide numeric children in ascending
-     * order of difference
-     */
-    private NodeNumericIndexIterator getNumericNodeIterator(int target) 
-            throws IOException {
-
-        if (target >= 0 && target <= Short.MAX_VALUE) {
-            Range range = getRange(target);
-
-            int startIndex = numericChildrenSearch.binarySearch(
-                    getNumericChildren(), target).getIndex();
-            if (startIndex < 0) {
-                startIndex = ~startIndex - 1;
-            }
-
-            return new NodeNumericIndexIterator(
-                    range, getNumericChildren(), target, startIndex);
-        }
-
-        return null;
-    }
-
-    /**
-     * Determines the range the target value falls between
-     *
-     * @param target value whose range is required
-     * @return the range the target falls between
-     */
-    private Range getRange(int target) {
-        for (Range range : ranges) {
-            if (range.inRange(target)) {
-                return range;
-            }
-        }
-        return ranges[ranges.length - 1];
-    }
-
-    /**
-     * Returns the node position as a number.
-     *
-     * @param state current working state of the matching process
-     * @return Null if there is no numeric characters, otherwise the characters
-     * as an integer
-     */
-    private int getCurrentPositionAsNumeric(MatchState state) {
-        // Find the left most numeric character from the current position.
-        int i = position;
-        while (i >= 0
-                && state.getTargetUserAgentArray()[i] >= (byte) '0'
-                && state.getTargetUserAgentArray()[i] <= (byte) '9') {
-            i--;
-        }
-        if (i < position) {
-            return getNumber(
-                    state.getTargetUserAgentArray(),
-                    i + 1,
-                    position - i);
-        }
-        return -1;
-    }
-
-    /**
      * Returns a complete node for the match object provided.
      *
      * @param state current working state of the matching process.
@@ -468,63 +371,6 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
             node = this;
         }
         return node;
-    }
-
-    /**
-     * Returns the next node for the characters provided from the start index
-     * for the number of characters specified.
-     *
-     * @param state current working state of the matching process
-     * @return The next child node, or null if there isn't one
-     */
-    private Node getNextNode(MatchState state) throws IOException {
-        int upper = children.length - 1;
-
-        if (upper >= 0) {
-
-            int lower = 0;
-            int middle = lower + (upper - lower) / 2;
-            int length = children[middle].getCharacters().length;
-            int startIndex = position - length + 1;
-
-            while (lower <= upper) {
-                middle = lower + (upper - lower) / 2;
-
-                // Increase the number of strings checked.
-                if (children[middle].isString) {
-                    state.incrStringsRead();
-                }
-
-                // Increase the number of nodes checked.
-                state.incrNodesEvaluated();
-
-                int comparisonResult = children[middle].compareTo(
-                        state.getTargetUserAgentArray(), startIndex);
-                if (comparisonResult == 0) {
-                    return children[middle].getNode();
-                } else if (comparisonResult > 0) {
-                    upper = middle - 1;
-                } else {
-                    lower = middle + 1;
-                }
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * Returns true if the node overlaps with this one.
-     *
-     * @param node
-     * @return
-     * @throws IOException
-     */
-    private boolean getIsOverlap(Node node) throws IOException {
-        Node lower = node.position < position ? node : this;
-        Node higher = lower == this ? node : this;
-        return lower.position == higher.position
-                || lower.getRoot().position > higher.position;
     }
 
     /**
@@ -583,7 +429,147 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
             return super.toString();
         }
     }
+    
+    // <editor-fold defaultstate="collapsed" desc="Private methods">
+    /**
+     * Returns the node position as a number.
+     *
+     * @param state current working state of the matching process
+     * @return Null if there is no numeric characters, otherwise the characters
+     * as an integer
+     */
+    private int getCurrentPositionAsNumeric(MatchState state) {
+        // Find the left most numeric character from the current position.
+        int i = position;
+        while (i >= 0
+                && state.getTargetUserAgentArray()[i] >= (byte) '0'
+                && state.getTargetUserAgentArray()[i] <= (byte) '9') {
+            i--;
+        }
+        if (i < position) {
+            return getNumber(
+                    state.getTargetUserAgentArray(),
+                    i + 1,
+                    position - i);
+        }
+        return -1;
+    }
+    
+    /**
+     * Returns true if the node overlaps with this one.
+     *
+     * @param node the other node.
+     * @return true if the node overlaps with this one.
+     * @throws IOException if there was a problem accessing data file.
+     */
+    private boolean getIsOverlap(Node node) throws IOException {
+        Node lower = node.position < position ? node : this;
+        Node higher = lower == this ? node : this;
+        return lower.position == higher.position
+                || lower.getRoot().position > higher.position;
+    }
+    
+    /**
+     * Returns the next node for the characters provided from the start index
+     * for the number of characters specified.
+     *
+     * @param state current working state of the matching process
+     * @return The next child node, or null if there isn't one
+     */
+    private Node getNextNode(MatchState state) throws IOException {
+        int upper = children.length - 1;
 
+        if (upper >= 0) {
+
+            int lower = 0;
+            int middle = lower + (upper - lower) / 2;
+            int length = children[middle].getCharacters().length;
+            int startIndex = position - length + 1;
+
+            while (lower <= upper) {
+                middle = lower + (upper - lower) / 2;
+
+                // Increase the number of strings checked.
+                if (children[middle].isString) {
+                    state.incrStringsRead();
+                }
+
+                // Increase the number of nodes checked.
+                state.incrNodesEvaluated();
+
+                int comparisonResult = children[middle].compareTo(
+                        state.getTargetUserAgentArray(), startIndex);
+                if (comparisonResult == 0) {
+                    return children[middle].getNode();
+                } else if (comparisonResult > 0) {
+                    upper = middle - 1;
+                } else {
+                    lower = middle + 1;
+                }
+            }
+        }
+
+        return null;
+    }
+    
+    /**
+     * Provides an iterator which provides the closest numeric children to the
+     * target is ascending order of difference
+     *
+     * @param target value of the sub string in the User-Agent
+     * @return an iterator configured to provide numeric children in ascending
+     * order of difference
+     */
+    private NodeNumericIndexIterator getNumericNodeIterator(int target) 
+            throws IOException {
+
+        if (target >= 0 && target <= Short.MAX_VALUE) {
+            Range range = getRange(target);
+
+            int startIndex = numericChildrenSearch.binarySearch(
+                    getNumericChildren(), target);
+            if (startIndex < 0) {
+                startIndex = ~startIndex - 1;
+            }
+
+            return new NodeNumericIndexIterator(
+                    range, getNumericChildren(), target, startIndex);
+        }
+
+        return null;
+    }
+    
+    /**
+     * Determines the range the target value falls between
+     *
+     * @param target value whose range is required
+     * @return the range the target falls between
+     */
+    private Range getRange(int target) {
+        for (Range range : ranges) {
+            if (range.inRange(target)) {
+                return range;
+            }
+        }
+        return ranges[ranges.length - 1];
+    }
+    // </editor-fold>
+    
+    // <editor-fold defaultstate="collapsed" desc="Abstract methods.">
+    /**
+     * @return an array of all the numeric children.
+     * @throws java.io.IOException if there was a problem accessing data file.
+     */
+    public abstract NodeNumericIndex[] getNumericChildren() throws IOException;
+    
+    /**
+     * @return An array of the ranked signature indexes for the node.
+     * @throws java.io.IOException if there was a problem accessing data file.
+     */
+    public abstract List<Integer> getRankedSignatureIndexes() throws IOException;
+    // </editor-fold>
+    
+    // <editor-fold defaultstate="collapsed" desc="Iterator for NodeNumericIndex">
     static class NodeNumericIndexIterator {
 
         private final NodeNumericIndex[] array;
@@ -595,15 +581,15 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
         private boolean highInRange;
 
         /**
-         *
+         * Creates a new NideNumericIndexIterator.
+         * 
          * @param range the range of values the iterator can return
          * @param array array of items that could be returned
          * @param target the target value
          * @param startIndex start index in the array
          */
-        NodeNumericIndexIterator(
-                Range range, NodeNumericIndex[] array,
-                int target, int startIndex) {
+        NodeNumericIndexIterator(Range range, NodeNumericIndex[] array,
+                                 int target, int startIndex) {
             this.range = range;
             this.array = array;
             this.target = target;
@@ -627,8 +613,10 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
 
             if (lowInRange && highInRange) {
                 // Get the differences between the two values.
-                int lowDifference = Math.abs(array[lowIndex].getValue() - target);
-                int highDifference = Math.abs(array[highIndex].getValue() - target);
+                int lowDifference = 
+                        Math.abs(array[lowIndex].getValue() - target);
+                int highDifference = 
+                        Math.abs(array[highIndex].getValue() - target);
 
                 // Favour the lowest value where the differences are equal.
                 if (lowDifference <= highDifference) {
@@ -668,4 +656,20 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
             return null;
         }
     }
+    // </editor-fold>
+    
+    // <editor-fold defaultstate="collapsed" desc="Private static class for binary search access">
+    /**
+     * Class provides access to the binary search functionality and overrides 
+     * the compareTo method. 
+     */
+    private static class SearchNodeNumericIndex 
+                            extends SearchArrays<NodeNumericIndex, Integer> {
+        
+        @Override
+        public int compareTo(NodeNumericIndex item, Integer key) {
+            return item.compareTo(key);
+        }
+    }
+    // </editor-fold>
 }

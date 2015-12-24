@@ -5,7 +5,7 @@
     <parent>
         <groupId>com.51degrees</groupId>
         <artifactId>device-detection</artifactId>
-        <version>3.2.2-SNAPSHOT</version>
+        <version>3.2.3.5-beta</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -58,6 +58,11 @@
         <!-- this profile tests lite only -->
         <profile>
             <id>test-dataset-lite-only</id>
+            <activation>
+                <file>
+                    <missing>${basedir}/data/51Degrees-EnterpriseV3.2.dat, ${basedir}/data/51Degrees-PremiumV3.2.dat, ${basedir}/data/51Degrees-PremiumV3.1.dat, ${basedir}/data/51Degrees-EnterpriseV3.1.dat</missing>
+                </file>
+            </activation>
             <build>
                 <plugins>
                     <plugin>

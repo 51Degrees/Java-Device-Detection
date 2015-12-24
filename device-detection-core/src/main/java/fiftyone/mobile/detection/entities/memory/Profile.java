@@ -50,8 +50,10 @@ public class Profile extends fiftyone.mobile.detection.entities.Profile {
         super(dataSet, offset, reader);
         int valueIndexesCount = reader.readInt32();
         int signatureIndexesCount = reader.readInt32();
-        this.valueIndexes = BaseEntity.readIntegerArray(reader, valueIndexesCount);
-        this.signatureIndexes = BaseEntity.readIntegerArray(reader, signatureIndexesCount);
+        this.valueIndexes = 
+                BaseEntity.readIntegerArray(reader, valueIndexesCount);
+        this.signatureIndexes = 
+                BaseEntity.readIntegerArray(reader, signatureIndexesCount);
     }
 
     /**
