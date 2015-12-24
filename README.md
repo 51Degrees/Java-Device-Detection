@@ -100,6 +100,19 @@ Data files which are updated weekly and daily, automatically, and with more prop
 
 ## Recent Changes
 
+### Version 3.2.3.5 Changes:
+Focus on improving tests, cleaning up documentation and API efficiency. Version highlights:
+
+Efficiency: IntegerFactory and IntegerEntity removed. More efficient integer lists are used instead, hence reducing the number of objects and significantly reducing memory consumption in memory mode.
+
+Build.xml has been removed as it no longer serves any purpose.
+
+Tests: general improvements and more realistic values. Memory tests for array and memory modes now use a file size multiplier. New tests added to validate stream and memory detections produce the same results.
+
+General: indentation and javadoc improvements.
+
+IFixedList removed, ISimpleList is used instead. New interface allows to retrieve a reference to a range of values in a list.
+
 ### Version 3.2.2.20 Changes:
 Project structure has been changed to Maven project.
 
