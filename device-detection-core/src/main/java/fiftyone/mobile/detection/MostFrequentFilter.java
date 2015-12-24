@@ -150,7 +150,8 @@ class MostFrequentFilter extends ArrayList<Integer> {
      *      prior lists.
      * @return True if the value has been processed, otherwise false.
      */
-    private boolean getHasProcessed(OrderedList[] lists, int index) throws IOException {
+    private boolean getHasProcessed(OrderedList[] lists, int index) 
+                                                            throws IOException {
         for (int i = (index - 1); i >= 0; i--) {
             if (lists[i].contains(lists[index].current())) {
                 return true;
@@ -168,7 +169,8 @@ class MostFrequentFilter extends ArrayList<Integer> {
      * @return Number of lists that contain the value held by the list at the 
      *      index.
      */
-    private int getCount(OrderedList[] lists, int index, int topCount) throws IOException {
+    private int getCount(OrderedList[] lists, int index, int topCount) 
+                                                            throws IOException {
         int count = 1;
         for (int i = index + 1; 
                 i < lists.length && 

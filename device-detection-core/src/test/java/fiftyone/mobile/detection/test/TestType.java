@@ -76,7 +76,12 @@ public interface TestType {
     interface TypePerformance {}
     
     /**
-     * Marker Interface for Unit Tests  for use with {@link org.junit.experimental.categories.Category}
+     * Marker Interface for Unit Tests for use with {@link org.junit.experimental.categories.Category}
      */
     interface TypeUnit{}
+    
+    /**
+     * Marker Interface for Reconcile Tests for use with {@link org.junit.experimental.categories.Category}
+     */
+    interface TypeComparison{}
 }

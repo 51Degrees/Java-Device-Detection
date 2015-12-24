@@ -305,8 +305,7 @@ public abstract class Signature extends BaseEntity
      */
     public SortedList<String, List<String>> getPropertyValuesAsStrings() 
                                                         throws IOException {
-        // Initialise the HashMap with the known number of values and 1 as the 
-        // threshold to avoid the need to rehash it.
+        // SortedList extends HashMap.
         SortedList<String, List<String>> list = 
                 new SortedList<String, List<String>>();
         while (getValues().hasNext()) {
@@ -402,7 +401,8 @@ public abstract class Signature extends BaseEntity
                                 buffer[i] = ' ';
                             }
                         }
-                        stringValue = localStringValue = new String(buffer, "US-ASCII");
+                        stringValue = localStringValue = 
+                                new String(buffer, "US-ASCII");
                     } catch (IOException ex) {
                         throw new WrappedIOException(ex.getMessage());
                     }

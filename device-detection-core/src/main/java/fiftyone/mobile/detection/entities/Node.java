@@ -199,7 +199,6 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
      * character position is set.
      */
     boolean isComplete() {
-        //return nextCharacterPosition != Short.MIN_VALUE;
         return characterStringOffset >= 0;
     }
 

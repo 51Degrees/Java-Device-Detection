@@ -249,8 +249,9 @@ public class Dataset implements Closeable {
     
     /**
      * Constructs a new data set ready to have lists of data assigned to it.
+     * 
      * @param lastModified The date and time the source of the data was 
-     * last modified.
+     *                     last modified.
      * @param mode The mode of operation the data set will be using.
      * @throws java.io.IOException signals an I/O exception occurred
      */
@@ -568,6 +569,7 @@ public class Dataset implements Closeable {
     
     /**
      * Used to search for a signature from a list of nodes.
+     * 
      * @return search instance connected to the list of signatures
      */
     @SuppressWarnings("DoubleCheckedLocking")
@@ -587,7 +589,6 @@ public class Dataset implements Closeable {
     private volatile SearchSignatureByNodes sigantureSearch;
 
     /**
-     *
      * @return an instance of the profile offset search.
      */
     @SuppressWarnings("DoubleCheckedLocking")

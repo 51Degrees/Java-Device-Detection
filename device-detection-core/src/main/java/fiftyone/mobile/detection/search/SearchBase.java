@@ -36,10 +36,10 @@ public abstract class SearchBase<T, K, L> {
     /**
      * Runs binary search for the entire list.
      * 
-     * @param list
-     * @param key
-     * @return
-     * @throws IOException 
+     * @param list list ordered in ascending key value.
+     * @param key key to be found in the list.
+     * @return the index of the key, or ones complement if not found.
+     * @throws IOException if there was a problem accessing data file.
      */
     public int binarySearch(L list, K key) throws IOException {
         return binarySearch(list, key, 0, getCount(list) - 1);
@@ -50,9 +50,9 @@ public abstract class SearchBase<T, K, L> {
      * 
      * @param list list ordered in ascending key value
      * @param key to be found in the list
-     * @param lower
-     * @param upper
-     * @return the index of the key, or ones complement if not found
+     * @param lower start search from this index.
+     * @param upper search up to and including this index.
+     * @return the index of the key, or ones complement if not found.
      * @throws IOException if there was a problem accessing data file.
      */
     public int binarySearch(L list, K key, int lower, int upper) 
