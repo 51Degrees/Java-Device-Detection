@@ -26,29 +26,13 @@ import fiftyone.mobile.detection.entities.Node;
 import fiftyone.mobile.detection.entities.Signature;
 
 abstract class BaseScore {
-
-    /**
-     * Gets the score for the specific node of the signature.
-     * @param state current working state of the matching process
-     * @param node 
-     * @return
-     */
-    protected abstract int getScore(MatchState state, Node node) throws IOException;
-
-    /**
-     * Sets any initial score before each node is evaluated.
-     * @param signature Signature string.
-     * @param lastNodeCharacter
-     * @return
-     */
-    protected abstract int getInitialScore(
-            Signature signature, int lastNodeCharacter) throws IOException;
-
+    
     /**
      * Checks all the signatures using the scoring method provided.
+     * 
      * @param state current working state of the matching process
      * @param closestSignatures Signature strings to evaluate.
-     * @throws IOException 
+     * @throws IOException if there was a problem accessing data file.
      */
     @SuppressWarnings("all, cast")
     void evaluateSignatures(MatchState state,
@@ -56,12 +40,14 @@ abstract class BaseScore {
         int count = 0, signatureIndex, rankedSignatureIndex;
         closestSignatures.reset();
         state.setLowestScore(Integer.MAX_VALUE);
-        int lastNodeCharacter = state.getNodesList().get(state.getNodesList().size() - 1).getRoot().position;
+        int lastNodeCharacter = 
+                state.getNodesList().get(state.getNodesList().size() - 1).
+                                                            getRoot().position;
         while (closestSignatures.hasNext() &&
                count < state.getDataSet().maxSignatures) {
             rankedSignatureIndex = closestSignatures.next();
             signatureIndex = state.getDataSet().rankedSignatureIndexes.get(
-                    rankedSignatureIndex).getValue();
+                    rankedSignatureIndex);
             evaluateSignature(
                     state,
                     state.getDataSet().signatures.get(signatureIndex),
@@ -74,12 +60,14 @@ abstract class BaseScore {
      * Compares all the characters up to the max length between the signature 
      * and the target User-Agent updating the match information if this 
      * signature is better than any evaluated previously.
+     * 
      * @param state current working state of the matching process
      * @param signature Signature string.
      * @param lastNodeCharacter The signature to be evaluated.
-     * @throws IOException 
+     * @throws IOException if there was a problem accessing data file.
      */
-        private void evaluateSignature(MatchState state, Signature signature, int lastNodeCharacter) throws IOException {
+    private void evaluateSignature(MatchState state, Signature signature, 
+                                    int lastNodeCharacter) throws IOException {
         state.incrSignaturesCompared();
 
         // Get the score between the target and the signature stopping if it's
@@ -98,12 +86,13 @@ abstract class BaseScore {
      * contained in the matched nodes to determine a score between the signature
      * and the target User-Agent. If that score becomes greater or equal to the
      * lowest score determined so far then stop.
+     * 
      * @param state current working state of the matching process
      * @param signature Signature string.
      * @param lastNodeCharacter The position of the last character in the 
      * matched nodes.
-     * @return
-     * @throws IOException 
+     * @return score between signature and target User-Agent.
+     * @throws IOException if there was a problem accessing data file.
      */
     private int getScore(MatchState state, Signature signature, 
             int lastNodeCharacter) throws IOException {
@@ -116,18 +105,19 @@ abstract class BaseScore {
         int matchNodeIndex = 0;
         int signatureNodeIndex = 0;
 
-        while (signatureNodeIndex < signature.getNodeOffsets().length
+        while (signatureNodeIndex < signature.getNodeOffsets().size()
                 && runningScore < state.getLowestScore()) {
             int matchNodeOffset = matchNodeIndex >= state.getNodesList().size() ? 
                     Integer.MAX_VALUE : 
                     state.getNodesList().get(matchNodeIndex).getIndex();
-            int signatureNodeOffset = signature.getNodeOffsets()[signatureNodeIndex];
+            int signatureNodeOffset = signature.getNodeOffsets().
+                    get(signatureNodeIndex);
             if (matchNodeOffset > signatureNodeOffset) {
                 // The matched node is either not available, or is higher than
-                // the current signature node. The signature node is not contained
-                // in the match so we must score it.
+                // the current signature node. The signature node is not 
+                // contained in the match so we must score it.
                 int score = getScore(state, state.getDataSet().nodes.get(
-                        signature.getNodeOffsets()[signatureNodeIndex]));
+                        signature.getNodeOffsets().get(signatureNodeIndex)));
 
                 // If the score is less than zero then a score could not be 
                 // determined and the signature can't be compared to the target
@@ -147,7 +137,26 @@ abstract class BaseScore {
                 matchNodeIndex++;
             }
         }
-
         return runningScore;
     }
+    
+    // <editor-fold defaultstate="collapsed" desc="Abstract methods">
+    /**
+     * Gets the score for the specific node of the signature.
+     * @param state current working state of the matching process
+     * @param node 
+     * @return
+     */
+    protected abstract int getScore(MatchState state, Node node) 
+                                                            throws IOException;
+
+    /**
+     * Sets any initial score before each node is evaluated.
+     * @param signature Signature string.
+     * @param lastNodeCharacter
+     * @return
+     */
+    protected abstract int getInitialScore(
+            Signature signature, int lastNodeCharacter) throws IOException;
+    // </editor-fold>
 }

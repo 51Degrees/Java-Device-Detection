@@ -36,13 +36,15 @@ import static org.junit.Assert.*;
  */
 public class MemoryFactoryTest extends DetectionTestSupport {
 
-    private static final String TEST_USER_AGENT = "Mozilla/5.0 (iPhone; CPU iPhone OS 6_0 like Mac OS X) AppleWebKit/536.26 (KHTML, like Gecko) Version/6.0 Mobile/10A5376e Safari/8536.25 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)";
+    private static final String TEST_USER_AGENT = 
+            "Mozilla/5.0 (iPhone; CPU iPhone OS 6_0 like Mac OS X) AppleWebKit/536.26 (KHTML, like Gecko) Version/6.0 Mobile/10A5376e Safari/8536.25 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)";
 
     @Test
     public void testCreate() throws Exception {
-        File testFile = new File(Filename.LITE_PATTERN_V32);
+        File testFile = new File(Filename.LITE_PATTERN_V31);
         FileInputStream fileInputStream = new FileInputStream(testFile);
         try {
+            //Dataset dataset = StreamFactory.create(testFile.getAbsolutePath(), false);
             Dataset dataset = MemoryFactory.create(fileInputStream);
             try {
                 Provider provider = new Provider(dataset);
@@ -66,6 +68,7 @@ public class MemoryFactoryTest extends DetectionTestSupport {
      */
     private void ensureViableProvider(Provider provider) throws IOException {
         Match match = provider.match(TEST_USER_AGENT);
+        System.out.println(TEST_USER_AGENT);
         assertEquals("Match method should be exact", MatchMethods.EXACT, match.getMethod());
         assertEquals("Is a mobile device", true, match.getValues("IsMobile").toBool());
         assertEquals("Screen width should be 640", 640.0, match.getValues("ScreenPixelsWidth").toDouble(),0);

@@ -34,6 +34,69 @@ import java.io.IOException;
 public abstract class SearchBase<T, K, L> {
 
     /**
+     * Runs binary search for the entire list.
+     * 
+     * @param list list ordered in ascending key value.
+     * @param key key to be found in the list.
+     * @return the index of the key, or ones complement if not found.
+     * @throws IOException if there was a problem accessing data file.
+     */
+    public int binarySearch(L list, K key) throws IOException {
+        return binarySearch(list, key, 0, getCount(list) - 1);
+    }
+    
+    /**
+     * Core implementation of the binary search. Runs binary search for a 
+     * 
+     * @param list list ordered in ascending key value
+     * @param key to be found in the list
+     * @param lower start search from this index.
+     * @param upper search up to and including this index.
+     * @return the index of the key, or ones complement if not found.
+     * @throws IOException if there was a problem accessing data file.
+     */
+    public int binarySearch(L list, K key, int lower, int upper) 
+                                                            throws IOException {
+        int index;
+
+        while (lower <= upper) {
+            index = lower + (upper - lower) / 2;
+            int comparisonResult = compareTo(getValue(list, index), key);
+            if (comparisonResult == 0) {
+                return index;
+            } else if (comparisonResult > 0) {
+                upper = index - 1;
+            } else {
+                lower = index + 1;
+            }
+        }
+        return ~lower;
+    }
+    
+    public SearchResult binarySearchResults(L list, K key) throws IOException {
+        SearchResult results = new SearchResult();
+        int lower = 0;
+        int upper = getCount(list) - 1;
+
+        while (lower <= upper) {
+            results.Iterations++;
+            results.Index = lower + (upper - lower) / 2;
+            int comparisonResult = compareTo(getValue(list, results.Index), key);
+            if (comparisonResult == 0) {
+                return results;
+            } else if (comparisonResult > 0) {
+                upper = results.Index - 1;
+            } else {
+                lower = results.Index + 1;
+            }
+        }
+
+        results.Index = ~lower;
+        return results;
+    }
+    
+    // <editor-fold defaultstate="collapsed" desc="Abstract methods.">
+    /**
      * Gets the count of items in the list.
      * 
      * @param list whose is to be returned
@@ -60,33 +123,5 @@ public abstract class SearchBase<T, K, L> {
      * @throws IOException if there was a problem accessing data file.
      */
     protected abstract int compareTo(T item, K key) throws IOException;
-
-    /**
-     * Core implementation of the binary search.
-     * @param list list ordered in ascending key value
-     * @param key to be found in the list
-     * @return the index of the key, or ones complement if not found
-     * @throws IOException if there was a problem accessing data file.
-     */
-    public SearchResult binarySearch(L list, K key) throws IOException {
-        SearchResult results = new SearchResult();
-        int lower = 0;
-        int upper = getCount(list) - 1;
-
-        while (lower <= upper) {
-            results.Iterations++;
-            results.Index = lower + (upper - lower) / 2;
-            int comparisonResult = compareTo(getValue(list, results.Index), key);
-            if (comparisonResult == 0) {
-                return results;
-            } else if (comparisonResult > 0) {
-                upper = results.Index - 1;
-            } else {
-                lower = results.Index + 1;
-            }
-        }
-
-        results.Index = ~lower;
-        return results;
-    }
+    // </editor-fold>
 }

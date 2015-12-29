@@ -56,11 +56,11 @@ public abstract class NodeIndexBase extends BaseEntity {
     
     /**
      * The node this index relates to.
-     * 
+     * <p>
      * If the data set is operating in memory mode then there will only ever
      * be one instance of the associated node. Therefore double checked locking
      * can be used to retrieve this single instance and store a reference to it.
-     * 
+     * <p>
      * When stream mode is being used we wish to ensure that instances of unused
      * objects are freed by the garbage collector quickly. If the reference to 
      * the cached instance were retained by the NodeIndex instance then more 

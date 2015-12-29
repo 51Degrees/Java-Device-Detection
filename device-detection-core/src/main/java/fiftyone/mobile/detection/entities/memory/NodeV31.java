@@ -24,6 +24,7 @@ import fiftyone.mobile.detection.Dataset;
 import fiftyone.mobile.detection.entities.BaseEntity;
 import fiftyone.mobile.detection.factories.NodeFactoryShared;
 import fiftyone.mobile.detection.readers.BinaryReader;
+import java.util.List;
 
 /**
  * All data is loaded into memory when the entity is constructed. Implements 
@@ -40,15 +41,15 @@ public class NodeV31 extends Node{
     /**
      * An array of the ranked signature indexes for the node.
      */
-    private final int[] rankedSignatureIndexes;
+    private final List<Integer> rankedSignatureIndexes;
     
     /**
      * Constructs a new instance of NodeV31.
      * 
      * @param dataSet The data set the node is contained within.
      * @param offset The offset in the data structure to the node.
-     * @param reader Reader connected to the source data structure and 
-     * positioned to start reading.
+     * @param reader BinaryReader connected to the source data structure and 
+     *               positioned to start reading.
      */
     public NodeV31(Dataset dataSet, int offset, BinaryReader reader) {
         super(dataSet, offset, reader);
@@ -58,9 +59,9 @@ public class NodeV31 extends Node{
                 reader, 
                 (int)(offset + reader.getPos() - nodeStartStreamPosition), 
                 childrenCount);
-        super.numericChildren = readNodeNumericIndexes(
+        numericChildren = readNodeNumericIndexes(
                 dataSet, reader, numericChildrenCount);
-        rankedSignatureIndexes = BaseEntity.readIntegerArray(
+        rankedSignatureIndexes = BaseEntity.readIntegerList(
                 reader, 
                 rankedSignatureCount);
     }
@@ -71,7 +72,7 @@ public class NodeV31 extends Node{
      * @return An array of the ranked signature indexes for the node.
      */
     @Override
-    public int[] getRankedSignatureIndexes() {
+    public List<Integer> getRankedSignatureIndexes() {
         return rankedSignatureIndexes;
     }
 }

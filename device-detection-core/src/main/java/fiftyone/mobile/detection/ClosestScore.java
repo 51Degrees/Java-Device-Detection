@@ -35,7 +35,8 @@ class ClosestScore extends BaseScore {
      * right most node and the target User-Agent.
      */
     @Override
-    protected int getInitialScore(Signature signature, int lastNodeCharacter) throws IOException {
+    protected int getInitialScore(Signature signature, int lastNodeCharacter) 
+                                                            throws IOException {
         return Math.abs(lastNodeCharacter + 1 - signature.getLength());
     }
 
@@ -51,7 +52,8 @@ class ClosestScore extends BaseScore {
     @Override
     protected int getScore(MatchState state, Node node) throws IOException {
         int score = 0;
-        int nodeIndex = node.getCharacters().length - 1, targetIndex = node.position + node.getLength();
+        int nodeIndex = node.getCharacters().length - 1, 
+            targetIndex = node.position + node.getLength();
 
         // Adjust the score and indexes if the node is too long.
         if (targetIndex >= state.getTargetUserAgentArray().length) {

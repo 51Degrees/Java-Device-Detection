@@ -22,6 +22,8 @@ package fiftyone.mobile.detection.entities;
 
 import fiftyone.mobile.detection.Dataset;
 import fiftyone.mobile.detection.readers.BinaryReader;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Base class for all entities in the DetectorDataSet. Contains common 
@@ -112,6 +114,23 @@ public class BaseEntity {
         int[] array = new int[count];
         for (int i = 0; i < count; i++) {
             array[i] = reader.readInt32();
+        }
+        return array;
+    }
+    
+    /**
+     * Reads an integer list where the first integer is the number of following
+     * integers.
+     *
+     * @param reader Reader set to the position at the start of the list
+     * @param count The number of integers to read to form the array
+     * @return A List of integers.
+     */
+    protected static List<Integer> readIntegerList(BinaryReader reader, 
+                                                   int count) {
+        List<Integer> array = new ArrayList<Integer>(count);
+        for (int i = 0; i < count; i++) {
+            array.add(reader.readInt32());
         }
         return array;
     }

@@ -38,8 +38,8 @@ import java.nio.ByteBuffer;
 public class NodeIndex extends NodeIndexBase implements Comparable<NodeIndex> {
 
     /**
-     * True if the value is an index to a sub string. False if the value is 1 to
-     * 4 consecutive characters.
+     * True if the value is an index to a sub string. False if the value is 1 
+     * to 4 consecutive characters.
      */
     final boolean isString;
     

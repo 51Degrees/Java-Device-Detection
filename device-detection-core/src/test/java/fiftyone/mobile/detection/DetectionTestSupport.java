@@ -148,7 +148,6 @@ public class DetectionTestSupport {
     public static void AssertCacheMissesGoodAll(Dataset dataSet) {
         assertTrue(String.format("Signature Cache Misses @ %.0f%%", dataSet.getPercentageSignatureCacheMisses() * 100), dataSet.getPercentageSignatureCacheMisses() < 0.4);
         assertTrue(String.format("Strings Cache Misses @ %.0f%%", dataSet.getPercentageStringsCacheMisses() * 100), dataSet.getPercentageStringsCacheMisses() < 0.6);
-        assertTrue(String.format("Ranked Signatures Cache Misses @ %.0f%%", dataSet.getPercentageRankedSignatureCacheMisses() * 100), dataSet.getPercentageRankedSignatureCacheMisses() < 0.5);
         assertTrue(String.format("Node Cache Misses @ %.0f%%", dataSet.getPercentageNodeCacheMisses() * 100), dataSet.getPercentageNodeCacheMisses() < 0.3);
         assertTrue(String.format("Value Cache Misses @ %.0f%%", dataSet.getPercentageValuesCacheMisses() * 100), dataSet.getPercentageValuesCacheMisses() < 0.3);
         assertTrue(String.format("Profile Cache Misses @ %.0f%%", dataSet.getPercentageProfilesCacheMisses() * 100), dataSet.getPercentageProfilesCacheMisses() < 0.3);
@@ -157,14 +156,12 @@ public class DetectionTestSupport {
     public static void AssertCacheMissesGood(Dataset dataSet) {
         assertTrue(String.format("Signature Cache Misses @ %.0f%%", dataSet.getPercentageSignatureCacheMisses() * 100), dataSet.getPercentageSignatureCacheMisses() < 0.4);
         assertTrue(String.format("Strings Cache Misses @ %.0f%%", dataSet.getPercentageStringsCacheMisses() * 100), dataSet.getPercentageStringsCacheMisses() < 0.5);
-        assertTrue(String.format("Ranked Signatures Cache Misses @ %.0f%%", dataSet.getPercentageRankedSignatureCacheMisses() * 100), dataSet.getPercentageRankedSignatureCacheMisses() < 0.5);
         assertTrue(String.format("Node Cache Misses @ %.0f%%", dataSet.getPercentageNodeCacheMisses() * 100), dataSet.getPercentageNodeCacheMisses() < 0.3);
     }
 
     public static void AssertCacheMissesBadAll(Dataset dataSet) {
         assertTrue(String.format("Signature Cache Misses @ %.0f%%", dataSet.getPercentageSignatureCacheMisses() * 100), dataSet.getPercentageSignatureCacheMisses() < 0.4);
         assertTrue(String.format("Strings Cache Misses @ %.0f%%", dataSet.getPercentageStringsCacheMisses() * 100), dataSet.getPercentageStringsCacheMisses() < 0.5);
-        assertTrue(String.format("Ranked Signatures Cache Misses @ %.0f%%", dataSet.getPercentageRankedSignatureCacheMisses() * 100), dataSet.getPercentageRankedSignatureCacheMisses() < 0.5);
         assertTrue(String.format("Node Cache Misses @ %.0f%%", dataSet.getPercentageNodeCacheMisses() * 100), dataSet.getPercentageNodeCacheMisses() < 0.5);
         assertTrue(String.format("Value Cache Misses @ %.0f%%", dataSet.getPercentageValuesCacheMisses() * 100), dataSet.getPercentageValuesCacheMisses() < 0.3);
         assertTrue(String.format("Profile Cache Misses @ %.0f%%", dataSet.getPercentageProfilesCacheMisses() * 100), dataSet.getPercentageProfilesCacheMisses() < 0.3);
@@ -173,7 +170,6 @@ public class DetectionTestSupport {
     public static void AssertCacheMissesBad(Dataset dataSet) {
         assertTrue(String.format("Signature Cache Misses @ %.0f%%", dataSet.getPercentageSignatureCacheMisses() * 100), dataSet.getPercentageSignatureCacheMisses() < 0.4);
         assertTrue(String.format("Strings Cache Misses @ %.0f%%", dataSet.getPercentageStringsCacheMisses() * 100), dataSet.getPercentageStringsCacheMisses() < 0.8);
-        assertTrue(String.format("Ranked Signatures Cache Misses @ %.0f%%", dataSet.getPercentageRankedSignatureCacheMisses() * 100), dataSet.getPercentageRankedSignatureCacheMisses() < 0.5);
         assertTrue(String.format("Node Cache Misses @ %.0f%%", dataSet.getPercentageNodeCacheMisses() * 100), dataSet.getPercentageNodeCacheMisses() < 0.5);
     }
 
@@ -230,8 +226,6 @@ public class DetectionTestSupport {
                 dataSet.getPercentageNodeCacheMisses() * (double)100);
         System.out.printf("Profiles cache misses '%.0f%%'\r\n",
                 dataSet.getPercentageProfilesCacheMisses() * (double)100);
-        System.out.printf("Ranked Signatures cache misses '%.0f%%'\r\n",
-                dataSet.getPercentageRankedSignatureCacheMisses() * (double)100);
         System.out.printf("Signatures cache misses '%.0f%%'\r\n",
                 dataSet.getPercentageSignatureCacheMisses() * (double)100);
         System.out.printf("Strings cache misses '%.0f%%'\r\n",

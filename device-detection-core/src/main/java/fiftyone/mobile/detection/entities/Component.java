@@ -105,8 +105,8 @@ public abstract class Component extends BaseEntity
             synchronized (this) {
                 localDefaultProfile = defaultProfile;
                 if (localDefaultProfile == null) {
-                    defaultProfile = localDefaultProfile = getDataSet().getProfiles().get(
-                            defaultProfileOffset);
+                    defaultProfile = localDefaultProfile = 
+                            getDataSet().getProfiles().get(defaultProfileOffset);
                 }
             }
         }
