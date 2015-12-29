@@ -52,8 +52,12 @@ public class TrieProviderV32 extends TrieProvider {
      * @param pool Pool connected to the data source.
      * @throws FileNotFoundException if a file could not be found.
      */
-    public TrieProviderV32(String copyright, byte[] strings, byte[] httpHeaders, byte[] properties, byte[] devices, short[] lookupList, long nodesLength, long nodesOffset, TriePool pool) throws FileNotFoundException {
-        super(copyright, strings, properties, devices, lookupList, nodesLength, nodesOffset, pool);
+    public TrieProviderV32(String copyright, byte[] strings, byte[] httpHeaders, 
+                           byte[] properties, byte[] devices, short[] lookupList, 
+                           long nodesLength, long nodesOffset, TriePool pool) 
+                           throws FileNotFoundException {
+        super(copyright, strings, properties, devices, lookupList, nodesLength, 
+                nodesOffset, pool);
         
         int limit = _properties.array().length / PROPERTY_LENGTH;
 
@@ -74,7 +78,8 @@ public class TrieProviderV32 extends TrieProvider {
      * @param headerFirstIndex where to start reading from.
      * @return the array of headers.
      */
-    private String[] getHeaders(byte[] httpHeaders, int headerCount, int headerFirstIndex) {
+    private String[] getHeaders(byte[] httpHeaders, int headerCount, 
+                                int headerFirstIndex) {
         List<String> headers = new ArrayList<String>();
         for (int i = 0; i < headerCount; i++) {
             int from = (headerFirstIndex + i) * DetectionConstants.SIZE_OF_INT;

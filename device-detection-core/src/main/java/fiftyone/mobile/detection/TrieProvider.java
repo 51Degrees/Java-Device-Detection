@@ -108,7 +108,8 @@ public abstract class TrieProvider implements Closeable {
     /**
      * Dictionary of property names to indexes.
      */
-    protected final Map<String, Integer> _propertyIndex = new HashMap<String, Integer>();
+    protected final Map<String, Integer> _propertyIndex = 
+            new HashMap<String, Integer>();
     /**
      * List of the available property names.
      */
@@ -116,7 +117,8 @@ public abstract class TrieProvider implements Closeable {
     /**
      * List of HTTP headers for each property index.
      */
-    protected final List<String[]> propertyHttpHeaders = new ArrayList<String[]>();
+    protected final List<String[]> propertyHttpHeaders = 
+            new ArrayList<String[]>();
     /**
      * A list of HTTP headers that the provider can use for device detection.
      */
@@ -143,8 +145,10 @@ public abstract class TrieProvider implements Closeable {
      * @param pool Pool connected to the data source.
      * @throws FileNotFoundException indicates device data file was not found.
      */
-    public TrieProvider(String copyright, byte[] strings, byte[] properties, byte[] devices,
-            short[] lookupList, long nodesLength, long nodesOffset, TriePool pool) throws FileNotFoundException {
+    public TrieProvider(String copyright, byte[] strings, byte[] properties, 
+                        byte[] devices, short[] lookupList, long nodesLength, 
+                        long nodesOffset, TriePool pool) 
+                        throws FileNotFoundException {
         this.copyright = copyright;
         _Strings = ByteBuffer.wrap(strings);
         _properties = ByteBuffer.wrap(properties);
@@ -295,7 +299,8 @@ public abstract class TrieProvider implements Closeable {
      * @param property The name of the property required.
      * @return The value of the property for the given device index.
      */
-    public String getPropertyValue(Map<String, Integer> deviceIndexes, String property) {
+    public String getPropertyValue(Map<String, Integer> deviceIndexes, 
+                                   String property) {
         if (deviceIndexes == null || deviceIndexes.isEmpty()) {
             return getDefaultPropertyValue(property);
         }
@@ -321,7 +326,8 @@ public abstract class TrieProvider implements Closeable {
      * @param propertyIndex Index of the property required.
      * @return The value of the property for the given device indexes.
      */
-    public String getPropertyValue(Map<String, Integer> deviceIndexes, int propertyIndex) {
+    public String getPropertyValue(Map<String, Integer> deviceIndexes, 
+                                   int propertyIndex) {
         Integer deviceIndex;
         for (String header : propertyHttpHeaders.get(propertyIndex)) {
             deviceIndex = deviceIndexes.get(header);
@@ -354,8 +360,8 @@ public abstract class TrieProvider implements Closeable {
      * @throws java.lang.Exception if there was a problem accessing data file.
      */
     public String getPropertyValueWithMultiHeaders( Map<String, String> headers, 
-                                                    String propertyName ) throws 
-                                                                Exception {
+                                                    String propertyName ) 
+                                                    throws Exception {
         return getPropertyValue(getDeviceIndexes(headers), propertyName);
     }
     
@@ -366,7 +372,8 @@ public abstract class TrieProvider implements Closeable {
      * @return The value of the property for the given user agent.
      * @throws Exception if there was a problem accessing data file.
      */
-    public String getPropertyValue(String userAgent, String propertyname) throws Exception {
+    public String getPropertyValue(String userAgent, String propertyname) 
+                                                            throws Exception {
         return getPropertyValue(getDeviceIndex(userAgent), propertyname);
     }
     
@@ -407,7 +414,8 @@ public abstract class TrieProvider implements Closeable {
         byte[] result = new byte[userAgent != null ? userAgent.length() + 1 : 0];
         if (result.length > 0) {
             for (int i = 0; i < userAgent.length(); i++) {
-                result[i] = userAgent.charAt(i) <= 0x7F ? (byte) userAgent.charAt(i) : (byte) ' ';
+                result[i] = 
+                        userAgent.charAt(i) <= 0x7F ? (byte) userAgent.charAt(i) : (byte) ' ';
             }
             result[result.length - 1] = 0;
         }
@@ -421,7 +429,8 @@ public abstract class TrieProvider implements Closeable {
      * @param value The value to be checked.
      * @return The position to move to.
      */
-    private short getChild(int lookupOffset, byte value) throws ArrayIndexOutOfBoundsException {
+    private short getChild(int lookupOffset, byte value) 
+                                        throws ArrayIndexOutOfBoundsException {
         try {
             short lowest = _lookupList[lookupOffset];
             short highest = _lookupList[lookupOffset + 1];
@@ -469,10 +478,12 @@ public abstract class TrieProvider implements Closeable {
             throws IOException {
         if (childIndex == 0) {
             // Move past the children offset to the first child.
-            long offset = reader.getPos() + (numberOfChildren - 1) * sizeOfOffsets(offsetType);
+            long offset = 
+                    reader.getPos() + (numberOfChildren - 1) * sizeOfOffsets(offsetType);
             reader.setPos(offset);
         } else {
-            // Move to the bytes that represent the node position of the next node based on the child index.
+            // Move to the bytes that represent the node position of the next 
+            // node based on the child index.
             reader.setPos(reader.getPos() + (childIndex - 1) * sizeOfOffsets(offsetType));
             long pos = reader.getPos();
             switch (offsetType) {
@@ -501,7 +512,8 @@ public abstract class TrieProvider implements Closeable {
      * @param parentDeviceIndex The device index of the parent node.
      * @return The device id with the most number of matching characters.
      */
-    private int getDeviceIndex(TrieReader reader, byte[] userAgent, int index, int parentDeviceIndex) throws Exception {
+    private int getDeviceIndex(TrieReader reader, byte[] userAgent, int index, 
+                               int parentDeviceIndex) throws Exception {
         // Position the reader for the nodePosition.
 
         // Get the lookup list.
@@ -575,7 +587,9 @@ public abstract class TrieProvider implements Closeable {
      * @param matchedUserAgent">The characters of the user agent matched.
      * @return The device id with the most number of matching characters.
      */
-    private int getDeviceIndex(TrieReader reader, byte[] userAgent, int index, int parentDeviceIndex, StringBuilder matchedUserAgent) throws Exception {
+    private int getDeviceIndex(TrieReader reader, byte[] userAgent, int index, 
+                               int parentDeviceIndex, 
+                               StringBuilder matchedUserAgent) throws Exception {
         // Add the character to the matched user agent.
         matchedUserAgent.append((char) userAgent[index]);
 

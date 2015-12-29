@@ -24,6 +24,7 @@ import fiftyone.mobile.detection.factories.NodeFactoryShared;
 import fiftyone.mobile.detection.readers.BinaryReader;
 import fiftyone.properties.DetectionConstants;
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Represents a NodeV31 which can be used with the Stream data set. 
@@ -40,7 +41,7 @@ public class NodeV31 extends Node {
      * An array of the ranked signature indexes for the node.
      */
     @SuppressWarnings("VolatileArrayField")
-    private volatile int[] rankedSignatureIndexes;
+    private volatile List<Integer> rankedSignatureIndexes;
     
     /**
      * Constructs a new instance of NodeV31.
@@ -69,8 +70,8 @@ public class NodeV31 extends Node {
      */
     @Override
     @SuppressWarnings("DoubleCheckedLocking")
-    public int[] getRankedSignatureIndexes() throws IOException {
-        int[] localRankedSignatureIndexes = rankedSignatureIndexes;
+    public List<Integer> getRankedSignatureIndexes() throws IOException {
+        List<Integer> localRankedSignatureIndexes = rankedSignatureIndexes;
         if (localRankedSignatureIndexes == null) {
             synchronized (this) {
                 localRankedSignatureIndexes = rankedSignatureIndexes;
@@ -81,7 +82,7 @@ public class NodeV31 extends Node {
                           DetectionConstants.SIZE_OF_INT) * 
                                 getNumericChildrenLength()));
                     rankedSignatureIndexes = localRankedSignatureIndexes = 
-                            readIntegerArray(reader, rankedSignatureCount);
+                            readIntegerList(reader, rankedSignatureCount);
                     pool.release(reader);
                 }
             }

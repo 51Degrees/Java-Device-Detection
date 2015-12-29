@@ -105,7 +105,6 @@ public class Dataset extends fiftyone.mobile.detection.Dataset {
         ((ICacheList)super.strings).resetCache();
         ((ICacheList)super.profiles).resetCache();
         ((ICacheList)super.values).resetCache();
-        ((ICacheList)super.rankedSignatureIndexes).resetCache();
     }
     
     /**
