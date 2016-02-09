@@ -30,37 +30,32 @@ import fiftyone.mobile.detection.Dataset;
 import fiftyone.mobile.detection.WrappedIOException;
 import fiftyone.mobile.detection.readers.BinaryReader;
 import fiftyone.mobile.detection.search.SearchArrays;
+
 import java.util.Collections;
 
 /**
- * A value associated with a property and component within the dataset. 
- * <p>
- * Every {@link Property} can return one of many values, or multiple values 
- * if it's a list property. For example: SupportedBearers returns a list of 
- * the bearers that the device can support. 
- * <p> 
- * Class contains metadata related to this value including the display name, 
- * description and URL to find out additional information. Metadata can be used 
- * by UI developers to provide users with more information about the meaning and 
- * intended use of this value. Access metadata like:
- * {@code value.getDescription();} and {@code value.getUrl();}.
- * <p>
- * Objects of this class should not be created directly as they are part of the 
- * internal logic. Use the relevant {@link Dataset} method to access these 
- * objects.
- * <p>
- * For more information see: 
- * <a href="https://51degrees.com/support/documentation/device-detection-data-model">
+ * A value associated with a property and component within the dataset.
+ * <p/>
+ * Every {@link Property} can return one of many values, or multiple values if it's a list property. For example:
+ * SupportedBearers returns a list of the bearers that the device can support.
+ * <p/>
+ * Class contains metadata related to this value including the display name, description and URL to find out additional
+ * information. Metadata can be used by UI developers to provide users with more information about the meaning and
+ * intended use of this value. Access metadata like: {@code value.getDescription();} and {@code value.getUrl();}.
+ * <p/>
+ * Objects of this class should not be created directly as they are part of the internal logic. Use the relevant {@link
+ * Dataset} method to access these objects.
+ * <p/>
+ * For more information see: <a href="https://51degrees.com/support/documentation/device-detection-data-model">
  * 51Degrees pattern data model</a>.
  */
 public class Value extends BaseEntity {
-    
+
     /**
-     * The value as an integer. Integer object instead of integer primitive 
-     * because of the nullable requirement.
+     * The value as an integer. Integer object instead of integer primitive because of the nullable requirement.
      */
     private volatile Integer asInt;
-    
+
     /**
      * The length in bytes of the value record in the data file.
      */
@@ -110,29 +105,60 @@ public class Value extends BaseEntity {
         }
         return localSignatures;
     }
+
     @SuppressWarnings("VolatileArrayField")
     private volatile Signature[] signatures;
 
     /**
-     * @return array containing the {@link Profile profiles} this value is 
-     *         associated with.
+     * @return List containing the {@link Profile profiles} this value is associated with.
      * @throws IOException if there was a problem accessing data file.
      */
+    public List<Profile> getProfiles() throws IOException {
+        ArrayList<Profile> list = new ArrayList<Profile>();
+        for (int profileIndex : getProfileIndexes()) {
+            list.add(dataSet.profiles.get(profileIndex));
+        }
+        return Collections.unmodifiableList(list);
+    }
+
     @SuppressWarnings("DoubleCheckedLocking")
-    public Profile[] getProfiles() throws IOException {
-        Profile[] localProfiles = profiles;
-        if (localProfiles == null) {
+    public List<Integer> getProfileIndexes() throws IOException {
+        List<Integer> localProfileIndexes = profileIndexes;
+        if (localProfileIndexes == null) {
             synchronized (this) {
-                localProfiles = profiles;
-                if (localProfiles == null) {
-                    profiles = localProfiles = doGetProfiles();
+                localProfileIndexes = profileIndexes;
+                if (localProfileIndexes == null) {
+                    profileIndexes = localProfileIndexes = doGetProfileIndexes();
                 }
             }
         }
-        return localProfiles;
+        return localProfileIndexes;
     }
+
+    /**
+     * Used by {@link Property} to set profile indexes. This method is quicker
+     * than using {@code getProfileIndexes} for each of the
+     * {@link Property Property's} {@link Value Values}.
+     * @param profileIndexesToSet List of {@link Profile} indexes.
+     */
+    protected void setProfileIndexes(List<Integer> profileIndexesToSet) {
+        List<Integer> localProfileIndexes = profileIndexes;
+        if (localProfileIndexes == null) {
+            synchronized (this) {
+                localProfileIndexes = profileIndexes;
+                if (localProfileIndexes == null) {
+                    localProfileIndexes = new ArrayList<Integer>();
+                    for (Integer profileIndex : profileIndexesToSet) {
+                        localProfileIndexes.add(profileIndex);
+                    }
+                    profileIndexes = localProfileIndexes;
+                }
+            }
+        }
+    }
+
     @SuppressWarnings("VolatileArrayField")
-    private volatile Profile[] profiles;
+    private volatile List<Integer> profileIndexes;
 
     /**
      * @return The {@link Property} the value relates to.
@@ -151,6 +177,7 @@ public class Value extends BaseEntity {
         }
         return localProperty;
     }
+
     private volatile Property property;
     final int propertyIndex;
 
@@ -163,8 +190,7 @@ public class Value extends BaseEntity {
     }
 
     /**
-     * @return a description of the value suitable to be displayed to end users
-     *         via a user interface.
+     * @return a description of the value suitable to be displayed to end users via a user interface.
      * @throws IOException if there was a problem accessing data file.
      */
     @SuppressWarnings("DoubleCheckedLocking")
@@ -181,6 +207,7 @@ public class Value extends BaseEntity {
         }
         return localDescription;
     }
+
     private volatile String description;
     private final int descriptionIndex;
 
@@ -202,6 +229,7 @@ public class Value extends BaseEntity {
         }
         return localUrl;
     }
+
     private volatile URL url;
     private final int urlIndex;
 
@@ -210,8 +238,7 @@ public class Value extends BaseEntity {
      *
      * @param dataSet the {@link Dataset} the value is contained within.
      * @param index the index in the data structure to the value.
-     * @param reader Reader connected to the source data structure and
-     *        positioned to start reading.
+     * @param reader Reader connected to the source data structure and positioned to start reading.
      */
     public Value(Dataset dataSet, int index, BinaryReader reader) {
         super(dataSet, index);
@@ -223,11 +250,10 @@ public class Value extends BaseEntity {
     }
 
     /**
-     * Called after the entire data set has been loaded to ensure any further
-     * initialisation steps that require other items in the data set can be
-     * completed. The Profiles and Signatures are not initialised as they are
-     * very rarely used and take a long time to initialise.
-     * <p>
+     * Called after the entire data set has been loaded to ensure any further initialisation steps that require other
+     * items in the data set can be completed. The Profiles and Signatures are not initialised as they are very rarely
+     * used and take a long time to initialise.
+     * <p/>
      * This method should not be called as it is part of the internal logic.
      *
      * @throws IOException if there was a problem accessing data file.
@@ -250,8 +276,23 @@ public class Value extends BaseEntity {
     }
 
     /**
+     * Compares with another Value instance by index.
+     *
+     * @param obj type of Value to compare against
+     * @return true if of type Value and equal, otherwise false.
+     */
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (this==obj) return true;
+        if (this == null) return false;
+        if (this.getClass() != obj.getClass()) return false;
+        return index == ((Value)obj).index;
+    }
+
+    /**
      * Compares two values by name.
-     * 
+     *
      * @param value name of value to compare the current value against.
      * @return integer representing difference.
      */
@@ -262,10 +303,9 @@ public class Value extends BaseEntity {
             throw new WrappedIOException(ex.getMessage());
         }
     }
-    
+
     /**
-     * Compares this value to another using the index field if they're in the
-     * same list other wise the name value.
+     * Compares this value to another using the index field if they're in the same list other wise the name value.
      *
      * @param other The value to be compared against.
      * @return Indication of relative value based on index field.
@@ -305,11 +345,11 @@ public class Value extends BaseEntity {
                 localAsNumber = asNumber;
                 if (localAsNumber == null) {
                     try {
-                        asNumber = localAsNumber = 
+                        asNumber = localAsNumber =
                                 Double.parseDouble(getName());
                     } catch (NumberFormatException e) {
                         if (this != getProperty().getDefaultValue()) {
-                            asNumber = localAsNumber = 
+                            asNumber = localAsNumber =
                                     getProperty().getDefaultValue().toDouble();
                         } else {
                             asNumber = localAsNumber = (double) 0;
@@ -320,6 +360,7 @@ public class Value extends BaseEntity {
         }
         return (double) localAsNumber;
     }
+
     private volatile Double asNumber;
 
     /**
@@ -339,14 +380,15 @@ public class Value extends BaseEntity {
         }
         return (boolean) localAsBool;
     }
+
     private volatile Boolean asBool;
 
     /**
-     * Returns true if the value is the null value for the property. If the
-     * property has no null value false is always returned.
+     * Returns true if the value is the null value for the property. If the property has no null value false is always
+     * returned.
      *
-     * @return true if the value is the null value for the property. If the
-     *         property has no null value false is always returned.
+     * @return true if the value is the null value for the property. If the property has no null value false is always
+     * returned.
      * @throws IOException if there was a problem accessing data file.
      */
     public boolean getIsDefault() throws IOException {
@@ -356,13 +398,12 @@ public class Value extends BaseEntity {
         }
         return false;
     }
-    
+
     /**
      * Returns the value as an integer.
-     * 
-     * @return If the value can not convert to an integer and the value is not 
-     *         equal to the null value then the null value for the property 
-     *         will be used. If no conversion is possible 0 is returned.
+     *
+     * @return If the value can not convert to an integer and the value is not equal to the null value then the null
+     * value for the property will be used. If no conversion is possible 0 is returned.
      * @throws java.io.IOException if there was a problem accessing data file.
      */
     @SuppressWarnings("DoubleCheckedLocking")
@@ -379,28 +420,22 @@ public class Value extends BaseEntity {
         }
         return localAsInt;
     }
-    
+
     // <editor-fold defaultstate="collapsed" desc="Private methods">
-    /**
-     * Gets all the profiles associated with the value.
-     *
-     * @return the profiles from the component that relate to this value
-     * @throws IOException if there was a problem accessing data file.
-     */
-    private Profile[] doGetProfiles() throws IOException {
-        List<Profile> list = new ArrayList<Profile>();
+
+    private List<Integer> doGetProfileIndexes() throws IOException {
+        List<Integer> list = new ArrayList<Integer>();
 
         for (Profile profile : getComponent().getProfiles()) {
             if (valuesIndexSearch.binarySearch(
-                    profile.getValues(), 
+                    profile.getValues(),
                     getIndex()) >= 0) {
-                list.add(profile);
+                list.add(profile.index);
             }
         }
-
-        return list.toArray(new Profile[list.size()]);
+        return list;
     }
-    
+
     /**
      * Gets all the signatures associated with the value.
      *
@@ -426,8 +461,9 @@ public class Value extends BaseEntity {
         return result;
     }
     // </editor-fold>
-    
+
     // <editor-fold defaultstate="collapsed" desc="Private static class for binary search access.">
+
     /**
      * Provides access to binary search and overrides the compareTo method.
      */
@@ -438,4 +474,12 @@ public class Value extends BaseEntity {
         }
     }
     // </editor-fold>
+
+    int[] toIntArray(List<Integer> list) {
+        int[] ret = new int[list.size()];
+        int i = 0;
+        for (Integer e : list)
+            ret[i++] = e.intValue();
+        return ret;
+    }
 }
