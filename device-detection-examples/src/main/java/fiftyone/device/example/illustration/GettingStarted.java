@@ -25,6 +25,7 @@ import fiftyone.device.example.Shared;
 import fiftyone.mobile.detection.Match;
 import fiftyone.mobile.detection.Provider;
 import fiftyone.mobile.detection.factories.StreamFactory;
+
 import java.io.Closeable;
 import java.io.IOException;
 
