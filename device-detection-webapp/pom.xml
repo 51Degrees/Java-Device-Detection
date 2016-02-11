@@ -6,7 +6,7 @@
     <parent>
         <groupId>com.51degrees</groupId>
         <artifactId>device-detection</artifactId>
-        <version>3.2.3.5-beta</version>
+        <version>3.2.4.3-beta</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>

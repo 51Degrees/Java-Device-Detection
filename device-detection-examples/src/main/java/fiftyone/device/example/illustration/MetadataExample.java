@@ -100,7 +100,8 @@ public class MetadataExample implements Closeable {
         // iterate over all properties in the dataset
         for(Property property : dataset.getProperties()) {
             //Get individual property, print name and description.
-            System.out.format("%s - %s%n", property.getName(), 
+            System.out.format("%s (%s) - %s%n", property.getName(),
+                    property.valueType.name(),
                     property.getDescription());
 
             // collects name, values and their descriptions

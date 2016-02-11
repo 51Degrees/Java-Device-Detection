@@ -23,11 +23,17 @@ package fiftyone.mobile.detection.entities;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.io.IOException;
+import java.util.*;
+import java.util.Map;
+
 import fiftyone.mobile.detection.Dataset;
+import fiftyone.mobile.detection.IReadonlyList;
+import fiftyone.mobile.detection.cache.Cache;
+import fiftyone.mobile.detection.entities.stream.FixedCacheList;
 import fiftyone.mobile.detection.readers.BinaryReader;
 
 /**
- * Encapsulates all the information about a property including how it's 
+ * Encapsulates all the information about a property including how its
  * {@link Value values} should be used and what they mean. 
  * <p> 
  * Some properties are not mandatory and may not always contain values. 
@@ -37,15 +43,15 @@ import fiftyone.mobile.detection.readers.BinaryReader;
  * <p>
  * Properties can return none, one or many values. The {@link #isList} data 
  * member should be referred to to determine the number of values to expect. 
- * Properties where IsList is false will only return up to one value. 
+ * Properties where IsList is false will return a maximum of one value.
  * <p> 
- * The property also provides metadata about the intended use of the property. 
- * The description can be used by UI developers to provide more information 
- * about the intended use of the property and it's values. 
+ * {@link #getDescription()} can be used by UI developers to provide more information
+ * about the intended use of the property and its values.
+ * <p>
  * The {@link #getCategory()} method can be used to group together related 
  * properties in configuration UIs. 
  * <p> 
- * The {@link Value} results are returned as a set of {@link Values} that 
+ * {@link #getValues()} returns {@link Values} instances that
  * provide various utility methods.
  * <p>
  * Objects of this class should not be created directly as they are part of the 
@@ -244,6 +250,99 @@ public class Property extends BaseEntity implements Comparable<Property> {
     private volatile Values values;
 
     /**
+     * Ensure that the values of this property have been initialized to point
+     * to the profiles they are in.
+     * @throws IOException
+     */
+    private void ensureValueProfilesSet() throws IOException {
+        boolean localValueProfilesSet = valueProfilesSet;
+        if (localValueProfilesSet == false) {
+            synchronized (this) {
+                localValueProfilesSet = valueProfilesSet;
+                if (localValueProfilesSet == false) {
+
+                    // If the Values list is cached increase the size
+                    // of the cache to improve performance for this
+                    // feature by storing all related values in the cache.
+                    // Having all the possible values cached will improve
+                    // performance for subsequent requests. if the data
+                    // set isn't cached then there will only be one instance
+                    // of each profile and value in memory so the step isn't
+                    // needed as the direct reference will be used.
+                    if (dataSet.values instanceof FixedCacheList
+                            && values != null)
+                    {
+                        ((FixedCacheList)dataSet.values).increaseCacheSize(values.count());
+                    }
+
+                    // A map of value indexes to the profiles that contain those values.
+                    Map<Integer, List<Integer>> valueIndexProfileIndexMap = new HashMap<Integer, List<Integer>>();
+                    for (Value value : getValues().getAll()) {
+                        valueIndexProfileIndexMap.put(value.index, new ArrayList<Integer>());
+                    }
+
+                    // Add all the profile indexes to the map.
+                    for (Profile profile : getComponent().getProfiles()) {
+                        for (Value value : profile.getValues(this).getAll()) {
+                            valueIndexProfileIndexMap.get(value.index).add(profile.getIndex());
+                        }
+                    }
+
+                    // Set the profile indexes in the property.
+                    for (int valueIndex : valueIndexProfileIndexMap.keySet()) {
+                        Value value = dataSet.values.get(valueIndex);
+                        value.setProfileIndexes(valueIndexProfileIndexMap.get(valueIndex));
+                    }
+                    valueProfilesSet = true;
+                }
+            }
+        }
+    }
+
+    /**
+     * Check to see if the property has initialized the linkage to profiles that refer to it.
+     */
+    public boolean isValueProfilesSet() {
+        return valueProfilesSet;
+    }
+
+    // guard to show whether the profile pointers have been set up on the values for this property
+    private volatile boolean valueProfilesSet = false;
+
+    /**
+     * Find the {@link Profile Profiles} that contain the stated value for this property.
+     * @param valueName the value to check for
+     * @param filterProfiles limit search to the profiles passed (null for all profiles)
+     * @return a list of profiles that contain the value or an empty list if there are none
+     * @throws IOException
+     */
+    public List<Profile> findProfiles(String valueName, List<Profile> filterProfiles) throws IOException {
+        List<Profile> result = new ArrayList<Profile>();
+
+        // makes sure values have had their profiles initialized
+        ensureValueProfilesSet();
+
+        if (valueName != null) {
+            Value value = this.values.get(valueName);
+            if (value != null) {
+                if (filterProfiles == null) {
+                    for (Integer profileIndex : value.getProfileIndexes()) {
+                        result.add(dataSet.profiles.get(profileIndex));
+                    }
+                } else {
+                    for (Profile profile : filterProfiles) {
+                        if (value.getProfileIndexes().contains(profile.getIndex())) {
+                            result.add(profile);
+                        }
+                    }
+                }
+            }
+        }
+        // Return an unmodifiable list.
+        return Collections.unmodifiableList(result);
+    }
+
+    /**
      * A description of the property suitable to be displayed to end users via a
      * user interface.
      *
@@ -356,6 +455,8 @@ public class Property extends BaseEntity implements Comparable<Property> {
         this.lastValueIndex = reader.readInt32();
         this.mapCount = reader.readInt32();
         this.firstMapIndex = reader.readInt32();
+
+        this.valueProfilesSet = false;
     }
 
     /**
