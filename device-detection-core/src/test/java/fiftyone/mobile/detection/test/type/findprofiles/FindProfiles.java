@@ -24,9 +24,11 @@ package fiftyone.mobile.detection.test.type.findprofiles;
 import fiftyone.mobile.detection.Dataset;
 import fiftyone.mobile.detection.DetectionTestSupport;
 import fiftyone.mobile.detection.Filename;
+import fiftyone.mobile.detection.cache.Cache;
 import fiftyone.mobile.detection.entities.Profile;
 import fiftyone.mobile.detection.entities.Property;
 import fiftyone.mobile.detection.entities.Value;
+import fiftyone.mobile.detection.entities.stream.FixedCacheList;
 import fiftyone.mobile.detection.factories.StreamFactory;
 import fiftyone.mobile.detection.test.TestType;
 import org.junit.Test;
@@ -107,6 +109,31 @@ public class FindProfiles extends DetectionTestSupport {
 
         for (Property property : dataset.getProperties()) {
             assertTrue(property.isValueProfilesSet());
+        }
+    }
+
+    /**
+     * Checks the cache works properly by increasing the size when
+     * values are initialised.
+     *
+     * @throws Exception
+     */
+    @Test
+    public void Cache() throws Exception {
+        Random rand = new Random();
+        Dataset dataset = StreamFactory.create(Filename.LITE_PATTERN_V32, false);
+
+        if (dataset.values instanceof FixedCacheList) {
+            for (Property property : dataset.getProperties()) {
+                ((FixedCacheList) dataset.values).resetCache();
+                int valueindex = rand.nextInt(property.getValues().count());
+                String valuename = property.getValues().get(valueindex).getName();
+                assertFalse(property.isValueProfilesSet());
+                dataset.findProfiles(property.getName(), valuename, null);
+                double cacheIncrease = ((FixedCacheList) dataset.values).getCacheMisses();
+                assertTrue(cacheIncrease == property.getValues().count());
+
+            }
         }
     }
 
