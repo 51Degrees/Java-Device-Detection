@@ -29,6 +29,7 @@ import java.util.Map;
 import fiftyone.mobile.detection.Dataset;
 import fiftyone.mobile.detection.IReadonlyList;
 import fiftyone.mobile.detection.cache.Cache;
+import fiftyone.mobile.detection.entities.stream.FixedCacheList;
 import fiftyone.mobile.detection.readers.BinaryReader;
 
 /**
@@ -268,9 +269,10 @@ public class Property extends BaseEntity implements Comparable<Property> {
                     // set isn't cached then there will only be one instance
                     // of each profile and value in memory so the step isn't
                     // needed as the direct reference will be used.
-                    if (dataSet.values instanceof Cache)
+                    if (dataSet.values instanceof FixedCacheList
+                            && values != null)
                     {
-                        ((Cache)dataSet.values).setCacheSize(((Cache) dataSet.values).getCacheSize() + values.count());
+                        ((FixedCacheList)dataSet.values).increaseCacheSize(values.count());
                     }
 
                     // A map of value indexes to the profiles that contain those values.

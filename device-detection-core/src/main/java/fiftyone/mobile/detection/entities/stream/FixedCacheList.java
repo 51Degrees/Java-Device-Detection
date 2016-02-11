@@ -86,7 +86,16 @@ public class FixedCacheList<T extends BaseEntity> extends StreamFixedList<T>
     public double getPercentageMisses() {
         return cache != null ? cache.getPercentageMisses() : 0;
     }
-    
+
+    /**
+     * Returns the number of request that were not already held in the cache.
+     * @return the number of request that were not already held in the cache.
+     */
+    public double getCacheMisses() {
+        return cache != null ? cache.getCacheMisses() : 0;
+    }
+
+
     /**
      * Returns The number of times the cache has been switched.
      * 
@@ -116,6 +125,17 @@ public class FixedCacheList<T extends BaseEntity> extends StreamFixedList<T>
     @Override
     public T get(int key) throws IOException {
         return cache.get(key);
+    }
+
+    /**
+     * Increases the cache size. This is used when added values to
+     * the cache.
+     *
+     * @param increaseBy The amount to increase the cache size by.
+     * @throws IOException
+     */
+    public void increaseCacheSize(int increaseBy) throws IOException {
+        cache.setCacheSize(cache.getCacheSize() + increaseBy);
     }
     
     /**
