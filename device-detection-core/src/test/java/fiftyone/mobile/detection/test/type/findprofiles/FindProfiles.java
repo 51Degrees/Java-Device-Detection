@@ -57,7 +57,7 @@ public class FindProfiles extends DetectionTestSupport {
                 " : " + targetValue.getName());
             List<Profile> profiles = dataset.findProfiles(property.getName(), targetValue.getName(), null);
             for (Profile profile : profiles) {
-                assertEquals(profile.getValues(property).get(targetValue.getName()), targetValue);
+                assertTrue(profile.getValues(property).get(targetValue.getName()).equals(targetValue));
             }
         }
     }
