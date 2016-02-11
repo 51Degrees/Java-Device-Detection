@@ -21,7 +21,9 @@
 package fiftyone.mobile.detection.cache;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -180,8 +182,7 @@ public class Cache<K, V> {
     public Cache(int cacheSize) {
         this(cacheSize, null);
     }
-    private final int cacheSize;
-    
+
     /**
      * Constructs a new instance of the cache.
      * 
@@ -189,11 +190,30 @@ public class Cache<K, V> {
      * @param loader used to fetch items not in the cache.
      */    
     public Cache(int cacheSize, ICacheLoader<K,V> loader) {
-        this.cacheSize = cacheSize;
+        this.cacheSize = new AtomicInteger(cacheSize);
         this.loader = loader;
         this.hashMap = new ConcurrentHashMap<K,Node>(cacheSize);
         this.linkedList = new DoublyLinkedList();
     }
+
+    /**
+     * Gets the size of the cache.
+     *
+     * @return size of the cache.
+     */
+    public int getCacheSize() { return cacheSize.get(); }
+
+    /**
+     * Sets the size of the cache. Used to improve performance when
+     * more frequently requested items are likely to be required.
+     * For example
+     * {@link fiftyone.mobile.detection.entities.Property#findProfiles(String, List)}.
+     * .
+     *
+     * @param size
+     */
+    public void setCacheSize(int size) { cacheSize.set(size); }
+    private AtomicInteger cacheSize;
 
     /**
      * @return number of cache misses.
@@ -293,11 +313,11 @@ public class Cache<K, V> {
      * Removes the last item in the cache if the cache size is reached.
      */
     private void removeLeastRecent() {
-        if (hashMap.size() > cacheSize) {
+        if (hashMap.size() > cacheSize.get()) {
             Node removedNode = linkedList.removeLast();
             KeyValuePair kvp = (KeyValuePair)removedNode.item;
             assert hashMap.remove(kvp.key) != null;
-            assert hashMap.size() == cacheSize;
+            assert hashMap.size() == cacheSize.get();
         }
     }
 

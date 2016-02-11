@@ -68,6 +68,8 @@ import java.io.Closeable;
  */
 public class Dataset implements Closeable {
 
+    public boolean FindProfilesInitialiseValueProfiles = false;
+
     /**
      * Age of the data in months when exported.
      */
@@ -606,7 +608,51 @@ public class Dataset implements Closeable {
         return result;
     }
     private volatile SearchProfileOffsetByProfileId profileOffsetSearch;
-    
+
+    /**
+     * Get the profiles associated with the {@link Property} name and
+     * value which intersects with filterProfiles if provided.
+     * @param propertyName the name of the {@link Property} to find as a string.
+     * @param valueName the {@link Property Property's} {@link Value} to find
+     *                  as a string.
+     * @param filterProfiles the list of {@link Profile Profiles} to search in.
+     *                       Or null to find all matching
+     *                       {@link Profile Profiles}.
+     * @return A read-only list of {@link Profile} objects in ascending index
+     * order.
+     * @throws IOException
+     * @throws IllegalArgumentException if the property does not exist.
+     */
+    public List<Profile> findProfiles(String propertyName, String valueName, List<Profile> filterProfiles) throws IOException {
+
+        Property property =  this.properties.get(propertyName);
+        if (property == null) {
+            throw new IllegalArgumentException(String.format(
+                    "Property '%s' does not exist in the '%s' data set. " +
+                            "Upgrade to a different data set which includes the property.",
+                    propertyName,
+                    this.name));
+        }
+        return findProfiles(property, valueName, filterProfiles);
+    }
+
+    /**
+     * Get the profiles associated with the {@link Property} name and
+     * value which intersects with filterProfiles if provided.
+     * @param property the {@link Property} object to seach with.
+     * @param valueName the {@link Property Property's} {@link Value} to find
+     *                  as a string.
+     * @param filterProfiles the list of {@link Profile Profiles} to search in.
+     *                       Or null to find all matching
+     *                       {@link Profile Profiles}.
+     * @return A read-only list of {@link Profile} objects in ascending index
+     * order.
+     * @throws IOException
+     */
+    public List<Profile> findProfiles(Property property, String valueName, List<Profile> filterProfiles) throws IOException {
+        return property.findProfiles(valueName, filterProfiles);
+    }
+
     /**
      * Returns an iterable of all {@link Component Components} in the current 
      * data file.
