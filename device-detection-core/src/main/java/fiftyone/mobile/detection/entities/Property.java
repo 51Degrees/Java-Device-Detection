@@ -28,6 +28,7 @@ import java.util.Map;
 
 import fiftyone.mobile.detection.Dataset;
 import fiftyone.mobile.detection.IReadonlyList;
+import fiftyone.mobile.detection.cache.Cache;
 import fiftyone.mobile.detection.readers.BinaryReader;
 
 /**
@@ -258,6 +259,19 @@ public class Property extends BaseEntity implements Comparable<Property> {
             synchronized (this) {
                 localValueProfilesSet = valueProfilesSet;
                 if (localValueProfilesSet == false) {
+
+                    // If the Values list is cached increase the size
+                    // of the cache to improve performance for this
+                    // feature by storing all related values in the cache.
+                    // Having all the possible values cached will improve
+                    // performance for subsequent requests. if the data
+                    // set isn't cached then there will only be one instance
+                    // of each profile and value in memory so the step isn't
+                    // needed as the direct reference will be used.
+                    if (dataSet.values instanceof Cache)
+                    {
+                        ((Cache)dataSet.values).setCacheSize(((Cache) dataSet.values).getCacheSize() + values.count());
+                    }
 
                     // A map of value indexes to the profiles that contain those values.
                     Map<Integer, List<Integer>> valueIndexProfileIndexMap = new HashMap<Integer, List<Integer>>();
