@@ -7,7 +7,7 @@
     <groupId>com.51degrees</groupId>
     <artifactId>device-detection</artifactId>
     <packaging>pom</packaging>
-    <version>3.2.3.5-beta</version>
+    <version>3.2.3-SNAPSHOT</version>
 
     <name>51Degrees :: Device Detection</name>
 
@@ -47,7 +47,7 @@
                     <version>${maven-compiler-plugin.version}</version>
                     <configuration>
                         <source>1.6</source>
-                        <target>1.7</target>
+                        <target>1.6</target>
                     </configuration>
                 </plugin>
 
