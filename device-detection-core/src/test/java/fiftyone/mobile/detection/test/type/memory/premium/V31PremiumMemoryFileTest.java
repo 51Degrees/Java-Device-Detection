@@ -48,7 +48,9 @@ public class V31PremiumMemoryFileTest extends MemoryBase {
 
     @BeforeClass
     public static void setUp() throws IOException {
-        dataset = getInitialisedDataset(filename, false, 20, null, false);
+        if (fileExists(filename)) {
+            dataset = getInitialisedDataset(filename, false, 20, null, false);
+        }
     }
 
     @Before
@@ -64,8 +66,10 @@ public class V31PremiumMemoryFileTest extends MemoryBase {
     
     @After
     public void resetCache() {
-        dataset.resetCache();
-        System.gc();
+        if (dataset != null) {
+            dataset.resetCache();
+            System.gc();
+        }
     }
 
     @Test

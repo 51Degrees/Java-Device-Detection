@@ -42,7 +42,7 @@ public abstract class FileBase extends Base {
      */
     @Before
     public void setUp() {
-        assertFileExists(super.dataFile);
+        assumeFileExists(super.dataFile);
         long startTime = Calendar.getInstance().getTimeInMillis();
         try {
             super.dataSet = StreamFactory.create(super.dataFile, false);

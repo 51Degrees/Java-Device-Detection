@@ -58,11 +58,6 @@
         <!-- this profile tests lite only -->
         <profile>
             <id>test-dataset-lite-only</id>
-            <activation>
-                <file>
-                    <missing>${basedir}/data/51Degrees-EnterpriseV3.2.dat, ${basedir}/data/51Degrees-PremiumV3.2.dat, ${basedir}/data/51Degrees-PremiumV3.1.dat, ${basedir}/data/51Degrees-EnterpriseV3.1.dat</missing>
-                </file>
-            </activation>
             <build>
                 <plugins>
                     <plugin>

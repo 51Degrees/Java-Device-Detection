@@ -37,7 +37,7 @@ public abstract class FileBase extends Base {
      */
     @Before
     public void setUp() {
-        assertFileExists(super.dataFile);
+        assumeFileExists(super.dataFile);
         try {
             this.dataSet = StreamFactory.create(super.dataFile, false);
         } catch (IOException ex) {

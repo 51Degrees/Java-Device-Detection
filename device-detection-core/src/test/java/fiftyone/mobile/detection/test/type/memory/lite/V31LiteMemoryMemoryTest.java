@@ -43,12 +43,14 @@ public class V31LiteMemoryMemoryTest extends MemoryBase {
 
     @BeforeClass
     public static void setUp() throws IOException {
-        dataset = getInitialisedDataset(filename, true, 200, null, false);
+        if (fileExists(filename)) {
+            dataset = getInitialisedDataset(filename, true, 200, null, false);
+        }
     }
 
     @Before
     public void checkFileExists() {
-        assertFileExists(filename);
+        assumeFileExists(filename);
     }
 
     @AfterClass
