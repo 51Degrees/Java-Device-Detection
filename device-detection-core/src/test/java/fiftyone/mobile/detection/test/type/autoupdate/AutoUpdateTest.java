@@ -72,7 +72,10 @@ public class AutoUpdateTest extends AutoUpdateBase {
         update();
     }
     
-    private void update() throws NoSuchAlgorithmException, IllegalArgumentException, Exception {
+    // Snippet Start
+    private void update() throws NoSuchAlgorithmException, 
+                                 IllegalArgumentException, 
+                                 Exception {
         String[] licenceKeys = super.getLicenceKeys();
         if (licenceKeys.length > 0) {
             AutoUpdateStatus result = AutoUpdate.update(
@@ -95,4 +98,5 @@ public class AutoUpdateTest extends AutoUpdateBase {
             }        
         }
     }
+    // Snippet End
 }

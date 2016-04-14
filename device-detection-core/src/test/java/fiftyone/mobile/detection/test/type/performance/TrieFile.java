@@ -103,7 +103,7 @@ public abstract class TrieFile extends TrieBase {
     
     @Before
     public void createDataSet() {
-        assertFileExists(super.dataFile);
+        assumeFileExists(super.dataFile);
         long startTime = Calendar.getInstance().getTimeInMillis();
         try {
             provider = TrieFactory.create(super.dataFile);

@@ -37,7 +37,7 @@ public abstract class MemoryBase extends Base {
      */
     @Before
     public void setUp() {
-        assertFileExists(super.dataFile);
+        assumeFileExists(super.dataFile);
         try {
             this.dataSet = MemoryFactory.create(super.dataFile);
         } catch (IOException ex) {

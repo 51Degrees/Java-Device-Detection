@@ -200,6 +200,7 @@ class ShareUsage implements Runnable {
      */
     @Override
     public void run() {
+        logger.debug("Share usage started.");
         do {
             try {
                 synchronized (wait) {
@@ -255,16 +256,21 @@ class ShareUsage implements Runnable {
                 }
             } catch (SecurityException ex) {
                 stop = true;
+                logger.debug("Security Exception: " + ex);
             } catch (XMLStreamException ex) {
                 stop = true;
+                logger.debug("XML Stream Exception: " + ex);
             } catch (IOException ex) {
                 stop = true;
+                logger.debug("IO Exception: " + ex);
             } catch (InterruptedException ex) {
                 stop = true;
+                logger.debug("Interrupted Exception: " + ex);
             } catch (IllegalStateException ex) {
                 // Probably means that the instance has stopped
                 // so stop any more thread processing.
                 stop = true;
+                logger.debug("Illegal State Exception: " + ex);
             }
         } while (stop == false);
     }

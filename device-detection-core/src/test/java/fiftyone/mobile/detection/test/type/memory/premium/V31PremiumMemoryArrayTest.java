@@ -50,7 +50,10 @@ public class V31PremiumMemoryArrayTest extends MemoryBase {
 
     @BeforeClass
     public static void setUp() throws IOException {
-        dataset = getInitialisedDataset(filename, false, 110, readAllBytes(filename), false);
+        if (fileExists(filename)) {
+            dataset = getInitialisedDataset(filename, false, 110, 
+                                            readAllBytes(filename), false);
+        }
     }
 
     @Before
@@ -66,8 +69,10 @@ public class V31PremiumMemoryArrayTest extends MemoryBase {
     
     @After
     public void resetCache() {
-        dataset.resetCache();
-        System.gc();
+        if (dataset != null) {
+            dataset.resetCache();
+            System.gc();
+        }
     }
 
     @Test

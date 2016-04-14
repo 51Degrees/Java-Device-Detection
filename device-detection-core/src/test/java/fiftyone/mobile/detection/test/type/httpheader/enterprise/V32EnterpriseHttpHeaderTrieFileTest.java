@@ -40,7 +40,7 @@ public class V32EnterpriseHttpHeaderTrieFileTest extends TrieCombinations {
     @Before
     public void createDataSet() throws IOException
     {
-        assertFileExists(super.dataFile);
+        assumeFileExists(super.dataFile);
         super.provider = TrieFactory.create(super.dataFile);
     }
     
