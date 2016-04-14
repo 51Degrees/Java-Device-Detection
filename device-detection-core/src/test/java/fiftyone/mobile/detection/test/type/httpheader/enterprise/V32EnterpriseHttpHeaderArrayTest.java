@@ -40,7 +40,7 @@ public class V32EnterpriseHttpHeaderArrayTest extends Combinations {
     @Before
     public void createDataSet() throws IOException
     {
-        assertFileExists(super.dataFile);
+        assumeFileExists(super.dataFile);
         super.dataSet = StreamFactory.create(readAllBytes(super.dataFile));
     }
 

@@ -54,7 +54,7 @@ public class V32LiteApiTest extends ApiBase {
 
     @Before
     public void checkFileExists() {
-        assertFileExists(filename);
+        assumeFileExists(filename);
     }
 
     @AfterClass

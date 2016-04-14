@@ -49,8 +49,10 @@ public class V32PremiumMemoryFileTest extends MemoryBase {
 
     @BeforeClass
     public static void setUp() throws IOException {
-        if (fileExists(filename)) dataset = StreamFactory.create(filename, false);
-        dataset = getInitialisedDataset(filename, false, 20, null, false);
+        if (fileExists(filename)) {
+            //dataset = StreamFactory.create(filename, false);
+            dataset = getInitialisedDataset(filename, false, 20, null, false);
+        }
     }
 
     @Before
@@ -66,8 +68,10 @@ public class V32PremiumMemoryFileTest extends MemoryBase {
     
     @After
     public void resetCache() {
-        dataset.resetCache();
-        System.gc();
+        if (dataset != null) {
+            dataset.resetCache();
+            System.gc();
+        }
     }
 
     @Test
