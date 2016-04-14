@@ -44,12 +44,15 @@ public class V32LiteMemoryArrayTest extends MemoryBase {
 
     @BeforeClass
     public static void setUp() throws IOException {
-        dataset = getInitialisedDataset(filename, false, 60, readAllBytes(filename), false);
+        if (fileExists(filename)) {
+            dataset = getInitialisedDataset(filename, false, 60, 
+                                            readAllBytes(filename), false);
+        }
     }
 
     @Before
     public void checkFileExists() {
-        assertFileExists(filename);
+        assumeFileExists(filename);
         System.gc();
     }
 
@@ -61,7 +64,9 @@ public class V32LiteMemoryArrayTest extends MemoryBase {
     
     @After
     public void resetCache() {
-        dataset.resetCache();
+        if (dataset != null) {
+            dataset.resetCache();
+        }
     }
 
     @Test

@@ -43,7 +43,9 @@ import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.util.Date;
 import java.util.UUID;
+import java.util.logging.Level;
 import javax.servlet.ServletContext;
+import javax.xml.stream.XMLStreamException;
 
 /**
  * Web version of the 51Degrees {@link Provider} class.
@@ -89,6 +91,10 @@ public class WebProvider extends Provider implements Closeable {
      * was used to create the provider.
      */
     private String sourceDataFile = null;
+    
+    private static Thread shareUsageThread;
+    
+    private static ShareUsage shareUsageWorker;
 
     /**
      * Constructs a new instance of the web provider connected to the dataset
@@ -138,6 +144,15 @@ public class WebProvider extends Provider implements Closeable {
         // one being destroyed.
         if (WebProvider.activeProvider == this) {
             WebProvider.activeProvider = null;
+        }
+        
+        if (shareUsageWorker != null) {
+            shareUsageWorker.destroy();
+            shareUsageWorker = null;
+        }
+        
+        if (shareUsageThread != null) {
+            shareUsageThread = null;
         }
     }
 
@@ -369,6 +384,16 @@ public class WebProvider extends Provider implements Closeable {
                     logger.info(String.format(
                             "Created provider from binary data file '%s'.",
                             binaryFile.getAbsolutePath()));
+                    // Share usage unless explicitly forbidden to.
+                    if ("False".equalsIgnoreCase(sc.getInitParameter(Constants.SHARE_USAGE))) {
+                        shareUsageThread = null;
+                        shareUsageWorker = null;
+                    } else {
+                        shareUsageWorker = new ShareUsage(Constants.URL, 
+                                                          NewDeviceDetails.MINIMUM);
+                        shareUsageThread = new Thread(shareUsageWorker);
+                        shareUsageThread.start();
+                    }
                 }
             } catch (Exception ex) {
                 // Record the exception in the log file.
@@ -414,6 +439,15 @@ public class WebProvider extends Provider implements Closeable {
                     String hv = headerValues.nextElement();
                     headers.put(header, hv);
                 }
+            }
+        }
+        
+        if (shareUsageThread != null && shareUsageWorker != null) {
+            try {
+                shareUsageWorker.recordNewDevice(request);
+            } catch (XMLStreamException ex) {
+                java.util.logging.Logger.getLogger(WebProvider.class.getName()).
+                    log(Level.INFO, "Failed to submit usage sharing data: {0}", ex);
             }
         }
         return super.match(headers);
