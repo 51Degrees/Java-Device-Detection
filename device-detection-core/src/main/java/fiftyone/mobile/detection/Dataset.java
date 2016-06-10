@@ -194,6 +194,14 @@ public class Dataset implements Closeable {
      */
     public PropertiesList properties;
     /**
+     * Array of JavaScript properties.
+     */
+    private Property[] javaScriptProperties = null;
+    /**
+     * Array of JavaScript properties related to property value overrides.
+     */
+    private Property[] pvoProperties;
+    /**
      * The date the data set was published.
      */
     public Date published;
@@ -248,7 +256,7 @@ public class Dataset implements Closeable {
      * a match.
      */
     public int xmlBufferLength;
-    
+   
     /**
      * Constructs a new data set ready to have lists of data assigned to it.
      * 
@@ -623,7 +631,10 @@ public class Dataset implements Closeable {
      * @throws IOException
      * @throws IllegalArgumentException if the property does not exist.
      */
-    public List<Profile> findProfiles(String propertyName, String valueName, List<Profile> filterProfiles) throws IOException {
+    public List<Profile> findProfiles(
+            String propertyName, 
+            String valueName, 
+            List<Profile> filterProfiles) throws IOException {
 
         Property property =  this.properties.get(propertyName);
         if (property == null) {
@@ -649,7 +660,10 @@ public class Dataset implements Closeable {
      * order.
      * @throws IOException
      */
-    public List<Profile> findProfiles(Property property, String valueName, List<Profile> filterProfiles) throws IOException {
+    public List<Profile> findProfiles(
+            Property property, 
+            String valueName, 
+            List<Profile> filterProfiles) throws IOException {
         return property.findProfiles(valueName, filterProfiles);
     }
 
@@ -667,7 +681,6 @@ public class Dataset implements Closeable {
         return components;
     }
     
-
     /**
      * Returns an iterable list of maps contained within the data file.
      * May contain multiple maps with the same name.
@@ -687,6 +700,61 @@ public class Dataset implements Closeable {
         return properties;
     }
     
+    /**
+     * All the JavaScript type properties in the data set.
+     * 
+     * @return array of properties of type JavaScript.
+     */
+    @SuppressWarnings("DoubleCheckedLocking")
+    public Property[] getJavaScriptProperties() {
+        if (javaScriptProperties == null) {
+            synchronized(this) {
+                if (javaScriptProperties == null) {
+                    List<Property> tempList = new ArrayList<Property>();
+                    for (Property property : getProperties()) {
+                        if (property.valueType == 
+                                Property.PropertyValueType.JAVASCRIPT) {
+                            tempList.add(property);
+                        }
+                    }
+                    Property[] localJavaScriptProperties = 
+                            new Property[tempList.size()];
+                    tempList.toArray(localJavaScriptProperties);
+                    javaScriptProperties = localJavaScriptProperties;
+                }
+            }
+        }
+        return javaScriptProperties;
+    }
+    
+    /**
+     * All the JavaScript properties that relate to Profile Value Overrides.
+     * 
+     * @return array of properties of type JavaScript.
+     * @throws java.io.IOException
+     */    
+    @SuppressWarnings("DoubleCheckedLocking")
+    public Property[] getPropertyValueOverrideProperties() throws IOException {
+        if (pvoProperties == null) {
+            synchronized(this) {
+                if (pvoProperties == null) { 
+                    List<Property> tempList = new ArrayList<Property>(); 
+                    for (Property property : getJavaScriptProperties()) {
+                        if (property.getCategory().equals(
+                            DetectionConstants.
+                            PROPERTY_VALUE_OVERRIDE_CATEGORY)) {
+                            tempList.add(property);
+                        }
+                    }
+                    Property[] localPvoProperties = 
+                            new Property[tempList.size()];
+                    tempList.toArray(localPvoProperties);
+                    pvoProperties = localPvoProperties;
+                }
+            }
+        }
+        return pvoProperties;
+    }
 
     /**
      * A list of all {@link Value values} the data set contains. A value is 

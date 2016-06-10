@@ -411,11 +411,13 @@ public class WebProvider extends Provider implements Closeable {
         // Does the provider exist and has data been loaded?
         if (provider == null || provider.dataSet == null) {
             // No, throw error as 
-            logger.error(String.format(
-            "Failed to create a Web Provider. The path to 51Degrees device "
-                    + "data file is not set in the Constants."));
-            throw new Error("Could not create a Web Provider. Path to "
-                    + "51Degrees data file was not set in the Constants.");
+            String message = String.format(
+                    "Failed to create a Web Provider from binary file '%s'. " +
+                    "Check the value for '%s' in the configuration.",
+                    binaryFile,
+                    Constants.BINARY_FILE_PATH);            
+            logger.error(message);
+            throw new Error(message);
         }
 
         return provider;
@@ -433,15 +435,24 @@ public class WebProvider extends Provider implements Closeable {
     public Match match(HttpServletRequest request) throws IOException {
         HashMap headers = new HashMap<String, String>();
         for (String header : super.dataSet.getHttpHeaders()) {
-            if (request.getHeader(header) != null) {
-                Enumeration<String> headerValues = request.getHeaders(header);
-                if (headerValues.hasMoreElements()) {
-                    String hv = headerValues.nextElement();
-                    headers.put(header, hv);
-                }
+            Enumeration<String> headerValues = request.getHeaders(header);
+            if (headerValues != null &&
+                headerValues.hasMoreElements()) {
+                String hv = headerValues.nextElement();
+                headers.put(header, hv);
             }
         }
         
+        // Add the cookie string if it's available. This is used to override
+        // static values with dynamic values retrieved via JavaScript and 
+        // passed to the server via cookies.
+        Enumeration<String> headerValues = request.getHeaders("Cookie");
+        if (headerValues != null &&
+            headerValues.hasMoreElements()) {
+            String hv = headerValues.nextElement();
+            headers.put("Cookie", hv);
+        }
+                
         if (shareUsageThread != null && shareUsageWorker != null) {
             try {
                 shareUsageWorker.recordNewDevice(request);
@@ -462,37 +473,34 @@ public class WebProvider extends Provider implements Closeable {
      * @return a match object with properties associated with the device
      * @throws IOException
      */
+    public static Match getMatch(final HttpServletRequest request) 
+            throws IOException {
+        return getActiveProvider(request.getServletContext()).match(request);
+    }
+    
+    /**
+     * Obtains the match result as a map from the request container. If the 
+     * result does not exist in the container then it will be calculated by the
+     * provider.
+     * 
+     * The method is deprecated in favour of getMatch which avoids creating a
+     * Map for all properties and values.
+     *
+     * @param request details of the HTTP request
+     * @return a map with properties associated with the device
+     * @throws IOException
+     */
+    @Deprecated
     public static Map<String, String[]> getResult(
                         final HttpServletRequest request) throws IOException {
-        boolean hasOverrides = ProfileOverride.hasOverrides(request);
-        Map<String, String[]> results = 
-                (Map<String, String[]>) request.getAttribute(RESULT_ATTIBUTE);
-        //HttpSession session = request.getSession();
-
-        // If there are no results already for the request, or there are 
-        // overrides from client JavaScript then get the updated/new results.
-        if (results == null || hasOverrides) {
-            synchronized (request) {
-                // Try getting the results again in case another thread has 
-                // processed them and added to the request attributes.
-                results = (Map<String, String[]>) request.getAttribute(RESULT_ATTIBUTE);
-                if (results == null || hasOverrides) {
-
-                    if (results == null) {
-                        // Get the match and store the list of properties and 
-                        // values in the context and session.
-                        Match match = getActiveProvider(
-                                request.getServletContext()).match(request);
-                        if (match != null) {
-                            // Allow other feautre detection methods to override
-                            // priofiles.
-                            ProfileOverride.override(request, match);
-                            
-                            request.setAttribute(RESULT_ATTIBUTE, match.getResults());
-                            results = match.getResults();
-                        }
-                    }
-                }
+        Map<String, String[]> results;
+        synchronized (request) {
+            results = (Map<String, String[]>)request.getAttribute(
+                    RESULT_ATTIBUTE);
+            if (results == null) {
+                Match match = getMatch(request);
+                results = match.getResults();
+                request.setAttribute(RESULT_ATTIBUTE, results);
             }
         }
         return results;
