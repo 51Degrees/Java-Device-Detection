@@ -98,7 +98,8 @@ public class DetectionConstants {
     /**
      * URL for the service that provides automatic updates of device data.
      */
-    public static final String AUTO_UPDATE_URL = "https://51degrees.com/Products/Downloads/Premium.aspx";
+    public static final String AUTO_UPDATE_URL = 
+            "https://51degrees.com/Products/Downloads/Premium.aspx";
     /**
      * Deprecated since V3.2 uses a temporary data file instead of memory to 
      * download the update.
