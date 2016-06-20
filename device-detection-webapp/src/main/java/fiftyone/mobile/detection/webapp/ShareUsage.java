@@ -62,7 +62,7 @@ class ShareUsage implements Runnable, Closeable {
     /**
      * Used to stop the thread.
      */
-    private boolean stop = false;
+    private volatile boolean stop = false;
     /**
      * URL to send new device data to.
      */
