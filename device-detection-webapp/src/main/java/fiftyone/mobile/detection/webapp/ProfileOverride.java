@@ -21,6 +21,7 @@
 package fiftyone.mobile.detection.webapp;
 
 import fiftyone.mobile.detection.Match;
+import fiftyone.mobile.detection.entities.Values;
 import java.io.IOException;
 import java.util.Map;
 import javax.servlet.http.Cookie;
@@ -80,14 +81,14 @@ class ProfileOverride {
      * @param request current HttpServletRequest.
      * @return JavaScript as string.
      */
-    static String getJavascript(HttpServletRequest request) throws IOException {
-        Map<String, String[]> results = WebProvider.getResult(request);
-        if (results != null) {
-            String[] javascript = results.get("JavascriptHardwareProfile");
+    static String getJavaScript(HttpServletRequest request) throws IOException {
+        Match match = WebProvider.getMatch(request);
+        if (match != null) {
+            Values javascript = match.getValues("JavascriptHardwareProfile");
             if (javascript != null) {
                 StringBuilder sb = new StringBuilder(
                         "function FODPO() {{ var profileIds = new Array(); ");
-                for(String snippet : javascript) {
+                for(String snippet : javascript.toStringArray()) {
                     sb.append(snippet).append("\r");
                 }
                 sb.append("document.cookie = \"51D_ProfileIds=\" "

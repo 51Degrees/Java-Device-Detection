@@ -59,6 +59,16 @@ public class DetectionConstants {
     @Deprecated
     public static final Version FormatVersion = new Version(3, 1, 0, 0);
     /**
+     * The prefix to apply to the cookie name when used in the client.
+     */
+    public static final String PROPERTY_VALUE_OVERRIDE_COOKIE_PREFIX = "51D_";
+    /**
+     * The category a property has to be associated with to be used for property
+     * value override JavaScript.
+     */
+    public static final String PROPERTY_VALUE_OVERRIDE_CATEGORY = 
+            "Property Value Override";
+    /**
      * Character to use when combining values from properties that support lists
      * and may have more than one value. For example; SupportedBearers.
      */

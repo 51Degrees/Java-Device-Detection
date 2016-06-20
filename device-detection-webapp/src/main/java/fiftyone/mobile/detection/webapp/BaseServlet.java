@@ -20,6 +20,8 @@
  * ********************************************************************* */
 package fiftyone.mobile.detection.webapp;
 
+import fiftyone.mobile.detection.Match;
+import fiftyone.mobile.detection.entities.Values;
 import java.io.IOException;
 import java.util.Map;
 import javax.servlet.ServletException;
@@ -42,15 +44,29 @@ import javax.servlet.http.HttpServletRequest;
 public class BaseServlet extends HttpServlet {
 
     /**
-     * Returns the result set associated with the request provided. If this is
-     * the first time the method is called the result will be stored in the
-     * HttpServletRequest's attribute collection so that it does not need to be
-     * fetched again in the future.
+     * Returns the match associated with the request provided.
      *
-     * @param request the request property results are for.
+     * @param request details of the HTTP request
+     * @return a match instance to access properties associated with the client
+     * device.
+     * @throws IOException if there was a problem accessing data file.
+     */
+    protected Match getMatch(final HttpServletRequest request) 
+            throws IOException {
+        return WebProvider.getMatch(request);
+    }
+    
+    /**
+     * Returns the result set associated with the request provided.
+     * 
+     * The method is deprecated in favour of getMatch which avoids creating a
+     * Map for all properties and values.
+     *
+     * @param request details of the HTTP request 
      * @return a set of results containing access to properties.
      * @throws IOException if there was a problem accessing data file.
      */
+    @Deprecated
     protected Map<String, String[]> getResult(final HttpServletRequest request) 
             throws IOException {
         return WebProvider.getResult(request);
@@ -77,11 +93,11 @@ public class BaseServlet extends HttpServlet {
     protected String getProperty(final HttpServletRequest request,
                                  final String propertyName) 
                                  throws ServletException, IOException {
-        final Map<String, String[]> result = getResult(request);
-        if (result != null) {
-            String[] values = result.get(propertyName);
+        final Match match = getMatch(request);
+        if (match != null) {
+            Values values = match.getValues(propertyName);
             if (values != null) {
-                return join(values);
+                return values.toString();
             }
         }
         return null;
