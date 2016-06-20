@@ -118,7 +118,11 @@ public final class StreamFactory {
     public static Dataset create(String filepath, Date lastModified, 
             boolean isTempFile) throws IOException {
         Dataset dataSet = 
-                new Dataset(filepath, lastModified, Modes.FILE, isTempFile);
+                new fiftyone.mobile.detection.entities.stream.Dataset(
+                        filepath, 
+                        lastModified, 
+                        Modes.FILE, 
+                        isTempFile);
         load(dataSet);
         return dataSet;
     }
