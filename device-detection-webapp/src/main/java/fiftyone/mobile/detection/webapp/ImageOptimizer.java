@@ -55,13 +55,6 @@ class ImageOptimizer {
     private final static Logger logger = LoggerFactory
         .getLogger(ImageOptimizer.class);
     
-    private static final String IMAGE_MAX_WIDTH = "IMAGE_MAX_WIDTH";
-    private static final String IMAGE_MAX_HEIGHT = "IMAGE_MAX_HEIGHT";
-    private static final String IMAGE_FACTOR = "IMAGE_FACTOR";
-    private static final String IMAGE_WIDTH_PARAM = "IMAGE_WIDTH_PARAM";
-    private static final String IMAGE_HEIGHT_PARAM = "IMAGE_HEIGHT_PARAM";
-    private static final String IMAGE_DEFAULT_AUTO = "IMAGE_DEFAULT_AUTO";
-    private static final String EMPTY_IMAGE_RESOURCE_NAME = "E.gif";
     private static final int DEFAULT_BUFFER_SIZE = 10240;
     private static final String AUTO_STRING = "auto";
     private static final String SCREEN_PIXEL_WIDTH = "ScreenPixelsWidth";
@@ -453,8 +446,7 @@ class ImageOptimizer {
     
     private static void sendEmpty(HttpServletResponse response) 
             throws IOException {
-        InputStream empty = ImageOptimizer.class.getResourceAsStream(
-                EMPTY_IMAGE_RESOURCE_NAME);
+        InputStream empty = ImageOptimizer.class.getResourceAsStream("/E.gif");
         int length = 0;
         empty.mark(Integer.MAX_VALUE);
         while(empty.read() >= 0) {
