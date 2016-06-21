@@ -318,9 +318,7 @@ class ShareUsage implements Runnable, Closeable {
      * Records the information as XML data and converts to a String for
      * storage.
      *
-     * @param Headers A Map of the connection headers.
-     * @param HostAddress The address IP address of the host.
-     * @param URI The URI information.
+     * @param request the request
      * @param newDeviceDetail How much information to be recorded.
      * @return The XML data as a String.
      * @throws XMLStreamException
@@ -350,13 +348,25 @@ class ShareUsage implements Runnable, Closeable {
             writer.writeEndElement();
 
             writer.writeStartElement("Version");
-            writer.writeCharacters(
-                    ShareUsage.class.getPackage().getImplementationVersion());
+            // this info is available from the Manifest in the JAR file
+            // however, if you build locally using an IDE rather than using
+            // Maven it may not be present
+            try {
+                writer.writeCharacters(
+                        ShareUsage.class.getPackage().getImplementationVersion());
+            } catch (Exception e) {
+                writer.writeCharacters("Not set");
+            }
             writer.writeEndElement();
 
             writer.writeStartElement("Product");
-            writer.writeCharacters(
-                    ShareUsage.class.getPackage().getImplementationTitle());
+            try {
+                // as above
+                writer.writeCharacters(
+                        ShareUsage.class.getPackage().getImplementationTitle());
+            } catch (Exception e) {
+                writer.writeCharacters("Not set");
+            }
             writer.writeEndElement();
 
             // Record either the IP address of the client if not local or the IP
