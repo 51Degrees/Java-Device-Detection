@@ -160,7 +160,7 @@ public class WebProvider extends Provider implements Closeable {
         if (shareUsageThread != null) {
             // Wait for the thread to complete outputing any data.
             try {
-                shareUsageThread.join();
+                shareUsageThread.join(Constants.NEW_URL_TIMEOUT);
             } catch (InterruptedException ex) {
                 java.util.logging.Logger.getLogger(
                         WebProvider.class.getName()).log(
