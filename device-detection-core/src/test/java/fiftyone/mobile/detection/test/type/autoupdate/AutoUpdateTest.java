@@ -93,16 +93,17 @@ public class AutoUpdateTest extends AutoUpdateBase {
             if (result != AUTO_UPDATE_NOT_NEEDED) {
                 fail("Data file should not have needed updating.");
             }
-        }
         
-        // Test a direct request also works correctly. Avoids the check which
-        // compares the file contents.
-        HttpURLConnection client = (HttpURLConnection)AutoUpdate.fullUrl(
-                    licenceKeys).openConnection();
-        client.setIfModifiedSince(
-                new File(super.getTestDataFile()).lastModified());
-        if (client.getResponseCode() != 304) {
-            fail("304 response should be returned as file already exists.");
+        
+            // Test a direct request also works correctly. Avoids the check which
+            // compares the file contents.
+            HttpURLConnection client = (HttpURLConnection)AutoUpdate.fullUrl(
+                        licenceKeys).openConnection();
+            client.setIfModifiedSince(
+                    new File(super.getTestDataFile()).lastModified());
+            if (client.getResponseCode() != 304) {
+                fail("304 response should be returned as file already exists.");
+            }
         }
     }
     
