@@ -27,10 +27,6 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
                 <version>${maven-war-plugin.version}</version>
-                <!--
-                copy the data files to the target directory (we assume that the app server
-                will run the war from this directory so the data files are on the path)
-                -->
                 <configuration>
                     <webResources>
                         <resource>
@@ -39,7 +35,6 @@
                             <includes>
                                 <include>51Degrees-LiteV3.2.dat</include>
                             </includes>
-                            <!-- relative to the directory that the WAR is constructed from -->
                             <targetPath>WEB-INF/</targetPath>
                         </resource>
                     </webResources>
