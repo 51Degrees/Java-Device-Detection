@@ -174,6 +174,6 @@ public class Gallery extends BaseServlet {
      */
     @Override
     public String getServletInfo() {
-        return "An example image gallary using 51Degrees image optimisation";
+        return "An example image gallery using 51Degrees image optimisation";
     }
 }

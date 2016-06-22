@@ -332,13 +332,25 @@ class ShareUsage implements Runnable, Closeable {
             writer.writeEndElement();
 
             writer.writeStartElement("Version");
-            writer.writeCharacters(
-                    ShareUsage.class.getPackage().getImplementationVersion());
+            // this info is available from the Manifest in the JAR file
+            // however, if you build locally using an IDE rather than using
+            // Maven it may not be present
+            try {
+                writer.writeCharacters(
+                        ShareUsage.class.getPackage().getImplementationVersion());
+            } catch (Exception e) {
+                writer.writeCharacters("Not set");
+            }
             writer.writeEndElement();
 
             writer.writeStartElement("Product");
-            writer.writeCharacters(
-                    ShareUsage.class.getPackage().getImplementationTitle());
+            try {
+                // as above
+                writer.writeCharacters(
+                        ShareUsage.class.getPackage().getImplementationTitle());
+            } catch (Exception e) {
+                writer.writeCharacters("Not set");
+            }
             writer.writeEndElement();
 
             // Record either the IP address of the client if not local or the IP
