@@ -113,12 +113,12 @@ class ShareUsage implements Runnable, Closeable {
      */
     @Override
     public void close() {
-        logger.debug("Destroying ShareUsage");
+        logger.debug("Closing ShareUsage");
         stop = true;
         synchronized (wait) {
             wait.notifyAll();
         }
-        logger.debug("Destroyed ShareUsage");
+        logger.debug("Closed ShareUsage");
     }
 
     /**
@@ -235,22 +235,6 @@ class ShareUsage implements Runnable, Closeable {
     }
 
     /**
-     * Adds the request details to the queue for processing by the background
-     * thread.
-     *
-     * @param Headers HashMap containing the request headers.
-     * @param HostAddress the Host Address.
-     * @param URI The URI of the request.
-     * @throws XMLStreamException
-     * @throws IOException
-     */
-    void recordNewDevice(final HashMap<String, String> Headers,
-            final String HostAddress, String URI) throws XMLStreamException,
-            IOException {
-
-    }
-
-    /**
      * Sends all the data on the queue.
      *
      * @param stream Output stream to send data to.
@@ -318,9 +302,7 @@ class ShareUsage implements Runnable, Closeable {
      * Records the information as XML data and converts to a String for
      * storage.
      *
-     * @param Headers A Map of the connection headers.
-     * @param HostAddress The address IP address of the host.
-     * @param URI The URI information.
+     * @param request The current server request.
      * @param newDeviceDetail How much information to be recorded.
      * @return The XML data as a String.
      * @throws XMLStreamException
