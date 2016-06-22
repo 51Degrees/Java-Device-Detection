@@ -96,6 +96,45 @@ import javax.net.ssl.HttpsURLConnection;
  */
 public class AutoUpdate {
     
+    private static class DownloadAttributes {
+        /**
+         * The MD5 hash of the downloaded data file if successful.
+         */
+        final String md5hash;
+        
+        /**
+         * The status of the download operation.
+         */
+        final AutoUpdateStatus status;
+        
+        /**
+         * The value of the Last-Modified header used to set the file's last
+         * modified date.
+         */
+        final long lastModified;
+        
+        /**
+         * Constructs a new instance of DownloadAttributes with an MD5 hash 
+         * indicating a successful download.
+         * @param md5hash hash for the downloaded data file.
+         */
+        DownloadAttributes(final String md5hash, final long lastModified) {
+            this.md5hash = md5hash;
+            this.lastModified = lastModified;
+            this.status = AUTO_UPDATE_IN_PROGRESS;
+        }
+        
+        /**
+         * Constructs a new instance of DownloadAttributes.
+         * @param status failure status.
+         */
+        DownloadAttributes(final AutoUpdateStatus status) {
+            this.status = status;
+            this.md5hash = null;
+            this.lastModified = 0;
+        }
+    }
+    
     /**
      * Stores critical data set attributes used to determine if the downloaded
      * data should be used to replace the current data file. Using this class
@@ -118,14 +157,18 @@ public class AutoUpdate {
          * @param dataFile whose attributes should be copied.
          */
         DataSetAttributes(File dataFile) throws IOException {
-            Dataset dataSet = StreamFactory.create(
-                    dataFile.getAbsolutePath(), false);
+            Dataset dataSet = null;
             try {
+                dataSet = StreamFactory.create(
+                        dataFile.getAbsolutePath(), 
+                        false);
                 published = dataSet.published;
                 propertyCount = dataSet.properties.size();
             }
             finally {
-                dataSet.close();
+                if (dataSet != null) {
+                    dataSet.close();
+                }
             }
         }
     }
@@ -193,6 +236,46 @@ public class AutoUpdate {
     }
     
     /**
+     * Provides access to the header fields of a data set.
+     * @param binaryFile path to a binary data file uncompressed
+     * @return a dataset with just the header loaded.
+     * @throws IOException
+     */
+    public static Dataset getDataSetWithHeaderLoaded(File binaryFile) 
+            throws IOException {
+        Dataset dataSet = null; 
+        if (binaryFile.exists()) {
+            dataSet = new Dataset(
+                new Date(binaryFile.lastModified()),
+                Modes.FILE);
+            FileInputStream fileInputStream = new FileInputStream(binaryFile);
+            try {
+                BinaryReader reader = new BinaryReader(fileInputStream);
+                try {
+                    CommonFactory.loadHeader(dataSet, reader);
+                }
+                finally {
+                    reader.close();
+                }
+            }
+            finally {
+                fileInputStream.close();
+            }
+        }  
+        
+        // Java does not provide a method to explicitly unmap the buffer from 
+        // the underlying file. The implementation of memory mapped files varies
+        // across operating systems. As such there is no reliable way of 
+        // guaranteeing the lock on the underlying file is released. For this
+        // reason System.gc() is called when the SourceFile class is closed
+        // to attempt to free the underlying file. The alternative would be to
+        // not use memory mapped files which removes a performance advantage.
+        System.gc();
+
+        return dataSet;
+    }    
+    
+    /**
      * Downloads and updates the premium data file.
      * 
      * @param licenseKeys the licence key to use for the update request.
@@ -220,16 +303,42 @@ public class AutoUpdate {
             */
             autoUpdateSignal.acquire();
             
+            /*
+            Some network configurations may not correctly handle SSL 
+            certificates. An exception of type 
+            java.security.cert.CertificateException may be generated. Uncomment
+            the following code to change the way Java validates the SSL 
+            certificates. This should only ever be performed during development
+            and never enabled during for production deployed as it removes
+            a security layer.
+            */
+            /*
+            javax.net.ssl.HttpsURLConnection.setDefaultHostnameVerifier(
+                new javax.net.ssl.HostnameVerifier(){
+                    @Override
+                    public boolean verify(String hostname,
+                            javax.net.ssl.SSLSession sslSession) {
+                        return true;
+                    }
+                });
+            */
+            
             // Download the device data, decompress, check validity and finally
             // replace the existing data file if all okay.
-            HttpURLConnection client = 
-                    (HttpsURLConnection)fullUrl(licenceKeys).openConnection();
-            result = downloadFile(binaryFile, compressedTempFile, client);
+            HttpURLConnection client = (HttpURLConnection)fullUrl(
+                    licenceKeys).openConnection();
+            
+            // Download the data file before performing the checks.
+            DownloadAttributes attrs = downloadFile(
+                    binaryFile, 
+                    compressedTempFile, 
+                    client);
             client.disconnect();
+            result = attrs.status;
             
             if (result == AutoUpdateStatus.AUTO_UPDATE_IN_PROGRESS) {
                 result = checkedDownloadedFileMD5(
-                    client, 
+                    attrs, 
                     compressedTempFile);
             }
             
@@ -238,12 +347,16 @@ public class AutoUpdate {
             }
 
             if (result == AutoUpdateStatus.AUTO_UPDATE_IN_PROGRESS) {
-               result = validateDownloadedFile(binaryFile, uncompressedTempFile);
+               result = validateDownloadedFile(
+                       binaryFile, 
+                       uncompressedTempFile);
             }
             
             if (result == AutoUpdateStatus.AUTO_UPDATE_IN_PROGRESS) {
-                result = activateDownloadedFile(client, 
-                        binaryFile, uncompressedTempFile);
+                result = activateDownloadedFile(
+                        attrs, 
+                        binaryFile, 
+                        uncompressedTempFile);
             }
         } finally {
             try {
@@ -270,17 +383,21 @@ public class AutoUpdate {
      * @param client HTTP client configured with the download URL.
      * @return The current status of the overall process.
      */
-    private static AutoUpdateStatus downloadFile(
-            File binaryFile, 
-            File compressedTempFile, 
-            HttpURLConnection client) throws IOException {
-        AutoUpdateStatus result = AUTO_UPDATE_IN_PROGRESS;
+    private static DownloadAttributes downloadFile(
+            final File binaryFile, 
+            final File compressedTempFile, 
+            final HttpURLConnection client) throws IOException {
 
+        DownloadAttributes result;
+        
         // Set the last modified header if available from the current
         // binary data file.
         if (binaryFile.exists()) {
             client.setIfModifiedSince(binaryFile.lastModified());
         }
+        
+        // Enabled redirect handling.
+        client.setInstanceFollowRedirects(true);
 
         // If the response is okay then download the file to the temporary
         // compressed data file. If not then set the response code 
@@ -292,6 +409,9 @@ public class AutoUpdate {
                     compressedTempFile);
                 try {
                     downloadFile(inputStream, outputStream);
+                    result = new DownloadAttributes(
+                            client.getHeaderField("Content-MD5"),
+                            client.getLastModified());
                 }
                 finally {
                     outputStream.close();
@@ -301,15 +421,37 @@ public class AutoUpdate {
                 inputStream.close();
             }
         } else {
-            //Server response was not 200. Data download can not commence.
-            if(client.getResponseCode() == 429) {
-                result = AUTO_UPDATE_ERR_429_TOO_MANY_ATTEMPTS;
-            } else if (client.getResponseCode() == 304) {
-                result = AUTO_UPDATE_NOT_NEEDED;
-            } else if(client.getResponseCode() == 403) {
-                result = AUTO_UPDATE_ERR_403_FORBIDDEN;
-            } else {
-                result = AUTO_UPDATE_HTTPS_ERR;
+            
+            switch (client.getResponseCode()) {
+                case 301:
+                case 302:
+                    // The original URL has been redirected. Follow the 
+                    // redirection rather than returning an error.
+                    HttpURLConnection redirect = (HttpURLConnection)new URL(
+                            client.getHeaderField("Location")).openConnection();
+                    result = downloadFile(
+                                    binaryFile, 
+                                    compressedTempFile, 
+                                    redirect);
+                    redirect.disconnect();
+                    break;
+                case 304:
+                    result = new DownloadAttributes(AUTO_UPDATE_NOT_NEEDED);
+                    break;                    
+                //Server response was not 200 or 300. Data download can not 
+                // commence.                    
+                case 429:
+                    result = new DownloadAttributes(
+                            AUTO_UPDATE_ERR_429_TOO_MANY_ATTEMPTS);
+                    break;
+                case 403:
+                    result = new DownloadAttributes(
+                            AUTO_UPDATE_ERR_403_FORBIDDEN);
+                    break;
+                default:
+                    result = new DownloadAttributes(
+                            AUTO_UPDATE_HTTPS_ERR);
+                    break;
             }
         }
         
@@ -326,13 +468,12 @@ public class AutoUpdate {
      * @return True if the hashes match, else false.
      */
     private static AutoUpdateStatus checkedDownloadedFileMD5(
-            final HttpURLConnection client, final File compressedTempFile) 
+            final DownloadAttributes attrs, final File compressedTempFile) 
             throws NoSuchAlgorithmException, IOException {
         AutoUpdateStatus status = AUTO_UPDATE_IN_PROGRESS;
-        final String serverHash = client.getHeaderField("Content-MD5");
         final String downloadHash = getMd5Hash(compressedTempFile);
-        if (serverHash == null ||
-            downloadHash.equals(serverHash) == false) {
+        if (attrs.md5hash == null ||
+            downloadHash.equals(attrs.md5hash) == false) {
             status = AUTO_UPDATE_ERR_MD5_VALIDATION_FAILED;
         }
         return status;
@@ -435,7 +576,7 @@ public class AutoUpdate {
      * @return current state of the update process
      */
     private static AutoUpdateStatus activateDownloadedFile(
-            HttpURLConnection client, 
+            DownloadAttributes attrs, 
             File binaryFile,
             File uncompressedTempFile) throws Exception {
         
@@ -458,7 +599,7 @@ public class AutoUpdate {
                     // provided from the web server with the download. This
                     // date will be used when checking for future updates to
                     // avoid downloading the file if there is no update.
-                    binaryFile.setLastModified(client.getLastModified());
+                    binaryFile.setLastModified(attrs.lastModified);
                     status = AUTO_UPDATE_SUCCESS;
                 }
                 else {
@@ -500,36 +641,6 @@ public class AutoUpdate {
     }
     
     /**
-     * Creates a data set populate just with the header information. Used to get
-     * the published date and the number of properties available.
-     * @param binaryFile path to a binary data file uncompressed
-     * @return data set with header data only loaded
-     */
-    private static Dataset getDataSetWithHeaderPopulated(File binaryFile) 
-                                                            throws IOException {
-        Dataset dataSet = null; 
-        if (binaryFile.exists()) {
-            dataSet = new Dataset(
-                new Date(binaryFile.lastModified()),
-                Modes.FILE);
-            FileInputStream fileInputStream = new FileInputStream(binaryFile);
-            try {
-                BinaryReader reader = new BinaryReader(fileInputStream);
-                try {
-                    CommonFactory.loadHeader(dataSet, reader);
-                }
-                finally {
-                    reader.close();
-                }
-            }
-            finally {
-                fileInputStream.close();
-            }
-        }        
-        return dataSet;
-    }
-    
-    /**
      * Validate the supplied keys to exclude keys from 3rd party products from 
      * being used.
      * 
@@ -555,7 +666,7 @@ public class AutoUpdate {
      * @return Premium data download URL.
      * @throws MalformedURLException
      */
-    private static URL fullUrl(String[] licenseKeys) 
+    public static URL fullUrl(String[] licenseKeys) 
             throws MalformedURLException {
         final String[] parameters = {
             "LicenseKeys=" + Utilities.joinString("|", licenseKeys),
