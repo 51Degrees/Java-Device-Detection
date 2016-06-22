@@ -43,7 +43,7 @@ Use like...
 boolean isTablet = match.getValues("IsTablet").toBool();
 ```
 
-or 
+or
 
 ```java
 boolean isMobile = match.getValues("IsMobile").toBool();
@@ -91,7 +91,7 @@ boolean isTablet = Boolean.parseBoolean(getProperty(request,"IsTablet"));
 
 The simplest method of deploying 51Degrees device detection to a Java project is with Maven. Just search for [51Degrees on Maven](http://search.maven.org/#search|ga|1|51degrees "51Degrees Packages on Maven").
 
-This GitHub repository and Maven include 51Degrees free Lite device database. The Lite data is updated monthly by our professional team of analysts. 
+This GitHub repository and Maven include 51Degrees free Lite device database. The Lite data is updated monthly by our professional team of analysts.
 
 Data files which are updated weekly and daily, automatically, and with more properties and device combinations are also available.
 
@@ -99,6 +99,11 @@ Data files which are updated weekly and daily, automatically, and with more prop
 
 
 ## Recent Changes
+
+### Version 3.2.5.2 Changes:
+Profile Value Override enables more property values to be updated dynamically based on JavaScript. For example; updating the ScreenPixelsWidth value based on JavaScript information. Requires a compatible data file with JavaScript properties in the Category "Property Value Override".
+
+Deprecated the getResult method of the Provider and related classes. The getMatch method should be used which is faster and more memory efficient as it avoids creating a HashMap of properties and values for each request.
 
 ### Version 3.2.3.5 Changes:
 Focus on improving tests, cleaning up documentation and API efficiency. Version highlights:
@@ -129,27 +134,27 @@ Duplicate code has been consolidated with a focus on improving documentation and
 Consistent examples have been added in parallel with APIs in other languages. The examples are designed to highlight a specific use case for the API. They relate to example specific documentation on the 51Degrees web site under Support -> Documentation -> Java.
 
 ### Version 3.2.1.9 Changes:
-Automatic update function no longer uses the memory to store data downloaded 
-from 51degrees.com update server. Instead a temporary file is used. 
+Automatic update function no longer uses the memory to store data downloaded
+from 51degrees.com update server. Instead a temporary file is used.
 This should significantly reduce the memory impact of the auto update process.
 
-The API now supports 51Degrees data files of version 3.2 as well as 3.1 data 
-files. The data files of version 3.2 are on average 20% smaller than the 3.1 
+The API now supports 51Degrees data files of version 3.2 as well as 3.1 data
+files. The data files of version 3.2 are on average 20% smaller than the 3.1
 data files due to the changes to the internal data structure.
 
-The core API (both Pattern and Trie) has been updated to perform device 
+The core API (both Pattern and Trie) has been updated to perform device
 detection with multiple HTTP headers.
 
-The API has been updated to implement caching for all major components that 
-require lookup/detection. This change reflects the fact that in the real-world 
-applications/websites subsequent requests are probable and that some user 
-agents that are encountered more often than others. This change should improve 
+The API has been updated to implement caching for all major components that
+require lookup/detection. This change reflects the fact that in the real-world
+applications/websites subsequent requests are probable and that some user
+agents that are encountered more often than others. This change should improve
 detection times even further.
 
-Breaking change: The embedded data file no longer exists. This makes the JAR 
+Breaking change: The embedded data file no longer exists. This makes the JAR
 very light but you will need to obtain the data file separately.
 
-Breaking change: Provider object can no longer be instantiated without 
+Breaking change: Provider object can no longer be instantiated without
 specifying the dataset to be used. See the breaking changes section.
 
 ### Version 3.1.8.4 Changes:
@@ -162,7 +167,7 @@ Added several methods to pre-load data on the Dataset object:
   initProperties()
   initValues()
   initSignatureRanks()
-  
+
 Added iterators classes, StreamVariableListIterator and StreamFixedListIterator.
 These fixed a NotSupportedOperation exception on some Dataset collections when
 created with a StreamFactory.
@@ -181,11 +186,11 @@ written to.
 
 ### Version 3.1.7.2 Changes:
 
-Addressed the "Not yet implemented" exception that was thrown when trying to 
-invoke the findProfile method of the dataset object. Exception was only thrown 
+Addressed the "Not yet implemented" exception that was thrown when trying to
+invoke the findProfile method of the dataset object. Exception was only thrown
 when Provider was constructed using the StreamFactory.
 
-Addressed an issue where findProfile method would often return the same profile 
+Addressed an issue where findProfile method would often return the same profile
 for different profile IDs.
 
 ### Version 3.1.6.1 Changes:
@@ -251,9 +256,9 @@ Fixed bug where Unix type systems would not cache images in the correct director
 Known Issues:
 
 Exception "Device data download failed: sun.security.validator.ValidatorException:
-PKIX path building failed: 
-sun.security.provider.certpath.SunCertPathBuilderException: 
-unable to find valid certification path to requested target" thrown when auto 
+PKIX path building failed:
+sun.security.provider.certpath.SunCertPathBuilderException:
+unable to find valid certification path to requested target" thrown when auto
 updating the data file due to GoDaddy root authority SSL certificate used by
 51Degrees not being present in some Java certificate stores.
 
@@ -262,10 +267,10 @@ Changes:
 Added support for secondary HTTP headers such as Device-Stock-UA.
 
 Changed the example project to use the Map<String, String[]> data structure
-used to cache the results of a detection in the requests attribute list, and 
+used to cache the results of a detection in the requests attribute list, and
 the session when available.
 
-Temporary files used by the WebProvider are now cleaned up correctly when the 
+Temporary files used by the WebProvider are now cleaned up correctly when the
 WebProvider is destroyed and a new active provider is created.
 
 Change the Disposable interface to no longer throw the IOException.
@@ -276,7 +281,7 @@ servlet behaviour.
 
 MD5 hash eTags now used for consistency with other implementations.
 
-Client javascript and image optimiser classes are now internal, static and 
+Client javascript and image optimiser classes are now internal, static and
 not publicly accessible.
 
 Fixed defects in the 51Degrees.features.js javascript generation.
@@ -290,7 +295,7 @@ Improved the quality of resized images from the optimiser.
 Removed memory constraint checking code in auto updater as V3 does not need
 to load the data file into memory in order to validate it.
 
-Stopped bandwidth server processing when the bandwidth monitoring javascript 
+Stopped bandwidth server processing when the bandwidth monitoring javascript
 is not included in the data set.
 
 Added the empty gif resource to the webapp package for image optimiser.
