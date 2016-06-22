@@ -499,12 +499,10 @@ public class WebProvider extends Provider implements Closeable {
      */
     public Match match(final HttpServletRequest request) throws IOException {
         Match match;
-        synchronized (request) {
-            match = (Match)request.getAttribute(MATCH_ATTRIBUTE);
-            if (match == null) {
-                match = getMatchFromProvider(request);
-                request.setAttribute(MATCH_ATTRIBUTE, match);
-            }
+        match = (Match)request.getAttribute(MATCH_ATTRIBUTE);
+        if (match == null) {
+            match = getMatchFromProvider(request);
+            request.setAttribute(MATCH_ATTRIBUTE, match);
         }
         return match;
     }
@@ -514,6 +512,9 @@ public class WebProvider extends Provider implements Closeable {
      * then if not matched before performs a new match for the request storing
      * the result for future reference.
      *
+     * Parallel requests for the same HttpServletRequest instance are not 
+     * supported.
+     * 
      * @param request details of the HTTP request
      * @return a match object with properties associated with the device
      * @throws IOException
@@ -531,6 +532,9 @@ public class WebProvider extends Provider implements Closeable {
      * The method is deprecated in favour of getMatch which avoids creating a
      * Map for all properties and values.
      *
+     * Parallel requests for the same HttpServletRequest instance are not 
+     * supported.
+     * 
      * @param request details of the HTTP request
      * @return a map with properties associated with the device
      * @throws IOException
@@ -538,15 +542,12 @@ public class WebProvider extends Provider implements Closeable {
     @Deprecated
     public static Map<String, String[]> getResult(
                         final HttpServletRequest request) throws IOException {
-        Map<String, String[]> results;
-        synchronized (request) {
-            results = (Map<String, String[]>)request.getAttribute(
-                    RESULT_ATTRIBUTE);
-            if (results == null) {
-                Match match = getMatch(request);
-                results = match.getResults();
-                request.setAttribute(RESULT_ATTRIBUTE, results);
-            }
+        Map<String, String[]> results = 
+                (Map<String, String[]>)request.getAttribute(RESULT_ATTRIBUTE);
+        if (results == null) {
+            Match match = getMatch(request);
+            results = match.getResults();
+            request.setAttribute(RESULT_ATTRIBUTE, results);
         }
         return results;
     }
