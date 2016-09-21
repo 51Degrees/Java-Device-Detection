@@ -36,7 +36,7 @@ public class V32PremiumPerformanceMemoryTest extends MemoryBase {
     
     @Override
     protected int getMaxSetupTime() {
-        return 10000;
+        return 12000;
     }
     
     @Test
