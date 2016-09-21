@@ -36,7 +36,7 @@ public class V31EnterprisePerformanceMemoryTest extends MemoryBase {
     
     @Override
     protected int getMaxSetupTime() {
-        return 10000;
+        return 13000;
     }
     
     @Test
