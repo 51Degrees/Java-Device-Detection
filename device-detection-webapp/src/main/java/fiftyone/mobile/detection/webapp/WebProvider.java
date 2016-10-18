@@ -500,8 +500,13 @@ public class WebProvider extends Provider implements Closeable {
     public Match match(final HttpServletRequest request) throws IOException {
         Match match;
         match = (Match)request.getAttribute(MATCH_ATTRIBUTE);
+        boolean hasOverrides = ProfileOverride.hasOverrides(request);
         if (match == null) {
             match = getMatchFromProvider(request);
+            request.setAttribute(MATCH_ATTRIBUTE, match);
+        }
+        if (hasOverrides) {
+            ProfileOverride.override(request, match);
             request.setAttribute(MATCH_ATTRIBUTE, match);
         }
         return match;
