@@ -206,14 +206,16 @@ public abstract class Profile extends BaseEntity implements Comparable<Profile> 
     @SuppressWarnings("DoubleCheckedLocking")
     public Values getValues(Property property) throws IOException {
         Values localValues;
-        localValues = getPropertyIndexToValues().get(property.getIndex());
-        if (localValues == null) {
-            synchronized (this) {
-                localValues = getPropertyIndexToValues().get(property.getIndex());
-                if (localValues == null) {
-                    localValues = getPropertyValues(property);
-                    getPropertyIndexToValues().add(property.getIndex(), localValues);
-                }
+        
+        // A read / write upgradable guard could be used in the future
+        // should the performance of getPropertyIndexToValues prove too 
+        // slow in the future. The use of a lock on the map ensures that
+        // this implementation is thread safe.
+        synchronized (getPropertyIndexToValues()) {
+            localValues = getPropertyIndexToValues().get(property.getIndex());
+            if (localValues == null) {
+                localValues = getPropertyValues(property);
+                getPropertyIndexToValues().add(property.getIndex(), localValues);
             }
         }
         return localValues;
