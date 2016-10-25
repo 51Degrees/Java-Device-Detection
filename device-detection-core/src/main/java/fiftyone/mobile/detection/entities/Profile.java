@@ -203,7 +203,6 @@ public abstract class Profile extends BaseEntity implements Comparable<Profile> 
      * if the property does not exist.
      * @throws java.io.IOException if there was a problem accessing data file.
      */
-    @SuppressWarnings("DoubleCheckedLocking")
     public Values getValues(Property property) throws IOException {
         Values localValues;
         
@@ -211,7 +210,7 @@ public abstract class Profile extends BaseEntity implements Comparable<Profile> 
         // should the performance of getPropertyIndexToValues prove too 
         // slow in the future. The use of a lock on the map ensures that
         // this implementation is thread safe.
-        synchronized (getPropertyIndexToValues()) {
+        synchronized (this) {
             localValues = getPropertyIndexToValues().get(property.getIndex());
             if (localValues == null) {
                 localValues = getPropertyValues(property);
@@ -372,8 +371,7 @@ public abstract class Profile extends BaseEntity implements Comparable<Profile> 
      * 
      * @return a hash map with property indexes mapped to corresponding values.
      */
-    @SuppressWarnings("DoubleCheckedLocking")
-    private SortedList<Integer, Values> getPropertyIndexToValues() {
+    private synchronized SortedList<Integer, Values> getPropertyIndexToValues() {
         SortedList<Integer, Values> localPropertyIndexToValues = 
                 propertyIndexToValues;
         if (localPropertyIndexToValues == null) {
