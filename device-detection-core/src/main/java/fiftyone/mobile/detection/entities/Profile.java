@@ -203,19 +203,12 @@ public abstract class Profile extends BaseEntity implements Comparable<Profile> 
      * if the property does not exist.
      * @throws java.io.IOException if there was a problem accessing data file.
      */
-    public Values getValues(Property property) throws IOException {
+    public synchronized Values getValues(Property property) throws IOException {
         Values localValues;
-        
-        // A read / write upgradable guard could be used in the future
-        // should the performance of getPropertyIndexToValues prove too 
-        // slow in the future. The use of a lock on the map ensures that
-        // this implementation is thread safe.
-        synchronized (this) {
-            localValues = getPropertyIndexToValues().get(property.getIndex());
-            if (localValues == null) {
-                localValues = getPropertyValues(property);
-                getPropertyIndexToValues().add(property.getIndex(), localValues);
-            }
+        localValues = getPropertyIndexToValues().get(property.getIndex());
+        if (localValues == null) {
+            localValues = getPropertyValues(property);
+            getPropertyIndexToValues().add(property.getIndex(), localValues);
         }
         return localValues;
     }
