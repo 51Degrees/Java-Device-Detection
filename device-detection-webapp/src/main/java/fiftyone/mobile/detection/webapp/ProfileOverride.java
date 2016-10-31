@@ -103,7 +103,7 @@ class ProfileOverride {
                                                             throws IOException {
         String cookieValue = getCookieValue(request);
         if (cookieValue != null) {
-            for(String profileId : cookieValue.split("|")) {
+            for(String profileId : cookieValue.split("\\|")) {
                 try {
                     match.updateProfile(Integer.valueOf(profileId));
                 }
