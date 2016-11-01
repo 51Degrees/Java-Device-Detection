@@ -100,6 +100,15 @@ Data files which are updated weekly and daily, automatically, and with more prop
 
 ## Recent Changes
 
+### Version 3.2.10.4 Changes:
+Fix for profile override cookie.
+
+isTempFile flag in DataSet constructor is now used, and a default constructor provided.
+
+Resolved a multi threading conflict with the getValues function.
+
+Updated the Lite data files for October 2016 data.
+
 ### Version 3.2.3.5 Changes:
 Focus on improving tests, cleaning up documentation and API efficiency. Version highlights:
 
