@@ -86,6 +86,19 @@ public final class StreamFactory {
         load(dataSet);
         return dataSet;
     }
+    
+    /**
+     * Creates a new DataSet from the file provided. The last modified date of
+     * the data set is the last write time of the data file provided.
+     * @param filePath Uncompressed file containing the data for the data set.
+     * @return A DataSet configured to read entities from the file path when
+     *         required.
+     * @throws IOException  if there was a problem accessing the data file.
+     */
+    public static Dataset create(String filePath)
+            throws IOException {
+        return create(filePath, false);
+    }
 
     /**
      * Creates a new DataSet from the file provided. The last modified date of 
@@ -118,7 +131,11 @@ public final class StreamFactory {
     public static Dataset create(String filepath, Date lastModified, 
             boolean isTempFile) throws IOException {
         Dataset dataSet = 
-                new Dataset(filepath, lastModified, Modes.FILE, isTempFile);
+                new fiftyone.mobile.detection.entities.stream.Dataset(
+                        filepath, 
+                        lastModified, 
+                        Modes.FILE, 
+                        isTempFile);
         load(dataSet);
         return dataSet;
     }
