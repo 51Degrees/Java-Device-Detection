@@ -316,7 +316,8 @@ public class Cache<K, V> {
         if (hashMap.size() > cacheSize.get()) {
             Node removedNode = linkedList.removeLast();
             KeyValuePair kvp = (KeyValuePair)removedNode.item;
-            assert hashMap.remove(kvp.key) != null;
+            Node previousNode = hashMap.remove(kvp.key);
+            assert previousNode != null;
             assert hashMap.size() == cacheSize.get();
         }
     }
