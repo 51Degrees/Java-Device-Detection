@@ -154,10 +154,16 @@ public class Cache<K, V> {
     }    
 
     /**
+     * Used in place of an object to make lock profiling easier to identify 
+     * different caches.
+     */
+    private class CacheLock<K,V> {};
+    
+    /**
      * Used to synchronise access to the the dictionary and linked list in the
      * function of the cache.
      */
-    private final Object writeLock = new Object();
+    private final CacheLock<K,V> writeLock = new CacheLock<K,V>();
     
     /**
      * Loader used to fetch items not in the cache.
@@ -270,19 +276,18 @@ public class Cache<K, V> {
             // to write the item to the cache.
             misses.incrementAndGet();
             V value = loader.fetch(key);
+            
+            // If the node has already been added to the dictionary
+            // then get it, otherise add the one just fetched.
+            Node newItem = new Node(new KeyValuePair(key, value));
+            node = hashMap.putIfAbsent(key, newItem);
 
-            synchronized(writeLock) {
-                // If the node has already been added to the dictionary
-                // then get it, otherise add the one just fetched.
-                Node newItem = new Node(new KeyValuePair(key, value));
-                node = hashMap.putIfAbsent(key, newItem);
-
-                // If the node got from the dictionary is the new one
-                // just feteched then it needs to be added to the linked
-                // list. The value just added to the hash map needs to set
-                // as the returned item.
-                if (node == null)
-                {
+            // If the node got from the dictionary is the new one just feteched
+            // from the loader (node == null) then it needs to be added to the
+            // linked list. The value just added to the hash map needs to set as
+            // the returned item.
+            if (node == null) {
+                synchronized(writeLock) {
                     added = true;
                     node = newItem;
                     
@@ -295,9 +300,10 @@ public class Cache<K, V> {
                 }
             }
         }
-        if (added == false) {
-            // The item is in the dictionary. Check it's still in the list
-            // and if so them move the key to the head of the list.            
+        if (added == false && node.list != null) {
+            // The item is in the dictionary and still in the list. Get a write
+            // lock and then check again that it's still in the list. If so them
+            // move the key to the head of the list.
             synchronized(writeLock) {
                 if (node.list != null) {
                     linkedList.remove(node);
@@ -310,7 +316,9 @@ public class Cache<K, V> {
     }
     
     /**
-     * Removes the last item in the cache if the cache size is reached.
+     * Removes the last item in the cache if the cache size is reached. This 
+     * must be called from a method that already has the write lock as it 
+     * manipulates the linked list and the hash map.
      */
     private void removeLeastRecent() {
         if (hashMap.size() > cacheSize.get()) {
