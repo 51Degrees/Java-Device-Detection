@@ -4,30 +4,54 @@ import fiftyone.mobile.detection.Match;
 import fiftyone.mobile.detection.Provider;
 import fiftyone.mobile.detection.entities.Property;
 import fiftyone.mobile.detection.factories.StreamFactory;
+import fiftyone.properties.MatchMethods;
 import java.io.BufferedReader;
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Date;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Benchmark implements Closeable {
 
-    public static class Result {
+    public static class BenchmarkState {
         
         // the time benchmarking started.
         Date start = new Date();
         
         // number of User-Agents processed to determine the result.
-        int count;
+        AtomicInteger count = new AtomicInteger();
         
         // used to ensure compiler optimiser doesn't optimise out the very
         // method that the benchmark is testing.
         int checkSum;
         
+        // set to true when the queue has had all elements added to it.
+        boolean addingComplete = false;
+        
+        // the number of threads running concurrently.
+        int numberOfThreads;
+        
+        // queue of User-Agent strings for processing.
+        LinkedBlockingQueue<String> queue;
+        
+        // provider to use for processing.
+        Provider provider;
+                
         // the average time in milliseconds for a single detection.
         public double getAverageDetectionTime() {
-            return getTotalDetectionTime() / count;
+            return getTotalDetectionTime() / count.intValue();
+        }
+        
+        public double getAverageDetectionTimePerThread() {
+            return (getTotalDetectionTime() * numberOfThreads) / count.intValue();
         }
         
         // the total time taken for the benchmark.
@@ -37,15 +61,75 @@ public class Benchmark implements Closeable {
         
         // the number of User-Agents included in the test.
         public int getCount() {
-            return count;
+            return count.intValue();
+        }
+    }
+    
+    private static class BenchmarkRunnable implements Runnable {
+        
+        private final BenchmarkState state;
+        
+        BenchmarkRunnable(
+                BenchmarkState result)
+                throws IOException {
+            this.state = result;
+        }
+        
+        @Override
+        public void run() {
+            try {
+                int workerCheckSum = 0;
+                Property isMobile = state.provider.dataSet.get("IsMobile");
+                Match match = state.provider.createMatch();
+                String userAgentString = state.queue.poll(1, TimeUnit.SECONDS);
+                while (userAgentString != null || 
+                       state.addingComplete == false) {
+                    if (userAgentString != null) {
+                        state.provider.match(userAgentString, match);
+                        workerCheckSum ^= match.getValues(isMobile).toString().
+                                hashCode();
+                        int count = state.count.incrementAndGet();
+                        if (count % 50000 == 0) {
+                            System.out.println("===========================");
+                            System.out.printf("Count: %d \r\n", count);
+                            System.out.printf("Queue: %d \r\n", 
+                                    state.queue.size());
+                            System.out.printf(
+                                    "getAverageDetectionTime: %f \r\n",
+                                    state.getAverageDetectionTime());
+                            System.out.printf(
+                                    "getAverageDetectionTimePerThread: %f \r\n",
+                                    state.getAverageDetectionTimePerThread());                            
+                        }
+                    }
+                    userAgentString = state.queue.poll(1, TimeUnit.SECONDS);
+                }
+                synchronized(state) {
+                    state.checkSum ^= workerCheckSum;
+                }
+            } catch (InterruptedException ex) {
+                Logger.getLogger(Benchmark.class.getName()).log(
+                        Level.SEVERE, null, ex);
+            } catch (IOException ex) {
+                Logger.getLogger(Benchmark.class.getName()).log(
+                        Level.SEVERE, null, ex);
+            }
         }
     }
 
+    private static final int defaultNumberOfThreads = 
+            Runtime.getRuntime().availableProcessors();
+    
+    private static final int QUEUE_SIZE = 4096;
+    
     // pattern detection matching provider
     private final Provider provider;
     
     // path to the User-Agent data file.
     private final String userAgentFile;
+    
+    // the number of concurrent detection threads.
+    private final int numberOfThreads;
 
     /**
      * Initialises the device detection Provider with the included Lite data
@@ -55,9 +139,13 @@ public class Benchmark implements Closeable {
      * 
      * @param deviceDataFile
      * @param userAgentFile
+     * @param numberOfThreads
      * @throws IOException if there was a problem reading from the data file.
      */
-    public Benchmark(String deviceDataFile, String userAgentFile) 
+    public Benchmark(
+            String deviceDataFile, 
+            String userAgentFile,
+            int numberOfThreads) 
             throws IOException, IllegalArgumentException {
         if (new File(deviceDataFile).exists() == false) {
             throw new IllegalArgumentException(String.format(
@@ -69,9 +157,12 @@ public class Benchmark implements Closeable {
                     "File '%s' does not exist.",
                     userAgentFile));
         }        
+        System.out.printf("Creating provider from: %s\r\n",
+                deviceDataFile);
         provider = new Provider(StreamFactory.create(
                 deviceDataFile, false));
         this.userAgentFile = userAgentFile;
+        this.numberOfThreads = numberOfThreads;
     }
 
     /**
@@ -79,36 +170,38 @@ public class Benchmark implements Closeable {
      * one using the provider. 
      * 
      * @throws IOException if there was a problem reading from the data file.
+     * @throws InterruptedException
      * @return results from the benchmark exercise.
      */
-    public Result run() 
-            throws IOException {
+    public BenchmarkState run() 
+            throws IOException, InterruptedException {
         String userAgentString;
+        ExecutorService executor = Executors.newFixedThreadPool(
+                numberOfThreads);
+        BenchmarkState state = new BenchmarkState();
+        state.numberOfThreads = numberOfThreads;
+        state.queue = new LinkedBlockingQueue<String>(QUEUE_SIZE);
+        state.provider = this.provider;
+        for(int i = 0; i < numberOfThreads; i++) {
+            executor.execute(new BenchmarkRunnable(state));
+        }
+
         BufferedReader bufferedReader = new BufferedReader(
                 new FileReader(this.userAgentFile));
-        Property isMobile = provider.dataSet.get("IsMobile");
-        Result result = new Result();
         try {
-            Match match = provider.createMatch();
             while ((userAgentString = bufferedReader.readLine()) != null) {
-                provider.match(userAgentString, match);
-                result.checkSum ^= match.getValues(isMobile).toString().hashCode();
-                result.count++;
-                if (result.count % 50000 == 0) {
-                    System.out.println("===========================");
-                    System.out.printf(
-                        "Count: %d \r\n", 
-                        result.count);
-                    System.out.printf(
-                        "getAverageDetectionTime: %f \r\n", 
-                        result.getAverageDetectionTime());                    
-                }
+                state.queue.put(userAgentString);
+            }
+            state.addingComplete = true;
+            executor.shutdown();
+            while (executor.isTerminated() == false) {
+                // Do nothing.
             }
         }
         finally {
             bufferedReader.close();
         }
-        return result;
+        return state;
     }
 
     /**
@@ -132,22 +225,29 @@ public class Benchmark implements Closeable {
      * 
      * @param args command line arguments.
      * @throws IOException if there was a problem accessing the data file.
+     * @throws InterruptedException if the queue failed to be processed.
      */
-    public static void main(String[] args) throws IOException {
-        if (args.length != 2) {
+    public static void main(String[] args) 
+            throws IOException, InterruptedException {
+        if (args.length < 2) {
             throw new IllegalArgumentException("Must provide two data files.");
         }
+        int numberOfThreads = args.length >= 3 ? 
+                Integer.parseInt(args[2]) : defaultNumberOfThreads;
         System.out.println("Starting Bench Marking Example");
-        Benchmark bm = new Benchmark(args[0], args[1]);
+        Benchmark bm = new Benchmark(args[0], args[1], numberOfThreads);
         try {
-            Result result = bm.run();
+            BenchmarkState result = bm.run();
             System.out.println("===========================");
             System.out.printf(
                 "Average detections per second: %f \r\n", 
                 result.getAverageDetectionTime());
             System.out.printf(
+                "Average detections per second per thread: %f \r\n", 
+                result.getAverageDetectionTimePerThread());                
+            System.out.printf(
                 "User-Agents processed: %d \r\n", 
-                result.count);
+                result.count.intValue());
             System.out.printf(
                 "getPercentageNodeCacheMisses: %f \r\n", 
                 bm.provider.dataSet.getPercentageNodeCacheMisses());            
@@ -162,7 +262,12 @@ public class Benchmark implements Closeable {
                 bm.provider.dataSet.getPercentageStringsCacheMisses());
             System.out.printf(
                 "getPercentageValuesCacheMisses: %f \r\n", 
-                bm.provider.dataSet.getPercentageValuesCacheMisses());            
+                bm.provider.dataSet.getPercentageValuesCacheMisses());
+            long[] counts = bm.provider.getMethodCounts();
+            for(MatchMethods method : MatchMethods.values()) {
+                System.out.printf(
+                    "%s: %d \r\n", method, counts[method.ordinal()]);
+            }
         }
         finally {
             bm.close();

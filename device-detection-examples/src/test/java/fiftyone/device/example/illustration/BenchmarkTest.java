@@ -45,7 +45,7 @@ public class BenchmarkTest {
 
     @Test
     public void testAllProfiles() throws Exception {
-        Benchmark.Result result = example.run();
+        Benchmark.BenchmarkState result = example.run();
         assertTrue(result.getAverageDetectionTime() < 0.2);
     }
 }
