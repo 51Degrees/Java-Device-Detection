@@ -279,63 +279,6 @@ public class Dataset implements Closeable {
     }
 
     /**
-     * The percentage of requests for signatures which were not already
-     * contained in the cache. A value is only returned when operating in
-     * Stream mode.
-     * 
-     * @return double representing percentage of requests for signatures not 
-     * currently in cache, only for Stream Mode.
-     */
-    public double getPercentageSignatureCacheMisses() {
-        return getPercentageMisses(signatures);
-    }
-
-    /**
-     * The percentage of requests for nodes which were not already
-     * contained in the cache. A value is only returned when operating in 
-     * Stream mode.
-     * 
-     * @return double representing percentage of requests for nodes not already 
-     * in cache. Stream Mode only.
-     */
-    public double getPercentageNodeCacheMisses() {
-        return getPercentageMisses(nodes);
-    }
-
-    /**
-     * The percentage of requests for strings which were not already contained
-     * in the cache. A value is only returned when operating in Stream mode.
-     * 
-     * @return double representing percentage of requests for strings that were 
-     * not already in cache.
-     */
-    public double getPercentageStringsCacheMisses() {
-        return getPercentageMisses(strings);
-    }
-
-    /**
-     * The percentage of requests for profiles which were not already contained
-     * in the cache. A value is only returned when operating in Stream mode.
-     * 
-     * @return double representing percentage of requests for profiles that were 
-     * not already in cache.
-     */
-    public double getPercentageProfilesCacheMisses() {
-        return getPercentageMisses(profiles);
-    }
-
-    /**
-     * The percentage of requests for values which were not already contained in
-     * the cache. A value is only returned when operating in Stream mode.
-     * 
-     * @return double representing percentage of requests for values that were 
-     * not already in cache.
-     */
-    public double getPercentageValuesCacheMisses() {
-        return getPercentageMisses(values);
-    }
-
-    /**
      * The largest rank value that can be returned. Maximum rank value can be 
      * useful when working with signature ranks to calculate the rank percentage 
      * and quickly sort.
@@ -1216,6 +1159,78 @@ public class Dataset implements Closeable {
     public void resetCache() {
         //Do nothing in this implementation.
     }
+    
+    /**
+     * The percentage of requests for signatures which were not already
+     * contained in the cache. A value is only returned when operating in
+     * Stream mode.
+     * 
+     * The data set no longer requires caching.
+     * 
+     * @return double representing percentage of requests for signatures not 
+     * currently in cache, only for Stream Mode.
+     */
+    @Deprecated
+    public double getPercentageSignatureCacheMisses() {
+        return getPercentageMisses(signatures);
+    }
+
+    /**
+     * The percentage of requests for nodes which were not already
+     * contained in the cache. A value is only returned when operating in 
+     * Stream mode.
+     * 
+     * The data set no longer requires caching.
+     * 
+     * @return double representing percentage of requests for nodes not already 
+     * in cache. Stream Mode only.
+     */
+    @Deprecated
+    public double getPercentageNodeCacheMisses() {
+        return getPercentageMisses(nodes);
+    }
+
+    /**
+     * The percentage of requests for strings which were not already contained
+     * in the cache. A value is only returned when operating in Stream mode.
+     * 
+     * The data set no longer requires caching.
+     * 
+     * @return double representing percentage of requests for strings that were 
+     * not already in cache.
+     */
+    @Deprecated
+    public double getPercentageStringsCacheMisses() {
+        return getPercentageMisses(strings);
+    }
+
+    /**
+     * The percentage of requests for profiles which were not already contained
+     * in the cache. A value is only returned when operating in Stream mode.
+     * 
+     * The data set no longer requires caching.
+     * 
+     * @return double representing percentage of requests for profiles that were 
+     * not already in cache.
+     */
+    @Deprecated
+    public double getPercentageProfilesCacheMisses() {
+        return getPercentageMisses(profiles);
+    }
+
+    /**
+     * The percentage of requests for values which were not already contained in
+     * the cache. A value is only returned when operating in Stream mode.
+     * 
+     * The data set no longer requires caching.
+     * 
+     * @return double representing percentage of requests for values that were 
+     * not already in cache.
+     */
+    @Deprecated
+    public double getPercentageValuesCacheMisses() {
+        return getPercentageMisses(values);
+    }    
     
     //</editor-fold>
 }
