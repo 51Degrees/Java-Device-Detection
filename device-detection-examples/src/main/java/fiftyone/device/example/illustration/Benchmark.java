@@ -258,34 +258,20 @@ public class Benchmark {
         String userAgentFile,
         int numberOfThreads) throws IOException, InterruptedException {
         
-        System.out.printf("Benchmarking stream memory dataset no cache: %s\r\n", 
+        System.out.printf("Benchmarking stream memory dataset: %s\r\n", 
                 deviceDataFile);
         runBenchmark(
-                StreamFactory.create(Files.readAllBytes(Paths.get(deviceDataFile)), false),
-                userAgentFile,
-                numberOfThreads);
-        
-        System.out.printf("Benchmarking stream memory dataset with cache: %s\r\n", 
-                deviceDataFile);
-        runBenchmark(
-                StreamFactory.create(Files.readAllBytes(Paths.get(deviceDataFile)), true),
-                userAgentFile,
-                numberOfThreads);        
-        
-        System.out.printf("Benchmarking stream file dataset no cache: %s\r\n", 
-                deviceDataFile);
-        runBenchmark(
-                StreamFactory.create(deviceDataFile, false, false),
+                StreamFactory.create(Files.readAllBytes(Paths.get(deviceDataFile))),
                 userAgentFile,
                 numberOfThreads);
 
-        System.out.printf("Benchmarking stream file dataset with cache: %s\r\n", 
+        System.out.printf("Benchmarking stream file dataset: %s\r\n", 
                 deviceDataFile);
         runBenchmark(
-                StreamFactory.create(deviceDataFile, false, true),
+                StreamFactory.create(deviceDataFile, false),
                 userAgentFile,
                 numberOfThreads);
-        
+       
         System.out.printf("Benchmarking memory dataset: %s\r\n", 
                 deviceDataFile);
         runBenchmark(

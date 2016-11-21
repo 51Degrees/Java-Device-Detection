@@ -26,6 +26,8 @@ import fiftyone.mobile.detection.Dataset;
 import fiftyone.mobile.detection.factories.MemoryFactory;
 import fiftyone.mobile.detection.factories.StreamFactory;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import org.junit.After;
 import static org.junit.Assert.assertTrue;
 import org.junit.Before;
@@ -47,20 +49,22 @@ public class BenchmarkTest {
     }
 
     @Test
-    public void testStreamNoCache() throws Exception {
-        logger.info("Stream Factory NO Cache"); 
-        testDataSet(StreamFactory.create(Shared.getLitePatternV32(), false, true));
+    public void testStreamFile() throws Exception {
+        logger.info("Stream File"); 
+        testDataSet(StreamFactory.create(Shared.getLitePatternV32(), false));
     }
     
     @Test
-    public void testStreamWithCache() throws Exception {
-        logger.info("Stream Factory with Cache"); 
-        testDataSet(StreamFactory.create(Shared.getLitePatternV32(), false, false));
+    public void testStreamMemory() throws Exception {
+        logger.info("Stream Array / Memory"); 
+        testDataSet(
+                StreamFactory.create(Files.readAllBytes(
+                        Paths.get(Shared.getLitePatternV32()))));
     }
-    
+   
     @Test
     public void testMemory() throws Exception {
-        logger.info("Memory Factory"); 
+        logger.info("Memory"); 
         testDataSet(MemoryFactory.create(Shared.getLitePatternV32(), true));
     }
     
