@@ -75,10 +75,14 @@ public abstract class Node extends fiftyone.mobile.detection.entities.Node {
                 result = numericChildren;
                 if(result == null) {
                     BinaryReader reader = pool.getReader();
-                    reader.setPos(numericChildrenPosition);
-                    result = numericChildren = readNodeNumericIndexes(
-                            dataSet, reader, numericChildrenCount);
-                    pool.release(reader);
+                    try {
+                        reader.setPos(numericChildrenPosition);
+                        result = numericChildren = readNodeNumericIndexes(
+                                dataSet, reader, numericChildrenCount);
+                    }
+                    finally {
+                        pool.release(reader);
+                    }
                 }
             }
         }
