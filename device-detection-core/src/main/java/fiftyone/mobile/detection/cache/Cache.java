@@ -276,18 +276,18 @@ public class Cache<K, V> {
             // to write the item to the cache.
             misses.incrementAndGet();
             V value = loader.fetch(key);
-            
-            // If the node has already been added to the dictionary
-            // then get it, otherise add the one just fetched.
             Node newItem = new Node(new KeyValuePair(key, value));
-            node = hashMap.putIfAbsent(key, newItem);
 
-            // If the node got from the dictionary is the new one just feteched
-            // from the loader (node == null) then it needs to be added to the
-            // linked list. The value just added to the hash map needs to set as
-            // the returned item.
-            if (node == null) {
-                synchronized(writeLock) {
+            synchronized(writeLock) {
+                // If the node has already been added to the dictionary
+                // then get it, otherise add the one just fetched.
+                node = hashMap.putIfAbsent(key, newItem);
+
+                // If the node got from the dictionary is the new one just feteched
+                // from the loader (node == null) then it needs to be added to the
+                // linked list. The value just added to the hash map needs to set as
+                // the returned item.
+                if (node == null) {
                     added = true;
                     node = newItem;
                     
