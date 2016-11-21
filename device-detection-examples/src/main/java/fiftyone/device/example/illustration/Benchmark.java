@@ -169,7 +169,7 @@ public class Benchmark {
                 new FileReader(this.userAgentFile));
         try {
             int userAgentsRead = 0;
-            while ((userAgentString = bufferedReader.readLine()) != null && userAgentsRead < 250000) {
+            while ((userAgentString = bufferedReader.readLine()) != null) {
                 userAgentsRead++;
                 this.queue.put(userAgentString);
                 if (userAgentsRead % 50000 == 0) {
@@ -198,21 +198,6 @@ public class Benchmark {
         System.out.printf(
             "User-Agents processed: %d \r\n", 
             getCount());
-        System.out.printf(
-            "getPercentageNodeCacheMisses: %f \r\n", 
-            dataSet.getPercentageNodeCacheMisses());            
-        System.out.printf(
-            "getPercentageProfilesCacheMisses: %f \r\n", 
-            dataSet.getPercentageProfilesCacheMisses());
-        System.out.printf(
-            "getPercentageSignatureCacheMisses: %f \r\n", 
-            dataSet.getPercentageSignatureCacheMisses());
-        System.out.printf(
-            "getPercentageStringsCacheMisses: %f \r\n", 
-            dataSet.getPercentageStringsCacheMisses());
-        System.out.printf(
-            "getPercentageValuesCacheMisses: %f \r\n", 
-            dataSet.getPercentageValuesCacheMisses());
         long[] counts = provider.getMethodCounts();
         for(MatchMethods method : MatchMethods.values()) {
             System.out.printf(
