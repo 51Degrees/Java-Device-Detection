@@ -32,14 +32,13 @@ import fiftyone.mobile.detection.entities.Signature;
 import fiftyone.mobile.detection.entities.Value;
 import fiftyone.mobile.detection.entities.memory.MemoryFixedList;
 import fiftyone.mobile.detection.entities.memory.PropertiesList;
-import fiftyone.mobile.detection.entities.stream.FixedCacheList;
 import fiftyone.mobile.detection.entities.stream.IntegerList;
 import fiftyone.mobile.detection.entities.stream.StreamVariableList;
+import fiftyone.mobile.detection.entities.stream.StreamFixedList;
 import fiftyone.mobile.detection.factories.stream.NodeStreamFactoryV31;
 import fiftyone.mobile.detection.factories.stream.NodeStreamFactoryV32;
 import fiftyone.mobile.detection.factories.stream.ProfileStreamFactory;
 import fiftyone.mobile.detection.readers.BinaryReader;
-import fiftyone.properties.DetectionConstants;
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
@@ -160,8 +159,7 @@ public final class StreamFactory {
             CommonFactory.loadHeader(dataSet, reader);
             
             dataSet.strings = new StreamVariableList<AsciiString>(
-                    dataSet, reader, new AsciiStringFactory(), 
-                    DetectionConstants.STRINGS_CACHE_SIZE);
+                    dataSet, reader, new AsciiStringFactory());
             
             MemoryFixedList<Component> components = null;
             switch (dataSet.versionEnum) {
@@ -184,24 +182,20 @@ public final class StreamFactory {
                     dataSet, reader, new PropertyFactory());
             dataSet.properties = properties; 
             
-            dataSet.values = new FixedCacheList<Value>(
-                    dataSet, reader, new ValueFactory(), 
-                    DetectionConstants.VALUES_CACHE_SIZE);
+            dataSet.values = new StreamFixedList<Value>(
+                    dataSet, reader, new ValueFactory());
             
             dataSet.profiles = new StreamVariableList<Profile>(
-                    dataSet, reader, new ProfileStreamFactory(), 
-                    DetectionConstants.PROFILE_CACHE_SIZE);
+                    dataSet, reader, new ProfileStreamFactory());
             
             switch (dataSet.versionEnum) {
                 case PatternV31:
-                    dataSet.signatures = new FixedCacheList<Signature>(
-                            dataSet, reader, new SignatureFactoryV31(dataSet), 
-                            DetectionConstants.SIGNATURES_CACHE_SIZE);
+                    dataSet.signatures = new StreamFixedList<Signature>(
+                            dataSet, reader, new SignatureFactoryV31(dataSet));
                     break;
                 case PatternV32:
-                    dataSet.signatures = new FixedCacheList<Signature>(
-                            dataSet, reader, new SignatureFactoryV32(dataSet), 
-                            DetectionConstants.SIGNATURES_CACHE_SIZE);
+                    dataSet.signatures = new StreamFixedList<Signature>(
+                            dataSet, reader, new SignatureFactoryV32(dataSet));
                     dataSet.signatureNodeOffsets = 
                             new IntegerList(dataSet, reader);
                     dataSet.nodeRankedSignatureIndexes = 
@@ -214,14 +208,12 @@ public final class StreamFactory {
                 case PatternV31:
                     dataSet.nodes = new StreamVariableList<Node>(
                             dataSet, reader, 
-                            new NodeStreamFactoryV31(), 
-                            DetectionConstants.NODES_CACHE_SIZE);
+                            new NodeStreamFactoryV31());
                     break;
                 case PatternV32:
                     dataSet.nodes = new StreamVariableList<Node>(
                             dataSet, reader, 
-                            new NodeStreamFactoryV32(), 
-                            DetectionConstants.NODES_CACHE_SIZE);
+                            new NodeStreamFactoryV32());
                     break;
             }
             

@@ -41,7 +41,6 @@ import fiftyone.mobile.detection.entities.Value;
 import fiftyone.mobile.detection.entities.Version;
 import fiftyone.mobile.detection.entities.memory.MemoryFixedList;
 import fiftyone.mobile.detection.entities.memory.PropertiesList;
-import fiftyone.mobile.detection.entities.stream.ICacheList;
 import fiftyone.mobile.detection.search.SearchBase;
 import fiftyone.mobile.detection.search.SearchResult;
 import fiftyone.properties.DetectionConstants;
@@ -1013,27 +1012,6 @@ public class Dataset implements Closeable {
     public ISimpleList getRankedSignatureIndexes() {
         return rankedSignatureIndexes;
     } 
-
-    /**
-     * Returns the percentage of requests that weren't serviced by the cache.
-     * 
-     * @param list a Cache object to get percentage from.
-     * @return 0 if object is not Cache, percentage otherwise.
-     */
-    private static double getPercentageMisses(Object list) {
-        if (list instanceof ICacheList) {
-            ICacheList c = (ICacheList)list;
-            return c.getPercentageMisses();
-        }
-        return -1;
-    }
-
-    /**
-     * If there are cached lists being used the states are reset for them.
-     */
-    public void resetCache() {
-        //Do nothing in this implementation.
-    }
     
     /**
      * Used to search for a signature from a list of nodes.
@@ -1116,10 +1094,6 @@ public class Dataset implements Closeable {
      */
     @Deprecated
     private static long getSwitches(Object list) {
-        if (list instanceof ICacheList) {
-            ICacheList c = (ICacheList)list;
-            return c.getSwitches();
-        }
         return -1;
     }
     
@@ -1219,5 +1193,29 @@ public class Dataset implements Closeable {
     public Property getPropertyByName(String propertyName) throws IOException {
         return this.properties.get(propertyName);
     }
+    
+    /**
+     * Returns the percentage of requests that weren't serviced by the cache.
+     * 
+     * The data set no longer requires caching.
+     * 
+     * @param list a Cache object to get percentage from.
+     * @return 0 if object is not Cache, percentage otherwise.
+     */
+    @Deprecated
+    private static double getPercentageMisses(Object list) {
+        return -1;
+    }
+
+    /**
+     * If there are cached lists being used the states are reset for them.
+     * 
+     * Caching is no longer supported in the stream data set.
+     */
+    @Deprecated
+    public void resetCache() {
+        //Do nothing in this implementation.
+    }
+    
     //</editor-fold>
 }

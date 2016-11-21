@@ -23,6 +23,7 @@ package fiftyone.mobile.detection.entities.stream;
 import fiftyone.mobile.detection.IReadonlyList;
 import fiftyone.mobile.detection.entities.BaseEntity;
 import fiftyone.mobile.detection.factories.BaseEntityFactory;
+import fiftyone.mobile.detection.factories.stream.NodeStreamFactoryV31;
 import fiftyone.mobile.detection.readers.BinaryReader;
 import java.io.IOException;
 import java.util.Iterator;
@@ -53,7 +54,7 @@ import java.util.Iterator;
  *
  * @param <T> The type of BaseEntity the list will contain.
  */
-public class StreamVariableList<T extends BaseEntity> extends StreamCacheList<T> 
+public class StreamVariableList<T extends BaseEntity> extends StreamBaseList<T> 
                                             implements IReadonlyList<T> {
 
     /**
@@ -63,11 +64,10 @@ public class StreamVariableList<T extends BaseEntity> extends StreamCacheList<T>
      * @param reader Reader connected to the source data structure and
      * positioned to start reading.
      * @param entityFactory Factory to build entities of type T.
-     * @param cacheSize number of items in cache.
      */
     public StreamVariableList(Dataset dataSet, BinaryReader reader,
-                        BaseEntityFactory<T> entityFactory, int cacheSize) {
-        super(dataSet, reader, entityFactory, cacheSize);
+                        BaseEntityFactory<T> entityFactory) {
+        super(dataSet, reader, entityFactory);
     }
 
     /**
