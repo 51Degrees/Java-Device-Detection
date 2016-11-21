@@ -22,30 +22,67 @@
 package fiftyone.device.example.illustration;
 
 import fiftyone.device.example.Shared;
+import fiftyone.mobile.detection.Dataset;
+import fiftyone.mobile.detection.factories.MemoryFactory;
+import fiftyone.mobile.detection.factories.StreamFactory;
 import java.io.IOException;
 import org.junit.After;
 import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.LoggerFactory;
 
 public class BenchmarkTest {
-    Benchmark example;
 
+    private final org.slf4j.Logger logger = LoggerFactory.getLogger(BenchmarkTest.class);
+    private Benchmark bm;
+    
     @Before
     public void setUp() throws IOException {
-        example = new Benchmark(
-                Shared.getLitePatternV32(), 
-                Shared.getGoodUserAgentsFile());
+        bm = new Benchmark(Shared.getGoodUserAgentsFile());
     }
 
     @After
     public void tearDown() throws IOException {
-        example.close();
     }
 
     @Test
-    public void testAllProfiles() throws Exception {
-        Benchmark.BenchmarkState result = example.run();
-        assertTrue(result.getAverageDetectionTime() < 0.2);
+    public void testStreamNoCache() throws Exception {
+        logger.info("Stream Factory NO Cache"); 
+        testDataSet(StreamFactory.create(Shared.getLitePatternV32(), false, true));
+    }
+    
+    @Test
+    public void testStreamWithCache() throws Exception {
+        logger.info("Stream Factory with Cache"); 
+        testDataSet(StreamFactory.create(Shared.getLitePatternV32(), false, false));
+    }
+    
+    @Test
+    public void testMemory() throws Exception {
+        logger.info("Memory Factory"); 
+        testDataSet(MemoryFactory.create(Shared.getLitePatternV32(), true));
+    }
+    
+    private void testDataSet(Dataset dataSet)
+            throws IOException, InterruptedException {
+        double baseLine = 0;
+        try {
+            for (int i = Runtime.getRuntime().availableProcessors(); i > 0; i--) {
+                bm.run(dataSet, i);
+                logger.info("Concurrent threads '{}'", i); 
+                logger.info("Average detection per thread '{}' ms", 
+                        bm.getAverageDetectionTimePerThread());
+                if (baseLine == 0) {
+                    baseLine = bm.getAverageDetectionTimePerThread();
+                }
+                else {
+                    assertTrue(bm.getAverageDetectionTimePerThread() < baseLine);
+                }
+            }
+        }
+        finally {
+            dataSet.close();
+        }
     }
 }
