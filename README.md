@@ -100,6 +100,13 @@ Data files which are updated weekly and daily, automatically, and with more prop
 
 ## Recent Changes
 
+### Version 3.2.11.3 Changes:
+Removed assert which caused increased memory usage.
+
+Improved detections per second per thread when using a large number of threads.
+
+WebProvider match function now calls base match function with headers.
+
 ### Version 3.2.10.4 Changes:
 Fix for profile override cookie.
 
