@@ -442,6 +442,16 @@ public class WebProvider extends Provider implements Closeable {
      */
     public Match match(final HttpServletRequest request) throws IOException {
         Match match;
+        HashMap headers = new HashMap<String, String>();
+        for (String header : super.dataSet.getHttpHeaders()) {
+            if (request.getHeader(header) != null) {
+                Enumeration<String> headerValues = request.getHeaders(header);
+                if (headerValues.hasMoreElements()) {
+                    String hv = headerValues.nextElement();
+                    headers.put(header, hv);
+                }
+            }
+        }
         match = (Match)request.getAttribute(MATCH_ATTRIBUTE);
         boolean hasOverrides = ProfileOverride.hasOverrides(request);
         // If there are no results already for the request, or there are 
@@ -456,8 +466,7 @@ public class WebProvider extends Provider implements Closeable {
                     if (match == null) {
                         // Get the match and store the list of properties and 
                         // values in the context and session.
-                        match = getActiveProvider(
-                                request.getServletContext()).match(request);
+                        match = super.match(headers);
                         if (match != null) {
                             // Allow other feautre detection methods to override
                             // priofiles.
