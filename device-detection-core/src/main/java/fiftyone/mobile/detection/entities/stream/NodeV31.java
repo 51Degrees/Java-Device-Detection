@@ -77,13 +77,17 @@ public class NodeV31 extends Node {
                 localRankedSignatureIndexes = rankedSignatureIndexes;
                 if (localRankedSignatureIndexes == null) {
                     BinaryReader reader = pool.getReader();
-                    reader.setPos(numericChildrenPosition + 
-                        ((DetectionConstants.SIZE_OF_SHORT + 
-                          DetectionConstants.SIZE_OF_INT) * 
-                                getNumericChildrenLength()));
-                    rankedSignatureIndexes = localRankedSignatureIndexes = 
-                            readIntegerList(reader, rankedSignatureCount);
-                    pool.release(reader);
+                    try {
+                        reader.setPos(numericChildrenPosition + 
+                            ((DetectionConstants.SIZE_OF_SHORT + 
+                              DetectionConstants.SIZE_OF_INT) * 
+                                    getNumericChildrenLength()));
+                        rankedSignatureIndexes = localRankedSignatureIndexes = 
+                                readIntegerList(reader, rankedSignatureCount);
+                    }
+                    finally {
+                        pool.release(reader);
+                    }
                 }
             }
         }

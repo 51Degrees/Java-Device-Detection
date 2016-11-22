@@ -64,10 +64,14 @@ public class Profile extends fiftyone.mobile.detection.entities.Profile {
                 localValueIndexes = valueIndexes;
                 if(localValueIndexes == null) {
                     BinaryReader reader = pool.getReader();
-                    reader.setPos(position);
-                    valueIndexes = localValueIndexes = 
-                            BaseEntity.readIntegerArray(reader, valueIndexesCount);
-                    pool.release(reader);
+                    try {
+                        reader.setPos(position);
+                        valueIndexes = localValueIndexes = 
+                                BaseEntity.readIntegerArray(reader, valueIndexesCount);
+                    }
+                    finally {
+                        pool.release(reader);
+                    }
                 }
             }
         }
@@ -87,11 +91,18 @@ public class Profile extends fiftyone.mobile.detection.entities.Profile {
                 localSignatureIndexes = signatureIndexes;
                 if (localSignatureIndexes == null) {
                     BinaryReader reader = pool.getReader();
-                    int offset = valueIndexesCount * (Integer.SIZE / Byte.SIZE);
-                    reader.setPos(position + offset);
-                    signatureIndexes = localSignatureIndexes = 
-                            BaseEntity.readIntegerArray(reader, signatureIndexesCount);
-                    pool.release(reader);
+                    try {
+                        int offset = valueIndexesCount * 
+                                (Integer.SIZE / Byte.SIZE);
+                        reader.setPos(position + offset);
+                        signatureIndexes = localSignatureIndexes = 
+                                BaseEntity.readIntegerArray(
+                                        reader, 
+                                        signatureIndexesCount);
+                    }
+                    finally {
+                        pool.release(reader);
+                    }
                 }
             }
         }
