@@ -46,7 +46,7 @@ public class StreamVariableListIterator<T extends BaseEntity>
     /**
      * List to iterate over.
      */
-    StreamVariableList<T> varList;
+    StreamBaseList<T> varList;
     /**
      * Current index.
      */
@@ -57,7 +57,7 @@ public class StreamVariableListIterator<T extends BaseEntity>
      * 
      * @param streamVariableList list to iterate over.
      */
-    public StreamVariableListIterator(StreamVariableList<T> streamVariableList)
+    public StreamVariableListIterator(StreamBaseList<T> streamVariableList)
     {
         //What to iterate over.
         varList = streamVariableList;
