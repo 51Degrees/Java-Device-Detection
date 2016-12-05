@@ -44,7 +44,7 @@ public class Constants {
     /**
      * Url used to share usage information with 51Degrees.
      */
-    public static final String URL = "https://devices.51degrees.mobi/new.ashx";
+    public static final String URL = "https://devices.51degrees.com/new.ashx";
 
     /**
      * Number of new device requests before the share usage information is
