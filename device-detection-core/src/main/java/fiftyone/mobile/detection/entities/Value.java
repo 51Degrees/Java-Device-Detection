@@ -250,6 +250,22 @@ public class Value extends BaseEntity {
     }
 
     /**
+     * Constructs a new instance of Value.
+     *
+     * @param dataSet the {@link Dataset} the value is contained within.
+     * @param property the dynamic value will relate to. 
+     * @param value string name of the dynamic value.
+     */
+    public Value(Dataset dataSet, Property property, String value) {
+        super (dataSet, -1);
+        this.propertyIndex = property.index;
+        this.name = value;
+        this.nameIndex = -1;
+        this.descriptionIndex = -1;
+        this.urlIndex = -1;
+    }
+    
+    /**
      * Called after the entire data set has been loaded to ensure any further initialisation steps that require other
      * items in the data set can be completed. The Profiles and Signatures are not initialised as they are very rarely
      * used and take a long time to initialise.
