@@ -85,9 +85,18 @@ public class Provider {
     private final AtomicLong detectionCount = new AtomicLong(0);
     
     /**
-     * The number of detections performed using the method.
+     * The number of detections performed using each of the methods.
+     * @return an array of longs where each element is the count of the 
+     * corresponding MATCH_METHOD enum ordinal.
      */
-    private final SortedList<MatchMethods, Long> methodCounts;
+    public long[] getMethodCounts() {
+        long[] counts = new long[methodCounts.length];
+        for (int i = 0; i < methodCounts.length; i++) {
+            counts[i] = methodCounts[i].get();
+        }
+        return counts;
+    }
+    private final AtomicLong[] methodCounts;
     
     /**
      * The data set associated with the provider.
@@ -125,13 +134,12 @@ public class Provider {
 
         // Initialise HashMap with default size and a rirective to re-hash only
         // when capacity exceeds initial.
-        int numberOfMethods = MatchMethods.values().length;
-        this.methodCounts = new SortedList<MatchMethods, Long>(numberOfMethods, 1);
-        this.methodCounts.add(MatchMethods.CLOSEST, 0l);
-        this.methodCounts.add(MatchMethods.NEAREST, 0l);
-        this.methodCounts.add(MatchMethods.NUMERIC, 0l);
-        this.methodCounts.add(MatchMethods.EXACT, 0l);
-        this.methodCounts.add(MatchMethods.NONE, 0l);
+        this.methodCounts = new AtomicLong[MatchMethods.values().length];
+        this.methodCounts[MatchMethods.CLOSEST.ordinal()] = new AtomicLong();
+        this.methodCounts[MatchMethods.NEAREST.ordinal()] = new AtomicLong();
+        this.methodCounts[MatchMethods.NUMERIC.ordinal()] = new AtomicLong();
+        this.methodCounts[MatchMethods.EXACT.ordinal()] = new AtomicLong();
+        this.methodCounts[MatchMethods.NONE.ordinal()] = new AtomicLong();
         
         userAgentCache = 
                 cacheSize > 0 ? new Cache<String, MatchResult>(cacheSize) : null;
@@ -438,13 +446,10 @@ public class Provider {
         if (recordDetectionTime) {
             state.setElapsed(System.nanoTime() - startNanoseconds);
         }
-
+        
         // Update the counts for the provider.
         detectionCount.incrementAndGet();
-        synchronized (methodCounts) {
-            MatchMethods method = state.getMethod();
-            methodCounts.put(method, methodCounts.get(method) + 1);
-        }
+        methodCounts[state.getMethod().ordinal()].getAndIncrement();
     }
     
     /**

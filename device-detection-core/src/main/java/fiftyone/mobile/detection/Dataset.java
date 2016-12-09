@@ -41,7 +41,6 @@ import fiftyone.mobile.detection.entities.Value;
 import fiftyone.mobile.detection.entities.Version;
 import fiftyone.mobile.detection.entities.memory.MemoryFixedList;
 import fiftyone.mobile.detection.entities.memory.PropertiesList;
-import fiftyone.mobile.detection.entities.stream.ICacheList;
 import fiftyone.mobile.detection.search.SearchBase;
 import fiftyone.mobile.detection.search.SearchResult;
 import fiftyone.properties.DetectionConstants;
@@ -194,14 +193,6 @@ public class Dataset implements Closeable {
      */
     public PropertiesList properties;
     /**
-     * Array of JavaScript properties.
-     */
-    private Property[] javaScriptProperties = null;
-    /**
-     * Array of JavaScript properties related to property value overrides.
-     */
-    private Property[] pvoProperties;
-    /**
      * The date the data set was published.
      */
     public Date published;
@@ -256,7 +247,7 @@ public class Dataset implements Closeable {
      * a match.
      */
     public int xmlBufferLength;
-   
+    
     /**
      * Constructs a new data set ready to have lists of data assigned to it.
      * 
@@ -285,63 +276,6 @@ public class Dataset implements Closeable {
         long difference = now.getTime() - was.getTime();
         long diffInSeconds = TimeUnit.MILLISECONDS.toSeconds(difference);
         return diffInSeconds;
-    }
-
-    /**
-     * The percentage of requests for signatures which were not already
-     * contained in the cache. A value is only returned when operating in
-     * Stream mode.
-     * 
-     * @return double representing percentage of requests for signatures not 
-     * currently in cache, only for Stream Mode.
-     */
-    public double getPercentageSignatureCacheMisses() {
-        return getPercentageMisses(signatures);
-    }
-
-    /**
-     * The percentage of requests for nodes which were not already
-     * contained in the cache. A value is only returned when operating in 
-     * Stream mode.
-     * 
-     * @return double representing percentage of requests for nodes not already 
-     * in cache. Stream Mode only.
-     */
-    public double getPercentageNodeCacheMisses() {
-        return getPercentageMisses(nodes);
-    }
-
-    /**
-     * The percentage of requests for strings which were not already contained
-     * in the cache. A value is only returned when operating in Stream mode.
-     * 
-     * @return double representing percentage of requests for strings that were 
-     * not already in cache.
-     */
-    public double getPercentageStringsCacheMisses() {
-        return getPercentageMisses(strings);
-    }
-
-    /**
-     * The percentage of requests for profiles which were not already contained
-     * in the cache. A value is only returned when operating in Stream mode.
-     * 
-     * @return double representing percentage of requests for profiles that were 
-     * not already in cache.
-     */
-    public double getPercentageProfilesCacheMisses() {
-        return getPercentageMisses(profiles);
-    }
-
-    /**
-     * The percentage of requests for values which were not already contained in
-     * the cache. A value is only returned when operating in Stream mode.
-     * 
-     * @return double representing percentage of requests for values that were 
-     * not already in cache.
-     */
-    public double getPercentageValuesCacheMisses() {
-        return getPercentageMisses(values);
     }
 
     /**
@@ -631,10 +565,7 @@ public class Dataset implements Closeable {
      * @throws IOException
      * @throws IllegalArgumentException if the property does not exist.
      */
-    public List<Profile> findProfiles(
-            String propertyName, 
-            String valueName, 
-            List<Profile> filterProfiles) throws IOException {
+    public List<Profile> findProfiles(String propertyName, String valueName, List<Profile> filterProfiles) throws IOException {
 
         Property property =  this.properties.get(propertyName);
         if (property == null) {
@@ -660,10 +591,7 @@ public class Dataset implements Closeable {
      * order.
      * @throws IOException
      */
-    public List<Profile> findProfiles(
-            Property property, 
-            String valueName, 
-            List<Profile> filterProfiles) throws IOException {
+    public List<Profile> findProfiles(Property property, String valueName, List<Profile> filterProfiles) throws IOException {
         return property.findProfiles(valueName, filterProfiles);
     }
 
@@ -681,6 +609,7 @@ public class Dataset implements Closeable {
         return components;
     }
     
+
     /**
      * Returns an iterable list of maps contained within the data file.
      * May contain multiple maps with the same name.
@@ -700,61 +629,6 @@ public class Dataset implements Closeable {
         return properties;
     }
     
-    /**
-     * All the JavaScript type properties in the data set.
-     * 
-     * @return array of properties of type JavaScript.
-     */
-    @SuppressWarnings("DoubleCheckedLocking")
-    public Property[] getJavaScriptProperties() {
-        if (javaScriptProperties == null) {
-            synchronized(this) {
-                if (javaScriptProperties == null) {
-                    List<Property> tempList = new ArrayList<Property>();
-                    for (Property property : getProperties()) {
-                        if (property.valueType == 
-                                Property.PropertyValueType.JAVASCRIPT) {
-                            tempList.add(property);
-                        }
-                    }
-                    Property[] localJavaScriptProperties = 
-                            new Property[tempList.size()];
-                    tempList.toArray(localJavaScriptProperties);
-                    javaScriptProperties = localJavaScriptProperties;
-                }
-            }
-        }
-        return javaScriptProperties;
-    }
-    
-    /**
-     * All the JavaScript properties that relate to Profile Value Overrides.
-     * 
-     * @return array of properties of type JavaScript.
-     * @throws java.io.IOException
-     */    
-    @SuppressWarnings("DoubleCheckedLocking")
-    public Property[] getPropertyValueOverrideProperties() throws IOException {
-        if (pvoProperties == null) {
-            synchronized(this) {
-                if (pvoProperties == null) { 
-                    List<Property> tempList = new ArrayList<Property>(); 
-                    for (Property property : getJavaScriptProperties()) {
-                        if (property.getCategory().equals(
-                            DetectionConstants.
-                            PROPERTY_VALUE_OVERRIDE_CATEGORY)) {
-                            tempList.add(property);
-                        }
-                    }
-                    Property[] localPvoProperties = 
-                            new Property[tempList.size()];
-                    tempList.toArray(localPvoProperties);
-                    pvoProperties = localPvoProperties;
-                }
-            }
-        }
-        return pvoProperties;
-    }
 
     /**
      * A list of all {@link Value values} the data set contains. A value is 
@@ -1081,27 +955,6 @@ public class Dataset implements Closeable {
     public ISimpleList getRankedSignatureIndexes() {
         return rankedSignatureIndexes;
     } 
-
-    /**
-     * Returns the percentage of requests that weren't serviced by the cache.
-     * 
-     * @param list a Cache object to get percentage from.
-     * @return 0 if object is not Cache, percentage otherwise.
-     */
-    private static double getPercentageMisses(Object list) {
-        if (list instanceof ICacheList) {
-            ICacheList c = (ICacheList)list;
-            return c.getPercentageMisses();
-        }
-        return -1;
-    }
-
-    /**
-     * If there are cached lists being used the states are reset for them.
-     */
-    public void resetCache() {
-        //Do nothing in this implementation.
-    }
     
     /**
      * Used to search for a signature from a list of nodes.
@@ -1184,10 +1037,6 @@ public class Dataset implements Closeable {
      */
     @Deprecated
     private static long getSwitches(Object list) {
-        if (list instanceof ICacheList) {
-            ICacheList c = (ICacheList)list;
-            return c.getSwitches();
-        }
         return -1;
     }
     
@@ -1287,5 +1136,101 @@ public class Dataset implements Closeable {
     public Property getPropertyByName(String propertyName) throws IOException {
         return this.properties.get(propertyName);
     }
+    
+    /**
+     * Returns the percentage of requests that weren't serviced by the cache.
+     * 
+     * The data set no longer requires caching.
+     * 
+     * @param list a Cache object to get percentage from.
+     * @return 0 if object is not Cache, percentage otherwise.
+     */
+    @Deprecated
+    private static double getPercentageMisses(Object list) {
+        return -1;
+    }
+
+    /**
+     * If there are cached lists being used the states are reset for them.
+     * 
+     * Caching is no longer supported in the stream data set.
+     */
+    @Deprecated
+    public void resetCache() {
+        //Do nothing in this implementation.
+    }
+    
+    /**
+     * The percentage of requests for signatures which were not already
+     * contained in the cache. A value is only returned when operating in
+     * Stream mode.
+     * 
+     * The data set no longer requires caching.
+     * 
+     * @return double representing percentage of requests for signatures not 
+     * currently in cache, only for Stream Mode.
+     */
+    @Deprecated
+    public double getPercentageSignatureCacheMisses() {
+        return getPercentageMisses(signatures);
+    }
+
+    /**
+     * The percentage of requests for nodes which were not already
+     * contained in the cache. A value is only returned when operating in 
+     * Stream mode.
+     * 
+     * The data set no longer requires caching.
+     * 
+     * @return double representing percentage of requests for nodes not already 
+     * in cache. Stream Mode only.
+     */
+    @Deprecated
+    public double getPercentageNodeCacheMisses() {
+        return getPercentageMisses(nodes);
+    }
+
+    /**
+     * The percentage of requests for strings which were not already contained
+     * in the cache. A value is only returned when operating in Stream mode.
+     * 
+     * The data set no longer requires caching.
+     * 
+     * @return double representing percentage of requests for strings that were 
+     * not already in cache.
+     */
+    @Deprecated
+    public double getPercentageStringsCacheMisses() {
+        return getPercentageMisses(strings);
+    }
+
+    /**
+     * The percentage of requests for profiles which were not already contained
+     * in the cache. A value is only returned when operating in Stream mode.
+     * 
+     * The data set no longer requires caching.
+     * 
+     * @return double representing percentage of requests for profiles that were 
+     * not already in cache.
+     */
+    @Deprecated
+    public double getPercentageProfilesCacheMisses() {
+        return getPercentageMisses(profiles);
+    }
+
+    /**
+     * The percentage of requests for values which were not already contained in
+     * the cache. A value is only returned when operating in Stream mode.
+     * 
+     * The data set no longer requires caching.
+     * 
+     * @return double representing percentage of requests for values that were 
+     * not already in cache.
+     */
+    @Deprecated
+    public double getPercentageValuesCacheMisses() {
+        return getPercentageMisses(values);
+    }    
+    
     //</editor-fold>
 }

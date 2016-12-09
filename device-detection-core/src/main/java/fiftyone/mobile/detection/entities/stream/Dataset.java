@@ -98,13 +98,9 @@ public class Dataset extends fiftyone.mobile.detection.Dataset {
      * Resets the cache for the data set.
      */
     @Override
+    @Deprecated
     public void resetCache() {
         super.resetCache();
-        ((ICacheList)super.signatures).resetCache();
-        ((ICacheList)super.nodes).resetCache();
-        ((ICacheList)super.strings).resetCache();
-        ((ICacheList)super.profiles).resetCache();
-        ((ICacheList)super.values).resetCache();
     }
     
     /**

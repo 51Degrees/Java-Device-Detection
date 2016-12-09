@@ -23,8 +23,7 @@ package fiftyone.mobile.detection.entities.stream;
 import fiftyone.mobile.detection.readers.BinaryReader;
 import fiftyone.mobile.detection.readers.SourceBase;
 import java.io.IOException;
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -46,13 +45,19 @@ import java.util.concurrent.atomic.AtomicInteger;
  * The C API also maintains a pool, but it is a pool of work sets where each 
  * work set is constructed from the data set and contains device information 
  * relevant to the device being detected. This pool only contains readers.
+ * <p>
+ * The number of readers created by the pool will typically be limited to the
+ * number of concurrent threads in operation. As such the number of readers
+ * will be relatively small and the Pool does not need to limit the maximum
+ * number that can be created.
  */
 public class Pool {
 
     /**
-     * List of readers available for use.
+     * Linked list of readers available for use.
      */
-    private final Queue<BinaryReader> readers = new LinkedList<BinaryReader>();
+    private final ConcurrentLinkedQueue<BinaryReader> readers = 
+            new ConcurrentLinkedQueue<BinaryReader>();
     
     /**
      * A source of file readers to use to read data from the file.
@@ -82,17 +87,17 @@ public class Pool {
      * @throws java.io.IOException if there was a problem accessing data file.
      */
     public BinaryReader getReader() throws IOException {
-        synchronized(readers) {
-            if (readers.isEmpty() == false) {
-                return readers.poll();
-            }
+        BinaryReader reader = readers.poll();
+        
+        if (reader == null) {
+            // There are no readers available so create one
+            // and ensure that the reader count is incremented
+            // after doing so.
+            readerCount.incrementAndGet();
+            reader = source.createReader();
         }
         
-        // There are no readers available so create one
-        // and ensure that the reader count is incremented
-        // after doing so.
-        readerCount.incrementAndGet();
-        return source.createReader();
+        return reader;
     }
 
     /**
@@ -100,9 +105,7 @@ public class Pool {
      * @param reader Reader open and ready to read from the temp file
      */
     public void release(BinaryReader reader) {
-        synchronized(readers) {
-            readers.add(reader);
-        }
+        readers.add(reader);
     }
    
     /**
@@ -121,8 +124,6 @@ public class Pool {
      * @return The number of readers in the queue.
      */
     public int getReadersQueued() {
-        synchronized(readers) {
-            return readers.size();
-        }
+        return readers.size();
     }
 }
