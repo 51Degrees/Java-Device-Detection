@@ -4,6 +4,7 @@ import fiftyone.mobile.detection.Dataset;
 import fiftyone.mobile.detection.Match;
 import fiftyone.mobile.detection.Provider;
 import fiftyone.mobile.detection.entities.Property;
+import fiftyone.mobile.detection.entities.Values;
 import fiftyone.mobile.detection.factories.MemoryFactory;
 import fiftyone.mobile.detection.factories.StreamFactory;
 import fiftyone.properties.MatchMethods;
@@ -54,10 +55,16 @@ public class Benchmark {
                         bm.elapsedNano.addAndGet(
                             System.nanoTime() - start);
                         
-                        // calculate a checksum to compare different runs on
-                        // the same data
+                        // Calculate a checksum to compare different runs on
+                        // the same data. Retrieve all the values for all the 
+                        // profiles to simulate a the most stressfull detection
+                        // scenario.
                         if (match.getSignature() != null) {
-                            workerCheckSum += match.getSignature().getRank();
+                            for (Property property : 
+                                 bm.provider.dataSet.getProperties()) {
+                                Values values = match.getValues(property);
+                                workerCheckSum += values.toStringArray().length;
+                            }
                         }
                         workerCheckSum += match.getValues(isMobile).
                                 toStringArray().length;
