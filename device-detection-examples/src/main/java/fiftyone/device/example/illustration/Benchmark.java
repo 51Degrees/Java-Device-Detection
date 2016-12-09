@@ -1,3 +1,24 @@
+/*
+ * This Source Code Form is copyright of 51Degrees Mobile Experts Limited.
+ * Copyright © 2015 51Degrees Mobile Experts Limited, 5 Charlotte Close,
+ * Caversham, Reading, Berkshire, United Kingdom RG4 7BY
+ *
+ * This Source Code Form is the subject of the following patent
+ * applications, owned by 51Degrees Mobile Experts Limited of 5 Charlotte
+ * Close, Caversham, Reading, Berkshire, United Kingdom RG4 7BY:
+ * European Patent Application No. 13192291.6; and
+ * United States Patent Application Nos. 14/085,223 and 14/085,301.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0.
+ *
+ * If a copy of the MPL was not distributed with this file, You can obtain
+ * one at http://mozilla.org/MPL/2.0/.
+ *
+ * This Source Code Form is "Incompatible With Secondary Licenses", as
+ * defined by the Mozilla Public License, v. 2.0.
+ */
+
 package fiftyone.device.example.illustration;
 
 import fiftyone.mobile.detection.Dataset;
@@ -23,8 +44,45 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class Benchmark {
+/**
+ * <!-- tutorial -->
+ * Example of a Benchmarking tool using 51Degrees Pattern detection to stress
+ * test your system.
+ * <p>
+ * The Example takes three arguments in the form of the 51Degrees binary device 
+ * data file path, the path of a .csv file containing User-Agents to be matched 
+ * and the number of threads you want to use for detection (optional where the 
+ * default is the number or logical cores in your current system. The Example 
+ * tests three different memory profiles: stream memory, stream file and memory 
+ * modes. 
+ * 
+ * <ol>
+ *  <li>Getting the detection time per thread
+ *  <pre class="prettyprint lang-java">
+ *  <code>
+ *      long start = System.nanoTime();
+ *      bm.provider.match(userAgentString, match);
+ *      bm.elapsedNano.addAndGet(
+ *          System.nanoTime() - start);
+ *  </code>
+ *  </pre>
+ *  <li>Getting properties to put more stress on the system
+ *  <pre class="prettyprint lang-java">
+ *  <code>
+ *      bm.provider.dataSet.getProperties()) {
+ *      Values values = match.getValues(property);
+ *      if (values != null) {
+ *          workerCheckSum += values.toStringArray().length;
+ *      } *  </code>
+ *  </pre>
+ * </ol>
+ * You can run {@link Benchmark#main} to test the performance of your system.
+ * <!-- turoial -->
+ * 
+ */
 
+public class Benchmark {
+    // Snippet Start
     /**
      * Encapsulates the logic that is executed in each thread of the benchmark.
      */
@@ -61,7 +119,7 @@ public class Benchmark {
                         // scenario.
                         if (match.getSignature() != null) {
                             for (Property property : 
-                                 bm.provider.dataSet.getProperties()) {
+                                bm.provider.dataSet.getProperties()) {
                                 Values values = match.getValues(property);
                                 if (values != null) {
                                     workerCheckSum += values.toStringArray().length;
@@ -251,7 +309,7 @@ public class Benchmark {
         String deviceDataFile,
         String userAgentFile,
         int numberOfThreads) throws IOException, InterruptedException {
-        /**
+        
         System.out.printf("Benchmarking stream memory dataset: %s\r\n", 
                 deviceDataFile);
         runBenchmark(
@@ -265,7 +323,7 @@ public class Benchmark {
                 StreamFactory.create(deviceDataFile, false),
                 userAgentFile,
                 numberOfThreads);
-       **/
+       
         System.out.printf("Benchmarking memory dataset: %s\r\n", 
                 deviceDataFile);
         runBenchmark(
@@ -304,4 +362,5 @@ public class Benchmark {
                 args.length >= 3 ? 
                 Integer.parseInt(args[2]) : defaultNumberOfThreads);
     }
+    // Snippet End
 }
