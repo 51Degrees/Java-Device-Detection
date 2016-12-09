@@ -22,7 +22,6 @@ package fiftyone.mobile.detection.test.type.autoupdate;
 
 import fiftyone.mobile.detection.AutoUpdate;
 import fiftyone.mobile.detection.AutoUpdateStatus;
-import static fiftyone.mobile.detection.AutoUpdateStatus.AUTO_UPDATE_NOT_NEEDED;
 import static fiftyone.mobile.detection.AutoUpdateStatus.AUTO_UPDATE_SUCCESS;
 import fiftyone.mobile.detection.Dataset;
 import fiftyone.mobile.detection.factories.MemoryFactory;
@@ -30,7 +29,6 @@ import fiftyone.mobile.detection.test.TestType;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.HttpURLConnection;
 import java.security.NoSuchAlgorithmException;
 import org.junit.After;
 import static org.junit.Assert.fail;
@@ -56,18 +54,15 @@ public class AutoUpdateTest extends AutoUpdateBase {
     
     @Test
     @Category(TestType.DataSetPremium.class)
-    public void testUpgradeLite() throws
-            FileNotFoundException, NoSuchAlgorithmException, 
-            IOException, Exception {
+    public void testUpgradeLite() throws FileNotFoundException, NoSuchAlgorithmException, IOException, Exception {
         super.setLiteDataFile();
         update();
+
     }
     
     @Test
     @Category(TestType.DataSetPremium.class)
-    public void testDownloadNew() throws 
-            FileNotFoundException, NoSuchAlgorithmException, 
-            IOException, Exception {
+    public void testDownloadNew() throws FileNotFoundException, NoSuchAlgorithmException, IOException, Exception {
         File f = new File(super.getTestDataFile());
         if (f.exists()) {
             if (f.delete() == false) {
@@ -75,36 +70,6 @@ public class AutoUpdateTest extends AutoUpdateBase {
             }
         }
         update();
-    }
-    
-    @Test
-    @Category(TestType.DataSetPremium.class)
-    public void testDownloadNotModified() throws 
-            FileNotFoundException, NoSuchAlgorithmException, 
-            IOException, Exception {
-        testDownloadNew();
-        
-        // Check that the standard auto update method works.
-        String[] licenceKeys = super.getLicenceKeys();
-        if (licenceKeys.length > 0) {
-            AutoUpdateStatus result = AutoUpdate.update(
-                    licenceKeys, 
-                    super.getTestDataFile());
-            if (result != AUTO_UPDATE_NOT_NEEDED) {
-                fail("Data file should not have needed updating.");
-            }
-        
-        
-            // Test a direct request also works correctly. Avoids the check which
-            // compares the file contents.
-            HttpURLConnection client = (HttpURLConnection)AutoUpdate.fullUrl(
-                        licenceKeys).openConnection();
-            client.setIfModifiedSince(
-                    new File(super.getTestDataFile()).lastModified());
-            if (client.getResponseCode() != 304) {
-                fail("304 response should be returned as file already exists.");
-            }
-        }
     }
     
     // Snippet Start

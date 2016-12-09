@@ -82,7 +82,7 @@ public class V32PremiumMemoryFileTest extends MemoryBase {
 
     @Test
     public void uniqueUserAgentsSingle() throws IOException {
-        super.userAgentsSingle(UserAgentGenerator.getUniqueUserAgents(), 30);
+        super.userAgentsSingle(UserAgentGenerator.getUniqueUserAgents(), 37);
     }
 
     @Test
@@ -92,7 +92,7 @@ public class V32PremiumMemoryFileTest extends MemoryBase {
 
     @Test
     public void randomUserAgentsSingle() throws IOException {
-        super.userAgentsSingle(UserAgentGenerator.getRandomUserAgents(), 31);
+        super.userAgentsSingle(UserAgentGenerator.getRandomUserAgents(), 34);
     }
 
     @Test
@@ -102,6 +102,6 @@ public class V32PremiumMemoryFileTest extends MemoryBase {
 
     @Test
     public void badUserAgentsSingle() throws IOException {
-        super.userAgentsSingle(UserAgentGenerator.getBadUserAgents(), 68);
+        super.userAgentsSingle(UserAgentGenerator.getBadUserAgents(), 72);
     }
 }

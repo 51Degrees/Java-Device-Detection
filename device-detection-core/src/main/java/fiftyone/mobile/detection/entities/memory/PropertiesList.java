@@ -48,7 +48,6 @@ public class PropertiesList extends MemoryFixedList<Property> {
     public PropertiesList(Dataset dataSet, BinaryReader reader, 
             BaseEntityFactory<Property> entityFactory) {
         super(dataSet, reader, entityFactory);
-        this.propertyNameDictionary = new HashMap<String, Property>();
     }
     
     /**
@@ -57,22 +56,25 @@ public class PropertiesList extends MemoryFixedList<Property> {
      * 
      * @return HashMap of Property name -> Property object entries.
      */
+    @SuppressWarnings("DoubleCheckedLocking")
     private Map<String, Property> getPropertyNameDictionary() 
             throws IOException {
-        Map<String, Property> result = propertyNameDictionary;
-        if (result.isEmpty()) {
+        Map<String, Property> localPropertyNameDictionary = propertyNameDictionary;
+        if (localPropertyNameDictionary == null) {
             synchronized(this) {
-                result = propertyNameDictionary;
-                if (result.isEmpty()) {
+                localPropertyNameDictionary = propertyNameDictionary;
+                if (localPropertyNameDictionary == null) {
+                    localPropertyNameDictionary = new HashMap<String, Property>();
                     for (Property p : array) {
-                        result.put(p.getName(), p);
+                        localPropertyNameDictionary.put(p.getName(), p);
                     }
+                    propertyNameDictionary = localPropertyNameDictionary;
                 }
             }
         }
-        return result;
+        return localPropertyNameDictionary;
     }
-    private final Map<String, Property> propertyNameDictionary;
+    private Map<String, Property> propertyNameDictionary;
     
     /**
      * Returns the property matching the name provided, or null if no such 

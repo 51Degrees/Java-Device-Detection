@@ -78,14 +78,14 @@ public class Value extends BaseEntity {
                 localName = name;
                 if (localName == null) {
                     name = localName = 
-                            getDataSet().strings.get(nameOffset).toString();
+                            getDataSet().strings.get(nameIndex).toString();
                 }
             }
         }
         return localName;
     }
     private volatile String name;
-    private final int nameOffset;
+    private final int nameIndex;
 
     /**
      * @return array containing the {@link Signature signatures} that the value 
@@ -196,12 +196,12 @@ public class Value extends BaseEntity {
     @SuppressWarnings("DoubleCheckedLocking")
     public String getDescription() throws IOException {
         String localDescription = description;
-        if (descriptionOffset >= 0 && localDescription == null) {
+        if (descriptionIndex >= 0 && localDescription == null) {
             synchronized (this) {
                 localDescription = description;
                 if (localDescription == null) {
                     description = localDescription = getDataSet().strings
-                            .get(descriptionOffset).toString();
+                            .get(descriptionIndex).toString();
                 }
             }
         }
@@ -209,7 +209,7 @@ public class Value extends BaseEntity {
     }
 
     private volatile String description;
-    private final int descriptionOffset;
+    private final int descriptionIndex;
 
     /**
      * @return A URL to more information about the value if present.
@@ -218,11 +218,11 @@ public class Value extends BaseEntity {
     @SuppressWarnings("DoubleCheckedLocking")
     public URL getUrl() throws IOException {
         URL localUrl = url;
-        if (urlOffset >= 0 && localUrl == null) {
+        if (urlIndex >= 0 && localUrl == null) {
             synchronized (this) {
                 localUrl = url;
                 if (localUrl == null) {
-                    url = localUrl = new URL(getDataSet().strings.get(urlOffset)
+                    url = localUrl = new URL(getDataSet().strings.get(urlIndex)
                             .toString());
                 }
             }
@@ -231,39 +231,22 @@ public class Value extends BaseEntity {
     }
 
     private volatile URL url;
-    private final int urlOffset;
+    private final int urlIndex;
 
     /**
      * Constructs a new instance of Value.
      *
      * @param dataSet the {@link Dataset} the value is contained within.
      * @param index the index in the data structure to the value.
-     * @param reader Reader connected to the source data structure and 
-     * positioned to start reading.
+     * @param reader Reader connected to the source data structure and positioned to start reading.
      */
     public Value(Dataset dataSet, int index, BinaryReader reader) {
         super(dataSet, index);
 
         this.propertyIndex = reader.readInt16();
-        this.nameOffset = reader.readInt32();
-        this.descriptionOffset = reader.readInt32();
-        this.urlOffset = reader.readInt32();
-    }
-    
-    /**
-     * Constructs a new instance of Value.
-     *
-     * @param dataSet the {@link Dataset} the value is contained within.
-     * @param property the dynamic value will relate to. 
-     * @param value string name of the dynamic value.
-     */
-    public Value(Dataset dataSet, Property property, String value) {
-        super (dataSet, -1);
-        this.propertyIndex = property.index;
-        this.name = value;
-        this.nameOffset = -1;
-        this.descriptionOffset = -1;
-        this.urlOffset = -1;
+        this.nameIndex = reader.readInt32();
+        this.descriptionIndex = reader.readInt32();
+        this.urlIndex = reader.readInt32();
     }
 
     /**
@@ -276,15 +259,15 @@ public class Value extends BaseEntity {
      * @throws IOException if there was a problem accessing data file.
      */
     public void init() throws IOException {
-        name = getDataSet().strings.get(nameOffset).toString();
+        name = getDataSet().strings.get(nameIndex).toString();
         property = getDataSet().getProperties().get(propertyIndex);
-        if (descriptionOffset >= 0) {
-            description = getDataSet().strings.get(descriptionOffset)
+        if (descriptionIndex >= 0) {
+            description = getDataSet().strings.get(descriptionIndex)
                     .toString();
         }
-        if (urlOffset >= 0) {
+        if (urlIndex >= 0) {
             try {
-                url = new URL(getDataSet().strings.get(urlOffset)
+                url = new URL(getDataSet().strings.get(urlIndex)
                         .toString());
             } catch (MalformedURLException e) {
                 url = null;
