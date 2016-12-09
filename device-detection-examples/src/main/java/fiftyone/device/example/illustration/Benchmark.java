@@ -63,7 +63,9 @@ public class Benchmark {
                             for (Property property : 
                                  bm.provider.dataSet.getProperties()) {
                                 Values values = match.getValues(property);
-                                workerCheckSum += values.toStringArray().length;
+                                if (values != null) {
+                                    workerCheckSum += values.toStringArray().length;
+                                }
                             }
                         }
                         workerCheckSum += match.getValues(isMobile).
@@ -249,7 +251,7 @@ public class Benchmark {
         String deviceDataFile,
         String userAgentFile,
         int numberOfThreads) throws IOException, InterruptedException {
-        
+        /**
         System.out.printf("Benchmarking stream memory dataset: %s\r\n", 
                 deviceDataFile);
         runBenchmark(
@@ -263,7 +265,7 @@ public class Benchmark {
                 StreamFactory.create(deviceDataFile, false),
                 userAgentFile,
                 numberOfThreads);
-       
+       **/
         System.out.printf("Benchmarking memory dataset: %s\r\n", 
                 deviceDataFile);
         runBenchmark(
