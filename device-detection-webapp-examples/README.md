@@ -10,9 +10,11 @@ As of 3.2.2.20-beta this package is available on Maven.
 <dependency>
     <groupId>com.51degrees</groupId>
     <artifactId>device-detection-webapp-examples</artifactId>
-    <version>3.2.2.20-beta</version>
+    <version>[see versions](http://search.maven.org/#search%7Cga%7C1%7Ca%3A%22device-detection-webapp-examples%22)</version>
 </dependency>
 ```
+
+The latest package can be found on the [MVN Repository](https://mvnrepository.com/artifact/com.51degrees/device-detection-webapp-examples/latest)
 
 **Summary**
 

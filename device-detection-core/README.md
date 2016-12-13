@@ -10,11 +10,13 @@ As of version 3.2.2.20-beta the Maven coordinates for the Core package have chan
 <dependency>
     <groupId>com.51degrees</groupId>
     <artifactId>device-detection-core</artifactId>
-    <version>3.2.2.20-beta</version>
+    <version>[see versions](http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.51degrees%22%20AND%20a%3A%22device-detection%22)</version>
 </dependency>
 ```
 
 Please remember to update your project POM files to reflect the change.
+
+The latest package can be found on the [MVN Repository(https://mvnrepository.com/artifact/com.51degrees/device-detection-core/latest)
 
 **Summary**
 
