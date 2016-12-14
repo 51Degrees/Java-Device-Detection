@@ -14,7 +14,7 @@ As of version 3.2.2.20-beta the Maven coordinates for the 51Degrees Java API hav
 <dependency>
     <groupId>com.51degrees</groupId>
     <artifactId>device-detection-core</artifactId>
-    <version>[see versions](http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.51degrees%22%20AND%20a%3A%22device-detection%22)</version>
+    <version>x.x.x.x</version>
 </dependency>
 ```
 
@@ -24,7 +24,7 @@ As of version 3.2.2.20-beta the Maven coordinates for the 51Degrees Java API hav
 <dependency>
     <groupId>com.51degrees</groupId>
     <artifactId>device-detection-webapp</artifactId>
-    <version>[see versions](http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.51degrees%22%20AND%20a%3A%22device-detection-webapp%22)</version>
+    <version>x.x.x.x</version>
 </dependency>
 ```
 
