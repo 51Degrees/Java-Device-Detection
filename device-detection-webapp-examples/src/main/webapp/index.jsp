@@ -4,6 +4,9 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>51Degrees Java Web Site</title>
+        <style type="text/css">
+            body {font-family: sans-serif;}
+        </style>
     </head>
     <body>
         <p><a href="Example">Example Page</a></p>
