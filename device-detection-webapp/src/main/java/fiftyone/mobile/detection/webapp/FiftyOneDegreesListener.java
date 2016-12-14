@@ -71,11 +71,12 @@ public class FiftyOneDegreesListener implements ServletContextListener {
             
             // Initialise the auto update service from 51Degrees if licence
             // keys are available.
-            List<String> keys = getLicenceKeys(contextEvent.getServletContext());
+            List<String> keys = getLicenceKeys(
+                    contextEvent.getServletContext());
             if (keys.size() > 0) {
                 autoUpdateTimer = new Timer();
                 autoUpdateTimer.schedule(new AutoUpdate(
-                        binaryFile.getAbsolutePath(), 
+                        binaryFile.getAbsolutePath(),
                         keys),
                         Constants.AUTO_UPDATE_DELAYED_START * 1000,
                         Constants.AUTO_UPDATE_WAIT * 1000);

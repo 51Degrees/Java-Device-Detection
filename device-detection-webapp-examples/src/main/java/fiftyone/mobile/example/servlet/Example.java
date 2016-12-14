@@ -33,6 +33,8 @@ import org.slf4j.LoggerFactory;
 
 import fiftyone.mobile.detection.entities.Property;
 import fiftyone.mobile.detection.entities.Property.PropertyValueType;
+import fiftyone.mobile.detection.entities.Value;
+import fiftyone.mobile.detection.entities.Values;
 import fiftyone.mobile.detection.webapp.BaseServlet;
 import java.util.ArrayList;
 
@@ -116,6 +118,11 @@ public class Example extends BaseServlet {
         out.println("<title>51Degrees Pattern Example Servlet</title>");
         out.println("<link rel=\"stylesheet\" type=\"text/css\" "
                 + "href=\""+CSS_INCLUDE+"\" class=\"inline\"/>");
+        
+        // Used to implement Client Side Overrides.
+        out.println("<script src=\"51D/core.js\" > </script>");
+        out.println("<script>" + "new FODPO();" + "</script>");
+        
         out.println("</head>");
         out.println("<body>");
         out.println("<div class=\"content\">");
@@ -265,14 +272,14 @@ public class Example extends BaseServlet {
             Property pr = super.getProvider(request).dataSet.get(property);
             if (pr != null) {
                 if (pr.valueType != PropertyValueType.JAVASCRIPT) {
-                    if (super.getResult(request).containsKey(pr.getName())) {
-                        String[] values = 
-                                super.getResult(request).get(pr.getName());
+                    Values values = 
+                            super.getMatch(request).getValues(pr.getName());
+                    if (values != null) {
                         int current = 0;
                         out.println("<td>");
-                        for (String value : values) {
+                        for (Value value : values.getAll()) {
                             out.println(value);
-                            if (current < values.length - 1) {
+                            if (current < values.count() - 1) {
                                 out.println(", ");
                             }
                             current++;
