@@ -20,6 +20,8 @@
  * ********************************************************************* */
 package fiftyone.mobile.detection.webapp;
 
+import fiftyone.mobile.detection.Match;
+import fiftyone.mobile.detection.entities.Values;
 import java.awt.image.BufferedImage;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
@@ -53,13 +55,6 @@ class ImageOptimizer {
     private final static Logger logger = LoggerFactory
         .getLogger(ImageOptimizer.class);
     
-    private static final String IMAGE_MAX_WIDTH = "IMAGE_MAX_WIDTH";
-    private static final String IMAGE_MAX_HEIGHT = "IMAGE_MAX_HEIGHT";
-    private static final String IMAGE_FACTOR = "IMAGE_FACTOR";
-    private static final String IMAGE_WIDTH_PARAM = "IMAGE_WIDTH_PARAM";
-    private static final String IMAGE_HEIGHT_PARAM = "IMAGE_HEIGHT_PARAM";
-    private static final String IMAGE_DEFAULT_AUTO = "IMAGE_DEFAULT_AUTO";
-    private static final String EMPTY_IMAGE_RESOURCE_NAME = "E.gif";
     private static final int DEFAULT_BUFFER_SIZE = 10240;
     private static final String AUTO_STRING = "auto";
     private static final String SCREEN_PIXEL_WIDTH = "ScreenPixelsWidth";
@@ -224,13 +219,14 @@ class ImageOptimizer {
                 request.getServletContext().getRealPath("WEB-INF"));
         
         if (size.width == 0 && size.height == 0) {
-            Map<String, String[]> results = WebProvider.getResult(request);
+            Match match = WebProvider.getMatch(request);
 
             // Get the screen width and height.
             try {
-                if (results.get(SCREEN_PIXEL_WIDTH) != null &&
-                    results.get(SCREEN_PIXEL_WIDTH).length > 0) {
-                    size.width = Integer.parseInt(results.get(SCREEN_PIXEL_WIDTH)[0]);
+                Values width = match.getValues(SCREEN_PIXEL_WIDTH);
+                if (width != null &&
+                    width.getIsDefault() == false) {
+                    size.width = (int)width.toDouble();
                 }
             }
             catch (NumberFormatException ex) {
@@ -238,10 +234,11 @@ class ImageOptimizer {
             }
             
             try {
-                if (results.get(SCREEN_PIXEL_HEIGHT) != null &&
-                    results.get(SCREEN_PIXEL_HEIGHT).length > 0) {
-                    size.height = Integer.parseInt(results.get(SCREEN_PIXEL_HEIGHT)[0]);
-                }
+                Values height = match.getValues(SCREEN_PIXEL_HEIGHT);
+                if (height != null &&
+                    height.getIsDefault() == false) {
+                    size.height = (int)height.toDouble();
+                }                
             }
             catch (NumberFormatException ex) {
                 size.height = 0;
@@ -449,8 +446,7 @@ class ImageOptimizer {
     
     private static void sendEmpty(HttpServletResponse response) 
             throws IOException {
-        InputStream empty = ImageOptimizer.class.getResourceAsStream(
-                EMPTY_IMAGE_RESOURCE_NAME);
+        InputStream empty = ImageOptimizer.class.getResourceAsStream("/E.gif");
         int length = 0;
         empty.mark(Integer.MAX_VALUE);
         while(empty.read() >= 0) {
@@ -509,12 +505,11 @@ class ImageOptimizer {
      * @throws IOException 
      */
     static String getJavascript(HttpServletRequest request) throws IOException {
-        Map<String, String[]> results = WebProvider.getResult(request);
-        if (results != null) {
-            String[] values = results.get("JavascriptImageOptimiser");
-            if (values != null &&
-                values.length == 1) {
-                return values[0];
+        Match match = WebProvider.getMatch(request);
+        if (match != null) {
+            Values values = match.getValues("JavascriptImageOptimiser");
+            if (values != null) {
+                return values.toString();
             }
         }
         return null;

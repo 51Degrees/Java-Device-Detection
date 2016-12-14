@@ -22,8 +22,10 @@
 package fiftyone.mobile.detection.webapp;
 
 import fiftyone.mobile.detection.Dataset;
+import fiftyone.mobile.detection.Match;
 import fiftyone.mobile.detection.entities.Property;
 import fiftyone.mobile.detection.entities.Property.PropertyValueType;
+import fiftyone.mobile.detection.entities.Values;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -81,19 +83,22 @@ class JavascriptProvider {
 
         StringBuilder javascript = new StringBuilder(
                 "// Copyright 51 Degrees Mobile Experts Limited\r\n");
-
         
         String fodIo = ImageOptimizer.getJavascript(request);
-        if(fodIo != null) {
+        if (fodIo != null) {
             javascript.append(fodIo);
         }
         String fodBw = Bandwidth.getJavascript(request);
-        if(fodBw != null) {
+        if (fodBw != null) {
             javascript.append(fodBw);
         }
-        String fodPo = ProfileOverride.getJavascript(request);
-        if(fodPo != null) {
+        String fodPo = ProfileOverride.getJavaScript(request);
+        if (fodPo != null) {
             javascript.append(fodPo);
+        }
+        String fodPvo = PropertyValueOverride.getJavascript(request);
+        if (fodPvo != null) {
+            javascript.append(fodPvo);
         }
         
         sendJavaScript(
@@ -118,14 +123,14 @@ class JavascriptProvider {
                 "// Copyright 51 Degrees Mobile Experts Limited\r\n");
         Dataset dataSet = 
                 WebProvider.getActiveProvider(request.getServletContext()).dataSet;
-        final Map<String, String[]> results = WebProvider.getResult(request);
+        final Match match = WebProvider.getMatch(request);
         List<String> features = new ArrayList<String>();
         
         String query = request.getQueryString();
         if (query == null) {
             for(Property property : dataSet.properties) {
                 if (property.valueType != PropertyValueType.JAVASCRIPT) {
-                    getFeatureJavaScript(results, features, property);
+                    getFeatureJavaScript(match, features, property);
                 }
             }
         }
@@ -136,7 +141,7 @@ class JavascriptProvider {
                 if (property.valueType != PropertyValueType.JAVASCRIPT) {
                     for(String name : requestedProperties) {
                         if (name.equalsIgnoreCase(property.getName())) {
-                            getFeatureJavaScript(results, features, property);
+                            getFeatureJavaScript(match, features, property);
                         }
                     }
                 }
@@ -155,16 +160,17 @@ class JavascriptProvider {
     }
 
     private static void getFeatureJavaScript(
-            Map<String, String[]> results, List<String> features, Property property) throws IOException {
-        String[] values = results.get(property.getName());
-        if (values != null && values.length > 0) {
+            Match match, List<String> features, Property property) 
+            throws IOException {
+        Values values = match.getValues(property.getName());
+        if (values != null) {
             switch (property.valueType) {
                 case BOOL:
                     try {
                         features.add(String.format(
                                 "%s:%s",
                                 property.getJavaScriptName(),
-                                Boolean.parseBoolean(values[0]) ? "true" : "false"));
+                                values.toBool() ? "true" : "false"));
                     } catch (NumberFormatException ex) {
                         // Ignore the property as there isn't a value that
                         // converts to a boolean.
@@ -175,7 +181,7 @@ class JavascriptProvider {
                         features.add(String.format(
                                 "%s:%d",
                                 property.getJavaScriptName(),
-                                Integer.parseInt(values[0])));
+                                (int)values.toDouble()));
                     } catch (NumberFormatException ex) {
                         // Ignore the property as there isn't a value that
                         // converts to a boolean.
@@ -186,7 +192,7 @@ class JavascriptProvider {
                         features.add(String.format(
                                 "%s:%s",
                                 property.getJavaScriptName(),
-                                Double.parseDouble(values[0])));
+                                values.toDouble()));
                     } catch (NumberFormatException ex) {
                         // Ignore the property as there isn't a value that
                         // converts to a boolean.
@@ -196,7 +202,7 @@ class JavascriptProvider {
                     features.add(String.format(
                             "%s:\"%s\"",
                             property.getJavaScriptName(),
-                            stringJoin(fiftyone.properties.DetectionConstants.VALUE_SEPARATOR, values)));
+                            values.toString()));
                     break;
             }
         }
