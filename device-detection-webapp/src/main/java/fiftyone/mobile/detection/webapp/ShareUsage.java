@@ -38,6 +38,7 @@ import java.util.HashMap;
 import java.util.TimeZone;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.zip.GZIPOutputStream;
+import javax.net.ssl.SSLHandshakeException;
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -158,6 +159,16 @@ class ShareUsage implements Runnable, Closeable {
                                 "generated UnknownHostException exception.",
                                 newDevicesUrl));
                         stop = true;
+                        continue;
+                    } catch (SSLHandshakeException ex) {
+                        logger.debug(String.format(
+                                "Stopping usage sharing as a secure " +
+                                "connection to remote '%s' could not be " +
+                                "establilshed and threw error '%s'",
+                                newDevicesUrl,
+                                ex.getCause().toString()));
+                        stop = true;
+                        continue;
                     }
 
                     // Get the response and record the content if it's valid. If
