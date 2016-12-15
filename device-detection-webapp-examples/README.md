@@ -14,7 +14,7 @@ As of 3.2.2.20-beta this package is available on Maven.
 </dependency>
 ```
 
-The latest package can be found on the [MVN Repository](https://mvnrepository.com/artifact/com.51degrees/device-detection-webapp-examples/latest)
+The latest package can be found on the [Maven Central Repository](http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.51degrees%22%20AND%20a%3A%22device-detection-webapp-examples%22)
 
 **Summary**
 

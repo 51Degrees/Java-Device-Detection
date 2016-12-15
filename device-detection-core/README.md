@@ -16,7 +16,7 @@ As of version 3.2.2.20-beta the Maven coordinates for the Core package have chan
 
 Please remember to update your project POM files to reflect the change.
 
-The latest package can be found on the [MVN Repository(https://mvnrepository.com/artifact/com.51degrees/device-detection-core/latest)
+The latest package can be found on the [Maven Central Repository](http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.51degrees%22%20AND%20a%3A%22device-detection-core%22)
 
 **Summary**
 
