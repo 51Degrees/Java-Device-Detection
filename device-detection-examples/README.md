@@ -10,9 +10,11 @@ As of 3.2.2.20-beta this package is available on Maven.
 <dependency>
     <groupId>com.51degrees</groupId>
     <artifactId>device-detection-examples</artifactId>
-    <version>3.2.2.20-beta</version>
+    <version>x.x.x.x</version>
 </dependency>
 ```
+
+The latest package can be found on the [Maven Central Repository](http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.51degrees%22%20AND%20a%3A%22device-detection-examples%22)
 
 **Summary**
 

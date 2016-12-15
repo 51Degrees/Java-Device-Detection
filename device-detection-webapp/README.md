@@ -10,11 +10,13 @@ As of version 3.2.2.20-beta the Maven coordinates for the WebApp package have ch
 <dependency>
     <groupId>com.51degrees</groupId>
     <artifactId>device-detection-webapp</artifactId>
-    <version>3.2.2.20-beta</version>
+    <version>x.x.x.x</version>
 </dependency>
 ```
 
 Please remember to update your project POM files to reflect the change.
+
+The latest package can be found on the [Maven Central Repository](http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.51degrees%22%20AND%20a%3A%22device-detection-webapp%22)
 
 **Summary**
 
