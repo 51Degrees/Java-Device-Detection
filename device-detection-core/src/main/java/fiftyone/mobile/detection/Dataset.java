@@ -255,7 +255,7 @@ public class Dataset implements Closeable {
      * a match.
      */
     public int xmlBufferLength;
-   
+    
     /**
      * Constructs a new data set ready to have lists of data assigned to it.
      * 
@@ -573,10 +573,7 @@ public class Dataset implements Closeable {
      * @throws IOException
      * @throws IllegalArgumentException if the property does not exist.
      */
-    public List<Profile> findProfiles(
-            String propertyName, 
-            String valueName, 
-            List<Profile> filterProfiles) throws IOException {
+    public List<Profile> findProfiles(String propertyName, String valueName, List<Profile> filterProfiles) throws IOException {
 
         Property property =  this.properties.get(propertyName);
         if (property == null) {
@@ -602,10 +599,7 @@ public class Dataset implements Closeable {
      * order.
      * @throws IOException
      */
-    public List<Profile> findProfiles(
-            Property property, 
-            String valueName, 
-            List<Profile> filterProfiles) throws IOException {
+    public List<Profile> findProfiles(Property property, String valueName, List<Profile> filterProfiles) throws IOException {
         return property.findProfiles(valueName, filterProfiles);
     }
 
@@ -623,6 +617,7 @@ public class Dataset implements Closeable {
         return components;
     }
     
+
     /**
      * Returns an iterable list of maps contained within the data file.
      * May contain multiple maps with the same name.
