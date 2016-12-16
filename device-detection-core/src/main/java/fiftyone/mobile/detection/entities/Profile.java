@@ -212,13 +212,16 @@ public abstract class Profile extends BaseEntity implements Comparable<Profile> 
      * @throws java.io.IOException if there was a problem accessing data file.
      */
     public Values getValues(Property property) throws IOException {
-        Values localValues;
+        Values localValues, newValues;
         localValues = propertyIndexToValues.get(property.getIndex());
         if (localValues == null) {
-            propertyIndexToValues.putIfAbsent(
+            newValues = getPropertyValues(property);
+            localValues = propertyIndexToValues.putIfAbsent(
                     property.getIndex(), 
-                    getPropertyValues(property));
-            localValues = propertyIndexToValues.get(property.getIndex());
+                    newValues);
+            if (localValues == null) {
+                localValues = newValues;
+            }
         }
         return localValues;
     }
