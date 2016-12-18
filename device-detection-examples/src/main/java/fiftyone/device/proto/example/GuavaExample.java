@@ -27,6 +27,7 @@ class GuavaExample {
         com.google.common.cache.Cache uaCache = CacheBuilder.newBuilder()
                 .initialCapacity(1000)
                 .maximumSize(100000)
+                .concurrencyLevel(5)
                 .build();
 
         com.google.common.cache.Cache nodeCache = CacheBuilder.newBuilder()
