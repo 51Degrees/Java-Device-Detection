@@ -20,6 +20,8 @@
  * ********************************************************************* */
 package fiftyone.mobile.detection.webapp;
 
+import fiftyone.mobile.detection.Match;
+import fiftyone.mobile.detection.entities.Values;
 import java.io.IOException;
 import java.net.URLDecoder;
 import java.util.Map;
@@ -126,12 +128,11 @@ class Bandwidth {
      * @throws IOException if there was a problem accessing data file.
      */
     static String getJavascript(HttpServletRequest request) throws IOException {
-        Map<String, String[]> results = WebProvider.getResult(request);
-        if (results != null) {
-            String[] values = results.get("JavascriptBandwidth");
-            if (values != null &&
-                values.length == 1) {
-                return values[0];
+        Match match = WebProvider.getMatch(request);
+        if (match != null) {
+            Values values = match.getValues("JavascriptBandwidth");
+            if (values != null) {
+                return values.toString();
             }
         }
         return null;

@@ -221,7 +221,7 @@ public class Provider {
      */
     public Match match(final Map<String, String> headers, Match match) 
             throws IOException {
-        
+        match.reset();
         if (headers == null || headers.isEmpty()) {
             // Empty headers all default match result.
             Controller.matchDefault(match.state);
@@ -265,6 +265,10 @@ public class Provider {
                 match.state.setSignature(null);
                 match.state.setTargetUserAgent(null);
             }
+
+            // If the Cookie header is present then record this as it maybe
+            // needed when a Property Value Override property is requested.
+            match.cookie = headers.get("Cookie");
         }
         return match;
     }

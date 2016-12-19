@@ -102,6 +102,16 @@ public class Match {
     final MatchState state;
     
     /**
+     * A string that contains the cookie header for the request.
+     */
+    public String cookie;
+    
+    /**
+     * Map of property names to dynamic values populated from the cookie.
+     */
+    private Map<String, String> propertyValueOverridesCookies;
+    
+    /**
      * Sets the result of the match explicitly.
      * @param value of the match result to set.
      */
@@ -357,21 +367,17 @@ public class Match {
         Map<String, String[]> results = new HashMap<String, String[]>();
 
         // Add the properties and values first.
-        for (Profile profile : getProfiles()) {
-            if (profile != null) {
-                for (Property property : profile.getProperties()) {
-                    Value[] values = profile.getValues();
-                    List<String> strings = new ArrayList<String>();
-                    for (Value value : values) {
-                        if (value.getProperty() == property) {
-                            strings.add(value.getName());
-                        }
-                    }
-                    results.put(
-                        property.getName(),
-                        strings.toArray(new String[strings.size()]));
+        for (Property property : getDataSet().getProperties()) {
+            Values values = getValues(property);
+            List<String> strings = new ArrayList<String>();
+            for (Value value : values.getAll()) {
+                if (value.getProperty() == property) {
+                    strings.add(value.getName());
                 }
             }
+            results.put(
+                property.getName(),
+                strings.toArray(new String[strings.size()]));
         }
 
         results.put(DetectionConstants.DIFFERENCE_PROPERTY,
@@ -391,7 +397,11 @@ public class Match {
      * Gets the {@link Values} associated with the property name using the 
      * profiles found by the match. If matched profiles don't contain a value 
      * then the default profiles for each of the components are also checked.
-     *
+     * 
+     * If a value is provided via the property value override functionality
+     * then this will be returned in place of the static value from the 
+     * dataset.
+     * 
      * @param property The property whose values are required.
      * @return Array of the values associated with the property, or null if the
      * property does not exist.
@@ -401,19 +411,38 @@ public class Match {
         Values value = null;
 
         if (property != null) {
-            // Get the property value from the profile returned
-            // from the match.
-            for (Profile profile : getProfiles()) {
-                if (profile.getComponent().getComponentId()
-                        == property.getComponent().getComponentId()) {
-                    value = profile.getValues(property);
-                    break;
+            // Create a dynamic values instance for this value which does
+            // not reference a static value index in the dataset.
+            if (this.cookie != null) {
+                String cookieValue = getPropertyValueOverridesCookies().get(
+                        property.getName());
+                if (cookieValue != null) {
+                    // Create a dynamic values instance for this value which 
+                    // does not reference a static value index in the dataset.
+                    value = new Values(property, new Value[] { new Value(
+                        this.getDataSet(),
+                        property,
+                        cookieValue) });
                 }
             }
 
-            // If the value has not been found use the default profile.
             if (value == null) {
-                value = property.getComponent().getDefaultProfile().getValues(property);
+                // Get the property value from the profile returned
+                // from the match.
+                for (Profile profile : getProfiles()) {
+                    if (profile.getComponent().getComponentId()
+                            == property.getComponent().getComponentId()) {
+                        value = profile.getValues(property);
+                        break;
+                    }
+                }
+
+                // If the value has not been found use the default profile.
+                if (value == null) {
+                    value = property.getComponent().
+                            getDefaultProfile().
+                            getValues(property);
+                }
             }
         }
 
@@ -432,7 +461,46 @@ public class Match {
      */
     public Values getValues(String propertyName) throws IOException {
         return getValues(getDataSet().get(propertyName));
-    }    
+    }
+    
+    @SuppressWarnings("DoubleCheckedLocking")
+    private Map<String,String> getPropertyValueOverridesCookies()
+    {
+        if (propertyValueOverridesCookies == null) {
+            synchronized(this) {
+                if (propertyValueOverridesCookies == null) {
+                    Map<String, String> tempMap = new HashMap<String, String>();
+                    try {
+                        String prefix = DetectionConstants.
+                                    PROPERTY_VALUE_OVERRIDE_COOKIE_PREFIX;
+                        String[] pairs = cookie.split(";");
+
+                        for (String pair : pairs) {
+                            pair = pair.trim();
+                            if (pair.startsWith(prefix)) {
+                                int equalsIndex = pair.indexOf("=");
+                                if (equalsIndex > prefix.length()) {
+                                    String key = pair.substring(
+                                            prefix.length(), 
+                                            equalsIndex);
+                                    String value = pair.substring(equalsIndex + 1);
+                                    tempMap.put(key, value);
+                                }
+                            }
+                        }
+                    }
+                    catch (Exception ex) {
+                        // There is no opportunity to throw an exception as the
+                        // method is core and is not essential to processing.
+                        // When a logger is added to core an entry should be
+                        // written to the log file.
+                    }
+                    propertyValueOverridesCookies = tempMap;
+                }
+            }
+        }
+        return propertyValueOverridesCookies;
+    }
 
     /**
      * Constructs a new detection match ready to be used.
@@ -466,6 +534,8 @@ public class Match {
     void reset() {
         this.state.reset();
         this.overriddenProfiles = null;
+        this.cookie = null;
+        this.propertyValueOverridesCookies = null;
     }
     
     /**
