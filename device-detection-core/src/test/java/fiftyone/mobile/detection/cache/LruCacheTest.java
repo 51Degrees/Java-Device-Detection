@@ -21,7 +21,7 @@
 package fiftyone.mobile.detection.cache;
 
 import fiftyone.mobile.detection.DetectionTestSupport;
-import fiftyone.mobile.detection.cache.Cache.KeyValuePair;
+import fiftyone.mobile.detection.cache.LruCache.KeyValuePair;
 import fiftyone.mobile.detection.test.TestType;
 
 import java.io.IOException;
@@ -40,9 +40,9 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 @Category(TestType.TypeUnit.class)
-public class CacheTest extends DetectionTestSupport {
+public class LruCacheTest extends DetectionTestSupport {
 
-    public class CacheLoader<K, V> implements ICacheLoader<K, V> {
+    public class CacheLoader<K, V> implements IValueLoader<K, V> {
 
         /**
          * Number of times items have been fetched from the source.
@@ -59,7 +59,7 @@ public class CacheTest extends DetectionTestSupport {
         }
 
         @Override
-        public V fetch(K key) throws IOException {
+        public V load(K key) throws IOException {
             fetches.incrementAndGet();
             return source.get(key);
         }
@@ -71,8 +71,8 @@ public class CacheTest extends DetectionTestSupport {
         HashMap<Integer, String> source = getNumericKeys(1);
         CacheLoader<Integer, String> loader =
                 new CacheLoader<Integer, String>(source);
-        Cache<Integer, String> cache =
-                new Cache<Integer, String>(source.size(), loader);
+        LruCache<Integer, String> cache =
+                new LruCache<Integer, String>(source.size(), loader);
         assertTrue(cache.get(0).equals(source.get(0)));
         assertTrue(cache.getCacheMisses() == 1);
     }
@@ -82,7 +82,7 @@ public class CacheTest extends DetectionTestSupport {
         HashMap<Integer, String> source = getNumericKeys(1);
         CacheLoader<Integer, String> loader =
                 new CacheLoader<Integer, String>(source);
-        Cache<Integer, String> cache = new Cache<Integer, String>(
+        LruCache<Integer, String> cache = new LruCache<Integer, String>(
                 source.size(),
                 loader);
         try {
@@ -107,8 +107,8 @@ public class CacheTest extends DetectionTestSupport {
         HashMap<String, String> source = getRandomStringKeys(1000000);
         CacheLoader<String, String> loader =
                 new CacheLoader<String, String>(source);
-        Cache<String, String> cache =
-                new Cache<String, String>(source.size(), loader);
+        LruCache<String, String> cache =
+                new LruCache<String, String>(source.size(), loader);
         long fill = processSource(source, cache);
         long retrieve = processSource(source, cache);
         logger.info(
@@ -130,7 +130,7 @@ public class CacheTest extends DetectionTestSupport {
      */
     private long processSource(
             HashMap<String, String> source,
-            Cache<String, String> cache) throws IOException {
+            LruCache<String, String> cache) throws IOException {
         long start = System.currentTimeMillis();
         for (String key : source.keySet()) {
             assertTrue(cache.get(key).equals(source.get(key)));
@@ -144,7 +144,7 @@ public class CacheTest extends DetectionTestSupport {
      */
     private <K, V> void validateCache(HashMap<K, V> source) throws IOException {
         CacheLoader<K, V> loader = new CacheLoader<K, V>(source);
-        Cache<K, V> cache = new Cache<K, V>(source.size() / 2, loader);
+        LruCache<K, V> cache = new LruCache<K, V>(source.size() / 2, loader);
         List<K> keysFront = new ArrayList<K>();
         List<K> keysBack = new ArrayList<K>();
 
@@ -161,7 +161,7 @@ public class CacheTest extends DetectionTestSupport {
 
         // Fill the cache with half of the values.
         for (K key : keysFront) {
-            Cache.Node expectedLast = cache.linkedList.last;
+            LruCache.Node expectedLast = cache.linkedList.last;
             assertTrue(cache.get(key) == source.get(key));
             KeyValuePair kvp = (KeyValuePair)cache.linkedList.first.item;
             assertTrue(kvp.key == key);
@@ -174,7 +174,7 @@ public class CacheTest extends DetectionTestSupport {
 
         // Check all the values are returned from the cache.
         for (K key : keysFront) {
-            Cache.Node expectedLast = cache.linkedList.last.previous;
+            LruCache.Node expectedLast = cache.linkedList.last.previous;
             assertTrue(cache.get(key) == source.get(key));
             KeyValuePair kvp = (KeyValuePair)cache.linkedList.first.item;
             assertTrue(kvp.key == key);
@@ -188,7 +188,7 @@ public class CacheTest extends DetectionTestSupport {
         // Now use the 2nd half of the source to push out all 
         // the first half.
         for (K key : keysBack) {
-            Cache.Node expectedLast = cache.linkedList.last.previous;
+            LruCache.Node expectedLast = cache.linkedList.last.previous;
             assertTrue(cache.get(key) == source.get(key));
             KeyValuePair kvp = (KeyValuePair)cache.linkedList.first.item;
             assertTrue(kvp.key == key);
@@ -202,7 +202,7 @@ public class CacheTest extends DetectionTestSupport {
         // Still using the 2nd half of the source retrieve all
         // the values again. They should come from the cache.
         for (K key : keysBack) {
-            Cache.Node expectedLast = cache.linkedList.last.previous;
+            LruCache.Node expectedLast = cache.linkedList.last.previous;
             assertTrue(cache.get(key) == source.get(key));
             KeyValuePair kvp = (KeyValuePair)cache.linkedList.first.item;
             assertTrue(kvp.key == key);
@@ -216,7 +216,7 @@ public class CacheTest extends DetectionTestSupport {
         // Check that the 1st half of the source is now fetched
         // again and are not already in the cache.
         for (K key : keysFront) {
-            Cache.Node expectedLast = cache.linkedList.last.previous;
+            LruCache.Node expectedLast = cache.linkedList.last.previous;
             assertTrue(cache.get(key) == source.get(key));
             KeyValuePair kvp = (KeyValuePair)cache.linkedList.first.item;
             assertTrue(kvp.key == key);
@@ -233,7 +233,7 @@ public class CacheTest extends DetectionTestSupport {
         random.addAll(keysFront);
         Collections.shuffle(random, new Random(System.nanoTime()));
         for (K key : random) {
-            Cache.Node expectedLast = cache.linkedList.last;
+            LruCache.Node expectedLast = cache.linkedList.last;
             KeyValuePair kvpExpectedLast = (KeyValuePair)expectedLast.item;
             assertTrue(cache.get(key) == source.get(key));
             KeyValuePair kvp = (KeyValuePair)cache.linkedList.first.item;

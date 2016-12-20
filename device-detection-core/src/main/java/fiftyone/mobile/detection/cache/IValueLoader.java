@@ -23,21 +23,20 @@ package fiftyone.mobile.detection.cache;
 import java.io.IOException;
 
 /**
- * Interface provides methods for load new items into cache if the item does not 
- * already exist and to provide results.
+ * Interface provides methods to load a value for a key
  * <p>
  * This method should not be called as it is part of the internal logic.
  * 
- * @param <K> Type of the cache key
- * @param <V> Type of the cached value
+ * @param <K> Type of key
+ * @param <V> Type of value
  */
-public interface ICacheLoader<K,V> {
+public interface IValueLoader<K,V> {
     /**
-     * Returns the value associated with the key from the source.
+     * Returns the value associated with the key.
      * 
      * @param key for the value required
      * @return Value associated with the key
-     * @throws java.io.IOException if there was a problem accessing data file.
+     * @throws java.io.IOException if there was an IOException in the course of loading.
      */
-    abstract V fetch(K key) throws IOException;
+    abstract V load(K key) throws IOException;
 }

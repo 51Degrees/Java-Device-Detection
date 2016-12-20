@@ -56,7 +56,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * @param <K> Key for the cache items.
  * @param <V> Value for the cache items.
  */
-public class Cache<K, V> {
+public class LruCache<K, V>  implements IUaMatchCache<K,V> {
    
     /**
      * A key value pair for cached items.
@@ -168,7 +168,7 @@ public class Cache<K, V> {
     /**
      * Loader used to fetch items not in the cache.
      */
-    private final ICacheLoader<K, V> loader;
+    private final IValueLoader<K, V> loader;
 
     /**
      * Hash map of keys to item values.
@@ -185,7 +185,7 @@ public class Cache<K, V> {
      * Constructs a new instance of the cache.
      * @param cacheSize The number of items to store in the cache.
      */
-    public Cache(int cacheSize) {
+    public LruCache(int cacheSize) {
         this(cacheSize, null);
     }
 
@@ -195,7 +195,7 @@ public class Cache<K, V> {
      * @param cacheSize The number of items to store in the cache.
      * @param loader used to fetch items not in the cache.
      */    
-    public Cache(int cacheSize, ICacheLoader<K,V> loader) {
+    public LruCache(int cacheSize, IValueLoader<K,V> loader) {
         this.cacheSize = new AtomicInteger(cacheSize);
         this.loader = loader;
         this.hashMap = new ConcurrentHashMap<K,Node>(cacheSize);
@@ -207,6 +207,7 @@ public class Cache<K, V> {
      *
      * @return size of the cache.
      */
+    @Override
     public int getCacheSize() { return cacheSize.get(); }
 
     /**
@@ -224,6 +225,7 @@ public class Cache<K, V> {
     /**
      * @return number of cache misses.
      */
+    @Override
     public long getCacheMisses() {
         return misses.get();
     }
@@ -232,6 +234,7 @@ public class Cache<K, V> {
     /**
      * @return number of requests received by the cache.
      */
+    @Override
     public long getCacheRequests() {
         return requests.get();
     }
@@ -240,6 +243,7 @@ public class Cache<K, V> {
     /**
      * @return the percentage of times cache request did not return a result.
      */
+    @Override
     public double getPercentageMisses() {
         return misses.doubleValue()/ requests.doubleValue();
     }
@@ -253,8 +257,13 @@ public class Cache<K, V> {
      * @return An instance of the value associated with the key.
      * @throws java.io.IOException if there was a problem accessing data file.
      */    
-    public V get(K key) throws IOException {
-        return get(key, loader);
+    @Override
+    public V get(K key) {
+        try {
+            return get(key, loader);
+        } catch (IOException e) {
+            throw new IllegalStateException(e);
+        }
     }
     
     /**
@@ -267,7 +276,7 @@ public class Cache<K, V> {
      * @return An instance of the value associated with the key
      * @throws java.io.IOException if there was a problem accessing data file.
      */
-    public V get(K key, ICacheLoader<K,V> loader) throws IOException {
+    public V get(K key, IValueLoader<K, V> loader) throws IOException {
         boolean added = false;
         requests.incrementAndGet();
         Node node = hashMap.get(key);
@@ -275,7 +284,7 @@ public class Cache<K, V> {
             // Get the item fresh from the loader before trying
             // to write the item to the cache.
             misses.incrementAndGet();
-            V value = loader.fetch(key);
+            V value = loader.load(key);
             Node newItem = new Node(new KeyValuePair(key, value));
 
             synchronized(writeLock) {
@@ -333,6 +342,7 @@ public class Cache<K, V> {
     /**
      * Resets the 'stats' for the cache.
      */
+    @Override
     public void resetCache()
     {
         this.hashMap.clear();

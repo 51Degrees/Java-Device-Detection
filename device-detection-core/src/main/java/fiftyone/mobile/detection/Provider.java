@@ -20,7 +20,9 @@
  * ********************************************************************* */
 package fiftyone.mobile.detection;
 
-import fiftyone.mobile.detection.cache.Cache;
+import fiftyone.mobile.detection.cache.ICache;
+import fiftyone.mobile.detection.cache.IUaMatchCache;
+import fiftyone.mobile.detection.cache.LruCache;
 import fiftyone.properties.MatchMethods;
 import fiftyone.mobile.detection.entities.Component;
 import fiftyone.mobile.detection.entities.Profile;
@@ -67,7 +69,7 @@ public class Provider {
     /**
      * A cache for User-Agents if required.
      */
-    private Cache<String, MatchResult> userAgentCache = null;
+    private IUaMatchCache<String, MatchResult> userAgentCache = null;
 
     /**
      * True if the detection time should be recorded in the Elapsed property
@@ -142,7 +144,7 @@ public class Provider {
         this.methodCounts[MatchMethods.NONE.ordinal()] = new AtomicLong();
         
         userAgentCache = 
-                cacheSize > 0 ? new Cache<String, MatchResult>(cacheSize) : null;
+                cacheSize > 0 ? new LruCache<String, MatchResult>(cacheSize) : null;
     }
 
     /**
@@ -521,7 +523,7 @@ public class Provider {
      * ordered in preferred sequence such that the first item is the most 
      * preferred.
      * 
-     * @param masterState current working state of the matching process
+     * @param state current working state of the matching process
      * @param matches map of HTTP header names and match states
      * @param component component to be retrieved
      * @return Profile for the component provided from the matches for each 
