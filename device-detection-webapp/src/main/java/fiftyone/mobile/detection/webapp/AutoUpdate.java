@@ -68,7 +68,7 @@ public class AutoUpdate extends TimerTask {
      */
     @Override
     public void run() {
-        //if (shouldUpdate()) {
+        if (shouldUpdate()) {
             try {
                 AutoUpdateStatus result = 
                     fiftyone.mobile.detection.AutoUpdate.update(
