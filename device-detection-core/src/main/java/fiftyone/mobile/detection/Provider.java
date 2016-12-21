@@ -120,7 +120,16 @@ public class Provider {
      * @param cacheSize to be used with the provider, 0 for no cache
      */
     public Provider(Dataset dataSet, int cacheSize) {
-        this(dataSet, false, cacheSize);
+        this(dataSet, false, cacheSize > 0 ? new LruCache<String, MatchResult>(cacheSize) : null);
+    }
+
+    /**
+     * Constructs a new Provider using the data set, with a cache provided by the caller
+     * @param dataSet to use for device detection
+     * @param cache to be used with the provider, null for no cache
+     */
+    public Provider(Dataset dataSet, IUaMatchCache cache) {
+        this(dataSet, false, cache);
     }
 
     /**
@@ -128,9 +137,9 @@ public class Provider {
      * provided, and recording detection time if flag set.
      * @param dataSet to use for device detection
      * @param recordDetectionTime true if the detection time should be recorded
-     * @param cacheSize to be used with the provider, 0 for no cache
+     * @param cache to be used with the provider - null for no cache
      */
-    Provider(Dataset dataSet, boolean recordDetectionTime, int cacheSize) {
+    Provider(Dataset dataSet, boolean recordDetectionTime, IUaMatchCache cache) {
         this.recordDetectionTime = recordDetectionTime;
         this.dataSet = dataSet;
 
@@ -143,8 +152,7 @@ public class Provider {
         this.methodCounts[MatchMethods.EXACT.ordinal()] = new AtomicLong();
         this.methodCounts[MatchMethods.NONE.ordinal()] = new AtomicLong();
         
-        userAgentCache = 
-                cacheSize > 0 ? new LruCache<String, MatchResult>(cacheSize) : null;
+        userAgentCache = cache;
     }
 
     /**
