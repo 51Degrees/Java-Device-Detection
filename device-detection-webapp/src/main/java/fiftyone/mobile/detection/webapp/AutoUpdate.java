@@ -144,7 +144,7 @@ public class AutoUpdate extends TimerTask {
                         masterFilePath),
                         ex);
             }
-        //}
+        }
     }
 
     /**
