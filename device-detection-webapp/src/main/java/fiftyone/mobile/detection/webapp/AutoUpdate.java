@@ -22,7 +22,6 @@ package fiftyone.mobile.detection.webapp;
 
 import fiftyone.mobile.detection.AutoUpdateStatus;
 import fiftyone.mobile.detection.Dataset;
-import fiftyone.mobile.detection.factories.StreamFactory;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -72,9 +71,9 @@ public class AutoUpdate extends TimerTask {
         if (shouldUpdate()) {
             try {
                 AutoUpdateStatus result = 
-                        fiftyone.mobile.detection.AutoUpdate.update(
-                                                            licenseKeys, 
-                                                            masterFilePath);
+                    fiftyone.mobile.detection.AutoUpdate.update(
+                        licenseKeys, 
+                        masterFilePath);
                 switch(result) {
                     case AUTO_UPDATE_SUCCESS:
                         SimpleDateFormat dateFormat = 
@@ -89,6 +88,51 @@ public class AutoUpdate extends TimerTask {
                                 dateStr));
                         WebProvider.refresh();
                         break;
+                    case AUTO_UPDATE_HTTPS_ERR:
+                        logger.info(
+                                "An error occurred fetching the data file. " +
+                                "Try again incase the error is temporary, or " +
+                                "validate licence key and network " +
+                                "configuration.");
+                        break;
+                    case AUTO_UPDATE_NOT_NEEDED:
+                        logger.info(
+                                "The data file is current and does not need " +
+                                "to be updated.");
+                        break;
+                    case AUTO_UPDATE_IN_PROGRESS:
+                        logger.info(
+                                "Another update operation is in progress.");
+                        break;
+                    case AUTO_UPDATE_MASTER_FILE_CANT_RENAME:
+                        logger.info(
+                                "There is a new data file, but the master " +
+                                "data file is locked and can't be replaced. " +
+                                "Check file system permissions.");
+                        break;
+                    case AUTO_UPDATE_ERR_429_TOO_MANY_ATTEMPTS:
+                        logger.info(
+                                "Too many attempts have been made to " +
+                                "download a data file from this public IP " +
+                                "address or with this licence key. Try again " +
+                                "after a period of time.");
+                        break;
+                    case AUTO_UPDATE_ERR_403_FORBIDDEN:
+                        logger.info(
+                                "Data not downloaded. The licence key is not " +
+                                "valid.");
+                        break;
+                    case AUTO_UPDATE_ERR_MD5_VALIDATION_FAILED:
+                        logger.info(
+                                "Data was downloaded but the MD5 check " +
+                                "failed.");
+                        break;
+                    case AUTO_UPDATE_NEW_FILE_CANT_RENAME:
+                        logger.info(
+                                "A data file was downloaded but could not be " +
+                                "moved to become the new master file. Check " +
+                                "file system permissions.");
+                        break;
                     default:
                         logger.info("Could not update 51Degrees data file "
                                 + "reason: " + result);
@@ -96,32 +140,55 @@ public class AutoUpdate extends TimerTask {
                 }
             } catch (Exception ex) {
                 logger.warn(String.format(
-                        "Exception auto updating file '%s'",
+                        "Exception auto updating file '%s'.",
                         masterFilePath),
                         ex);
             }
         }
     }
 
+    /**
+     * Determines if 51Degrees should be queried to determine if a new data file
+     * might be present.
+     * @return True if the data file needs to be updated, otherwise false.
+     * @throws IOException 
+     */
     private boolean shouldUpdate() {
-        // check if file exists
         boolean shouldUpdate = true;
         final File masterFile = new File(masterFilePath);
         // If no file exists an update is definitely required.
-        if (masterFile.exists()) {
-            try {
-                Dataset dataset = StreamFactory.create(masterFilePath, false);
-                // Check if the current data set needs an update. Lite data always
-                // needs an update, non lite data only needs an update if the
-                // nextUpdate member has expired.
-                if(dataset.getName().equals("Lite") && new Date().before(dataset.nextUpdate)) {
-                    shouldUpdate = false;
+        try {
+            if (masterFile.exists()) {
+                Dataset dataset = null;
+                try {
+                    dataset = fiftyone.mobile.detection.AutoUpdate.
+                            getDataSetWithHeaderLoaded(masterFile);
+                    // Don't perform the update if the next update date from 
+                    // the current data file is in the future.
+                    if(new Date().before(dataset.nextUpdate)) {
+                        shouldUpdate = false;
+                    }
+                } catch (IOException ex) {
+                    // data file is probably corrupt, allow update
+                    logger.debug(String.format(
+                        "Exception checking file '%s'.",
+                         masterFile), ex);
                 }
-            } catch (IOException ex) {
-                // data file is probably corrupt, allow update
+                finally {
+                    if (dataset != null) {
+                        dataset.close();
+                    }
+                }
             }
         }
-
+        catch (IOException ex) {
+            logger.warn(String.format(
+                "Exception checking update status of current date file '%s'",
+                masterFile), ex);
+            // Don't update as something has gone wrong with the file checking
+            // process which might have more serious consequences.
+            shouldUpdate = false;
+        }
         return shouldUpdate;
     }
 }

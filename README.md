@@ -14,7 +14,7 @@ As of version 3.2.2.20-beta the Maven coordinates for the 51Degrees Java API hav
 <dependency>
     <groupId>com.51degrees</groupId>
     <artifactId>device-detection-core</artifactId>
-    <version>3.2.2.20-beta</version>
+    <version>x.x.x.x</version>
 </dependency>
 ```
 
@@ -24,11 +24,11 @@ As of version 3.2.2.20-beta the Maven coordinates for the 51Degrees Java API hav
 <dependency>
     <groupId>com.51degrees</groupId>
     <artifactId>device-detection-webapp</artifactId>
-    <version>3.2.2.20-beta</version>
+    <version>x.x.x.x</version>
 </dependency>
 ```
 
-You can also get a package with examples and a package with WebApp example servlets. For more details see [Maven Central Repository](http://search.maven.org/#search|ga|1|g%3A%22com.51degrees%22).
+You can also get a package with examples and a package with WebApp example servlets. For more details and the latest packages see [Maven Central Repository](http://search.maven.org/#search|ga|1|g%3A%22com.51degrees%22).
 
 **Server Side and Offline projects:** Initialize detector like...
 
@@ -99,6 +99,13 @@ Data files which are updated weekly and daily, automatically, and with more prop
 
 
 ## Recent Changes
+
+### Version 3.2.11.3 Changes:
+Removed assert which caused increased memory usage.
+
+Improved detections per second per thread when using a large number of threads.
+
+WebProvider match function now calls base match function with headers.
 
 ### Version 3.2.10.4 Changes:
 Fix for profile override cookie.

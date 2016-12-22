@@ -67,10 +67,6 @@ public enum AutoUpdateStatus {
      */
     AUTO_UPDATE_ERR_403_FORBIDDEN,
     /**
-     * Used when IO operations with input or output stream failed.
-     */
-    AUTO_UPDATE_ERR_READING_STREAM,
-    /**
      * MD5 validation failed.
      */
     AUTO_UPDATE_ERR_MD5_VALIDATION_FAILED,
