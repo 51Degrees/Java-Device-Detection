@@ -63,7 +63,7 @@ public class Values {
      * @param property Property the values list relates to
      * @param values IEnumerable of values to use to initialise the list
      */
-    Values(Property property, Value[] values) {
+    public Values(Property property, Value[] values) {
         this.values = values;
         this.property = property;
     }

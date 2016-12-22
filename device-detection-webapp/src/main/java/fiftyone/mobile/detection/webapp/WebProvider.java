@@ -45,6 +45,7 @@ import java.util.Date;
 import java.util.UUID;
 import java.util.logging.Level;
 import javax.servlet.ServletContext;
+import javax.servlet.http.HttpSession;
 import javax.xml.stream.XMLStreamException;
 
 /**
@@ -61,13 +62,6 @@ import javax.xml.stream.XMLStreamException;
  * that takes in a list of HTTP headers in the parent provider class.
  */
 public class WebProvider extends Provider implements Closeable {
-
-    /**
-     * Used to store the results for previous matches to reduce the number of
-     * detection requests.
-     */
-    interface MatchResult extends Map<String, String[]> {
-    }
     /**
      * Used to create a new instance of the active provider.
      */
@@ -87,16 +81,20 @@ public class WebProvider extends Provider implements Closeable {
      * to regenerate the match instance.
      */
     private static final String MATCH_ATTRIBUTE = "51D_MATCH";
-
     /**
      * The data file used by the data set of the provider if a stream factory
      * was used to create the provider.
      */
     private String sourceDataFile = null;
-    
-    private static Thread shareUsageThread;
-    
-    private static ShareUsage shareUsageWorker;
+    /**
+     * Thread used to share usage information as a background activity with 
+     * 51Degrees.
+     */    
+    private Thread shareUsageThread;
+    /**
+     * Instance of a class used to encapsulate share usage functionality.
+     */
+    private ShareUsage shareUsageWorker;
 
     /**
      * Constructs a new instance of the web provider connected to the dataset
@@ -149,16 +147,39 @@ public class WebProvider extends Provider implements Closeable {
         }
         
         if (shareUsageWorker != null) {
-            shareUsageWorker.destroy();
-            shareUsageWorker = null;
+            // Stop the share usage worker outputing any final data before the
+            // thread is stopped.
+            shareUsageWorker.close();
         }
         
         if (shareUsageThread != null) {
-            shareUsageThread = null;
+            // Wait for the thread to complete outputing any data.
+            try {
+                shareUsageThread.join(Constants.NEW_URL_TIMEOUT);
+            } catch (InterruptedException ex) {
+                java.util.logging.Logger.getLogger(
+                        WebProvider.class.getName()).log(
+                                Level.SEVERE, null, ex);
+            }
         }
+    }
+    
+    /**
+     * Associates a share usage thread with this WebProvider.
+     */
+    private void initShareUsage() {
+        shareUsageWorker = new ShareUsage(
+                Constants.URL, 
+                NewDeviceDetails.MAXIMUM);
+        shareUsageThread = new Thread(shareUsageWorker);
+        shareUsageThread.start();
     }
 
     /**
+     * Returns the current active provider used to provision device detection
+     * services. The reference to the active provider should not be stored as
+     * it might change at any time due to data file updates.
+     * 
      * @param sc Servlet context for the request.
      * @return a reference to the active provider.
      */
@@ -175,6 +196,9 @@ public class WebProvider extends Provider implements Closeable {
     }
 
     /**
+     * Returns the path to the binary data file if specified in the 
+     * configuration.
+     * 
      * @param sc current ServletContext.
      * @return the binary file path from the configuration file
      */
@@ -197,8 +221,10 @@ public class WebProvider extends Provider implements Closeable {
                 try {
                     if (file.delete() == false) {
                         logger.debug(String.format(
-                                "Could not delete temporary file '%s'. It may be "
-                                + "in user by another provider.",
+                                "Could not delete temporary file '%s'. It " +
+                                "maybe in use by another provider or the web " +
+                                "server's credentials are insufficient to " +
+                                "delete files.",
                                 file));
                     }
                 } catch (SecurityException ex) {
@@ -241,20 +267,39 @@ public class WebProvider extends Provider implements Closeable {
      * @param tempDirectory directory that will contain the temporary data file.
      * @return a temporary file name for the data file.
      */
-    private static String getTempFileName(File tempDirectory, File binaryFilePath) {
+    private static String getTempFileName(
+            File tempDirectory,
+            File binaryFilePath) {
         return tempDirectory.getAbsolutePath() + String.format(
                 "\\%s.%s.tmp",
                 binaryFilePath.getName(),
                 UUID.randomUUID().toString());
     }
     
+    /**
+     * Returns the date that the data file provided was published. Assumes the
+     * data file is valid and can be opened.
+     * @param fileName of the data file to use.
+     * @return the date that data file was published.
+     * @throws IOException 
+     */
     private static Date getDataFileDate(String fileName) throws IOException {
-        Dataset dataset = StreamFactory.create(fileName, false);
-        return dataset.published;
+        Dataset dataSet = null;
+        try {
+            dataSet = fiftyone.mobile.detection.AutoUpdate.
+                    getDataSetWithHeaderLoaded(new File(fileName));
+            return dataSet.published;
+        }
+        finally {
+            if (dataSet != null) {
+                dataSet.close();
+            }
+        }
     }
     
     /**
-     * Gets the file path of a temporary data file for use with a stream provider.
+     * Gets the file path of a temporary data file for use with a stream 
+     * provider.
      * 
      * This method will create a file if one does not already exist.
      * @param tempDirectory directory where temp files should be searched for
@@ -262,7 +307,9 @@ public class WebProvider extends Provider implements Closeable {
      * @param binaryFile the binary source file to get a temporary copy of.
      * @returns a file path to a temporary working file.
      */
-    private static String getTempWorkingFile(File tempDirectory, File binaryFile)
+    private static String getTempWorkingFile(
+            File tempDirectory, 
+            File binaryFile)
             throws FileNotFoundException, IOException {
         String tempFilePath = null;
         if (binaryFile.exists())
@@ -288,17 +335,23 @@ public class WebProvider extends Provider implements Closeable {
                         Date tempDate = getDataFileDate(filePath);
                         if (tempDate.equals(masterDate))
                         {
-                            logger.info("Using existing temp data file with published data %s - \"%s\"",
+                            logger.info(String.format(
+                                    "Using existing temp data file with " +
+                                    "published data '%s' - '%s'",
                                     tempDate.toString(),
-                                    filePath);
+                                    filePath));
                             return fileName;
                         }
                     }
-                    catch (Exception ex) // Exception may occur if file is not a 51Degrees file, no action is needed.
+                    catch (Exception ex) 
                     {
-                        logger.info("Error while reading temporary data file \"%s\": %s",
+                        // Exception may occur if file is not a 51Degrees file,
+                        // no action is needed.
+                        logger.info(String.format(
+                                "Error while reading temporary data file " +
+                                "'%s': '%s'",
                                 filePath,
-                                ex.getMessage());
+                                ex.getMessage()));
                     }
                 }
             }
@@ -310,7 +363,9 @@ public class WebProvider extends Provider implements Closeable {
 
             // Copy the file to enable other processes to update it.
             copyFile(binaryFile, tempFilePath);
-            logger.info("Created temp data file - \"%s\"", tempFilePath);
+            logger.info(String.format(
+                    "Created temp data file - '%s'", 
+                    tempFilePath));
 
         }
         return tempFilePath;
@@ -368,7 +423,8 @@ public class WebProvider extends Provider implements Closeable {
                 if (binaryFile.exists()) {
                     if (memoryMode) {
                         logger.info(String.format(
-                                "Creating memory provider from binary data file '%s'.",
+                                "Creating memory provider from binary data " +
+                                "file '%s'.",
                                 binaryFile.getAbsolutePath()));
                         provider = new WebProvider(MemoryFactory.create(
                                 binaryFile.getAbsolutePath()));
@@ -377,32 +433,31 @@ public class WebProvider extends Provider implements Closeable {
                                 tempDirectory,
                                 binaryFile);
                         logger.info(String.format(
-                                "Creating stream provider from binary data file '%s'.",
+                                "Creating stream provider from binary data " +
+                                "file '%s'.",
                                 tempFile));
-                        provider = new WebProvider(StreamFactory.create(tempFile, false));
+                        provider = new WebProvider(StreamFactory.create(
+                                tempFile, 
+                                false));
                         
                         provider.sourceDataFile = tempFile;
                     }
                     logger.info(String.format(
                             "Created provider from binary data file '%s'.",
                             binaryFile.getAbsolutePath()));
-                    // Share usage unless explicitly forbidden to.
-                    if ("False".equalsIgnoreCase(sc.getInitParameter(Constants.SHARE_USAGE))) {
-                        shareUsageThread = null;
-                        shareUsageWorker = null;
-                    } else {
-                        shareUsageWorker = new ShareUsage(Constants.URL, 
-                                                          NewDeviceDetails.MINIMUM);
-                        shareUsageThread = new Thread(shareUsageWorker);
-                        shareUsageThread.start();
+                    
+                    // If enable start the share usage thread.
+                    if ("False".equalsIgnoreCase(sc.getInitParameter(
+                            Constants.SHARE_USAGE)) == false) {
+                        provider.initShareUsage();
                     }
                 }
             } catch (Exception ex) {
                 // Record the exception in the log file.
                 logger.error(String.format(
-                        "Exception processing device data from binary file '%s'. "
-                        + "Enable debug level logging and try again to help identify"
-                        + " cause.",
+                        "Exception processing device data from binary file " +
+                        "'%s'. Enable debug level logging and try again to " +
+                        "help identify cause.",
                         binaryFile),
                         ex);
                 // Reset the provider.
@@ -412,12 +467,14 @@ public class WebProvider extends Provider implements Closeable {
 
         // Does the provider exist and has data been loaded?
         if (provider == null || provider.dataSet == null) {
-            // No, throw error as 
-            logger.error(String.format(
-            "Failed to create a Web Provider. The path to 51Degrees device "
-                    + "data file is not set in the Constants."));
-            throw new Error("Could not create a Web Provider. Path to "
-                    + "51Degrees data file was not set in the Constants.");
+            // No, throw error as an Error.
+            String message = String.format(
+                    "Failed to create a Web Provider from binary file '%s'. " +
+                    "Check the value for '%s' in the configuration.",
+                    binaryFile,
+                    Constants.BINARY_FILE_PATH);            
+            logger.error(message);
+            throw new Error(message);
         }
 
         return provider;
@@ -437,43 +494,17 @@ public class WebProvider extends Provider implements Closeable {
      */
     public Match match(final HttpServletRequest request) throws IOException {
         Match match;
-        HashMap headers = new HashMap<String, String>();
-        for (String header : super.dataSet.getHttpHeaders()) {
-            if (request.getHeader(header) != null) {
-                Enumeration<String> headerValues = request.getHeaders(header);
-                if (headerValues.hasMoreElements()) {
-                    String hv = headerValues.nextElement();
-                    headers.put(header, hv);
-                }
-            }
-        }
         match = (Match)request.getAttribute(MATCH_ATTRIBUTE);
         boolean hasOverrides = ProfileOverride.hasOverrides(request);
-        // If there are no results already for the request, or there are 
-        // overrides from client JavaScript then get the updated/new results.
-        if (match == null || hasOverrides) {
-            synchronized (request) {
-                // Try getting the results again in case another thread has 
-                // processed them and added to the request attributes.
-                match = (Match) request.getAttribute(MATCH_ATTRIBUTE);
-                if (match == null || hasOverrides) {
-
-                    if (match == null) {
-                        // Get the match and store the list of properties and 
-                        // values in the context and session.
-                        match = super.match(headers);
-                        if (match != null) {
-                            // Allow other feautre detection methods to override
-                            // priofiles.
-                            ProfileOverride.override(request, match);
-                            request.setAttribute(MATCH_ATTRIBUTE, match);
-                        }
-                    }
-                }
-            }
+        if (match == null) {
+            match = getMatchFromProvider(request);
+            request.setAttribute(MATCH_ATTRIBUTE, match);
+        }
+        if (hasOverrides) {
+            ProfileOverride.override(request, match);
+            request.setAttribute(MATCH_ATTRIBUTE, match);
         }
         return match;
-
     }
 
     /**
@@ -481,20 +512,38 @@ public class WebProvider extends Provider implements Closeable {
      * then if not matched before performs a new match for the request storing
      * the result for future reference.
      *
+     * Parallel requests for the same HttpServletRequest instance are not 
+     * supported.
+     * 
      * @param request details of the HTTP request
      * @return a match object with properties associated with the device
      * @throws IOException
      */
+    public static Match getMatch(final HttpServletRequest request) 
+            throws IOException {
+        return getActiveProvider(request.getServletContext()).match(request);
+    }
+    
+    /**
+     * Obtains the match result as a map from the request container. If the 
+     * result does not exist in the container then it will be calculated by the
+     * provider.
+     * 
+     * The method is deprecated in favour of getMatch which avoids creating a
+     * Map for all properties and values.
+     *
+     * Parallel requests for the same HttpServletRequest instance are not 
+     * supported.
+     * 
+     * @param request details of the HTTP request
+     * @return a map with properties associated with the device
+     * @throws IOException
+     */
+    @Deprecated
     public static Map<String, String[]> getResult(
                         final HttpServletRequest request) throws IOException {
-        Map<String, String[]> results = 
-                (Map<String, String[]>) null;
-        //HttpSession session = request.getSession();
-
-        // Get the match from the provider and then the match results from the
-        // match.
-        Match match = getActiveProvider(
-                request.getServletContext()).match(request);
+        Map<String, String[]> results = (Map<String, String[]>)null;
+        Match match = getMatch(request);
         if (match != null) {
             results = match.getResults();
         }
@@ -517,5 +566,58 @@ public class WebProvider extends Provider implements Closeable {
                 }
             }
         }
+    }
+
+    /**
+     * Function retrieves the relevant HTTP headers from the HttpServletRequest 
+     * object and returns the result of device detection in the form of a Match 
+     * object.
+     * 
+     * @param request HttpServletRequest containing HTTP headers.
+     * @return FiftyOne Match instance populated with detection results.
+     * @throws IOException if there was a problem accessing data file.
+     */
+    private Match getMatchFromProvider(final HttpServletRequest request) 
+            throws IOException {
+        HashMap headers = new HashMap<String, String>();
+        for (String header : super.dataSet.getHttpHeaders()) {
+            Enumeration<String> headerValues = request.getHeaders(header);
+            if (headerValues != null &&
+                headerValues.hasMoreElements()) {
+                String hv = headerValues.nextElement();
+                headers.put(header, hv);
+            }
+        }
+        
+        // Add the cookie string if it's available. This is used to override
+        // static values with dynamic values retrieved via JavaScript and 
+        // passed to the server via cookies.
+        Enumeration<String> headerValues = request.getHeaders("Cookie");
+        if (headerValues != null &&
+            headerValues.hasMoreElements()) {
+            String hv = headerValues.nextElement();
+            headers.put("Cookie", hv);
+        }
+        
+        // If usage sharing is enabled for this WebProvider and the session is
+        // new indicating this is the first request then submit usage sharing
+        // data to the queue.
+        if (shareUsageThread != null && shareUsageWorker != null) {
+            HttpSession session = request.getSession();
+            if (session != null && session.isNew()) {
+                try {
+                    shareUsageWorker.recordNewDevice(request);
+                } catch (XMLStreamException ex) {
+                    java.util.logging.Logger.getLogger(
+                            WebProvider.class.getName()).log(
+                                    Level.INFO, 
+                                    "Failed to submit usage sharing data: {0}",
+                                    ex);
+                }
+            }
+        }
+        
+        // Calculate the match result in the core implementation.
+        return super.match(headers);
     }
 }

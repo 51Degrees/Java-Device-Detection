@@ -21,7 +21,6 @@
 package fiftyone.mobile.detection.entities;
 
 import fiftyone.mobile.detection.Dataset;
-import fiftyone.mobile.detection.SortedList;
 import fiftyone.mobile.detection.readers.BinaryReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -31,6 +30,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Profile is a collection of {@link Value values} for a single 
@@ -88,6 +88,14 @@ public abstract class Profile extends BaseEntity implements Comparable<Profile> 
      * Returned when the property has no values in the provide.
      */
     private final Value[] emptyValues = new Value[0];
+    
+    /**
+     * Map used to relate property index to the values associated with it for
+     * this profile. Used to speed up the retrieval of values associated with 
+     * the profile and property.
+     */
+    private final ConcurrentHashMap<Integer, Values> propertyIndexToValues = 
+            new ConcurrentHashMap<Integer, Values>();
     
     /**
      * Constructs a new instance of the Profile
@@ -203,12 +211,17 @@ public abstract class Profile extends BaseEntity implements Comparable<Profile> 
      * if the property does not exist.
      * @throws java.io.IOException if there was a problem accessing data file.
      */
-    public synchronized Values getValues(Property property) throws IOException {
-        Values localValues;
-        localValues = getPropertyIndexToValues().get(property.getIndex());
+    public Values getValues(Property property) throws IOException {
+        Values localValues, newValues;
+        localValues = propertyIndexToValues.get(property.getIndex());
         if (localValues == null) {
-            localValues = getPropertyValues(property);
-            getPropertyIndexToValues().add(property.getIndex(), localValues);
+            newValues = getPropertyValues(property);
+            localValues = propertyIndexToValues.putIfAbsent(
+                    property.getIndex(), 
+                    newValues);
+            if (localValues == null) {
+                localValues = newValues;
+            }
         }
         return localValues;
     }
@@ -223,8 +236,9 @@ public abstract class Profile extends BaseEntity implements Comparable<Profile> 
         // Work out the start and end index in the values associated
         // with the profile that relate to this property.
         Value[] result;
-        int start = 
-                Arrays.binarySearch(getValueIndexes(), property.firstValueIndex);
+        int start = Arrays.binarySearch(
+                getValueIndexes(),
+                property.firstValueIndex);
         
         // If the start is negative then the first value doesn't exist.
         // Take the complement and use this as the first index which will 
@@ -246,7 +260,7 @@ public abstract class Profile extends BaseEntity implements Comparable<Profile> 
         if (end < 0) {
             end = ~end;
             if (end >= getValueIndexes().length ||
-                    getValueIndexes()[end] > property.getLastIndexValue()) {
+                getValueIndexes()[end] > property.getLastIndexValue()) {
                 end--;
             }
         }
@@ -352,33 +366,13 @@ public abstract class Profile extends BaseEntity implements Comparable<Profile> 
         if (component == null)
             component = getDataSet().getComponents().get(componentIndex);
         for(Property property : properties) {
-            getPropertyIndexToValues().add(
+            propertyIndexToValues.put(
                     property.getIndex(),
                     getPropertyValues(property));
         }
     }
-   
-    /**
-     * A hash map relating the index of a property to the values returned 
-     * by the profile. Used to speed up subsequent data processing.
-     * 
-     * @return a hash map with property indexes mapped to corresponding values.
-     */
-    private synchronized SortedList<Integer, Values> getPropertyIndexToValues() {
-        SortedList<Integer, Values> localPropertyIndexToValues = 
-                propertyIndexToValues;
-        if (localPropertyIndexToValues == null) {
-            synchronized(this) {
-                localPropertyIndexToValues = propertyIndexToValues;
-                if (localPropertyIndexToValues == null) {
-                    propertyIndexToValues = localPropertyIndexToValues = 
-                            new SortedList<Integer, Values>();
-                }
-            }
-        }
-        return localPropertyIndexToValues;
-    }
-    private volatile SortedList<Integer, Values> propertyIndexToValues;
+
+
     
     /**
      * A string representation of the profiles display values.
