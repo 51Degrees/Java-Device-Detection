@@ -57,7 +57,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * @param <V> Value for the cache items.
  */
 public class LruCache<K, V>  implements IUaMatchCache<K,V> {
-   
+
     /**
      * A key value pair for cached items.
      */
@@ -168,7 +168,10 @@ public class LruCache<K, V>  implements IUaMatchCache<K,V> {
     /**
      * Loader used to fetch items not in the cache.
      */
-    private final IValueLoader<K, V> loader;
+    public void setCacheLoader(IValueLoader<K, V> loader) {
+       this.loader = loader;
+    }
+    private IValueLoader<K, V> loader;
 
     /**
      * Hash map of keys to item values.

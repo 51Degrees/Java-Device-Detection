@@ -66,7 +66,7 @@ public class MemoryFactoryTest extends DetectionTestSupport {
      * @param provider the provider to test
      * @throws IOException
      */
-    private void ensureViableProvider(Provider provider) throws IOException {
+    static void ensureViableProvider(Provider provider) throws IOException {
         Match match = provider.match(TEST_USER_AGENT);
         System.out.println(TEST_USER_AGENT);
         assertEquals("Match method should be exact", MatchMethods.EXACT, match.getMethod());

@@ -29,4 +29,31 @@ public interface ICache<K,V> {
     V get(K key);
 
     void resetCache();
+
+    abstract class Base <K, V> implements ICache<K, V> {
+        @Override
+        public int getCacheSize() {
+            return 0;
+        }
+
+        @Override
+        public long getCacheMisses() {
+            return 0;
+        }
+
+        @Override
+        public long getCacheRequests() {
+            return 0;
+        }
+
+        @Override
+        public double getPercentageMisses() {
+            return 0;
+        }
+
+        @Override
+        public void resetCache() {
+            throw new IllegalStateException("Cache reset not supported");
+        }
+    }
 }

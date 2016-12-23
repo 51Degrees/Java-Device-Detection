@@ -38,5 +38,5 @@ public interface IValueLoader<K,V> {
      * @return Value associated with the key
      * @throws java.io.IOException if there was an IOException in the course of loading.
      */
-    abstract V load(K key) throws IOException;
+    V load(K key) throws IOException;
 }
