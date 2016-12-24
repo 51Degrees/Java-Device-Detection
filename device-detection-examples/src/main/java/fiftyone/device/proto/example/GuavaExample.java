@@ -64,35 +64,32 @@ class GuavaExample {
 
     public static void main (String[] args) throws IOException {
         com.google.common.cache.Cache uaCache = CacheBuilder.newBuilder()
-                .initialCapacity(1000)
+                .initialCapacity(100000)
                 .maximumSize(100000)
-                .concurrencyLevel(5)
+                .concurrencyLevel(5) // set to number of threads that can access cache at same time
                 .build();
 
         com.google.common.cache.Cache nodeCache = CacheBuilder.newBuilder()
-                .initialCapacity(10000)
-                .maximumSize(10000)
+                .initialCapacity(StreamFactory.NODES_CACHE_SIZE)
+                .maximumSize(StreamFactory.NODES_CACHE_SIZE)
+                .concurrencyLevel(5)
                 .build();
 
         com.google.common.cache.Cache profileCache = CacheBuilder.newBuilder()
-                .initialCapacity(10000)
-                .maximumSize(10000)
+                .initialCapacity(StreamFactory.PROFILES_CACHE_SIZE)
+                .maximumSize(StreamFactory.PROFILES_CACHE_SIZE)
+                .concurrencyLevel(5)
                 .build();
 
         Dataset dataset = new StreamFactory.Builder()
-/*
                 .addCache(StreamFactory.CacheType.NodesCache, new CacheAdaptor(nodeCache))
                 .addCache(StreamFactory.CacheType.ProfilesCache, new CacheAdaptor(profileCache))
-*/
                 .isTempfile()
                 .lastModified(new Date())
                 .build("data/51Degrees-LiteV3.2.dat");
 
-/*
         Provider provider = new Provider(dataset, new UaCacheAdaptor(uaCache));
-*/
 
-        Provider provider = new Provider(dataset);
         Match match = provider.match("Hello World");
         System.out.printf("%s", match.getSignature());
     }
