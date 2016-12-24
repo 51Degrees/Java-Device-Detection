@@ -211,26 +211,39 @@ public final class StreamFactory {
      */
     private static class EntityLoader<V> implements IValueLoader<Integer,V> {
 
-        protected final Dataset dataset;
-        protected final BaseEntityFactory<V> entityFactory;
-        protected final Header header;
+        final Dataset dataset;
+        final BaseEntityFactory<V> entityFactory;
+        final Header header;
+        boolean fixedLength = false;
 
         EntityLoader(Header header, Dataset dataset, BaseEntityFactory<V> entityFactory) {
             this.dataset = dataset;
             this.entityFactory = entityFactory;
             this.header = header;
+            try {
+                getEntityFactory().getLength();
+                fixedLength = true;
+            } catch (UnsupportedOperationException ignored) {
+                // expected for variable length entities
+            } catch (IOException e) {
+                throw new IllegalStateException(e);
+            }
         }
 
         @Override
         public V load(Integer key) throws IOException {
             BinaryReader reader = dataset.pool.getReader();
             try {
-                reader.setPos(header.getStartPosition()
-                        + (getEntityFactory().getLength() * key));
-            } catch (UnsupportedOperationException e) {
-                reader.setPos(header.getStartPosition() + key);
+                if (fixedLength) {
+                    reader.setPos(header.getStartPosition()
+                            + (getEntityFactory().getLength() * key));
+                } else {
+                    reader.setPos(header.getStartPosition() + key);
+                }
+                return entityFactory.create(dataset, key, reader);
+            } finally {
+                dataset.pool.release(reader);
             }
-            return entityFactory.create(dataset, key, reader);
         }
 
         public BaseEntityFactory<V> getEntityFactory() {
@@ -240,6 +253,7 @@ public final class StreamFactory {
         public Header getHeader() {
             return header;
         }
+
     }
 
     /**
@@ -345,11 +359,11 @@ public final class StreamFactory {
                     try {
                         T result = get(position);
                         count ++;
-                        try {
+                        if (loader.fixedLength) {
+                            position ++;
+                        } else {
                             // this method supported only for variable length entities
                             position += loader.getEntityFactory().getLength(result);
-                        } catch (UnsupportedOperationException e) {
-                            position ++;
                         }
                         return result;
                     } catch (IOException e) {
