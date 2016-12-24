@@ -215,9 +215,8 @@ public abstract class Profile extends BaseEntity implements Comparable<Profile> 
         Values localValues;
         localValues = propertyIndexToValues.get(property.getIndex());
         if (localValues == null) {
-            localValues = propertyIndexToValues.putIfAbsent(
-                    property.getIndex(), 
-                    getPropertyValues(property));
+            localValues = getPropertyValues(property);
+            propertyIndexToValues.put(property.getIndex(), localValues);
         }
         return localValues;
     }
