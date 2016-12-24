@@ -99,22 +99,4 @@ public abstract class NodeFactory extends BaseEntityFactory<Node> {
     protected abstract Node construct(Dataset dataSet, 
             int index, BinaryReader reader) throws IOException;
 
-    /**
-     * Returns the length of the NodeV31 entity provided.
-     *
-     * @param entity An entity of type Node who length is required.
-     * @return The number of bytes used to store the node.
-     * @throws IOException if there was a problem accessing data file.
-     */
-    @Override
-    public int getLength(Node entity)
-                                                            throws IOException {
-        return getBaseLength() + DetectionConstants.SIZE_OF_INT +
-                (entity.getChildrenLength() *
-                    NodeFactoryShared.getNodeIndexLengthV31()) +
-                (entity.getNumericChildrenLength() *
-                    getNodeNumericIndexLength()) +
-                (entity.getRankedSignatureIndexes().size() *
-                    DetectionConstants.SIZE_OF_INT);
-    }
 }
