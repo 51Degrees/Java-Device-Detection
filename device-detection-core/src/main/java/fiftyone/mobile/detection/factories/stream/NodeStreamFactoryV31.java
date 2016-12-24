@@ -23,6 +23,7 @@ package fiftyone.mobile.detection.factories.stream;
 import fiftyone.mobile.detection.Dataset;
 import fiftyone.mobile.detection.entities.Node;
 import fiftyone.mobile.detection.factories.NodeFactory;
+import fiftyone.mobile.detection.factories.NodeFactoryV31;
 import fiftyone.mobile.detection.readers.BinaryReader;
 import java.io.IOException;
 
@@ -32,7 +33,7 @@ import java.io.IOException;
  * Objects of this class should not be created directly as they are part of the 
  * internal logic.
  */
-public class NodeStreamFactoryV31 extends NodeFactory {
+public class NodeStreamFactoryV31 extends NodeFactoryV31 {
 
     /**
      * Constructs a new instance of NodeStreamFactoryV31.
