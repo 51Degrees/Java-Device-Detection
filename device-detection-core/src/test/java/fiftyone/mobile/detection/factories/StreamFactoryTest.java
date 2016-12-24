@@ -4,6 +4,7 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import fiftyone.mobile.detection.Dataset;
 import fiftyone.mobile.detection.Filename;
+import fiftyone.mobile.detection.IReadonlyList;
 import fiftyone.mobile.detection.Provider;
 import fiftyone.mobile.detection.cache.IPutCache;
 import fiftyone.mobile.detection.cache.IUaMatchCache;
@@ -15,6 +16,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Date;
 import java.util.Iterator;
+
+import static org.junit.Assert.*;
 
 /**
  * @author jo
@@ -87,29 +90,37 @@ public class StreamFactoryTest {
                 .maximumSize(StreamFactory.PROFILES_CACHE_SIZE)
                 .build();
 
-        Dataset dataset = new StreamFactory.Builder()
+        Dataset streamDataset = new StreamFactory.Builder()
+/*
                 .addCache(StreamFactory.CacheType.NodesCache, new CacheAdaptor(nodeCache))
                 .addCache(StreamFactory.CacheType.ProfilesCache, new CacheAdaptor(profileCache))
+*/
                 .isTempfile()
                 .lastModified(new Date())
                 .build(Filename.LITE_PATTERN_V32);
 
 
-        Iterator it = dataset.strings.iterator();
+        Dataset memoryDataset = MemoryFactory.create(Filename.LITE_PATTERN_V32);
+
+        compareStreamMemory(streamDataset.strings, memoryDataset.strings);
+        compareStreamMemory(streamDataset.signatures, memoryDataset.signatures);
+        compareStreamMemory(streamDataset.profiles, memoryDataset.profiles);
+        compareStreamMemory(streamDataset.nodes, memoryDataset.nodes);
+        compareStreamMemory(streamDataset.values, memoryDataset.values);
+
+        MemoryFactoryTest.ensureViableProvider(new Provider(memoryDataset));
+        MemoryFactoryTest.ensureViableProvider(new Provider(streamDataset));
+    }
+
+    private void compareStreamMemory(IReadonlyList stream, IReadonlyList memory) {
+        assertEquals(stream.size(), memory.size());
+        Iterator streamIt = stream.iterator();
+        Iterator memoryIt = stream.iterator();
         for (int i=0; i < 20; i++) {
-            System.out.println(it.next());
+            System.out.println(streamIt.next());
+            System.out.println(memoryIt.next());
+            assertEquals(streamIt.next().toString(), memoryIt.next().toString());
         }
-
-        System.out.println(dataset.strings.size());
-
-        it = dataset.profiles.iterator();
-        for (int i=0; i < 20; i++) {
-            System.out.println(it.next());
-        }
-
-        System.out.println(dataset.profiles.size());
-
-        MemoryFactoryTest.ensureViableProvider(new Provider(dataset));
     }
 
 }
