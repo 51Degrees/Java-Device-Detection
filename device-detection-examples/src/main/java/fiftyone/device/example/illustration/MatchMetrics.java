@@ -116,7 +116,7 @@ public class MatchMetrics implements Closeable {
      */
     public MatchMetrics() throws IOException {
         provider = new Provider(StreamFactory.create(
-                Shared.getLitePatternV32(), true));
+                Shared.getLitePatternV32(), false));
     }
     
     /**
