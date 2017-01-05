@@ -2,14 +2,17 @@ package fiftyone.mobile.detection.factories;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import fiftyone.mobile.StandardUnitTest;
 import fiftyone.mobile.detection.Dataset;
-import fiftyone.mobile.detection.Filename;
+import fiftyone.mobile.Filename;
 import fiftyone.mobile.detection.IReadonlyList;
 import fiftyone.mobile.detection.Provider;
 import fiftyone.mobile.detection.cache.IPutCache;
 import fiftyone.mobile.detection.cache.IUaMatchCache;
 import fiftyone.mobile.detection.cache.IValueLoader;
+import fiftyone.mobile.TestType;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -22,7 +25,7 @@ import static org.junit.Assert.*;
 /**
  * @author jo
  */
-public class StreamFactoryTest {
+public class StreamFactoryTest extends StandardUnitTest {
 
     public static class CacheAdaptor <K,V> extends IPutCache.Base<K,V> implements IPutCache<K,V> {
         private final Cache<K,V> cache;
@@ -108,8 +111,8 @@ public class StreamFactoryTest {
         compareStreamMemory(streamDataset.nodes, memoryDataset.nodes);
         compareStreamMemory(streamDataset.values, memoryDataset.values);
 
-        MemoryFactoryTest.ensureViableProvider(new Provider(memoryDataset));
-        MemoryFactoryTest.ensureViableProvider(new Provider(streamDataset));
+        Common.ensureViableProvider(new Provider(memoryDataset));
+        Common.ensureViableProvider(new Provider(streamDataset));
     }
 
     private void compareStreamMemory(IReadonlyList stream, IReadonlyList memory) {
