@@ -1,5 +1,6 @@
 package fiftyone.mobile.detection;
 
+import fiftyone.mobile.StandardUnitTest;
 import fiftyone.mobile.detection.factories.MemoryFactory;
 import org.junit.Test;
 
@@ -14,7 +15,7 @@ import java.util.List;
  *
  * @author jo
  */
-public class MatchTest {
+public class MatchTest extends StandardUnitTest {
     private static final int NUMBER_OF_TESTS = 1000000;
 
     @Test

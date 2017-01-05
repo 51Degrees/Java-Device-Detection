@@ -20,9 +20,9 @@
  * ********************************************************************* */
 package fiftyone.mobile.detection.cache;
 
-import fiftyone.mobile.detection.DetectionTestSupport;
+import fiftyone.mobile.DetectionTestSupport;
 import fiftyone.mobile.detection.cache.LruCache.KeyValuePair;
-import fiftyone.mobile.detection.test.TestType;
+import fiftyone.mobile.TestType;
 
 import java.io.IOException;
 import java.util.ArrayList;
