@@ -20,12 +20,18 @@
  * ********************************************************************* */
 package fiftyone.mobile.detection.entities.stream;
 
+import fiftyone.mobile.detection.cache.ICache;
 import fiftyone.mobile.detection.entities.Modes;
+import fiftyone.mobile.detection.factories.StreamFactory;
 import fiftyone.mobile.detection.readers.SourceBase;
 import fiftyone.mobile.detection.readers.SourceFile;
 import fiftyone.mobile.detection.readers.SourceMemory;
+import fiftyone.properties.CacheConstants;
+
 import java.io.IOException;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A data set returned from the stream factory which includes a pool of
@@ -49,7 +55,32 @@ public class Dataset extends fiftyone.mobile.detection.Dataset {
      * Data source to be used with the pool.
      */
     private final SourceBase source;
-    
+
+    /**
+     * Returns a cache to allow examination of its performance
+     *
+     * @param cacheType the type of cache
+     * @return a cache or null if no cache in operation
+     */
+    public ICache getCache(CacheConstants.CacheType cacheType) {
+        return cacheMap.get(cacheType);
+    }
+
+    /**
+     * Returns a cache to allow examination of its performance
+     *
+     * @param cacheMap a Map of caches to use
+     * @return a cache or null if no cache in operation
+     */
+    public void setCacheMap(Map<CacheConstants.CacheType, ICache> cacheMap) {
+        this.cacheMap = cacheMap;
+    }
+
+    private java.util.Map<CacheConstants.CacheType, ICache> cacheMap = new HashMap<CacheConstants.CacheType, ICache>(5);
+
+
+
+
     /**
      * Creates a dataset object with a pool of readers used to retrieve data 
      * from the data file. Only useful in stram mode.

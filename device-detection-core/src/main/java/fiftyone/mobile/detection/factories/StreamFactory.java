@@ -35,6 +35,7 @@ import fiftyone.mobile.detection.factories.stream.NodeStreamFactoryV31;
 import fiftyone.mobile.detection.factories.stream.NodeStreamFactoryV32;
 import fiftyone.mobile.detection.factories.stream.ProfileStreamFactory;
 import fiftyone.mobile.detection.readers.BinaryReader;
+import fiftyone.properties.CacheConstants.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -42,7 +43,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import static fiftyone.mobile.detection.factories.StreamFactory.CacheType.*;
+import static fiftyone.properties.CacheConstants.CacheType.*;
+import static fiftyone.properties.CacheConstants.*;
 
 /**
  * Factory class used to create a DetectorDataSet from a source data structure.
@@ -79,16 +81,10 @@ import static fiftyone.mobile.detection.factories.StreamFactory.CacheType.*;
  *          .addCache(cachetype, cache)
  *          .build("path_to_file")</code>
  *  <p>Note that all caches must be specified when using the builder, the default
- *  no cache where nore is specified for a particular {@link CacheType}.
+ *  no cache where none is specified for a particular {@link CacheType}.
  * </ul>
  */
 public final class StreamFactory {
-
-    public static final int STRINGS_CACHE_SIZE = 5000;
-    public static final int NODES_CACHE_SIZE = 15000;
-    public static final int VALUES_CACHE_SIZE = 5000;
-    public static final int PROFILES_CACHE_SIZE = 600;
-    public static final int SIGNATURES_CACHE_SIZE = 500;
 
     /**
      * Constructor creates a new dataset from the supplied bytes array.
@@ -160,12 +156,6 @@ public final class StreamFactory {
         cacheMap.put(SignaturesCache, new LruCache(SIGNATURES_CACHE_SIZE));
         load(dataSet, cacheMap);
         return dataSet;
-    }
-    /**
-     * Cache types for Stream Dataset
-     */
-    public enum CacheType {
-        StringsCache, NodesCache, ValuesCache, ProfilesCache, SignaturesCache
     }
 
     public static class Builder {
@@ -246,6 +236,7 @@ public final class StreamFactory {
             }
         }
 
+        @SuppressWarnings("WeakerAccess")
         public BaseEntityFactory<V> getEntityFactory() {
             return entityFactory;
         }
@@ -415,6 +406,7 @@ public final class StreamFactory {
     private static void load(Dataset dataSet, java.util.Map<CacheType, ICache> cacheMap) throws IOException {
         BinaryReader reader = dataSet.pool.getReader();
         try {
+            dataSet.setCacheMap(cacheMap);
             reader.setPos(0);
             //Load headers that are common for both V31 and V32.
             CommonFactory.loadHeader(dataSet, reader);
@@ -422,7 +414,7 @@ public final class StreamFactory {
             EntityLoader<AsciiString> loader = getLoaderFor(new Header(reader), cacheMap.get(StringsCache), dataSet, new AsciiStringFactory());
             dataSet.strings = new StreamList<AsciiString>(loader);
             
-            MemoryFixedList<Component> components = null;
+            MemoryFixedList<Component> components;
             switch (dataSet.versionEnum) {
                 case PatternV31:
                     components = new MemoryFixedList<Component>(
@@ -432,6 +424,8 @@ public final class StreamFactory {
                     components = new MemoryFixedList<Component>(
                             dataSet, reader, new ComponentFactoryV32());
                     break;
+
+                default: throw new IllegalStateException("Unknown data version number");
             }
             dataSet.components = components;
             

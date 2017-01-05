@@ -20,16 +20,15 @@
  * ********************************************************************* */
 package fiftyone.mobile.detection;
 
-import fiftyone.mobile.DetectionTestSupport;
 import fiftyone.mobile.StandardUnitTest;
-import fiftyone.mobile.TestType;
+import org.junit.Test;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
 import static org.junit.Assert.assertTrue;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
 
 public class MostFrequentFilterTest extends StandardUnitTest {
  

@@ -21,13 +21,10 @@
 
 package fiftyone.mobile.detection.factories;
 
-import fiftyone.mobile.DetectionTestSupport;
 import fiftyone.mobile.Filename;
 import fiftyone.mobile.StandardUnitTest;
 import fiftyone.mobile.detection.*;
-import fiftyone.mobile.TestType;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -40,14 +37,14 @@ import static org.junit.Assert.*;
 public class MemoryFactoryTest extends StandardUnitTest {
 
     @Test
-    public void testCreate() throws Exception {
+    public void testCreateFromStream() throws Exception {
         File testFile = new File(Filename.LITE_PATTERN_V32);
         FileInputStream fileInputStream = new FileInputStream(testFile);
         try {
             Dataset dataset = MemoryFactory.create(fileInputStream);
             try {
                 Provider provider = new Provider(dataset);
-                Common.ensureViableProvider(provider);
+                ViableProvider.ensureViableProvider(provider);
             } finally {
                 if (dataset != null) dataset.close();
             }

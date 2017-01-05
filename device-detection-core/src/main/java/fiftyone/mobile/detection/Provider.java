@@ -20,8 +20,7 @@
  * ********************************************************************* */
 package fiftyone.mobile.detection;
 
-import fiftyone.mobile.detection.cache.ICache;
-import fiftyone.mobile.detection.cache.IUaMatchCache;
+import fiftyone.mobile.detection.cache.ILoadingCache;
 import fiftyone.mobile.detection.cache.LruCache;
 import fiftyone.properties.MatchMethods;
 import fiftyone.mobile.detection.entities.Component;
@@ -69,7 +68,7 @@ public class Provider {
     /**
      * A cache for User-Agents if required.
      */
-    private IUaMatchCache<String, MatchResult> userAgentCache = null;
+    private ILoadingCache<String, MatchResult> userAgentCache = null;
 
     /**
      * True if the detection time should be recorded in the Elapsed property
@@ -128,7 +127,7 @@ public class Provider {
      * @param dataSet to use for device detection
      * @param cache to be used with the provider, null for no cache
      */
-    public Provider(Dataset dataSet, IUaMatchCache cache) {
+    public Provider(Dataset dataSet, ILoadingCache cache) {
         this(dataSet, false, cache);
     }
 
@@ -139,7 +138,7 @@ public class Provider {
      * @param recordDetectionTime true if the detection time should be recorded
      * @param cache to be used with the provider - null for no cache
      */
-    Provider(Dataset dataSet, boolean recordDetectionTime, IUaMatchCache cache) {
+    Provider(Dataset dataSet, boolean recordDetectionTime, ILoadingCache cache) {
         this.recordDetectionTime = recordDetectionTime;
         this.dataSet = dataSet;
 
@@ -178,18 +177,18 @@ public class Provider {
     }
     
     /**
-     * @return number of requests to the cache.
+     * @return number of requests to the cache - -1 if no cache provided
      */
     public double getCacheRequests() {
         if (userAgentCache != null) {
             return userAgentCache.getCacheRequests();
         } else {
-            return 0;
+            return -1;
         }
     }
     
     /**
-     * @return number of cache misses.
+     * @return number of cache misses  - -1 if no cache provided
      */
     public long getCacheMisses() {
         if (userAgentCache != null) {

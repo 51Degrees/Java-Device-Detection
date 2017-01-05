@@ -1,25 +1,23 @@
 package fiftyone.mobile.detection.factories;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
+import com.google.common.io.Files;
+import fiftyone.mobile.Filename;
 import fiftyone.mobile.StandardUnitTest;
 import fiftyone.mobile.detection.Dataset;
-import fiftyone.mobile.Filename;
 import fiftyone.mobile.detection.IReadonlyList;
 import fiftyone.mobile.detection.Provider;
-import fiftyone.mobile.detection.cache.IPutCache;
-import fiftyone.mobile.detection.cache.IUaMatchCache;
-import fiftyone.mobile.detection.cache.IValueLoader;
-import fiftyone.mobile.TestType;
+import fiftyone.mobile.detection.cache.ICache;
+import fiftyone.mobile.detection.cache.LruCache;
+import fiftyone.properties.CacheConstants;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Date;
 import java.util.Iterator;
 
+import static fiftyone.mobile.detection.factories.GuavaCache.getDatasetWithGuavaCaches;
+import static fiftyone.properties.CacheConstants.CacheType.*;
 import static org.junit.Assert.*;
 
 /**
@@ -27,103 +25,225 @@ import static org.junit.Assert.*;
  */
 public class StreamFactoryTest extends StandardUnitTest {
 
-    public static class CacheAdaptor <K,V> extends IPutCache.Base<K,V> implements IPutCache<K,V> {
-        private final Cache<K,V> cache;
-
-        public CacheAdaptor(com.google.common.cache.Cache<K,V> cache) {
-            this.cache = cache;
-        }
-
-        @Override
-        public V get(K key) {
-            return cache.getIfPresent(key);
-        }
-
-        @Override
-        public void put(K key, V value) {
-            cache.put(key, value);
-        }
-    }
-
-    public static class UaCacheAdaptor <K,V> extends IUaMatchCache.Base<K,V> implements IUaMatchCache<K,V> {
-
-        private final Cache<K, V> cache;
-
-        public UaCacheAdaptor(com.google.common.cache.Cache<K,V> cache) {
-            this.cache = cache;
-        }
-
-        @Override
-        public V get(K key, IValueLoader<K, V> loader) throws IOException {
-            V result = get(key);
-            if (result == null) {
-                result = loader.load(key);
-                if (result != null) {
-                    cache.put(key, result);
-                }
-            }
-            return result;
-        }
-
-        @Override
-        public V get(K key) {
-            return cache.getIfPresent(key);
-        }
-    }
-
-
     @Test
-    public void testCreate() throws Exception {
-        File testFile = new File(Filename.LITE_PATTERN_V31);
-        FileInputStream fileInputStream = new FileInputStream(testFile);
+    public void testCreate32FromBuilder () throws Exception {
+        File temp = File.createTempFile("Test",".dat");
+        File source = new File(Filename.LITE_PATTERN_V32);
+        Files.copy(source, temp);
 
-        com.google.common.cache.Cache uaCache = CacheBuilder.newBuilder()
-                .initialCapacity(1000)
-                .maximumSize(100000)
-                .concurrencyLevel(5)
-                .build();
+        Dataset dataset = new StreamFactory.Builder()
+                .lastModified(new Date())
+                .build(temp.getPath());
+        ViableProvider.ensureViableProvider(new Provider(dataset));
+        dataset.close();
+        // temp must still exist after close
+        assertTrue(temp.exists());
 
-        com.google.common.cache.Cache nodeCache = CacheBuilder.newBuilder()
-                .initialCapacity(StreamFactory.NODES_CACHE_SIZE)
-                .maximumSize(StreamFactory.NODES_CACHE_SIZE)
-                .build();
-
-        com.google.common.cache.Cache profileCache = CacheBuilder.newBuilder()
-                .initialCapacity(StreamFactory.PROFILES_CACHE_SIZE)
-                .maximumSize(StreamFactory.PROFILES_CACHE_SIZE)
-                .build();
-
-        Dataset streamDataset = new StreamFactory.Builder()
-/*
-                .addCache(StreamFactory.CacheType.NodesCache, new CacheAdaptor(nodeCache))
-                .addCache(StreamFactory.CacheType.ProfilesCache, new CacheAdaptor(profileCache))
-*/
+        // assess whether temporary file gets deleted
+        dataset = new StreamFactory.Builder()
                 .isTempfile()
                 .lastModified(new Date())
-                .build(Filename.LITE_PATTERN_V32);
+                .build(temp.getPath());
 
+        ViableProvider.ensureViableProvider(new Provider(dataset));
+        dataset.close();
+        // temp must NOT still exist after close
+        assertFalse(temp.exists());
 
+    }
+
+    @Test
+    public void testCreate32FromFilename () throws Exception {
+        File temp = File.createTempFile("Test",".dat");
+        File source = new File(Filename.LITE_PATTERN_V32);
+        Files.copy(source, temp);
+
+        Dataset dataset = StreamFactory.create(temp.getPath());
+        ViableProvider.ensureViableProvider(new Provider(dataset));
+        dataset.close();
+        // temp must still exist after close
+        assertTrue(temp.exists());
+
+        // assess whether temporary file gets deleted
+        dataset = StreamFactory.create(temp.getPath(), true);
+        ViableProvider.ensureViableProvider(new Provider(dataset));
+        dataset.close();
+        // temp must NOT still exist after close
+        assertFalse(temp.exists());
+
+    }
+
+    @Test
+    public void testCreate31FromFilename () throws Exception {
+        Dataset dataset = StreamFactory.create(Filename.LITE_PATTERN_V31);
+        ViableProvider.ensureViableProvider(new Provider(dataset));
+    }
+
+    // tests to see if Stream and Memory load the same thing (default caches)
+    @Test
+    public void testMemoryStreamDatasetConsistentDefault () throws IOException {
+
+        fiftyone.mobile.detection.entities.stream.Dataset streamDataset =
+                StreamFactory.create(Filename.LITE_PATTERN_V32);
         Dataset memoryDataset = MemoryFactory.create(Filename.LITE_PATTERN_V32);
 
-        compareStreamMemory(streamDataset.strings, memoryDataset.strings);
-        compareStreamMemory(streamDataset.signatures, memoryDataset.signatures);
-        compareStreamMemory(streamDataset.profiles, memoryDataset.profiles);
-        compareStreamMemory(streamDataset.nodes, memoryDataset.nodes);
-        compareStreamMemory(streamDataset.values, memoryDataset.values);
+        compareDatasets(streamDataset, memoryDataset);
+    }
 
-        Common.ensureViableProvider(new Provider(memoryDataset));
-        Common.ensureViableProvider(new Provider(streamDataset));
+    // tests to see if Stream and Memory load the same thing (no caches)
+    @Test
+    public void testMemoryStreamDatasetConsistentNoCache () throws IOException {
+
+        fiftyone.mobile.detection.entities.stream.Dataset streamDataset = new StreamFactory.Builder()
+                .lastModified(new Date())
+                .build(Filename.LITE_PATTERN_V32);
+        Dataset memoryDataset = MemoryFactory.create(Filename.LITE_PATTERN_V32);
+
+        compareDatasets(streamDataset, memoryDataset);
+    }
+
+    // tests to see if Stream and Memory load the same thing (user supplied partial LRUCache)
+    @Test
+    public void testMemoryStreamDatasetConsistentPartialLruCache () throws IOException {
+        LruCache nodesCache = new LruCache(20);
+        LruCache valuesCache = new LruCache(100);
+        LruCache stringsCache = new LruCache(100);
+
+        fiftyone.mobile.detection.entities.stream.Dataset streamDataset = new StreamFactory.Builder()
+                .addCache(NodesCache, nodesCache)
+                .addCache(ValuesCache, valuesCache)
+                .addCache(StringsCache, stringsCache)
+                .build(Filename.LITE_PATTERN_V32);
+        Dataset memoryDataset = MemoryFactory.create(Filename.LITE_PATTERN_V32);
+
+        compareDatasets(streamDataset, memoryDataset);
+    }
+
+    // see if stream and memory load same thing with a full set of Guava caches
+    @Test
+    public void testMemoryStreamDatasetConsistentGuava () throws Exception {
+
+        fiftyone.mobile.detection.entities.stream.Dataset streamDataset = getDatasetWithGuavaCaches();
+        Dataset memoryDataset = MemoryFactory.create(Filename.LITE_PATTERN_V32);
+
+        compareDatasets(streamDataset, memoryDataset);
+    }
+
+    // see if the cache metrics etc work when using default cache.
+    @Test
+    public void testDefaultCache () throws Exception {
+        fiftyone.mobile.detection.entities.stream.Dataset dataset = StreamFactory.create(Filename.LITE_PATTERN_V32);
+        Provider provider = new Provider(dataset, 20);
+
+        cacheTests(provider);
+    }
+
+    // see if cache metrics etc work with Guava cache
+    @Test
+    public void testGuavaCache () throws Exception {
+        fiftyone.mobile.detection.entities.stream.Dataset dataset = getDatasetWithGuavaCaches();
+        Provider provider = new Provider(dataset, GuavaCache.getUserAgentCache());
+
+        cacheTests(provider);
+    }
+
+
+    // --- helpers
+
+    private void compareDatasets(fiftyone.mobile.detection.entities.stream.Dataset streamDataset, Dataset memoryDataset) {
+        System.out.println("\nStrings");
+        compareStreamMemory(streamDataset.strings, memoryDataset.strings);
+        printDatasetCacheInfo(streamDataset);
+
+        System.out.println("\nSignatures");
+        compareStreamMemory(streamDataset.signatures, memoryDataset.signatures);
+        printDatasetCacheInfo(streamDataset);
+
+        System.out.println("\nProfiles");
+        compareStreamMemory(streamDataset.profiles, memoryDataset.profiles);
+        printDatasetCacheInfo(streamDataset);
+
+        System.out.println("\nNodes");
+        compareStreamMemory(streamDataset.nodes, memoryDataset.nodes);
+        printDatasetCacheInfo(streamDataset);
+
+        System.out.println("\nValues");
+        compareStreamMemory(streamDataset.values, memoryDataset.values);
+        printDatasetCacheInfo(streamDataset);
+    }
+
+
+
+    private void cacheTests(Provider provider) throws IOException {
+        ViableProvider.ensureViableProvider(provider);
+        fiftyone.mobile.detection.entities.stream.Dataset dataset = (fiftyone.mobile.detection.entities.stream.Dataset) provider.dataSet;
+        assertEquals(1, provider.getCacheMisses());
+        assertEquals(1, provider.getCacheRequests(), 0);
+        printDatasetCacheInfo(dataset);
+
+        long stringsRequests = dataset.getCache(StringsCache).getCacheRequests();
+        long stringsMisses = dataset.getCache(StringsCache).getCacheMisses();
+        long nodesRequests = dataset.getCache(NodesCache).getCacheRequests();
+        long nodesMisses = dataset.getCache(NodesCache).getCacheMisses();
+        long valuesRequests = dataset.getCache(ValuesCache).getCacheRequests();
+        long valuesMisses = dataset.getCache(ValuesCache).getCacheMisses();
+        long profilesRequests = dataset.getCache(ProfilesCache).getCacheRequests();
+        long profilesMisses = dataset.getCache(ProfilesCache).getCacheMisses();
+        long signaturesRequests = dataset.getCache(SignaturesCache).getCacheRequests();
+        long signaturesMisses = dataset.getCache(SignaturesCache).getCacheMisses();
+
+
+        // check that the requests go up and that nothing hits the backend caches
+        ViableProvider.ensureViableProvider(provider);
+        assertEquals(1, provider.getCacheMisses());
+        assertEquals(2, provider.getCacheRequests(), 0);
+        assertEquals(stringsRequests, dataset.getCache(StringsCache).getCacheRequests());
+        assertEquals(stringsMisses, dataset.getCache(StringsCache).getCacheMisses());
+        assertEquals(nodesRequests, dataset.getCache(NodesCache).getCacheRequests());
+        assertEquals(nodesMisses, dataset.getCache(NodesCache).getCacheMisses());
+        assertEquals(valuesRequests, dataset.getCache(ValuesCache).getCacheRequests());
+        assertEquals(valuesMisses, dataset.getCache(ValuesCache).getCacheMisses());
+        assertEquals(profilesRequests, dataset.getCache(ProfilesCache).getCacheRequests());
+        assertEquals(profilesMisses, dataset.getCache(ProfilesCache).getCacheMisses());
+        assertEquals(signaturesRequests, dataset.getCache(SignaturesCache).getCacheRequests());
+        assertEquals(signaturesMisses, dataset.getCache(SignaturesCache).getCacheMisses());
+
+        // again check that the requests go up and that nothing hits the backend caches
+        ViableProvider.ensureViableProvider(provider);
+        assertEquals(1, provider.getCacheMisses());
+        assertEquals(3, provider.getCacheRequests(), 0);
+        assertEquals(stringsRequests, dataset.getCache(StringsCache).getCacheRequests());
+        assertEquals(stringsMisses, dataset.getCache(StringsCache).getCacheMisses());
+        assertEquals(nodesRequests, dataset.getCache(NodesCache).getCacheRequests());
+        assertEquals(nodesMisses, dataset.getCache(NodesCache).getCacheMisses());
+        assertEquals(valuesRequests, dataset.getCache(ValuesCache).getCacheRequests());
+        assertEquals(valuesMisses, dataset.getCache(ValuesCache).getCacheMisses());
+        assertEquals(profilesRequests, dataset.getCache(ProfilesCache).getCacheRequests());
+        assertEquals(profilesMisses, dataset.getCache(ProfilesCache).getCacheMisses());
+        assertEquals(signaturesRequests, dataset.getCache(SignaturesCache).getCacheRequests());
+        assertEquals(signaturesMisses, dataset.getCache(SignaturesCache).getCacheMisses());
+    }
+
+    private void printDatasetCacheInfo(fiftyone.mobile.detection.entities.stream.Dataset dataset) {
+        for (CacheConstants.CacheType type: CacheConstants.CacheType.values()) {
+            ICache cache = dataset.getCache(type);
+            if (cache == null) {
+                System.out.println(type + " is null");
+            } else {
+                System.out.printf("Cache %s, Misses: %d, Requests: %d%n", type,
+                        cache.getCacheMisses(),
+                        cache.getCacheRequests());
+            }
+        }
     }
 
     private void compareStreamMemory(IReadonlyList stream, IReadonlyList memory) {
         assertEquals(stream.size(), memory.size());
         Iterator streamIt = stream.iterator();
         Iterator memoryIt = stream.iterator();
-        for (int i=0; i < 20; i++) {
-            System.out.println(streamIt.next());
-            System.out.println(memoryIt.next());
+        while (streamIt.hasNext()) {
             assertEquals(streamIt.next().toString(), memoryIt.next().toString());
         }
+        assertFalse(memoryIt.hasNext());
     }
-
 }

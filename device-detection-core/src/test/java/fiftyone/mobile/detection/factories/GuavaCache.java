@@ -1,28 +1,28 @@
-package fiftyone.device.proto.example;
+package fiftyone.mobile.detection.factories;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import fiftyone.mobile.detection.Dataset;
-import fiftyone.mobile.detection.Match;
-import fiftyone.mobile.detection.Provider;
+import fiftyone.mobile.Filename;
 import fiftyone.mobile.detection.cache.ICache;
 import fiftyone.mobile.detection.cache.IPutCache;
 import fiftyone.mobile.detection.cache.ILoadingCache;
 import fiftyone.mobile.detection.cache.IValueLoader;
-import fiftyone.mobile.detection.factories.StreamFactory;
+import fiftyone.mobile.detection.entities.stream.Dataset;
 
 import java.io.IOException;
 import java.util.Date;
 
-import static fiftyone.properties.CacheConstants.CacheType.NodesCache;
-import static fiftyone.properties.CacheConstants.CacheType.ProfilesCache;
-import static fiftyone.properties.CacheConstants.NODES_CACHE_SIZE;
-import static fiftyone.properties.CacheConstants.PROFILES_CACHE_SIZE;
+import static fiftyone.properties.CacheConstants.*;
+import static fiftyone.properties.CacheConstants.CacheType.*;
+import static fiftyone.properties.CacheConstants.CacheType.SignaturesCache;
+import static fiftyone.properties.CacheConstants.SIGNATURES_CACHE_SIZE;
+import static fiftyone.properties.CacheConstants.VALUES_CACHE_SIZE;
 
 /**
- * @author jo
+ * Example user supplied class providing a Guava Cache
  */
-class GuavaExample {
+@SuppressWarnings("WeakerAccess")
+public class GuavaCache {
 
     public static class CacheAdaptor <K,V>  implements ICache<K,V> {
         protected final Cache<K,V> cache;
@@ -74,7 +74,7 @@ class GuavaExample {
         }
     }
 
-    public static class UaCacheAdaptor <K,V> extends CacheAdaptor<K,V> implements ILoadingCache<K,V> {
+    public static class UaCacheAdaptor <K,V> extends PutCacheAdaptor<K,V> implements ILoadingCache<K,V> {
 
         public UaCacheAdaptor(com.google.common.cache.Cache<K,V> cache) {
             super(cache);
@@ -98,35 +98,58 @@ class GuavaExample {
         }
     }
 
-
-    public static void main (String[] args) throws IOException {
-        com.google.common.cache.Cache uaCache = CacheBuilder.newBuilder()
-                .initialCapacity(100000)
-                .maximumSize(100000)
-                .concurrencyLevel(5) // set to number of threads that can access cache at same time
-                .build();
-
+    static Dataset getDatasetWithGuavaCaches() throws IOException {
         com.google.common.cache.Cache nodeCache = CacheBuilder.newBuilder()
                 .initialCapacity(NODES_CACHE_SIZE)
                 .maximumSize(NODES_CACHE_SIZE)
-                .concurrencyLevel(5)
+                .recordStats()
                 .build();
 
         com.google.common.cache.Cache profileCache = CacheBuilder.newBuilder()
                 .initialCapacity(PROFILES_CACHE_SIZE)
                 .maximumSize(PROFILES_CACHE_SIZE)
-                .concurrencyLevel(5)
+                .recordStats()
                 .build();
 
-        Dataset dataset = new StreamFactory.Builder()
-                .addCache(NodesCache, new PutCacheAdaptor(nodeCache))
-                .addCache(ProfilesCache, new PutCacheAdaptor(profileCache))
-                .lastModified(new Date())
-                .build("data/51Degrees-LiteV3.2.dat");
+        com.google.common.cache.Cache stringsCache = CacheBuilder.newBuilder()
+                .initialCapacity(STRINGS_CACHE_SIZE)
+                .maximumSize(STRINGS_CACHE_SIZE)
+                .recordStats()
+                .build();
 
-        Provider provider = new Provider(dataset, new UaCacheAdaptor(uaCache));
+        com.google.common.cache.Cache valuesCache = CacheBuilder.newBuilder()
+                .initialCapacity(VALUES_CACHE_SIZE)
+                .maximumSize(VALUES_CACHE_SIZE)
+                .recordStats()
+                .build();
 
-        Match match = provider.match("Hello World");
-        System.out.printf("%s", match.getSignature());
+        com.google.common.cache.Cache signaturesCache = CacheBuilder.newBuilder()
+                .initialCapacity(SIGNATURES_CACHE_SIZE)
+                .maximumSize(SIGNATURES_CACHE_SIZE)
+                .recordStats()
+                .build();
+
+        @SuppressWarnings("unchecked")
+        Dataset dataset =
+                new StreamFactory.Builder()
+                        .addCache(NodesCache, new PutCacheAdaptor(nodeCache))
+                        .addCache(ProfilesCache, new PutCacheAdaptor(profileCache))
+                        .addCache(StringsCache, new PutCacheAdaptor(stringsCache))
+                        .addCache(ValuesCache, new PutCacheAdaptor(valuesCache))
+                        .addCache(SignaturesCache, new PutCacheAdaptor(signaturesCache))
+                        .lastModified(new Date())
+                        .build(Filename.LITE_PATTERN_V32);
+
+        return dataset;
+    }
+
+    static <K,V> ILoadingCache<K,V> getUserAgentCache() {
+        com.google.common.cache.Cache<K,V> uaCache = CacheBuilder.newBuilder()
+                .initialCapacity(20)
+                .maximumSize(20)
+                .recordStats()
+                .build();
+
+        return new UaCacheAdaptor<K,V>(uaCache);
     }
 }

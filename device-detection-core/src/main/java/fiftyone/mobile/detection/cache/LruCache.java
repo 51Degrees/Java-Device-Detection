@@ -56,7 +56,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * @param <K> Key for the cache items.
  * @param <V> Value for the cache items.
  */
-public class LruCache<K, V>  implements IUaMatchCache<K,V> {
+public class LruCache<K, V>  implements ILoadingCache<K,V> {
 
     /**
      * A key value pair for cached items.
@@ -211,7 +211,7 @@ public class LruCache<K, V>  implements IUaMatchCache<K,V> {
      * @return size of the cache.
      */
     @Override
-    public int getCacheSize() { return cacheSize.get(); }
+    public long getCacheSize() { return cacheSize.get(); }
 
     /**
      * Sets the size of the cache. Used to improve performance when

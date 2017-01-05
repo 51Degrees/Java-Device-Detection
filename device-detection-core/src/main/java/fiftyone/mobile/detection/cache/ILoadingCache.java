@@ -11,6 +11,6 @@ import java.io.IOException;
  * Used only in UA Matching.
  * @author jo
  */
-public interface IUaMatchCache <K,V> extends ICache <K,V> {
+public interface ILoadingCache<K,V> extends ICache <K,V> {
     V get(K key, IValueLoader<K, V> loader) throws IOException;
 }

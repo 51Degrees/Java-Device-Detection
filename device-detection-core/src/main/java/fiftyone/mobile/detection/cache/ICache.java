@@ -12,7 +12,7 @@ package fiftyone.mobile.detection.cache;
  * @author jo
  */
 public interface ICache<K,V> {
-    int getCacheSize();
+    long getCacheSize();
 
     long getCacheMisses();
 
@@ -32,7 +32,7 @@ public interface ICache<K,V> {
 
     abstract class Base <K, V> implements ICache<K, V> {
         @Override
-        public int getCacheSize() {
+        public long getCacheSize() {
             return 0;
         }
 
