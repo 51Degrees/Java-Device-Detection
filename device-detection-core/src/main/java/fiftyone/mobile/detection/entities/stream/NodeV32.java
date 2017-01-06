@@ -52,7 +52,7 @@ public class NodeV32 extends Node {
      * positioned to start reading.
      * @throws java.io.IOException if there was a problem accessing data file.
      */
-    public NodeV32(fiftyone.mobile.detection.entities.stream.Dataset dataSet, 
+    public NodeV32(StreamDataset dataSet,
                     int offset, BinaryReader reader) throws IOException {
         super(dataSet, offset, reader);
         super.rankedSignatureCount = reader.readUInt16();

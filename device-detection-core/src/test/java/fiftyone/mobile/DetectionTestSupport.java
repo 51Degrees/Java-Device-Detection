@@ -23,6 +23,7 @@ package fiftyone.mobile;
 
 import fiftyone.mobile.detection.Dataset;
 import fiftyone.mobile.detection.Provider;
+import fiftyone.mobile.detection.entities.stream.StreamDataset;
 import fiftyone.mobile.test.common.Results;
 import fiftyone.properties.MatchMethods;
 import org.junit.Before;
@@ -130,9 +131,9 @@ public class DetectionTestSupport {
      * @param provider
      */
     public static void assertPool(Provider provider) {
-        if (provider.dataSet instanceof fiftyone.mobile.detection.entities.stream.Dataset) {
-            fiftyone.mobile.detection.entities.stream.Dataset dataSet =
-                    (fiftyone.mobile.detection.entities.stream.Dataset)provider.dataSet;
+        if (provider.dataSet instanceof StreamDataset) {
+            StreamDataset dataSet =
+                    (StreamDataset)provider.dataSet;
 
             // Check the size of the reader queues for equality now time has
             // passed and readers should have been returned to it.
@@ -218,7 +219,7 @@ public class DetectionTestSupport {
         }
     }
 
-    public static void reportPool(fiftyone.mobile.detection.entities.stream.Dataset dataSet) {
+    public static void reportPool(StreamDataset dataSet) {
         System.out.printf("Readers in queue '%d'\r\n", dataSet.getReadersQueued());
         System.out.printf("Readers created '%d'\r\n", dataSet.getReadersCreated());
     }
@@ -247,10 +248,10 @@ public class DetectionTestSupport {
     public static void reportProvider(Provider provider) {
         System.out.printf("User-Agent cache misses '%.0f%%'\r\n",
                 provider.getPercentageCacheMisses());
-        if (provider.dataSet instanceof fiftyone.mobile.detection.entities.stream.Dataset)
+        if (provider.dataSet instanceof StreamDataset)
         {
             reportCache(provider.dataSet);
-            reportPool((fiftyone.mobile.detection.entities.stream.Dataset)provider.dataSet);
+            reportPool((StreamDataset)provider.dataSet);
         }
     }
 

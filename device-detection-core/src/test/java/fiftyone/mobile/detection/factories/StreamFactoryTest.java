@@ -8,6 +8,7 @@ import fiftyone.mobile.detection.IReadonlyList;
 import fiftyone.mobile.detection.Provider;
 import fiftyone.mobile.detection.cache.ICache;
 import fiftyone.mobile.detection.cache.LruCache;
+import fiftyone.mobile.detection.entities.stream.StreamDataset;
 import fiftyone.mobile.detection.helper.GuavaCache;
 import fiftyone.mobile.detection.helper.ViableProvider;
 import fiftyone.properties.CacheConstants;
@@ -88,7 +89,7 @@ public class StreamFactoryTest extends StandardUnitTest {
     @Test
     public void testMemoryStreamDatasetConsistentDefault () throws IOException {
 
-        fiftyone.mobile.detection.entities.stream.Dataset streamDataset =
+        StreamDataset streamDataset =
                 StreamFactory.create(Filename.LITE_PATTERN_V32);
         Dataset memoryDataset = MemoryFactory.create(Filename.LITE_PATTERN_V32);
 
@@ -99,7 +100,7 @@ public class StreamFactoryTest extends StandardUnitTest {
     @Test
     public void testMemoryStreamDatasetConsistentNoCache () throws IOException {
 
-        fiftyone.mobile.detection.entities.stream.Dataset streamDataset = new StreamFactory.Builder()
+        StreamDataset streamDataset = new StreamFactory.Builder()
                 .lastModified(new Date())
                 .build(Filename.LITE_PATTERN_V32);
         Dataset memoryDataset = MemoryFactory.create(Filename.LITE_PATTERN_V32);
@@ -114,7 +115,7 @@ public class StreamFactoryTest extends StandardUnitTest {
         LruCache valuesCache = new LruCache(100);
         LruCache stringsCache = new LruCache(100);
 
-        fiftyone.mobile.detection.entities.stream.Dataset streamDataset = new StreamFactory.Builder()
+        StreamDataset streamDataset = new StreamFactory.Builder()
                 .addCache(NodesCache, nodesCache)
                 .addCache(ValuesCache, valuesCache)
                 .addCache(StringsCache, stringsCache)
@@ -128,7 +129,7 @@ public class StreamFactoryTest extends StandardUnitTest {
     @Test
     public void testMemoryStreamDatasetConsistentGuava () throws Exception {
 
-        fiftyone.mobile.detection.entities.stream.Dataset streamDataset = getDatasetWithGuavaCaches();
+        StreamDataset streamDataset = getDatasetWithGuavaCaches();
         Dataset memoryDataset = MemoryFactory.create(Filename.LITE_PATTERN_V32);
 
         compareDatasets(streamDataset, memoryDataset);
@@ -137,7 +138,7 @@ public class StreamFactoryTest extends StandardUnitTest {
     // see if the cache metrics etc work when using default cache.
     @Test
     public void testDefaultCache () throws Exception {
-        fiftyone.mobile.detection.entities.stream.Dataset dataset = StreamFactory.create(Filename.LITE_PATTERN_V32);
+        Dataset dataset = StreamFactory.create(Filename.LITE_PATTERN_V32);
         Provider provider = new Provider(dataset, 20);
 
         cacheTests(provider);
@@ -146,7 +147,7 @@ public class StreamFactoryTest extends StandardUnitTest {
     // see if cache metrics etc work with Guava cache
     @Test
     public void testGuavaCache () throws Exception {
-        fiftyone.mobile.detection.entities.stream.Dataset dataset = getDatasetWithGuavaCaches();
+        Dataset dataset = getDatasetWithGuavaCaches();
         Provider provider = new Provider(dataset, GuavaCache.getUserAgentCache());
 
         cacheTests(provider);
@@ -155,7 +156,7 @@ public class StreamFactoryTest extends StandardUnitTest {
 
     // --- helpers
 
-    private void compareDatasets(fiftyone.mobile.detection.entities.stream.Dataset streamDataset, Dataset memoryDataset) {
+    private void compareDatasets(StreamDataset streamDataset, Dataset memoryDataset) {
         logger.debug("Strings");
         compareStreamMemory(streamDataset.strings, memoryDataset.strings);
         printDatasetCacheInfo(streamDataset);
@@ -181,7 +182,7 @@ public class StreamFactoryTest extends StandardUnitTest {
 
     private void cacheTests(Provider provider) throws IOException {
         ViableProvider.ensureViableProvider(provider);
-        fiftyone.mobile.detection.entities.stream.Dataset dataset = (fiftyone.mobile.detection.entities.stream.Dataset) provider.dataSet;
+        StreamDataset dataset = (StreamDataset) provider.dataSet;
         assertEquals(1, provider.getCacheMisses());
         assertEquals(1, provider.getCacheRequests(), 0);
         printDatasetCacheInfo(dataset);
@@ -229,7 +230,7 @@ public class StreamFactoryTest extends StandardUnitTest {
         assertEquals(signaturesMisses, dataset.getCache(SignaturesCache).getCacheMisses());
     }
 
-    private void printDatasetCacheInfo(fiftyone.mobile.detection.entities.stream.Dataset dataset) {
+    private void printDatasetCacheInfo(StreamDataset dataset) {
         for (CacheConstants.CacheType type: CacheConstants.CacheType.values()) {
             ICache cache = dataset.getCache(type);
             if (cache == null) {

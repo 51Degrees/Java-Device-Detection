@@ -7,7 +7,8 @@ import fiftyone.mobile.detection.cache.ICache;
 import fiftyone.mobile.detection.cache.IPutCache;
 import fiftyone.mobile.detection.cache.ILoadingCache;
 import fiftyone.mobile.detection.cache.IValueLoader;
-import fiftyone.mobile.detection.entities.stream.Dataset;
+import fiftyone.mobile.detection.Dataset;
+import fiftyone.mobile.detection.entities.stream.StreamDataset;
 import fiftyone.mobile.detection.factories.StreamFactory;
 
 import java.io.IOException;
@@ -24,10 +25,10 @@ import static fiftyone.properties.CacheConstants.VALUES_CACHE_SIZE;
  */
 public class GuavaCache {
 
-    public static class CacheAdaptor <K,V>  implements ICache<K,V> {
-        protected final Cache<K,V> cache;
+     static class CacheAdaptor <K,V>  implements ICache<K,V> {
+        final Cache<K,V> cache;
 
-        public CacheAdaptor(Cache<K,V> cache) {
+        CacheAdaptor(Cache<K, V> cache) {
             this.cache = cache;
         }
 
@@ -62,9 +63,9 @@ public class GuavaCache {
         }
     }
 
-    public static class PutCacheAdaptor<K,V> extends CacheAdaptor<K,V> implements IPutCache<K,V>{
+    static class PutCacheAdaptor<K,V> extends CacheAdaptor<K,V> implements IPutCache<K,V>{
 
-        public PutCacheAdaptor(Cache<K, V> cache) {
+        PutCacheAdaptor(Cache<K, V> cache) {
             super(cache);
         }
 
@@ -74,9 +75,9 @@ public class GuavaCache {
         }
     }
 
-    public static class UaCacheAdaptor <K,V> extends PutCacheAdaptor<K,V> implements ILoadingCache<K,V> {
+    static class UaCacheAdaptor <K,V> extends PutCacheAdaptor<K,V> implements ILoadingCache<K,V> {
 
-        public UaCacheAdaptor(com.google.common.cache.Cache<K,V> cache) {
+        UaCacheAdaptor(com.google.common.cache.Cache<K,V> cache) {
             super(cache);
         }
 
@@ -98,7 +99,7 @@ public class GuavaCache {
         }
     }
 
-    public static Dataset getDatasetWithGuavaCaches() throws IOException {
+    public static StreamDataset getDatasetWithGuavaCaches() throws IOException {
         com.google.common.cache.Cache nodeCache = CacheBuilder.newBuilder()
                 .initialCapacity(NODES_CACHE_SIZE)
                 .maximumSize(NODES_CACHE_SIZE)
@@ -130,7 +131,7 @@ public class GuavaCache {
                 .build();
 
         @SuppressWarnings("unchecked")
-        Dataset dataset =
+        StreamDataset dataset =
                 new StreamFactory.Builder()
                         .addCache(NodesCache, new PutCacheAdaptor(nodeCache))
                         .addCache(ProfilesCache, new PutCacheAdaptor(profileCache))

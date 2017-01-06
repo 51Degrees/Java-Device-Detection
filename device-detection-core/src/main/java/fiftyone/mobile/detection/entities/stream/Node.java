@@ -54,7 +54,7 @@ public abstract class Node extends fiftyone.mobile.detection.entities.Node {
      * positioned to start reading.
      * @throws java.io.IOException if there was a problem accessing data file.
      */
-    public Node(Dataset dataSet, int offset, BinaryReader reader) 
+    public Node(StreamDataset dataSet, int offset, BinaryReader reader)
                                                             throws IOException {
         super(dataSet, offset, reader);
         this.pool = dataSet.pool;

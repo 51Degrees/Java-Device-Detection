@@ -1,7 +1,9 @@
 package fiftyone.properties;
 
+import fiftyone.mobile.detection.entities.stream.StreamDataset;
+
 /**
- * Constants for caches for Stream {@link fiftyone.mobile.detection.entities.stream.Dataset}s
+ * Constants for caches for Stream {@link StreamDataset}s
  */
 public class CacheConstants {
 

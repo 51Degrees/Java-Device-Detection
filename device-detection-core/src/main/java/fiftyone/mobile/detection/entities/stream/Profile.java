@@ -43,7 +43,7 @@ public class Profile extends fiftyone.mobile.detection.entities.Profile {
      * @param index the index in the data structure to the profile.
      * @param reader BinaryReader object to be used.
      */
-    public Profile(Dataset dataSet, int index, BinaryReader reader) {
+    public Profile(StreamDataset dataSet, int index, BinaryReader reader) {
         super(dataSet, index, reader);
         this.pool = dataSet.pool;
         valueIndexesCount = reader.readInt32();

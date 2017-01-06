@@ -22,6 +22,7 @@ package fiftyone.mobile.detection.factories.stream;
 
 import fiftyone.mobile.detection.Dataset;
 import fiftyone.mobile.detection.entities.Profile;
+import fiftyone.mobile.detection.entities.stream.StreamDataset;
 import fiftyone.mobile.detection.readers.BinaryReader;
 
 /**
@@ -38,7 +39,7 @@ public class ProfileStreamFactory
     @Override
     protected Profile construct(Dataset dataSet, int index, BinaryReader reader) {
         return new fiftyone.mobile.detection.entities.stream.Profile(
-                (fiftyone.mobile.detection.entities.stream.Dataset)dataSet, 
+                (StreamDataset)dataSet,
                 index, 
                 reader);
     }

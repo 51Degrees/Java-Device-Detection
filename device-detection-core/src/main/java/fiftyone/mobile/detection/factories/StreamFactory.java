@@ -29,7 +29,7 @@ import fiftyone.mobile.detection.entities.*;
 import fiftyone.mobile.detection.entities.headers.Header;
 import fiftyone.mobile.detection.entities.memory.MemoryFixedList;
 import fiftyone.mobile.detection.entities.memory.PropertiesList;
-import fiftyone.mobile.detection.entities.stream.Dataset;
+import fiftyone.mobile.detection.entities.stream.StreamDataset;
 import fiftyone.mobile.detection.entities.stream.IntegerList;
 import fiftyone.mobile.detection.factories.stream.NodeStreamFactoryV31;
 import fiftyone.mobile.detection.factories.stream.NodeStreamFactoryV32;
@@ -93,8 +93,8 @@ public final class StreamFactory {
      * @return Stream Dataset object.
      * @throws IOException if there was a problem accessing data file.
      */
-    public static Dataset create(byte[] data) throws IOException {
-        Dataset dataSet = new Dataset(data, Modes.MEMORY_MAPPED);
+    public static StreamDataset create(byte[] data) throws IOException {
+        StreamDataset dataSet = new StreamDataset(data, Modes.MEMORY_MAPPED);
         load(dataSet, new HashMap<CacheType, ICache>());
         return dataSet;
     }
@@ -107,7 +107,7 @@ public final class StreamFactory {
      *         required.
      * @throws IOException  if there was a problem accessing the data file.
      */
-    public static Dataset create(String filePath)
+    public static StreamDataset create(String filePath)
             throws IOException {
         return create(filePath, false);
     }
@@ -123,7 +123,7 @@ public final class StreamFactory {
      *         required.
      * @throws IOException if there was a problem accessing data file.
      */
-    public static Dataset create(String filePath, boolean isTempFile) 
+    public static StreamDataset create(String filePath, boolean isTempFile)
                                                             throws IOException {
         return create(filePath, 
                 new Date(new File(filePath).lastModified()), 
@@ -140,10 +140,10 @@ public final class StreamFactory {
      * @return Stream Dataset object.
      * @throws IOException if there was a problem accessing data file.
      */
-    public static Dataset create(String filepath, Date lastModified, 
+    public static StreamDataset create(String filepath, Date lastModified,
             boolean isTempFile) throws IOException {
-        Dataset dataSet = 
-                new fiftyone.mobile.detection.entities.stream.Dataset(
+        StreamDataset dataSet =
+                new StreamDataset(
                         filepath, 
                         lastModified, 
                         Modes.FILE, 
@@ -180,13 +180,13 @@ public final class StreamFactory {
             return this;
         }
 
-        public Dataset build(String filename) throws IOException {
+        public StreamDataset build(String filename) throws IOException {
             Date modDate = lastModified;
             if (modDate.equals(DATE_NONE)) {
                 modDate = new Date(new File(filename).lastModified());
             }
-            Dataset dataSet =
-                    new fiftyone.mobile.detection.entities.stream.Dataset(
+            StreamDataset dataSet =
+                    new StreamDataset(
                             filename, modDate,  Modes.FILE,  isTempFile);
             load(dataSet, cacheMap);
             return dataSet;
@@ -201,12 +201,12 @@ public final class StreamFactory {
      */
     private static class EntityLoader<V> implements IValueLoader<Integer,V> {
 
-        final Dataset dataset;
+        final StreamDataset dataset;
         final BaseEntityFactory<V> entityFactory;
         final Header header;
         boolean fixedLength = false;
 
-        EntityLoader(Header header, Dataset dataset, BaseEntityFactory<V> entityFactory) {
+        EntityLoader(Header header, StreamDataset dataset, BaseEntityFactory<V> entityFactory) {
             this.dataset = dataset;
             this.entityFactory = entityFactory;
             this.header = header;
@@ -256,7 +256,7 @@ public final class StreamFactory {
 
         private LruCache<Integer, V> cache;
 
-        LruEntityLoader(final Header header, final Dataset dataset, final BaseEntityFactory<V> entityFactory, LruCache<Integer, V> cache) {
+        LruEntityLoader(final Header header, final StreamDataset dataset, final BaseEntityFactory<V> entityFactory, LruCache<Integer, V> cache) {
             super(header, dataset, entityFactory);
             this.cache = cache;
             this.cache.setCacheLoader(new IValueLoader<Integer, V>() {
@@ -284,7 +284,7 @@ public final class StreamFactory {
 
         private IPutCache<Integer, V> cache;
 
-        CachedEntityLoader(Header header, Dataset dataset, BaseEntityFactory<V> entityFactory, IPutCache<Integer, V> cache) {
+        CachedEntityLoader(Header header, StreamDataset dataset, BaseEntityFactory<V> entityFactory, IPutCache<Integer, V> cache) {
             super(header, dataset, entityFactory);
             this.cache = cache;
         }
@@ -372,15 +372,16 @@ public final class StreamFactory {
     }
 
     /**
-     * helper to create an appropriate loader given the cache type
+     * helper to create an appropriate loader for a cached list given the cache type
+     * @param header the header defining the list this will create the loader for
      * @param cache the cache, or null
      * @param dataset the dataset
-     * @param factory the factory for the tupe
+     * @param factory the factory for the type
      * @param <T> the type
      * @return an entity loader
      */
     @SuppressWarnings("unchecked")
-    private static <T> EntityLoader<T> getLoaderFor(Header header, ICache cache, Dataset dataset, BaseEntityFactory factory) {
+    private static <T> EntityLoader<T> getLoaderFor(Header header, ICache cache, StreamDataset dataset, BaseEntityFactory factory) {
         EntityLoader loader;
         if (cache == null) {
             loader = new EntityLoader(header, dataset, factory);
@@ -403,7 +404,7 @@ public final class StreamFactory {
      * @throws IOException if there was a problem accessing data file.
      */
     @SuppressWarnings("null")
-    private static void load(Dataset dataSet, java.util.Map<CacheType, ICache> cacheMap) throws IOException {
+    private static void load(StreamDataset dataSet, java.util.Map<CacheType, ICache> cacheMap) throws IOException {
         BinaryReader reader = dataSet.pool.getReader();
         try {
             dataSet.setCacheMap(cacheMap);

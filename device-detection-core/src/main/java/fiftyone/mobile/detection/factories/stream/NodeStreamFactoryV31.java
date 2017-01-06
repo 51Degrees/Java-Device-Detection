@@ -22,6 +22,7 @@ package fiftyone.mobile.detection.factories.stream;
 
 import fiftyone.mobile.detection.Dataset;
 import fiftyone.mobile.detection.entities.Node;
+import fiftyone.mobile.detection.entities.stream.StreamDataset;
 import fiftyone.mobile.detection.factories.NodeFactory;
 import fiftyone.mobile.detection.factories.NodeFactoryV31;
 import fiftyone.mobile.detection.readers.BinaryReader;
@@ -54,7 +55,7 @@ public class NodeStreamFactoryV31 extends NodeFactoryV31 {
     protected Node construct(Dataset dataSet, int index, BinaryReader reader) 
                                                             throws IOException {
         return new fiftyone.mobile.detection.entities.stream.NodeV31(
-                (fiftyone.mobile.detection.entities.stream.Dataset)dataSet, 
+                (StreamDataset)dataSet,
                 index, 
                 reader);
     }

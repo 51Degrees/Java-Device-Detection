@@ -42,7 +42,7 @@ public class IntegerList implements ISimpleList {
     // Entity header.
     private final Header header;
     // Array of items contained in the list.
-    protected final Dataset dataSet;
+    protected final StreamDataset dataSet;
     
     /**
      * Constructs a new instance of this class.
@@ -51,14 +51,14 @@ public class IntegerList implements ISimpleList {
      * @param reader BinaryReader connected to the source data structure and 
      *               positioned to start reading.
      */
-    public IntegerList(Dataset dataSet, BinaryReader reader) {
+    public IntegerList(StreamDataset dataSet, BinaryReader reader) {
         this.header = new Header(reader);
         this.dataSet = dataSet;
     }
     
     @Override
     public int get(int index) {
-        int result = 0;
+        int result;
         BinaryReader reader = null;
         try {
             reader = dataSet.pool.getReader();

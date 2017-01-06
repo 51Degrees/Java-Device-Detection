@@ -21,12 +21,10 @@
 package fiftyone.mobile.detection;
 
 import java.io.IOException;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
+import fiftyone.mobile.detection.cache.ICache;
 import fiftyone.mobile.detection.entities.AsciiString;
 import fiftyone.mobile.detection.entities.Component;
 import fiftyone.mobile.detection.entities.Guid;
@@ -41,8 +39,10 @@ import fiftyone.mobile.detection.entities.Value;
 import fiftyone.mobile.detection.entities.Version;
 import fiftyone.mobile.detection.entities.memory.MemoryFixedList;
 import fiftyone.mobile.detection.entities.memory.PropertiesList;
+import fiftyone.mobile.detection.entities.stream.StreamDataset;
 import fiftyone.mobile.detection.search.SearchBase;
 import fiftyone.mobile.detection.search.SearchResult;
+import fiftyone.properties.CacheConstants;
 import fiftyone.properties.DetectionConstants;
 import java.io.Closeable;
 
@@ -53,8 +53,7 @@ import java.io.Closeable;
  * Dataset should not be constructed directly, instead use either 
  * {@link fiftyone.mobile.detection.factories.StreamFactory} or 
  * {@link fiftyone.mobile.detection.factories.MemoryFactory}. Stream factory 
- * returns a {@link fiftyone.mobile.detection.entities.stream.Dataset Stream 
- * Dataset} which extends the this class and contains data members and methods 
+ * returns a {@link StreamDataset} which extends the this class and contains data members and methods
  * to access the data file on the "as needed" basis.
  * <p>
  * All information about the detector data set is exposed in this class 
@@ -66,7 +65,7 @@ import java.io.Closeable;
  * For more information see https://51degrees.com/Support/Documentation/Java
  */
 public class Dataset implements Closeable {
-
+    // TODO why is this here?
     public boolean FindProfilesInitialiseValueProfiles = false;
 
     /**
@@ -255,7 +254,7 @@ public class Dataset implements Closeable {
      * a match.
      */
     public int xmlBufferLength;
-    
+
     /**
      * Constructs a new data set ready to have lists of data assigned to it.
      * 
