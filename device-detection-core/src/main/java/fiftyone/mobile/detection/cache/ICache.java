@@ -6,18 +6,28 @@ package fiftyone.mobile.detection.cache;
  * Aside from {@link #get(Object)} methods are optional.
  * <p>
  * Implementations may choose to respond "-1" for
- * methods that return numbers and may throw {@link UnsupportedOperationException}
- * for {@link #resetCache()}.
- *
- * @author jo
+ * methods that return numbers and proiver a no op
+ * for {@link #resetCache()}
  */
 public interface ICache<K,V> {
+    /**
+     * The size of the cache as number of entries
+     */
     long getCacheSize();
 
+    /**
+     * The number of requests that could not be served
+     */
     long getCacheMisses();
 
+    /**
+     * The number of requests made to the cache
+     */
     long getCacheRequests();
 
+    /**
+     * a fraction < 1 (not a percentage) misses/requests
+     */
     double getPercentageMisses();
 
     /**
@@ -28,32 +38,36 @@ public interface ICache<K,V> {
      */
     V get(K key);
 
+    /**
+     * Remove all entries from the cache and reset statistics if possible.
+     */
     void resetCache();
 
     abstract class Base <K, V> implements ICache<K, V> {
         @Override
         public long getCacheSize() {
-            return 0;
+            return -1;
         }
 
         @Override
         public long getCacheMisses() {
-            return 0;
+            return -1;
         }
 
         @Override
         public long getCacheRequests() {
-            return 0;
+            return -1;
         }
 
         @Override
         public double getPercentageMisses() {
-            return 0;
+            if (getCacheRequests() == 0) {
+                return -1;
+            }
+            return getCacheMisses()/getCacheRequests();
         }
 
         @Override
-        public void resetCache() {
-            throw new IllegalStateException("Cache reset not supported");
-        }
+        public void resetCache() {}
     }
 }

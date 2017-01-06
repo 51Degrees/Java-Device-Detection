@@ -50,11 +50,16 @@ import java.io.Closeable;
  * Data set used for device detection and provide methods to work with device 
  * data. 
  * <p>
- * Dataset should not be constructed directly, instead use either 
- * {@link fiftyone.mobile.detection.factories.StreamFactory} or 
- * {@link fiftyone.mobile.detection.factories.MemoryFactory}. Stream factory 
+ * Dataset should not be constructed directly.
+ * See {@link DatasetBuilder} for a convenient way to instantiate this class.
+ * <p>
+ * Alternatively use either
+ * {@link fiftyone.mobile.detection.factories.StreamFactory} or
+ * {@link fiftyone.mobile.detection.factories.MemoryFactory}.
+ * <p>
+ * Stream factory
  * returns a {@link StreamDataset} which extends the this class and contains data members and methods
- * to access the data file on the "as needed" basis.
+ * to access the data file on the "as needed" basis as well as supporting caching.
  * <p>
  * All information about the detector data set is exposed in this class 
  * including meta data and data used for device detection in the form of lists.
@@ -1088,97 +1093,75 @@ public class Dataset implements Closeable {
             return super.binarySearch(profileOffsets, profileId);
         }
     }
-    
+
+    /**
+     * Reset any caches in use for this Dataset. Only {@link StreamDataset}
+     * contains caches.
+     */
+    public void resetCache() {
+        //Do nothing in this implementation.
+    }
+
+
     // <editor-fold defaultstate="collapsed" desc="Deprecated methods">
     /**
-     * Returns the number of times the cache lists were switched.
-     * Note: The LRU does not require switching and this method has been 
-     * deprecated.
-     * @param list a Cache object to get percentage from.
-     * @return 0 if object is not Cache, percentage otherwise.
+     * This method no longer supported. (See {@link StreamDataset#getCache(CacheConstants.CacheType)}.
      */
     @Deprecated
     private static long getSwitches(Object list) {
-        return -1;
+        return 0;
     }
     
     /**
-     * Number of times the ranked signature cache was switched.
-     * A value is only returned when operating in Stream mode.
-     * 
-     * @return Number of times the ranked signature cache was switched.
+     * This method no longer supported. (See {@link StreamDataset#getCache(CacheConstants.CacheType)}.
      */
     @Deprecated
     public long getRankedSignatureCacheSwitches() {
         return getSwitches(rankedSignatureIndexes);
     }
-    
+
     /**
-     * The percentage of requests for ranked signatures which were not already
-     * contained in the cache.A value is only returned when operating in 
-     * Stream mode.
-     * @return The percentage of requests for ranked signatures which were 
-     * not already contained in the cache.
+     * This method no longer supported. (See {@link StreamDataset#getCache(CacheConstants.CacheType)}.
      */
     @Deprecated
     public double getPercentageRankedSignatureCacheMisses() {
         return getPercentageMisses(rankedSignatureIndexes);
     }
-    
+
     /**
-     * Number of times the signature cache was switched.
-     * Note: The LRU does not require switching and this method has been 
-     * deprecated.
-     * A value is only returned when operating in Stream mode.
-     * @return Number of times the signature cache was switched.
+     * This method no longer supported. (See {@link StreamDataset#getCache(CacheConstants.CacheType)}.
      */
     @Deprecated
     public long getSignatureCacheSwitches() {
         return 0;
     }
-    
+
     /**
-     * Number of times the node cache was switched.
-     * Note: The LRU does not require switching and this method has been 
-     * deprecated.
-     * A value is only returned when operating in Stream mode.
-     * @return Number of times the node cache was switched.
+     * This method no longer supported. (See {@link StreamDataset#getCache(CacheConstants.CacheType)}.
      */
     @Deprecated
     public long getNodeCacheSwitches() {
         return getSwitches(nodes);
     }
-    
+
     /**
-     * Number of times the strings cache was switched.
-     * Note: The LRU does not require switching and this method has been 
-     * deprecated.
-     * A value is only returned when operating in Stream mode.
-     * @return Number of times the strings cache was switched.
+     * This method no longer supported. (See {@link StreamDataset#getCache(CacheConstants.CacheType)}.
      */
     @Deprecated
     public long getStringsCacheSwitches() {
         return getSwitches(strings);
     }
-    
+
     /**
-     * Number of times the profiles cache was switched.
-     * Note: The LRU does not require switching and this method has been 
-     * deprecated.
-     * A value is only returned when operating in Stream mode.
-     * @return Number of times the profiles cache was switched.
+     * This method no longer supported. (See {@link StreamDataset#getCache(CacheConstants.CacheType)}.
      */
     @Deprecated
     public long getProfilesCacheSwitches() {
         return getSwitches(profiles);
     }
-    
+
     /**
-     * Number of times the values cache was switched.
-     * Note: The LRU does not require switching and this method has been 
-     * deprecated.
-     * A value is only returned when operating in Stream mode.
-     * @return Number of times the values cache was switched.
+     * This method no longer supported. (See {@link StreamDataset#getCache(CacheConstants.CacheType)}.
      */
     @Deprecated
     public long getValuesCacheSwitches() {
@@ -1198,39 +1181,17 @@ public class Dataset implements Closeable {
     public Property getPropertyByName(String propertyName) throws IOException {
         return this.properties.get(propertyName);
     }
-    
+
     /**
-     * Returns the percentage of requests that weren't serviced by the cache.
-     * 
-     * The data set no longer requires caching.
-     * 
-     * @param list a Cache object to get percentage from.
-     * @return 0 if object is not Cache, percentage otherwise.
+     * This method no longer supported. (See {@link StreamDataset#getCache(CacheConstants.CacheType)}.
      */
     @Deprecated
     private static double getPercentageMisses(Object list) {
-        return -1;
+        return 0;
     }
 
     /**
-     * If there are cached lists being used the states are reset for them.
-     * 
-     * Caching is no longer supported in the stream data set.
-     */
-    @Deprecated
-    public void resetCache() {
-        //Do nothing in this implementation.
-    }
-    
-    /**
-     * The percentage of requests for signatures which were not already
-     * contained in the cache. A value is only returned when operating in
-     * Stream mode.
-     * 
-     * The data set no longer requires caching.
-     * 
-     * @return double representing percentage of requests for signatures not 
-     * currently in cache, only for Stream Mode.
+     * This method no longer supported. (See {@link StreamDataset#getCache(CacheConstants.CacheType)}.
      */
     @Deprecated
     public double getPercentageSignatureCacheMisses() {
@@ -1238,14 +1199,7 @@ public class Dataset implements Closeable {
     }
 
     /**
-     * The percentage of requests for nodes which were not already
-     * contained in the cache. A value is only returned when operating in 
-     * Stream mode.
-     * 
-     * The data set no longer requires caching.
-     * 
-     * @return double representing percentage of requests for nodes not already 
-     * in cache. Stream Mode only.
+     * This method no longer supported. (See {@link StreamDataset#getCache(CacheConstants.CacheType)}.
      */
     @Deprecated
     public double getPercentageNodeCacheMisses() {
@@ -1253,13 +1207,7 @@ public class Dataset implements Closeable {
     }
 
     /**
-     * The percentage of requests for strings which were not already contained
-     * in the cache. A value is only returned when operating in Stream mode.
-     * 
-     * The data set no longer requires caching.
-     * 
-     * @return double representing percentage of requests for strings that were 
-     * not already in cache.
+     * This method no longer supported. (See {@link StreamDataset#getCache(CacheConstants.CacheType)}.
      */
     @Deprecated
     public double getPercentageStringsCacheMisses() {
@@ -1267,13 +1215,7 @@ public class Dataset implements Closeable {
     }
 
     /**
-     * The percentage of requests for profiles which were not already contained
-     * in the cache. A value is only returned when operating in Stream mode.
-     * 
-     * The data set no longer requires caching.
-     * 
-     * @return double representing percentage of requests for profiles that were 
-     * not already in cache.
+     * This method no longer supported. (See {@link StreamDataset#getCache(CacheConstants.CacheType)}.
      */
     @Deprecated
     public double getPercentageProfilesCacheMisses() {
@@ -1281,13 +1223,7 @@ public class Dataset implements Closeable {
     }
 
     /**
-     * The percentage of requests for values which were not already contained in
-     * the cache. A value is only returned when operating in Stream mode.
-     * 
-     * The data set no longer requires caching.
-     * 
-     * @return double representing percentage of requests for values that were 
-     * not already in cache.
+     * This method no longer supported. (See {@link StreamDataset#getCache(CacheConstants.CacheType)}.
      */
     @Deprecated
     public double getPercentageValuesCacheMisses() {

@@ -12,16 +12,13 @@ import java.util.Date;
 import java.util.HashMap;
 
 /**
- * A data set returned from the stream factory which includes a pool of
+ * A data set which includes a pool of
  * data readers that are used to fetch data from the source when the data
- * set is used to retrieve data not already in memory.
+ * set is used to retrieve data not already in memory. It also provides for
+ * caching of values.
  * <p>
- * Extends {@link fiftyone.mobile.detection.Dataset}
- * <p>
- * Created by {@link fiftyone.mobile.detection.factories.StreamFactory}.
- * Since stream works with file directly a pool of readers is maintained until
- * the dataset is closed. Class provides extra methods to check how many readers
- * were created and how many are currently free to use.
+ * Class provides extra methods to assess status of readers and to
+ * evaluate the caches.
  */
 public class StreamDataset extends fiftyone.mobile.detection.Dataset {
 
@@ -93,6 +90,20 @@ public class StreamDataset extends fiftyone.mobile.detection.Dataset {
     public int getReadersQueued()
     {
         return pool.getReadersQueued();
+    }
+
+    /**
+     * Resets the caches for the data set. This is a "best efforts"
+     * operation that may not be supported by all underlying cache
+     * implementations.
+     */
+    @Override
+    public void resetCache() {
+        for (ICache cache: cacheMap.values()) {
+            if (cache != null) {
+                cache.resetCache();
+            }
+        }
     }
 
     private java.util.Map<CacheConstants.CacheType, ICache> cacheMap = new HashMap<CacheConstants.CacheType, ICache>(5);
