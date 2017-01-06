@@ -23,16 +23,18 @@ package fiftyone.mobile.detection.factories;
 
 import fiftyone.mobile.Filename;
 import fiftyone.mobile.StandardUnitTest;
-import fiftyone.mobile.detection.*;
+import fiftyone.mobile.detection.Dataset;
+import fiftyone.mobile.detection.Provider;
 import org.junit.Test;
 
 import java.io.File;
 import java.io.FileInputStream;
 
-import static org.junit.Assert.*;
+import static fiftyone.mobile.detection.helper.ViableProvider.ensureViableProvider;
+import static org.junit.Assert.assertTrue;
 
 /**
- * Tests for the instantiation of MemoryFactory
+ * Minimal tests for the instantiation of MemoryFactory
  */
 public class MemoryFactoryTest extends StandardUnitTest {
 
@@ -44,7 +46,7 @@ public class MemoryFactoryTest extends StandardUnitTest {
             Dataset dataset = MemoryFactory.create(fileInputStream);
             try {
                 Provider provider = new Provider(dataset);
-                ViableProvider.ensureViableProvider(provider);
+                ensureViableProvider(provider);
             } finally {
                 if (dataset != null) dataset.close();
             }

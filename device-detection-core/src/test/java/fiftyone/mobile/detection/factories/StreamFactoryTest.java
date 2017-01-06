@@ -8,6 +8,8 @@ import fiftyone.mobile.detection.IReadonlyList;
 import fiftyone.mobile.detection.Provider;
 import fiftyone.mobile.detection.cache.ICache;
 import fiftyone.mobile.detection.cache.LruCache;
+import fiftyone.mobile.detection.helper.GuavaCache;
+import fiftyone.mobile.detection.helper.ViableProvider;
 import fiftyone.properties.CacheConstants;
 import org.junit.Test;
 
@@ -16,15 +18,16 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.Iterator;
 
-import static fiftyone.mobile.detection.factories.GuavaCache.getDatasetWithGuavaCaches;
+import static fiftyone.mobile.detection.helper.GuavaCache.getDatasetWithGuavaCaches;
 import static fiftyone.properties.CacheConstants.CacheType.*;
 import static org.junit.Assert.*;
 
 /**
- * @author jo
+ * Validate StreamFactory
  */
 public class StreamFactoryTest extends StandardUnitTest {
 
+    // create a 3.2 pattern provider using a builder
     @Test
     public void testCreate32FromBuilder () throws Exception {
         File temp = File.createTempFile("Test",".dat");
@@ -52,6 +55,7 @@ public class StreamFactoryTest extends StandardUnitTest {
 
     }
 
+    // create a 3.2 pattern provider using factory create method
     @Test
     public void testCreate32FromFilename () throws Exception {
         File temp = File.createTempFile("Test",".dat");
@@ -73,6 +77,7 @@ public class StreamFactoryTest extends StandardUnitTest {
 
     }
 
+    // create 3.1 pattern provider using factory create method
     @Test
     public void testCreate31FromFilename () throws Exception {
         Dataset dataset = StreamFactory.create(Filename.LITE_PATTERN_V31);
@@ -151,23 +156,23 @@ public class StreamFactoryTest extends StandardUnitTest {
     // --- helpers
 
     private void compareDatasets(fiftyone.mobile.detection.entities.stream.Dataset streamDataset, Dataset memoryDataset) {
-        System.out.println("\nStrings");
+        logger.debug("Strings");
         compareStreamMemory(streamDataset.strings, memoryDataset.strings);
         printDatasetCacheInfo(streamDataset);
 
-        System.out.println("\nSignatures");
+        logger.debug("Signatures");
         compareStreamMemory(streamDataset.signatures, memoryDataset.signatures);
         printDatasetCacheInfo(streamDataset);
 
-        System.out.println("\nProfiles");
+        logger.debug("Profiles");
         compareStreamMemory(streamDataset.profiles, memoryDataset.profiles);
         printDatasetCacheInfo(streamDataset);
 
-        System.out.println("\nNodes");
+        logger.debug("Nodes");
         compareStreamMemory(streamDataset.nodes, memoryDataset.nodes);
         printDatasetCacheInfo(streamDataset);
 
-        System.out.println("\nValues");
+        logger.debug("Values");
         compareStreamMemory(streamDataset.values, memoryDataset.values);
         printDatasetCacheInfo(streamDataset);
     }
@@ -228,9 +233,9 @@ public class StreamFactoryTest extends StandardUnitTest {
         for (CacheConstants.CacheType type: CacheConstants.CacheType.values()) {
             ICache cache = dataset.getCache(type);
             if (cache == null) {
-                System.out.println(type + " is null");
+                logger.debug(type + " is null");
             } else {
-                System.out.printf("Cache %s, Misses: %d, Requests: %d%n", type,
+                logger.debug("Cache {}, Misses: {}, Requests: {}", type,
                         cache.getCacheMisses(),
                         cache.getCacheRequests());
             }

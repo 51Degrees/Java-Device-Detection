@@ -55,6 +55,9 @@
                 <configuration>
                     <forkCount>1</forkCount>
                     <reuseForks>false</reuseForks>
+                    <systemPropertyVariables>
+                        <default.debug.level>info</default.debug.level>
+                    </systemPropertyVariables>
                 </configuration>
             </plugin>
         </plugins>
@@ -98,7 +101,23 @@
                 </plugins>
             </build>
         </profile>
+        <!-- this profile tests the api category and standard unit tests only -->
+        <profile>
+            <id>enable-debug-logging</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <systemPropertyVariables>
+                                <default.debug.level>debug</default.debug.level>
+                            </systemPropertyVariables>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
 
     </profiles>
-
 </project>

@@ -1,4 +1,4 @@
-package fiftyone.mobile.detection.factories;
+package fiftyone.mobile.detection.helper;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -8,6 +8,7 @@ import fiftyone.mobile.detection.cache.IPutCache;
 import fiftyone.mobile.detection.cache.ILoadingCache;
 import fiftyone.mobile.detection.cache.IValueLoader;
 import fiftyone.mobile.detection.entities.stream.Dataset;
+import fiftyone.mobile.detection.factories.StreamFactory;
 
 import java.io.IOException;
 import java.util.Date;
@@ -21,7 +22,6 @@ import static fiftyone.properties.CacheConstants.VALUES_CACHE_SIZE;
 /**
  * Example user supplied class providing a Guava Cache
  */
-@SuppressWarnings("WeakerAccess")
 public class GuavaCache {
 
     public static class CacheAdaptor <K,V>  implements ICache<K,V> {
@@ -98,7 +98,7 @@ public class GuavaCache {
         }
     }
 
-    static Dataset getDatasetWithGuavaCaches() throws IOException {
+    public static Dataset getDatasetWithGuavaCaches() throws IOException {
         com.google.common.cache.Cache nodeCache = CacheBuilder.newBuilder()
                 .initialCapacity(NODES_CACHE_SIZE)
                 .maximumSize(NODES_CACHE_SIZE)
@@ -143,7 +143,7 @@ public class GuavaCache {
         return dataset;
     }
 
-    static <K,V> ILoadingCache<K,V> getUserAgentCache() {
+    public static <K,V> ILoadingCache<K,V> getUserAgentCache() {
         com.google.common.cache.Cache<K,V> uaCache = CacheBuilder.newBuilder()
                 .initialCapacity(20)
                 .maximumSize(20)

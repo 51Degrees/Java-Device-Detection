@@ -8,7 +8,8 @@
         </encoder>
     </appender>
 
-    <root level="info">
+    <!-- use enable-debug-logging profile in POM to change this -->
+    <root level="${default.debug.level:-debug}">
         <appender-ref ref="STDOUT" />
     </root>
 
