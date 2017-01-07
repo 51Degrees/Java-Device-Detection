@@ -254,6 +254,16 @@ public class DatasetBuilder {
         }
 
         @SuppressWarnings("WeakerAccess")
+        public int nextPosition(int position, V result) throws IOException {
+            if (fixedLength) {
+                return ++position;
+            } else {
+                // this method supported only for variable length entities
+                return position + getEntityFactory().getLength(result);
+            }
+        }
+
+        @SuppressWarnings("WeakerAccess")
         public BaseEntityFactory<V> getEntityFactory() {
             return entityFactory;
         }
@@ -276,13 +286,7 @@ public class DatasetBuilder {
         LruEntityLoader(final Header header, final StreamDataset dataset, final BaseEntityFactory<V> entityFactory, LruCache<Integer, V> cache) {
             super(header, dataset, entityFactory);
             this.cache = cache;
-            this.cache.setCacheLoader(new IValueLoader<Integer, V>() {
-                @Override
-                public V load(Integer key) throws IOException {
-                    // delegate to the enclosing class superclass method
-                    return LruEntityLoader.super.load(key);
-                }
-            });
+            this.cache.setCacheLoader(new EntityLoader<V>(header, dataset, entityFactory));
         }
 
         @Override
@@ -367,12 +371,7 @@ public class DatasetBuilder {
                     try {
                         T result = get(position);
                         count++;
-                        if (loader.fixedLength) {
-                            position++;
-                        } else {
-                            // this method supported only for variable length entities
-                            position += loader.getEntityFactory().getLength(result);
-                        }
+                        position = loader.nextPosition(position, result);
                         return result;
                     } catch (IOException e) {
                         throw new IllegalStateException(e);
