@@ -58,5 +58,4 @@ public class MemoryFactoryTest extends StandardUnitTest {
             fileInputStream.close();
         }
     }
-
 }

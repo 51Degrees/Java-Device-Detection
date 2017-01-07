@@ -20,18 +20,10 @@
  * ********************************************************************* */
 package fiftyone.mobile.detection.entities.stream;
 
-import fiftyone.mobile.detection.cache.ICache;
 import fiftyone.mobile.detection.entities.Modes;
-import fiftyone.mobile.detection.factories.StreamFactory;
-import fiftyone.mobile.detection.readers.SourceBase;
-import fiftyone.mobile.detection.readers.SourceFile;
-import fiftyone.mobile.detection.readers.SourceMemory;
-import fiftyone.properties.CacheConstants;
 
 import java.io.IOException;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * A data set returned from the stream factory which includes a pool of

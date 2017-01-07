@@ -1,11 +1,11 @@
 package fiftyone.mobile.detection.entities.stream;
 
+import fiftyone.mobile.detection.DatasetBuilder.CacheType;
 import fiftyone.mobile.detection.cache.ICache;
 import fiftyone.mobile.detection.entities.Modes;
 import fiftyone.mobile.detection.readers.SourceBase;
 import fiftyone.mobile.detection.readers.SourceFile;
 import fiftyone.mobile.detection.readers.SourceMemory;
-import fiftyone.properties.CacheConstants;
 
 import java.io.IOException;
 import java.util.Date;
@@ -106,14 +106,14 @@ public class StreamDataset extends fiftyone.mobile.detection.Dataset {
         }
     }
 
-    private java.util.Map<CacheConstants.CacheType, ICache> cacheMap = new HashMap<CacheConstants.CacheType, ICache>(5);
+    private java.util.Map<CacheType, ICache> cacheMap = new HashMap<CacheType, ICache>(5);
     /**
      * Returns a cache to allow examination of its performance
      *
      * @param cacheType the type of cache
      * @return a cache or null if no cache in operation
      */
-    public ICache getCache(CacheConstants.CacheType cacheType) {
+    public ICache getCache(CacheType cacheType) {
         return cacheMap.get(cacheType);
     }
 
@@ -122,7 +122,7 @@ public class StreamDataset extends fiftyone.mobile.detection.Dataset {
      *
      * @param cacheMap a Map of caches to use
      */
-    public void setCacheMap(java.util.Map<CacheConstants.CacheType, ICache> cacheMap) {
+    public void setCacheMap(java.util.Map<CacheType, ICache> cacheMap) {
         this.cacheMap = cacheMap;
     }
 

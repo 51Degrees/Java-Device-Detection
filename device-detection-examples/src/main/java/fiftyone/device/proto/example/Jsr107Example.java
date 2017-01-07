@@ -7,7 +7,7 @@ import javax.cache.configuration.MutableConfiguration;
 import java.io.IOException;
 
 /**
- * @author jo
+ *
  */
 class Jsr107Example {
 

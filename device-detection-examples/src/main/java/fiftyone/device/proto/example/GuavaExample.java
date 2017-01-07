@@ -2,32 +2,33 @@ package fiftyone.device.proto.example;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import fiftyone.device.example.Shared;
 import fiftyone.mobile.detection.Dataset;
+import fiftyone.mobile.detection.DatasetBuilder;
 import fiftyone.mobile.detection.Match;
 import fiftyone.mobile.detection.Provider;
 import fiftyone.mobile.detection.cache.ICache;
-import fiftyone.mobile.detection.cache.IPutCache;
 import fiftyone.mobile.detection.cache.ILoadingCache;
+import fiftyone.mobile.detection.cache.IPutCache;
 import fiftyone.mobile.detection.cache.IValueLoader;
-import fiftyone.mobile.detection.factories.StreamFactory;
 
 import java.io.IOException;
 import java.util.Date;
 
-import static fiftyone.properties.CacheConstants.CacheType.NodesCache;
-import static fiftyone.properties.CacheConstants.CacheType.ProfilesCache;
-import static fiftyone.properties.CacheConstants.NODES_CACHE_SIZE;
-import static fiftyone.properties.CacheConstants.PROFILES_CACHE_SIZE;
+import static fiftyone.mobile.detection.DatasetBuilder.CacheType.NodesCache;
+import static fiftyone.mobile.detection.DatasetBuilder.CacheType.ProfilesCache;
+import static fiftyone.mobile.detection.DatasetBuilder.NODES_CACHE_SIZE;
+import static fiftyone.mobile.detection.DatasetBuilder.PROFILES_CACHE_SIZE;
 
 /**
- * @author jo
+ *
  */
 class GuavaExample {
 
-    public static class CacheAdaptor <K,V>  implements ICache<K,V> {
+    public static class GuavaCacheAdaptor<K,V>  implements ICache<K,V> {
         protected final Cache<K,V> cache;
 
-        public CacheAdaptor(Cache<K,V> cache) {
+        public GuavaCacheAdaptor(Cache<K,V> cache) {
             this.cache = cache;
         }
 
@@ -62,7 +63,7 @@ class GuavaExample {
         }
     }
 
-    public static class PutCacheAdaptor<K,V> extends CacheAdaptor<K,V> implements IPutCache<K,V>{
+    public static class PutCacheAdaptor<K,V> extends GuavaCacheAdaptor<K,V> implements IPutCache<K,V>{
 
         public PutCacheAdaptor(Cache<K, V> cache) {
             super(cache);
@@ -74,7 +75,7 @@ class GuavaExample {
         }
     }
 
-    public static class UaCacheAdaptor <K,V> extends CacheAdaptor<K,V> implements ILoadingCache<K,V> {
+    public static class UaCacheAdaptor <K,V> extends GuavaCacheAdaptor<K,V> implements ILoadingCache<K,V> {
 
         public UaCacheAdaptor(com.google.common.cache.Cache<K,V> cache) {
             super(cache);
@@ -118,11 +119,12 @@ class GuavaExample {
                 .concurrencyLevel(5)
                 .build();
 
-        Dataset dataset = new StreamFactory.Builder()
+        Dataset dataset = new DatasetBuilder()
+                .stream()
                 .addCache(NodesCache, new PutCacheAdaptor(nodeCache))
                 .addCache(ProfilesCache, new PutCacheAdaptor(profileCache))
                 .lastModified(new Date())
-                .build("data/51Degrees-LiteV3.2.dat");
+                .build(Shared.getLitePatternV32());
 
         Provider provider = new Provider(dataset, new UaCacheAdaptor(uaCache));
 

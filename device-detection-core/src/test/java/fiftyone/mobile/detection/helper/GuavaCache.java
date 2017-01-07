@@ -3,22 +3,18 @@ package fiftyone.mobile.detection.helper;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import fiftyone.mobile.Filename;
+import fiftyone.mobile.detection.DatasetBuilder;
 import fiftyone.mobile.detection.cache.ICache;
-import fiftyone.mobile.detection.cache.IPutCache;
 import fiftyone.mobile.detection.cache.ILoadingCache;
+import fiftyone.mobile.detection.cache.IPutCache;
 import fiftyone.mobile.detection.cache.IValueLoader;
-import fiftyone.mobile.detection.Dataset;
 import fiftyone.mobile.detection.entities.stream.StreamDataset;
-import fiftyone.mobile.detection.factories.StreamFactory;
 
 import java.io.IOException;
 import java.util.Date;
 
-import static fiftyone.properties.CacheConstants.*;
-import static fiftyone.properties.CacheConstants.CacheType.*;
-import static fiftyone.properties.CacheConstants.CacheType.SignaturesCache;
-import static fiftyone.properties.CacheConstants.SIGNATURES_CACHE_SIZE;
-import static fiftyone.properties.CacheConstants.VALUES_CACHE_SIZE;
+import static fiftyone.mobile.detection.DatasetBuilder.CacheType.*;
+import static fiftyone.mobile.detection.DatasetBuilder.*;
 
 /**
  * Example user supplied class providing a Guava Cache
@@ -132,7 +128,8 @@ public class GuavaCache {
 
         @SuppressWarnings("unchecked")
         StreamDataset dataset =
-                new StreamFactory.Builder()
+                new DatasetBuilder()
+                        .stream()
                         .addCache(NodesCache, new PutCacheAdaptor(nodeCache))
                         .addCache(ProfilesCache, new PutCacheAdaptor(profileCache))
                         .addCache(StringsCache, new PutCacheAdaptor(stringsCache))
