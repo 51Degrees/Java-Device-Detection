@@ -12,6 +12,8 @@ import org.junit.Test;
 
 import java.io.*;
 import java.util.Date;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 import static fiftyone.mobile.detection.DatasetBuilder.CacheType.*;
 import static fiftyone.mobile.detection.helper.DatasetHelper.cacheTests;
@@ -79,6 +81,19 @@ public class DatasetBuilderTest extends StandardUnitTest {
         dataset.close();
         // temp must NOT still exist after close
         assertFalse(temp.exists());
+    }
+
+    @Test(expected = NoSuchElementException.class)
+    public void testIterator () throws Exception {
+        StreamDataset streamDataset = new DatasetBuilder()
+                .stream()
+                .lastModified(new Date())
+                .build(Filename.LITE_PATTERN_V32);
+        Iterator it = streamDataset.profiles.iterator();
+        while (it.hasNext()) {
+            it.next();
+        }
+        it.next();
     }
 
     // tests to see if Stream and Memory load the same thing (no caches)

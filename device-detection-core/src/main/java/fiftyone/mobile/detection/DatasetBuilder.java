@@ -360,6 +360,8 @@ public class DatasetBuilder {
                 // the position in the file or the item number (as above)
                 // depending on whether the entity is fixed or variable size
                 int position = 0;
+                // number of elements
+                int total = loader.getHeader().getCount();
 
                 @Override
                 public boolean hasNext() {
@@ -369,6 +371,9 @@ public class DatasetBuilder {
                 @Override
                 public T next() {
                     try {
+                        if (count >= total) {
+                            throw new NoSuchElementException();
+                        }
                         T result = get(position);
                         count++;
                         position = loader.nextPosition(position, result);

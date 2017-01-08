@@ -14,7 +14,6 @@ import java.util.List;
 /**
  * This is a test to see how much difference recycling the Match class compares to creating anew.
  *
- * @author jo
  */
 public class MatchTest extends StandardUnitTest {
     private static final int NUMBER_OF_TESTS = 1000000;
