@@ -25,6 +25,7 @@ import static fiftyone.mobile.detection.DatasetBuilder.PROFILES_CACHE_SIZE;
  */
 class GuavaExample {
 
+    @SuppressWarnings("WeakerAccess")
     public static class GuavaCacheAdaptor<K,V>  implements ICache<K,V> {
         protected final Cache<K,V> cache;
 
@@ -63,6 +64,7 @@ class GuavaExample {
         }
     }
 
+    @SuppressWarnings("WeakerAccess")
     public static class PutCacheAdaptor<K,V> extends GuavaCacheAdaptor<K,V> implements IPutCache<K,V>{
 
         public PutCacheAdaptor(Cache<K, V> cache) {
@@ -75,6 +77,7 @@ class GuavaExample {
         }
     }
 
+    @SuppressWarnings("WeakerAccess")
     public static class UaCacheAdaptor <K,V> extends GuavaCacheAdaptor<K,V> implements ILoadingCache<K,V> {
 
         public UaCacheAdaptor(com.google.common.cache.Cache<K,V> cache) {
@@ -119,13 +122,14 @@ class GuavaExample {
                 .concurrencyLevel(5)
                 .build();
 
-        Dataset dataset = new DatasetBuilder()
-                .stream()
+        @SuppressWarnings("unchecked")
+        Dataset dataset = DatasetBuilder.stream()
                 .addCache(NodesCache, new PutCacheAdaptor(nodeCache))
                 .addCache(ProfilesCache, new PutCacheAdaptor(profileCache))
                 .lastModified(new Date())
                 .build(Shared.getLitePatternV32());
 
+        @SuppressWarnings("unchecked")
         Provider provider = new Provider(dataset, new UaCacheAdaptor(uaCache));
 
         Match match = provider.match("Hello World");
