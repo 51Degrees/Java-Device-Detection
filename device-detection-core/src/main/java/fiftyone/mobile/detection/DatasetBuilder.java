@@ -29,26 +29,26 @@ import static fiftyone.mobile.detection.DatasetBuilder.CacheType.*;
  * <p>
  * Use as follows:<br>
  *<pre><code>
- *      Dataset dataset = new DatasetBuilder()
- *          // for stream dataset
- *          .stream()
+ *      // for stream dataset read from byte array buffer
+ *      Dataset dataset = DatasetBuilder.buffer()
+ *          // to use caching
+ *          .addDefaultCaches()
+ *          .build(array);
+ *
+ *      // for stream dataset read from file
+ *      Dataset dataset = DatasetBuilder.stream()
  *          // to use caching (recommended)
  *          .addDefaultCaches()
  *          // if a temporary file (deleted on dataset close)
  *          .setTempFile()
  *          // to set the date explicitly
  *          .lastModified(date)
- *          // to build from a byte array
- *          .build(array);
  *          // or to build from a file
  *          .build(filename);
  *          
  * </code></pre>
  */
 
-/*
-    NB this could usefully employ CRTP when we add in memory()
- */
 public class DatasetBuilder {
 
     /* Default Cache sizes */
@@ -76,29 +76,152 @@ public class DatasetBuilder {
     }
 
     private java.util.Map<CacheType, ICache> cacheMap = new HashMap<CacheType, ICache>(5);
-    private boolean isTempFile = false;
-    // private boolean init;
-    private static final Date DATE_NONE = new Date(0);
-    private Date lastModified = DATE_NONE;
 
-    /**
-     * Create a stream dataset
-     */
-    public Stream stream() {
-        return new Stream();
+    // prevent direct construction
+    private DatasetBuilder() {
+
     }
 
-/*
+    /**
+     * Create a stream file dataset
+     */
+    public static Stream stream() {
+        return new DatasetBuilder().new Stream();
+    }
+
+    /**
+     * Create a stream buffer dataset
+     */
+    public static Buffer buffer() {
+        return new DatasetBuilder().new Buffer();
+    }
+
+
+    /**
+     * Holds cache methods for buffer and file stream mode
+     */
+    @SuppressWarnings("WeakerAccess")
+    public class Cachable<T extends Cachable<T>> {
+
+        // no direct instantiation
+        private Cachable () {
+
+        }
+        
+        /**
+         * Add a cache to this (Stream) Dataset
+         * @param cacheType the type
+         * @param cache the cache
+         */
+        public T addCache(CacheType cacheType, ICache cache) {
+            cacheMap.put(cacheType, cache);
+            //noinspection unchecked
+            return (T) this;
+        }
+
+        /**
+         * Add all the caches in the map
+         * @param map a map of instantiated caches with their type
+         */
+        public T addCaches(java.util.Map<CacheType, ICache> map) {
+            cacheMap.putAll(map);
+            //noinspection unchecked
+            return (T) this;
+        }
+
+        /**
+         * Add the internal default caches
+         */
+        public T addDefaultCaches() {
+            addCaches(defaultCacheMap);
+            //noinspection unchecked
+            return (T) this;
+        }
+    }
+
+    /**
+     * Buffer dataset builder
+     */
+    public class Buffer extends Cachable<Buffer>{
+
+        // cannot be instantiated directly
+        private Buffer() {
+
+        }
+
+        /**
+         * build the dataset from a buffer
+         * @param buffer the buffer
+         */
+        public StreamDataset build(byte[] buffer) throws IOException {
+            StreamDataset dataSet = new StreamDataset(buffer, Modes.MEMORY_MAPPED);
+            loadForStreaming(dataSet, cacheMap);
+            return dataSet;
+        }
+    }
+
+    /**
+     * File dataset builder
+     */
+    @SuppressWarnings("WeakerAccess")
+    public class Stream extends Cachable<Stream> {
+
+        private boolean isTempFile = false;
+        private Date lastModified = null;
+
+        // cannot be instantiated directly
+        private Stream() {
+
+        }
+
+        /**
+         * If this dataset is built from a file, delete the file after close
+         */
+        public Stream setTempFile() {
+            isTempFile = true;
+            return this;
+        }
+
+        /**
+         * If this dataset is built from a file
+         * @param isTemp if true, delete the file after close
+         */
+        public Stream setTempFile(boolean isTemp) {
+            isTempFile = isTemp;
+            return this;
+        }
+
+        /**
+         * If this dataset is built from a file, override the creation date
+         * @param date the date
+         */
+        public Stream lastModified(Date date) {
+            lastModified = date;
+            return this;
+        }
+
+        /**
+         * build the dataset from a file
+         * @param filename the filename to build from
+         */
+        public StreamDataset build(String filename) throws IOException {
+            Date modDate = lastModified;
+            if (modDate == null) {
+                modDate = new Date(new File(filename).lastModified());
+            }
+            StreamDataset dataSet = new StreamDataset(filename, modDate, Modes.FILE, isTempFile);
+            loadForStreaming(dataSet, cacheMap);
+            return dataSet;
+        }
+    }
+
+    /*
     public Memory memory() {
-        return new Memory();
+        return new DatasetBuilder().new Memory();
     }
 
     public class Memory extends DatasetBuilder {
 
-        public Memory lastModified(Date date) {
-            lastModified = date;
-            return this;
-        }
         public Memory init() {
             init = true;
             return this;
@@ -130,86 +253,6 @@ public class DatasetBuilder {
         }
     }
 */
-
-    @SuppressWarnings("WeakerAccess")
-    public class Stream extends DatasetBuilder {
-        /**
-         * Add a cache to this (Stream) Dataset
-         * @param cacheType the type
-         * @param cache the cache
-         */
-        public Stream addCache(CacheType cacheType, ICache cache) {
-            cacheMap.put(cacheType, cache);
-            return this;
-        }
-
-        /**
-         * Add all the caches in the map
-         * @param map a map of instantiated caches with their type
-         */
-        public Stream addCaches(java.util.Map<CacheType, ICache> map) {
-            cacheMap.putAll(map);
-            return this;
-        }
-
-        /**
-         * Add the internal default caches
-         */
-        public Stream addDefaultCaches() {
-            addCaches(defaultCacheMap);
-            return this;
-        }
-
-        /**
-         * If this dataset is built from a file, delete the file after close
-         */
-        public Stream setTempfile() {
-            isTempFile = true;
-            return this;
-        }
-
-        /**
-         * If this dataset is built from a file
-         * @param isTemp if true, delete the file after close
-         */
-        public Stream setTempfile(boolean isTemp) {
-            isTempFile = isTemp;
-            return this;
-        }
-
-        /**
-         * If this dataset is built from a file, override the creation date
-         * @param date the date
-         */
-        public Stream lastModified(Date date) {
-            lastModified = date;
-            return this;
-        }
-
-        /**
-         * build the dataset from a file
-         * @param filename the filename to build from
-         */
-        public StreamDataset build(String filename) throws IOException {
-            Date modDate = lastModified;
-            if (modDate.equals(DATE_NONE)) {
-                modDate = new Date(new File(filename).lastModified());
-            }
-            StreamDataset dataSet = new StreamDataset(filename, modDate, Modes.FILE, isTempFile);
-            loadForStreaming(dataSet, cacheMap);
-            return dataSet;
-        }
-
-        /**
-         * build the dataset from a buffer
-         * @param buffer the buffer
-         */
-        public StreamDataset build(byte[] buffer) throws IOException {
-            StreamDataset dataSet = new StreamDataset(buffer, Modes.MEMORY_MAPPED);
-            loadForStreaming(dataSet, cacheMap);
-            return dataSet;
-        }
-    }
 
     /**
      * Class adapts an EntityFactory to a Loader

@@ -26,14 +26,12 @@ public class ProviderTest extends StandardUnitTest {
     // check we get the same results whatever way we create a dataset
     @Test
     public void testMemoryAndStreamSame () throws IOException {
-        StreamDataset cachedDataset = new DatasetBuilder()
-                .stream()
+        StreamDataset cachedDataset = DatasetBuilder.stream()
                 .addDefaultCaches()
                 .build(Filename.LITE_PATTERN_V32);
         Provider cachedProvider = new Provider(cachedDataset);
 
-        StreamDataset unCachedDataset = new DatasetBuilder()
-                .stream()
+        StreamDataset unCachedDataset = DatasetBuilder.stream()
                 .build(Filename.LITE_PATTERN_V32);
         Provider unCachedProvider = new Provider(unCachedDataset);
 
@@ -53,7 +51,7 @@ public class ProviderTest extends StandardUnitTest {
             count++;
         }
         logger.info("{} tests done", count);
-        is.close();
+        source.close();
         cachedDataset.close();
         unCachedDataset.close();
         memoryDataset.close();

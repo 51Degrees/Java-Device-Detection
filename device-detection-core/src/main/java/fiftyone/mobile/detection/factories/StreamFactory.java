@@ -68,8 +68,7 @@ public final class StreamFactory {
      * @throws IOException if there was a problem accessing data file.
      */
     public static StreamDataset create(byte[] data) throws IOException {
-        return new DatasetBuilder()
-                .stream()
+        return DatasetBuilder.buffer()
                 .addDefaultCaches()
                 .build(data);
     }
@@ -118,10 +117,9 @@ public final class StreamFactory {
     public static StreamDataset create(String filepath, Date lastModified,
             boolean isTempFile) throws IOException {
 
-        return new DatasetBuilder()
-                .stream()
+        return DatasetBuilder.stream()
                 .addDefaultCaches()
-                .setTempfile(isTempFile)
+                .setTempFile(isTempFile)
                 .lastModified(lastModified)
                 .build(filepath);
     }

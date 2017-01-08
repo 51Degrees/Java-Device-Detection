@@ -128,8 +128,7 @@ public class GuavaCache {
 
         @SuppressWarnings("unchecked")
         StreamDataset dataset =
-                new DatasetBuilder()
-                        .stream()
+                DatasetBuilder.stream()
                         .addCache(NodesCache, new PutCacheAdaptor(nodeCache))
                         .addCache(ProfilesCache, new PutCacheAdaptor(profileCache))
                         .addCache(StringsCache, new PutCacheAdaptor(stringsCache))

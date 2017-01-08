@@ -19,7 +19,6 @@ import static fiftyone.mobile.detection.DatasetBuilder.CacheType.*;
 import static fiftyone.mobile.detection.helper.DatasetHelper.cacheTests;
 import static fiftyone.mobile.detection.helper.DatasetHelper.compareDatasets;
 import static fiftyone.mobile.detection.helper.GuavaCache.getDatasetWithGuavaCaches;
-import static fiftyone.mobile.detection.helper.MatchHelper.matchEquals;
 import static org.junit.Assert.*;
 
 /**
@@ -30,8 +29,7 @@ public class DatasetBuilderTest extends StandardUnitTest {
     // default is to have no caches
     @Test
     public void testDefaultIsNoCaches () throws IOException {
-        StreamDataset dataset = new DatasetBuilder()
-                .stream()
+        StreamDataset dataset = DatasetBuilder.stream()
                 .build(Filename.LITE_PATTERN_V32);
         assertEquals(null, dataset.getCache(StringsCache));
         assertEquals(null, dataset.getCache(SignaturesCache));
@@ -43,8 +41,7 @@ public class DatasetBuilderTest extends StandardUnitTest {
     // check that the default caches are added
     @Test
     public void testAddDefaultCaches () throws IOException {
-        StreamDataset dataset = new DatasetBuilder()
-                .stream()
+        StreamDataset dataset = DatasetBuilder.stream()
                 .addDefaultCaches()
                 .build(Filename.LITE_PATTERN_V32);
         assertEquals(LruCache.class, dataset.getCache(StringsCache).getClass());
@@ -61,8 +58,7 @@ public class DatasetBuilderTest extends StandardUnitTest {
         File source = new File(Filename.LITE_PATTERN_V32);
         Files.copy(source, temp);
 
-        Dataset dataset = new DatasetBuilder()
-                .stream()
+        Dataset dataset = DatasetBuilder.stream()
                 .lastModified(new Date())
                 .build(temp.getPath());
         ViableProvider.ensureViableProvider(new Provider(dataset));
@@ -71,9 +67,8 @@ public class DatasetBuilderTest extends StandardUnitTest {
         assertTrue(temp.exists());
 
         // assess whether temporary file gets deleted
-        dataset = new DatasetBuilder()
-                .stream()
-                .setTempfile()
+        dataset = DatasetBuilder.stream()
+                .setTempFile()
                 .lastModified(new Date())
                 .build(temp.getPath());
 
@@ -85,8 +80,7 @@ public class DatasetBuilderTest extends StandardUnitTest {
 
     @Test(expected = NoSuchElementException.class)
     public void testIterator () throws Exception {
-        StreamDataset streamDataset = new DatasetBuilder()
-                .stream()
+        StreamDataset streamDataset = DatasetBuilder.stream()
                 .lastModified(new Date())
                 .build(Filename.LITE_PATTERN_V32);
         Iterator it = streamDataset.profiles.iterator();
@@ -100,8 +94,7 @@ public class DatasetBuilderTest extends StandardUnitTest {
     @Test
     public void testMemoryStreamDatasetConsistentNoCache () throws IOException {
 
-        StreamDataset streamDataset = new DatasetBuilder()
-                .stream()
+        StreamDataset streamDataset = DatasetBuilder.stream()
                 .lastModified(new Date())
                 .build(Filename.LITE_PATTERN_V32);
         Dataset memoryDataset = MemoryFactory.create(Filename.LITE_PATTERN_V32);
@@ -116,8 +109,7 @@ public class DatasetBuilderTest extends StandardUnitTest {
         LruCache valuesCache = new LruCache(100);
         LruCache stringsCache = new LruCache(100);
 
-        StreamDataset streamDataset = new DatasetBuilder()
-                .stream()
+        StreamDataset streamDataset = DatasetBuilder.stream()
                 .addCache(NodesCache, nodesCache)
                 .addCache(ValuesCache, valuesCache)
                 .addCache(StringsCache, stringsCache)
