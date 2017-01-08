@@ -20,6 +20,7 @@
  * ********************************************************************* */
 package fiftyone.mobile.detection.entities.stream;
 
+import fiftyone.mobile.detection.StreamDataset;
 import fiftyone.mobile.detection.factories.NodeFactoryShared;
 import fiftyone.mobile.detection.readers.BinaryReader;
 import fiftyone.properties.DetectionConstants;

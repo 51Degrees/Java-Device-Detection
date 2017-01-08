@@ -23,7 +23,7 @@ package fiftyone.device.example.batch;
 import fiftyone.mobile.detection.Match;
 import fiftyone.mobile.detection.Provider;
 import fiftyone.mobile.detection.entities.Values;
-import fiftyone.mobile.detection.entities.stream.StreamDataset;
+import fiftyone.mobile.detection.StreamDataset;
 
 import java.io.*;
 

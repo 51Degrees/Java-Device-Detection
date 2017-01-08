@@ -8,7 +8,7 @@ import fiftyone.mobile.detection.cache.ICache;
 import fiftyone.mobile.detection.cache.ILoadingCache;
 import fiftyone.mobile.detection.cache.IPutCache;
 import fiftyone.mobile.detection.cache.IValueLoader;
-import fiftyone.mobile.detection.entities.stream.StreamDataset;
+import fiftyone.mobile.detection.StreamDataset;
 
 import java.io.IOException;
 import java.util.Date;

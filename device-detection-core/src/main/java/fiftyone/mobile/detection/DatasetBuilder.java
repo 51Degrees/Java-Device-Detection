@@ -10,7 +10,6 @@ import fiftyone.mobile.detection.entities.headers.Header;
 import fiftyone.mobile.detection.entities.memory.MemoryFixedList;
 import fiftyone.mobile.detection.entities.memory.PropertiesList;
 import fiftyone.mobile.detection.entities.stream.IntegerList;
-import fiftyone.mobile.detection.entities.stream.StreamDataset;
 import fiftyone.mobile.detection.factories.*;
 import fiftyone.mobile.detection.factories.stream.NodeStreamFactoryV31;
 import fiftyone.mobile.detection.factories.stream.NodeStreamFactoryV32;
@@ -107,7 +106,7 @@ public class DatasetBuilder {
         private Cachable () {
 
         }
-        
+
         /**
          * Add a cache to this (Stream) Dataset
          * @param cacheType the type
@@ -408,7 +407,7 @@ public class DatasetBuilder {
 
                 @Override
                 public boolean hasNext() {
-                    return count < loader.getHeader().getCount();
+                    return count < total;
                 }
 
                 @Override

@@ -22,6 +22,7 @@
 package fiftyone.mobile.detection.entities.stream;
 
 import fiftyone.mobile.detection.ISimpleList;
+import fiftyone.mobile.detection.StreamDataset;
 import fiftyone.mobile.detection.WrappedIOException;
 import fiftyone.mobile.detection.entities.headers.Header;
 import fiftyone.mobile.detection.readers.BinaryReader;

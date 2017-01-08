@@ -24,7 +24,6 @@ import fiftyone.mobile.detection.DatasetBuilder.CacheType;
 import fiftyone.mobile.detection.entities.*;
 import fiftyone.mobile.detection.entities.memory.MemoryFixedList;
 import fiftyone.mobile.detection.entities.memory.PropertiesList;
-import fiftyone.mobile.detection.entities.stream.StreamDataset;
 import fiftyone.mobile.detection.search.SearchBase;
 import fiftyone.mobile.detection.search.SearchResult;
 import fiftyone.properties.DetectionConstants;

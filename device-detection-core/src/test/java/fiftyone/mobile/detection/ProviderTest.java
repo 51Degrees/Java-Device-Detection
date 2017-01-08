@@ -2,7 +2,6 @@ package fiftyone.mobile.detection;
 
 import fiftyone.mobile.Filename;
 import fiftyone.mobile.StandardUnitTest;
-import fiftyone.mobile.detection.entities.stream.StreamDataset;
 import fiftyone.mobile.detection.factories.MemoryFactory;
 import fiftyone.mobile.detection.factories.StreamFactoryTest;
 import org.junit.Test;
@@ -13,7 +12,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 import static fiftyone.mobile.detection.helper.MatchHelper.matchEquals;
-import static org.junit.Assert.*;
 
 /**
  * minimal testing that Provider works. Some of this is covered in the Factory and DatasetBuilder tests

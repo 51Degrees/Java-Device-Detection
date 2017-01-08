@@ -22,7 +22,7 @@ package fiftyone.mobile.detection.factories.stream;
 
 import fiftyone.mobile.detection.Dataset;
 import fiftyone.mobile.detection.entities.Profile;
-import fiftyone.mobile.detection.entities.stream.StreamDataset;
+import fiftyone.mobile.detection.StreamDataset;
 import fiftyone.mobile.detection.readers.BinaryReader;
 
 /**

@@ -5,7 +5,7 @@ import fiftyone.mobile.detection.DatasetBuilder.CacheType;
 import fiftyone.mobile.detection.IReadonlyList;
 import fiftyone.mobile.detection.Provider;
 import fiftyone.mobile.detection.cache.ICache;
-import fiftyone.mobile.detection.entities.stream.StreamDataset;
+import fiftyone.mobile.detection.StreamDataset;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

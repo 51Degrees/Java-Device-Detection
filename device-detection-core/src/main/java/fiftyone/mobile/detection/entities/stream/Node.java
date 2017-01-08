@@ -20,6 +20,7 @@
  * ********************************************************************* */
 package fiftyone.mobile.detection.entities.stream;
 
+import fiftyone.mobile.detection.StreamDataset;
 import fiftyone.mobile.detection.entities.NodeNumericIndex;
 import fiftyone.mobile.detection.readers.BinaryReader;
 import java.io.IOException;

@@ -21,7 +21,7 @@
 package fiftyone.mobile.detection.factories;
 
 import fiftyone.mobile.detection.DatasetBuilder;
-import fiftyone.mobile.detection.entities.stream.StreamDataset;
+import fiftyone.mobile.detection.StreamDataset;
 
 import java.io.File;
 import java.io.IOException;

@@ -4,7 +4,6 @@ import com.google.common.io.Files;
 import fiftyone.mobile.Filename;
 import fiftyone.mobile.StandardUnitTest;
 import fiftyone.mobile.detection.cache.LruCache;
-import fiftyone.mobile.detection.entities.stream.StreamDataset;
 import fiftyone.mobile.detection.factories.MemoryFactory;
 import fiftyone.mobile.detection.helper.GuavaCache;
 import fiftyone.mobile.detection.helper.ViableProvider;

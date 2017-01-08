@@ -1,8 +1,9 @@
-package fiftyone.mobile.detection.entities.stream;
+package fiftyone.mobile.detection;
 
 import fiftyone.mobile.detection.DatasetBuilder.CacheType;
 import fiftyone.mobile.detection.cache.ICache;
 import fiftyone.mobile.detection.entities.Modes;
+import fiftyone.mobile.detection.entities.stream.Pool;
 import fiftyone.mobile.detection.readers.SourceBase;
 import fiftyone.mobile.detection.readers.SourceFile;
 import fiftyone.mobile.detection.readers.SourceMemory;
