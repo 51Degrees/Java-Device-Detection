@@ -1,4 +1,4 @@
-package fiftyone.device.proto.example;
+package fiftyone.device.example.illustration;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -21,7 +21,7 @@ import static fiftyone.mobile.detection.DatasetBuilder.NODES_CACHE_SIZE;
 import static fiftyone.mobile.detection.DatasetBuilder.PROFILES_CACHE_SIZE;
 
 /**
- *
+ * Example Illustrates using a Guava cache in place of the 51 Degrees internal LRU Cache
  */
 class GuavaExample {
 
