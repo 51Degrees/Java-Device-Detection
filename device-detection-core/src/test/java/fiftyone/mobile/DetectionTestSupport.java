@@ -23,7 +23,7 @@ package fiftyone.mobile;
 
 import fiftyone.mobile.detection.Dataset;
 import fiftyone.mobile.detection.Provider;
-import fiftyone.mobile.detection.StreamDataset;
+import fiftyone.mobile.detection.IndirectDataset;
 import fiftyone.mobile.test.common.Results;
 import fiftyone.properties.MatchMethods;
 import org.junit.Before;
@@ -131,9 +131,9 @@ public class DetectionTestSupport {
      * @param provider
      */
     public static void assertPool(Provider provider) {
-        if (provider.dataSet instanceof StreamDataset) {
-            StreamDataset dataSet =
-                    (StreamDataset)provider.dataSet;
+        if (provider.dataSet instanceof IndirectDataset) {
+            IndirectDataset dataSet =
+                    (IndirectDataset)provider.dataSet;
 
             // Check the size of the reader queues for equality now time has
             // passed and readers should have been returned to it.
@@ -219,7 +219,7 @@ public class DetectionTestSupport {
         }
     }
 
-    public static void reportPool(StreamDataset dataSet) {
+    public static void reportPool(IndirectDataset dataSet) {
         System.out.printf("Readers in queue '%d'\r\n", dataSet.getReadersQueued());
         System.out.printf("Readers created '%d'\r\n", dataSet.getReadersCreated());
     }
@@ -248,10 +248,10 @@ public class DetectionTestSupport {
     public static void reportProvider(Provider provider) {
         System.out.printf("User-Agent cache misses '%.0f%%'\r\n",
                 provider.getPercentageCacheMisses());
-        if (provider.dataSet instanceof StreamDataset)
+        if (provider.dataSet instanceof IndirectDataset)
         {
             reportCache(provider.dataSet);
-            reportPool((StreamDataset)provider.dataSet);
+            reportPool((IndirectDataset)provider.dataSet);
         }
     }
 

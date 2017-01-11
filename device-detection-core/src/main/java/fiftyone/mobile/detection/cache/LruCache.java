@@ -353,4 +353,16 @@ public class LruCache<K, V>  implements ILoadingCache<K,V> {
         misses.set(0);
         requests.set(0);
     }
+
+    /**
+     * Return builder for an LRU cache
+     */
+    public static Builder builder() {
+        return new Builder() {
+            @Override
+            public ICache build(int size) {
+                return new LruCache(size);
+            }
+        };
+    }
 }

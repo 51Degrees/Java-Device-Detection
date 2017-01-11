@@ -28,7 +28,7 @@ public class DatasetBuilderTest extends StandardUnitTest {
     // default is to have no caches
     @Test
     public void testDefaultIsNoCaches () throws IOException {
-        StreamDataset dataset = DatasetBuilder.stream()
+        IndirectDataset dataset = DatasetBuilder.file()
                 .build(Filename.LITE_PATTERN_V32);
         assertEquals(null, dataset.getCache(StringsCache));
         assertEquals(null, dataset.getCache(SignaturesCache));
@@ -40,7 +40,7 @@ public class DatasetBuilderTest extends StandardUnitTest {
     // check that the default caches are added
     @Test
     public void testAddDefaultCaches () throws IOException {
-        StreamDataset dataset = DatasetBuilder.stream()
+        IndirectDataset dataset = DatasetBuilder.file()
                 .addDefaultCaches()
                 .build(Filename.LITE_PATTERN_V32);
         assertEquals(LruCache.class, dataset.getCache(StringsCache).getClass());
@@ -57,7 +57,7 @@ public class DatasetBuilderTest extends StandardUnitTest {
         File source = new File(Filename.LITE_PATTERN_V32);
         Files.copy(source, temp);
 
-        Dataset dataset = DatasetBuilder.stream()
+        Dataset dataset = DatasetBuilder.file()
                 .lastModified(new Date())
                 .build(temp.getPath());
         ViableProvider.ensureViableProvider(new Provider(dataset));
@@ -66,7 +66,7 @@ public class DatasetBuilderTest extends StandardUnitTest {
         assertTrue(temp.exists());
 
         // assess whether temporary file gets deleted
-        dataset = DatasetBuilder.stream()
+        dataset = DatasetBuilder.file()
                 .setTempFile()
                 .lastModified(new Date())
                 .build(temp.getPath());
@@ -79,10 +79,10 @@ public class DatasetBuilderTest extends StandardUnitTest {
 
     @Test(expected = NoSuchElementException.class)
     public void testIterator () throws Exception {
-        StreamDataset streamDataset = DatasetBuilder.stream()
+        IndirectDataset indirectDataset = DatasetBuilder.file()
                 .lastModified(new Date())
                 .build(Filename.LITE_PATTERN_V32);
-        Iterator it = streamDataset.profiles.iterator();
+        Iterator it = indirectDataset.profiles.iterator();
         while (it.hasNext()) {
             it.next();
         }
@@ -93,12 +93,12 @@ public class DatasetBuilderTest extends StandardUnitTest {
     @Test
     public void testMemoryStreamDatasetConsistentNoCache () throws IOException {
 
-        StreamDataset streamDataset = DatasetBuilder.stream()
+        IndirectDataset indirectDataset = DatasetBuilder.file()
                 .lastModified(new Date())
                 .build(Filename.LITE_PATTERN_V32);
         Dataset memoryDataset = MemoryFactory.create(Filename.LITE_PATTERN_V32);
 
-        compareDatasets(streamDataset, memoryDataset);
+        compareDatasets(indirectDataset, memoryDataset);
     }
 
     // tests to see if Stream and Memory load the same thing (user supplied partial LRUCache)
@@ -108,24 +108,24 @@ public class DatasetBuilderTest extends StandardUnitTest {
         LruCache valuesCache = new LruCache(100);
         LruCache stringsCache = new LruCache(100);
 
-        StreamDataset streamDataset = DatasetBuilder.stream()
+        IndirectDataset indirectDataset = DatasetBuilder.file()
                 .addCache(NodesCache, nodesCache)
                 .addCache(ValuesCache, valuesCache)
                 .addCache(StringsCache, stringsCache)
                 .build(Filename.LITE_PATTERN_V32);
         Dataset memoryDataset = MemoryFactory.create(Filename.LITE_PATTERN_V32);
 
-        compareDatasets(streamDataset, memoryDataset);
+        compareDatasets(indirectDataset, memoryDataset);
     }
 
     // see if stream and memory load same thing with a full set of Guava caches
     @Test
     public void testMemoryStreamDatasetConsistentGuava () throws Exception {
 
-        StreamDataset streamDataset = getDatasetWithGuavaCaches();
+        IndirectDataset indirectDataset = getDatasetWithGuavaCaches();
         Dataset memoryDataset = MemoryFactory.create(Filename.LITE_PATTERN_V32);
 
-        compareDatasets(streamDataset, memoryDataset);
+        compareDatasets(indirectDataset, memoryDataset);
     }
 
     // see if cache metrics etc work with Guava cache

@@ -21,7 +21,7 @@
 package fiftyone.mobile.detection.factories;
 
 import fiftyone.mobile.detection.DatasetBuilder;
-import fiftyone.mobile.detection.StreamDataset;
+import fiftyone.mobile.detection.IndirectDataset;
 
 import java.io.File;
 import java.io.IOException;
@@ -67,7 +67,7 @@ public final class StreamFactory {
      * @return Stream Dataset object.
      * @throws IOException if there was a problem accessing data file.
      */
-    public static StreamDataset create(byte[] data) throws IOException {
+    public static IndirectDataset create(byte[] data) throws IOException {
         return DatasetBuilder.buffer()
                 .addDefaultCaches()
                 .build(data);
@@ -81,7 +81,7 @@ public final class StreamFactory {
      *         required.
      * @throws IOException  if there was a problem accessing the data file.
      */
-    public static StreamDataset create(String filePath)
+    public static IndirectDataset create(String filePath)
             throws IOException {
         return create(filePath, false);
     }
@@ -97,7 +97,7 @@ public final class StreamFactory {
      *         required.
      * @throws IOException if there was a problem accessing data file.
      */
-    public static StreamDataset create(String filePath, boolean isTempFile)
+    public static IndirectDataset create(String filePath, boolean isTempFile)
                                                             throws IOException {
         return create(filePath, 
                 new Date(new File(filePath).lastModified()), 
@@ -114,10 +114,10 @@ public final class StreamFactory {
      * @return Stream Dataset object.
      * @throws IOException if there was a problem accessing data file.
      */
-    public static StreamDataset create(String filepath, Date lastModified,
-            boolean isTempFile) throws IOException {
+    public static IndirectDataset create(String filepath, Date lastModified,
+                                         boolean isTempFile) throws IOException {
 
-        return DatasetBuilder.stream()
+        return DatasetBuilder.file()
                 .addDefaultCaches()
                 .setTempFile(isTempFile)
                 .lastModified(lastModified)

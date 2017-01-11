@@ -22,7 +22,7 @@ package fiftyone.mobile.detection.factories.stream;
 
 import fiftyone.mobile.detection.Dataset;
 import fiftyone.mobile.detection.entities.Node;
-import fiftyone.mobile.detection.StreamDataset;
+import fiftyone.mobile.detection.IndirectDataset;
 import fiftyone.mobile.detection.factories.NodeFactoryV31;
 import fiftyone.mobile.detection.readers.BinaryReader;
 import java.io.IOException;
@@ -54,7 +54,7 @@ public class NodeStreamFactoryV31 extends NodeFactoryV31 {
     protected Node construct(Dataset dataSet, int index, BinaryReader reader) 
                                                             throws IOException {
         return new fiftyone.mobile.detection.entities.stream.NodeV31(
-                (StreamDataset)dataSet,
+                (IndirectDataset)dataSet,
                 index, 
                 reader);
     }

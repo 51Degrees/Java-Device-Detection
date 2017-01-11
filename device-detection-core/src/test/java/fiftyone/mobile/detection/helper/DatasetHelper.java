@@ -5,7 +5,7 @@ import fiftyone.mobile.detection.DatasetBuilder.CacheType;
 import fiftyone.mobile.detection.IReadonlyList;
 import fiftyone.mobile.detection.Provider;
 import fiftyone.mobile.detection.cache.ICache;
-import fiftyone.mobile.detection.StreamDataset;
+import fiftyone.mobile.detection.IndirectDataset;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,33 +22,33 @@ import static org.junit.Assert.assertFalse;
 public class DatasetHelper {
     private static Logger logger = LoggerFactory.getLogger(DatasetHelper.class);
 
-    public static void compareDatasets(StreamDataset streamDataset, Dataset memoryDataset) {
+    public static void compareDatasets(IndirectDataset indirectDataset, Dataset memoryDataset) {
         logger.debug("Strings");
-        compareLists(streamDataset.strings, memoryDataset.strings);
-        printDatasetCacheInfo(streamDataset);
+        compareLists(indirectDataset.strings, memoryDataset.strings);
+        printDatasetCacheInfo(indirectDataset);
 
         logger.debug("Signatures");
-        compareLists(streamDataset.signatures, memoryDataset.signatures);
-        printDatasetCacheInfo(streamDataset);
+        compareLists(indirectDataset.signatures, memoryDataset.signatures);
+        printDatasetCacheInfo(indirectDataset);
 
         logger.debug("Profiles");
-        compareLists(streamDataset.profiles, memoryDataset.profiles);
-        printDatasetCacheInfo(streamDataset);
+        compareLists(indirectDataset.profiles, memoryDataset.profiles);
+        printDatasetCacheInfo(indirectDataset);
 
         logger.debug("Nodes");
-        compareLists(streamDataset.nodes, memoryDataset.nodes);
-        printDatasetCacheInfo(streamDataset);
+        compareLists(indirectDataset.nodes, memoryDataset.nodes);
+        printDatasetCacheInfo(indirectDataset);
 
         logger.debug("Values");
-        compareLists(streamDataset.values, memoryDataset.values);
-        printDatasetCacheInfo(streamDataset);
+        compareLists(indirectDataset.values, memoryDataset.values);
+        printDatasetCacheInfo(indirectDataset);
     }
 
 
 
     public static void cacheTests(Provider provider) throws IOException {
         ViableProvider.ensureViableProvider(provider);
-        StreamDataset dataset = (StreamDataset) provider.dataSet;
+        IndirectDataset dataset = (IndirectDataset) provider.dataSet;
         assertEquals(1, provider.getCacheMisses());
         assertEquals(1, provider.getCacheRequests(), 0);
         printDatasetCacheInfo(dataset);
@@ -96,7 +96,7 @@ public class DatasetHelper {
         assertEquals(signaturesMisses, dataset.getCache(SignaturesCache).getCacheMisses());
     }
 
-    public static void printDatasetCacheInfo(StreamDataset dataset) {
+    public static void printDatasetCacheInfo(IndirectDataset dataset) {
         for (CacheType type: CacheType.values()) {
             ICache cache = dataset.getCache(type);
             if (cache == null) {

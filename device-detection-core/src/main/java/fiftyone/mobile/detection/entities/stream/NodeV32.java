@@ -20,7 +20,7 @@
  * ********************************************************************* */
 package fiftyone.mobile.detection.entities.stream;
 
-import fiftyone.mobile.detection.StreamDataset;
+import fiftyone.mobile.detection.IndirectDataset;
 import fiftyone.mobile.detection.factories.NodeFactoryShared;
 import fiftyone.mobile.detection.readers.BinaryReader;
 import fiftyone.properties.DetectionConstants;
@@ -53,7 +53,7 @@ public class NodeV32 extends Node {
      * positioned to start reading.
      * @throws java.io.IOException if there was a problem accessing data file.
      */
-    public NodeV32(StreamDataset dataSet,
+    public NodeV32(IndirectDataset dataSet,
                     int offset, BinaryReader reader) throws IOException {
         super(dataSet, offset, reader);
         super.rankedSignatureCount = reader.readUInt16();

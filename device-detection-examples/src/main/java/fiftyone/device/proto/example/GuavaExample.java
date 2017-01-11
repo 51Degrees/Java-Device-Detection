@@ -123,7 +123,7 @@ class GuavaExample {
                 .build();
 
         @SuppressWarnings("unchecked")
-        Dataset dataset = DatasetBuilder.stream()
+        Dataset dataset = DatasetBuilder.file()
                 .addCache(NodesCache, new PutCacheAdaptor(nodeCache))
                 .addCache(ProfilesCache, new PutCacheAdaptor(profileCache))
                 .lastModified(new Date())

@@ -35,7 +35,7 @@ import static fiftyone.mobile.detection.DatasetBuilder.CacheType.*;
  *          .build(array);
  *
  *      // for stream dataset read from file
- *      Dataset dataset = DatasetBuilder.stream()
+ *      Dataset dataset = DatasetBuilder.file()
  *          // to use caching (recommended)
  *          .addDefaultCaches()
  *          // if a temporary file (deleted on dataset close)
@@ -57,6 +57,57 @@ public class DatasetBuilder {
     public static final int PROFILES_CACHE_SIZE = 600;
     public static final int SIGNATURES_CACHE_SIZE = 500;
 
+
+    // TODO Fill me in!
+    private static EnumMap<CacheType, Integer> defaultCacheSizes = new EnumMap<CacheType, Integer>(CacheType.class);
+    static {
+        defaultCacheSizes.put(StringsCache, STRINGS_CACHE_SIZE);
+        defaultCacheSizes.put(NodesCache, NODES_CACHE_SIZE);
+        defaultCacheSizes.put(ValuesCache, VALUES_CACHE_SIZE);
+        defaultCacheSizes.put(ProfilesCache, PROFILES_CACHE_SIZE);
+        defaultCacheSizes.put(SignaturesCache, SIGNATURES_CACHE_SIZE);
+    }
+
+    // TODO Fill me in!
+    private static EnumMap<CacheType, Integer> MthmCacheSizes = new EnumMap<CacheType, Integer>(CacheType.class);
+    static {
+        MthmCacheSizes.put(StringsCache, STRINGS_CACHE_SIZE);
+        MthmCacheSizes.put(NodesCache, NODES_CACHE_SIZE);
+        MthmCacheSizes.put(ValuesCache, VALUES_CACHE_SIZE);
+        MthmCacheSizes.put(ProfilesCache, PROFILES_CACHE_SIZE);
+        MthmCacheSizes.put(SignaturesCache, SIGNATURES_CACHE_SIZE);
+    }
+
+    // TODO Fill me in!
+    private static EnumMap<CacheType, Integer> SthmCacheSizes = new EnumMap<CacheType, Integer>(CacheType.class);
+    static {
+        SthmCacheSizes.put(StringsCache, STRINGS_CACHE_SIZE);
+        SthmCacheSizes.put(NodesCache, NODES_CACHE_SIZE);
+        SthmCacheSizes.put(ValuesCache, VALUES_CACHE_SIZE);
+        SthmCacheSizes.put(ProfilesCache, PROFILES_CACHE_SIZE);
+        SthmCacheSizes.put(SignaturesCache, SIGNATURES_CACHE_SIZE);
+    }
+
+    // TODO Fill me in!
+    private static EnumMap<CacheType, Integer> StlmCacheSizes = new EnumMap<CacheType, Integer>(CacheType.class);
+    static {
+        StlmCacheSizes.put(StringsCache, STRINGS_CACHE_SIZE);
+        StlmCacheSizes.put(NodesCache, NODES_CACHE_SIZE);
+        StlmCacheSizes.put(ValuesCache, VALUES_CACHE_SIZE);
+        StlmCacheSizes.put(ProfilesCache, PROFILES_CACHE_SIZE);
+        StlmCacheSizes.put(SignaturesCache, SIGNATURES_CACHE_SIZE);
+    }
+
+    // TODO Fill me in!
+    private static EnumMap<CacheType, Integer> MtlmCacheSizes = new EnumMap<CacheType, Integer>(CacheType.class);
+    static {
+        MtlmCacheSizes.put(StringsCache, STRINGS_CACHE_SIZE);
+        MtlmCacheSizes.put(NodesCache, NODES_CACHE_SIZE);
+        MtlmCacheSizes.put(ValuesCache, VALUES_CACHE_SIZE);
+        MtlmCacheSizes.put(ProfilesCache, PROFILES_CACHE_SIZE);
+        MtlmCacheSizes.put(SignaturesCache, SIGNATURES_CACHE_SIZE);
+    }
+
     /**
      * Cache types for Stream Dataset
      */
@@ -64,17 +115,47 @@ public class DatasetBuilder {
         StringsCache, NodesCache, ValuesCache, ProfilesCache, SignaturesCache
     }
 
-    private final java.util.Map<CacheType, ICache> defaultCacheMap = new HashMap<CacheType, ICache>(5);
-    // initialise the default caches
-    {
-        defaultCacheMap.put(StringsCache, new LruCache(STRINGS_CACHE_SIZE));
-        defaultCacheMap.put(NodesCache, new LruCache(NODES_CACHE_SIZE));
-        defaultCacheMap.put(ValuesCache, new LruCache(VALUES_CACHE_SIZE));
-        defaultCacheMap.put(ProfilesCache, new LruCache(PROFILES_CACHE_SIZE));
-        defaultCacheMap.put(SignaturesCache, new LruCache(SIGNATURES_CACHE_SIZE));
+    @SuppressWarnings("unused")
+    public interface CacheSet {
+        int getSize(CacheType cacheType);
+        ICache getCache(ICache.Builder cacheBuilder, CacheType cacheType);
+        java.util.Map<CacheType, ICache> getCaches(ICache.Builder builder);
     }
 
-    private java.util.Map<CacheType, ICache> cacheMap = new HashMap<CacheType, ICache>(5);
+    public enum CacheTemplate implements CacheSet {
+        Default(defaultCacheSizes),
+        SingleThreadLowMemory(StlmCacheSizes),
+        SingleThreadHighmemory(SthmCacheSizes),
+        MultiThreadLowMemory(MtlmCacheSizes),
+        MultiThreadHighMemory(MthmCacheSizes);
+
+        private EnumMap<CacheType, Integer> sizes = new EnumMap<CacheType, Integer>(CacheType.class);
+        
+        CacheTemplate(EnumMap<CacheType, Integer> sizes) {
+            this.sizes.putAll(sizes);
+        }
+
+        @Override
+        public int getSize(CacheType cacheType) {
+           return sizes.get(cacheType);
+        }
+
+        @Override
+        public ICache getCache(ICache.Builder cacheBuilder, CacheType cacheType) {
+            return cacheBuilder.build(sizes.get(cacheType));
+        }
+
+        @Override
+        public java.util.Map<CacheType, ICache> getCaches(ICache.Builder builder){
+            java.util.Map<CacheType, ICache> result = new EnumMap<CacheType, ICache>(CacheType.class);
+            for (CacheType t: CacheType.values()) {
+                result.put(t, builder.build(sizes.get(t)));
+            }
+            return result;
+        }
+    }
+    
+    private java.util.Map<CacheType, ICache> cacheMap = new EnumMap<CacheType, ICache>(CacheType.class);
 
     // prevent direct construction
     private DatasetBuilder() {
@@ -84,15 +165,15 @@ public class DatasetBuilder {
     /**
      * Create a stream file dataset
      */
-    public static Stream stream() {
-        return new DatasetBuilder().new Stream();
+    public static BuildFromFile file() {
+        return new DatasetBuilder().new BuildFromFile();
     }
 
     /**
      * Create a stream buffer dataset
      */
-    public static Buffer buffer() {
-        return new DatasetBuilder().new Buffer();
+    public static BuildFromBuffer buffer() {
+        return new DatasetBuilder().new BuildFromBuffer();
     }
 
 
@@ -132,8 +213,33 @@ public class DatasetBuilder {
          * Add the internal default caches
          */
         public T addDefaultCaches() {
-            addCaches(defaultCacheMap);
+            addCaches(CacheTemplate.Default.getCaches(LruCache.builder()));
             //noinspection unchecked
+            return (T) this;
+        }
+
+        /**
+         * Add caches from a predefined cache template with default LruCache
+         */
+        public T addCachesFromTemplate(CacheTemplate template) {
+            addCaches(template.getCaches(LruCache.builder()));
+            return (T) this;
+        }
+
+        /**
+         * Add caches from a CacheSet
+         * To add, say, your own Template with the default LruCache
+         * do as follows:
+         * <p>
+         * <code>
+         *     addCachesFromTemplate(myCacheSet, LruCache.builder())
+         * </code>
+         *
+         * @param set the template
+         * @param builder a cache builder
+         */
+        public T addCachesFromCacheSet(CacheSet set, ICache.Builder builder) {
+            addCaches(set.getCaches(builder));
             return (T) this;
         }
     }
@@ -141,10 +247,10 @@ public class DatasetBuilder {
     /**
      * Buffer dataset builder
      */
-    public class Buffer extends Cachable<Buffer>{
+    public class BuildFromBuffer extends Cachable<BuildFromBuffer>{
 
         // cannot be instantiated directly
-        private Buffer() {
+        private BuildFromBuffer() {
 
         }
 
@@ -152,8 +258,8 @@ public class DatasetBuilder {
          * build the dataset from a buffer
          * @param buffer the buffer
          */
-        public StreamDataset build(byte[] buffer) throws IOException {
-            StreamDataset dataSet = new StreamDataset(buffer, Modes.MEMORY_MAPPED);
+        public IndirectDataset build(byte[] buffer) throws IOException {
+            IndirectDataset dataSet = new IndirectDataset(buffer, Modes.MEMORY_MAPPED);
             loadForStreaming(dataSet, cacheMap);
             return dataSet;
         }
@@ -163,20 +269,20 @@ public class DatasetBuilder {
      * File dataset builder
      */
     @SuppressWarnings("WeakerAccess")
-    public class Stream extends Cachable<Stream> {
+    public class BuildFromFile extends Cachable<BuildFromFile> {
 
         private boolean isTempFile = false;
         private Date lastModified = null;
 
         // cannot be instantiated directly
-        private Stream() {
+        private BuildFromFile() {
 
         }
 
         /**
          * If this dataset is built from a file, delete the file after close
          */
-        public Stream setTempFile() {
+        public BuildFromFile setTempFile() {
             isTempFile = true;
             return this;
         }
@@ -185,7 +291,7 @@ public class DatasetBuilder {
          * If this dataset is built from a file
          * @param isTemp if true, delete the file after close
          */
-        public Stream setTempFile(boolean isTemp) {
+        public BuildFromFile setTempFile(boolean isTemp) {
             isTempFile = isTemp;
             return this;
         }
@@ -194,7 +300,7 @@ public class DatasetBuilder {
          * If this dataset is built from a file, override the creation date
          * @param date the date
          */
-        public Stream lastModified(Date date) {
+        public BuildFromFile lastModified(Date date) {
             lastModified = date;
             return this;
         }
@@ -203,12 +309,12 @@ public class DatasetBuilder {
          * build the dataset from a file
          * @param filename the filename to build from
          */
-        public StreamDataset build(String filename) throws IOException {
+        public IndirectDataset build(String filename) throws IOException {
             Date modDate = lastModified;
             if (modDate == null) {
                 modDate = new Date(new File(filename).lastModified());
             }
-            StreamDataset dataSet = new StreamDataset(filename, modDate, Modes.FILE, isTempFile);
+            IndirectDataset dataSet = new IndirectDataset(filename, modDate, Modes.FILE, isTempFile);
             loadForStreaming(dataSet, cacheMap);
             return dataSet;
         }
@@ -260,12 +366,12 @@ public class DatasetBuilder {
      */
     private static class EntityLoader<V> implements IValueLoader<Integer, V> {
 
-        final StreamDataset dataset;
+        final IndirectDataset dataset;
         final BaseEntityFactory<V> entityFactory;
         final Header header;
         boolean fixedLength = false;
 
-        EntityLoader(Header header, StreamDataset dataset, BaseEntityFactory<V> entityFactory) {
+        EntityLoader(Header header, IndirectDataset dataset, BaseEntityFactory<V> entityFactory) {
             this.dataset = dataset;
             this.entityFactory = entityFactory;
             this.header = header;
@@ -325,7 +431,7 @@ public class DatasetBuilder {
 
         private LruCache<Integer, V> cache;
 
-        LruEntityLoader(final Header header, final StreamDataset dataset, final BaseEntityFactory<V> entityFactory, LruCache<Integer, V> cache) {
+        LruEntityLoader(final Header header, final IndirectDataset dataset, final BaseEntityFactory<V> entityFactory, LruCache<Integer, V> cache) {
             super(header, dataset, entityFactory);
             this.cache = cache;
             this.cache.setCacheLoader(new EntityLoader<V>(header, dataset, entityFactory));
@@ -347,7 +453,7 @@ public class DatasetBuilder {
 
         private IPutCache<Integer, V> cache;
 
-        CachedEntityLoader(Header header, StreamDataset dataset, BaseEntityFactory<V> entityFactory, IPutCache<Integer, V> cache) {
+        CachedEntityLoader(Header header, IndirectDataset dataset, BaseEntityFactory<V> entityFactory, IPutCache<Integer, V> cache) {
             super(header, dataset, entityFactory);
             this.cache = cache;
         }
@@ -445,7 +551,7 @@ public class DatasetBuilder {
      * @return an entity loader
      */
     @SuppressWarnings("unchecked")
-    private static <T> EntityLoader<T> getLoaderFor(Header header, ICache cache, StreamDataset dataset, BaseEntityFactory factory) {
+    private static <T> EntityLoader<T> getLoaderFor(Header header, ICache cache, IndirectDataset dataset, BaseEntityFactory factory) {
         EntityLoader loader;
         if (cache == null) {
             loader = new EntityLoader(header, dataset, factory);
@@ -469,7 +575,7 @@ public class DatasetBuilder {
      * @throws IOException if there was a problem accessing data file.
      */
     @SuppressWarnings("null")
-    private static void loadForStreaming(StreamDataset dataSet, java.util.Map<CacheType, ICache> cacheMap) throws IOException {
+    private static void loadForStreaming(IndirectDataset dataSet, java.util.Map<CacheType, ICache> cacheMap) throws IOException {
         BinaryReader reader = dataSet.pool.getReader();
         try {
             dataSet.setCacheMap(cacheMap);

@@ -20,7 +20,7 @@
  * ********************************************************************* */
 package fiftyone.mobile.detection.entities.stream;
 
-import fiftyone.mobile.detection.StreamDataset;
+import fiftyone.mobile.detection.IndirectDataset;
 import fiftyone.mobile.detection.entities.Modes;
 
 import java.io.IOException;
@@ -38,12 +38,11 @@ import java.util.Date;
  * the dataset is closed. Class provides extra methods to check how many readers
  * were created and how many are currently free to use.
  *
- * @deprecated - use {@link StreamDataset} instead, if you need access to the pool
+ * Use {@link IndirectDataset} instead, if you need access to the pool
  * of readers, or use {@link fiftyone.mobile.detection.Dataset} if not.
  * This is only here for backwards compatibility
  */
-@Deprecated
-public class Dataset extends StreamDataset {
+public class Dataset extends IndirectDataset {
 
 
     /**

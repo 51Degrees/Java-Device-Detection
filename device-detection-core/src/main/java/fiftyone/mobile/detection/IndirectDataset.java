@@ -21,7 +21,7 @@ import java.util.HashMap;
  * Class provides extra methods to assess status of readers and to
  * evaluate the caches.
  */
-public class StreamDataset extends fiftyone.mobile.detection.Dataset {
+public class IndirectDataset extends fiftyone.mobile.detection.Dataset {
 
     /**
      * Creates a dataset object with a pool of readers used to retrieve data
@@ -34,8 +34,8 @@ public class StreamDataset extends fiftyone.mobile.detection.Dataset {
      * disposed
      * @throws IOException if there was a problem accessing data file.
      */
-    public StreamDataset(String fileName, Date lastModified,
-                   Modes mode, boolean isTempFile) throws IOException {
+    public IndirectDataset(String fileName, Date lastModified,
+                           Modes mode, boolean isTempFile) throws IOException {
         super(lastModified, mode);
         source = new SourceFile(fileName, isTempFile);
         this.pool = new Pool(source);
@@ -50,7 +50,7 @@ public class StreamDataset extends fiftyone.mobile.detection.Dataset {
      * @param mode The mode of operation the data set will be using.
      * @throws IOException if there was a problem accessing data file.
      */
-    public StreamDataset(byte[] data, Modes mode) throws IOException {
+    public IndirectDataset(byte[] data, Modes mode) throws IOException {
         super(new Date(Long.MIN_VALUE), mode);
         source = new SourceMemory(data);
         this.pool = new Pool(source);

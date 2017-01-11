@@ -22,7 +22,7 @@
 package fiftyone.mobile.detection.entities.stream;
 
 import fiftyone.mobile.detection.ISimpleList;
-import fiftyone.mobile.detection.StreamDataset;
+import fiftyone.mobile.detection.IndirectDataset;
 import fiftyone.mobile.detection.WrappedIOException;
 import fiftyone.mobile.detection.entities.headers.Header;
 import fiftyone.mobile.detection.readers.BinaryReader;
@@ -43,7 +43,7 @@ public class IntegerList implements ISimpleList {
     // Entity header.
     private final Header header;
     // Array of items contained in the list.
-    protected final StreamDataset dataSet;
+    protected final IndirectDataset dataSet;
     
     /**
      * Constructs a new instance of this class.
@@ -52,7 +52,7 @@ public class IntegerList implements ISimpleList {
      * @param reader BinaryReader connected to the source data structure and 
      *               positioned to start reading.
      */
-    public IntegerList(StreamDataset dataSet, BinaryReader reader) {
+    public IntegerList(IndirectDataset dataSet, BinaryReader reader) {
         this.header = new Header(reader);
         this.dataSet = dataSet;
     }

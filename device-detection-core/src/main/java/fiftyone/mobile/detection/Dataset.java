@@ -48,7 +48,7 @@ import java.util.concurrent.TimeUnit;
  * {@link fiftyone.mobile.detection.factories.MemoryFactory}.
  * <p>
  * Stream factory
- * returns a {@link StreamDataset} which extends the this class and contains data members and methods
+ * returns a {@link IndirectDataset} which extends the this class and contains data members and methods
  * to access the data file on the "as needed" basis as well as supporting caching.
  * <p>
  * All information about the detector data set is exposed in this class 
@@ -1085,7 +1085,7 @@ public class Dataset implements Closeable {
     }
 
     /**
-     * Reset any caches in use for this Dataset. Only {@link StreamDataset}
+     * Reset any caches in use for this Dataset. Only {@link IndirectDataset}
      * contains caches.
      */
     public void resetCache() {
@@ -1095,7 +1095,7 @@ public class Dataset implements Closeable {
 
     // <editor-fold defaultstate="collapsed" desc="Deprecated methods">
     /**
-     * This method no longer supported. (See {@link StreamDataset#getCache(CacheType)}.
+     * This method no longer supported. (See {@link IndirectDataset#getCache(CacheType)}.
      */
     @Deprecated
     private static long getSwitches(Object list) {
@@ -1103,7 +1103,7 @@ public class Dataset implements Closeable {
     }
     
     /**
-     * This method no longer supported. (See {@link StreamDataset#getCache(CacheType)}.
+     * This method no longer supported. (See {@link IndirectDataset#getCache(CacheType)}.
      */
     @Deprecated
     public long getRankedSignatureCacheSwitches() {
@@ -1111,7 +1111,7 @@ public class Dataset implements Closeable {
     }
 
     /**
-     * This method no longer supported. (See {@link StreamDataset#getCache(CacheType)}.
+     * This method no longer supported. (See {@link IndirectDataset#getCache(CacheType)}.
      */
     @Deprecated
     public double getPercentageRankedSignatureCacheMisses() {
@@ -1119,7 +1119,7 @@ public class Dataset implements Closeable {
     }
 
     /**
-     * This method no longer supported. (See {@link StreamDataset#getCache(CacheType)}.
+     * This method no longer supported. (See {@link IndirectDataset#getCache(CacheType)}.
      */
     @Deprecated
     public long getSignatureCacheSwitches() {
@@ -1127,7 +1127,7 @@ public class Dataset implements Closeable {
     }
 
     /**
-     * This method no longer supported. (See {@link StreamDataset#getCache(CacheType)}.
+     * This method no longer supported. (See {@link IndirectDataset#getCache(CacheType)}.
      */
     @Deprecated
     public long getNodeCacheSwitches() {
@@ -1135,7 +1135,7 @@ public class Dataset implements Closeable {
     }
 
     /**
-     * This method no longer supported. (See {@link StreamDataset#getCache(CacheType)}.
+     * This method no longer supported. (See {@link IndirectDataset#getCache(CacheType)}.
      */
     @Deprecated
     public long getStringsCacheSwitches() {
@@ -1143,7 +1143,7 @@ public class Dataset implements Closeable {
     }
 
     /**
-     * This method no longer supported. (See {@link StreamDataset#getCache(CacheType)}.
+     * This method no longer supported. (See {@link IndirectDataset#getCache(CacheType)}.
      */
     @Deprecated
     public long getProfilesCacheSwitches() {
@@ -1151,7 +1151,7 @@ public class Dataset implements Closeable {
     }
 
     /**
-     * This method no longer supported. (See {@link StreamDataset#getCache(CacheType)}.
+     * This method no longer supported. (See {@link IndirectDataset#getCache(CacheType)}.
      */
     @Deprecated
     public long getValuesCacheSwitches() {
@@ -1173,7 +1173,7 @@ public class Dataset implements Closeable {
     }
 
     /**
-     * This method no longer supported. (See {@link StreamDataset#getCache(CacheType)}.
+     * This method no longer supported. (See {@link IndirectDataset#getCache(CacheType)}.
      */
     @Deprecated
     private static double getPercentageMisses(Object list) {
@@ -1181,7 +1181,7 @@ public class Dataset implements Closeable {
     }
 
     /**
-     * This method no longer supported. (See {@link StreamDataset#getCache(CacheType)}.
+     * This method no longer supported. (See {@link IndirectDataset#getCache(CacheType)}.
      */
     @Deprecated
     public double getPercentageSignatureCacheMisses() {
@@ -1189,7 +1189,7 @@ public class Dataset implements Closeable {
     }
 
     /**
-     * This method no longer supported. (See {@link StreamDataset#getCache(CacheType)}.
+     * This method no longer supported. (See {@link IndirectDataset#getCache(CacheType)}.
      */
     @Deprecated
     public double getPercentageNodeCacheMisses() {
@@ -1197,7 +1197,7 @@ public class Dataset implements Closeable {
     }
 
     /**
-     * This method no longer supported. (See {@link StreamDataset#getCache(CacheType)}.
+     * This method no longer supported. (See {@link IndirectDataset#getCache(CacheType)}.
      */
     @Deprecated
     public double getPercentageStringsCacheMisses() {
@@ -1205,7 +1205,7 @@ public class Dataset implements Closeable {
     }
 
     /**
-     * This method no longer supported. (See {@link StreamDataset#getCache(CacheType)}.
+     * This method no longer supported. (See {@link IndirectDataset#getCache(CacheType)}.
      */
     @Deprecated
     public double getPercentageProfilesCacheMisses() {
@@ -1213,7 +1213,7 @@ public class Dataset implements Closeable {
     }
 
     /**
-     * This method no longer supported. (See {@link StreamDataset#getCache(CacheType)}.
+     * This method no longer supported. (See {@link IndirectDataset#getCache(CacheType)}.
      */
     @Deprecated
     public double getPercentageValuesCacheMisses() {

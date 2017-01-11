@@ -43,6 +43,13 @@ public interface ICache<K,V> {
      */
     void resetCache();
 
+    /**
+     * Factory for ICaches
+     */
+    interface Builder {
+       ICache build(int size);
+    }
+
     abstract class Base <K, V> implements ICache<K, V> {
         @Override
         public long getCacheSize() {

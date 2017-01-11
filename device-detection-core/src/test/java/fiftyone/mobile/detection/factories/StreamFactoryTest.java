@@ -5,7 +5,7 @@ import fiftyone.mobile.Filename;
 import fiftyone.mobile.StandardUnitTest;
 import fiftyone.mobile.detection.Dataset;
 import fiftyone.mobile.detection.Provider;
-import fiftyone.mobile.detection.StreamDataset;
+import fiftyone.mobile.detection.IndirectDataset;
 import fiftyone.mobile.detection.helper.ViableProvider;
 import org.junit.Test;
 
@@ -55,11 +55,11 @@ public class StreamFactoryTest extends StandardUnitTest {
     @Test
     public void testMemoryStreamDatasetConsistentDefault () throws IOException {
 
-        StreamDataset streamDataset =
+        IndirectDataset indirectDataset =
                 StreamFactory.create(Filename.LITE_PATTERN_V32);
         Dataset memoryDataset = MemoryFactory.create(Filename.LITE_PATTERN_V32);
 
-        compareDatasets(streamDataset, memoryDataset);
+        compareDatasets(indirectDataset, memoryDataset);
     }
 
     // see if the cache metrics etc work when using default cache.

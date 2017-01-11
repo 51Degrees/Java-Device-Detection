@@ -8,7 +8,7 @@ import fiftyone.mobile.detection.cache.ICache;
 import fiftyone.mobile.detection.cache.ILoadingCache;
 import fiftyone.mobile.detection.cache.IPutCache;
 import fiftyone.mobile.detection.cache.IValueLoader;
-import fiftyone.mobile.detection.StreamDataset;
+import fiftyone.mobile.detection.IndirectDataset;
 
 import java.io.IOException;
 import java.util.Date;
@@ -95,7 +95,7 @@ public class GuavaCache {
         }
     }
 
-    public static StreamDataset getDatasetWithGuavaCaches() throws IOException {
+    public static IndirectDataset getDatasetWithGuavaCaches() throws IOException {
         com.google.common.cache.Cache nodeCache = CacheBuilder.newBuilder()
                 .initialCapacity(NODES_CACHE_SIZE)
                 .maximumSize(NODES_CACHE_SIZE)
@@ -127,8 +127,8 @@ public class GuavaCache {
                 .build();
 
         @SuppressWarnings("unchecked")
-        StreamDataset dataset =
-                DatasetBuilder.stream()
+        IndirectDataset dataset =
+                DatasetBuilder.file()
                         .addCache(NodesCache, new PutCacheAdaptor(nodeCache))
                         .addCache(ProfilesCache, new PutCacheAdaptor(profileCache))
                         .addCache(StringsCache, new PutCacheAdaptor(stringsCache))
