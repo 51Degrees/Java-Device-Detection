@@ -2,6 +2,7 @@ package fiftyone.mobile.detection;
 
 import fiftyone.mobile.Filename;
 import fiftyone.mobile.StandardUnitTest;
+import fiftyone.mobile.detection.cache.LruCache;
 import fiftyone.mobile.detection.factories.MemoryFactory;
 import fiftyone.mobile.detection.factories.StreamFactoryTest;
 import org.junit.Test;
@@ -27,7 +28,7 @@ public class ProviderTest extends StandardUnitTest {
         StreamDataset cachedDataset = DatasetBuilder.stream()
                 .addDefaultCaches()
                 .build(Filename.LITE_PATTERN_V32);
-        Provider cachedProvider = new Provider(cachedDataset);
+        Provider cachedProvider = new Provider(cachedDataset, new LruCache(5000));
 
         StreamDataset unCachedDataset = DatasetBuilder.stream()
                 .build(Filename.LITE_PATTERN_V32);
