@@ -232,7 +232,7 @@ public class DatasetBuilder {
          * do as follows:
          * <p>
          * <code>
-         *     addCachesFromTemplate(myCacheSet, LruCache.builder())
+         *     addCachesFromCacheSet(myCacheSet, LruCache.builder())
          * </code>
          *
          * @param set the template
