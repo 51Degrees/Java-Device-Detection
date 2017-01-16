@@ -42,7 +42,6 @@ import static fiftyone.mobile.detection.DatasetBuilder.CacheType.*;
  *          .setTempFile()
  *          // to set the date explicitly
  *          .lastModified(date)
- *          // or to build from a file
  *          .build(filename);
  *          
  * </code></pre>
@@ -223,6 +222,7 @@ public class DatasetBuilder {
          */
         public T addCachesFromTemplate(CacheTemplate template) {
             addCaches(template.getCaches(LruCache.builder()));
+            //noinspection unchecked
             return (T) this;
         }
 
@@ -240,6 +240,7 @@ public class DatasetBuilder {
          */
         public T addCachesFromCacheSet(CacheSet set, ICache.Builder builder) {
             addCaches(set.getCaches(builder));
+            //noinspection unchecked
             return (T) this;
         }
     }
