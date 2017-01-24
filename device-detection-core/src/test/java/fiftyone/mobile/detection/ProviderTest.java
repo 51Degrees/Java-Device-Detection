@@ -26,7 +26,7 @@ public class ProviderTest extends StandardUnitTest {
     @Test
     public void testMemoryAndStreamSame () throws IOException {
         IndirectDataset cachedDataset = DatasetBuilder.file()
-                .addDefaultCaches()
+                .configureDefaultCaches()
                 .build(Filename.LITE_PATTERN_V32);
         Provider cachedProvider = new Provider(cachedDataset, new LruCache(5000));
 

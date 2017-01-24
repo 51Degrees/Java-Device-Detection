@@ -7,10 +7,7 @@ import fiftyone.mobile.detection.Dataset;
 import fiftyone.mobile.detection.DatasetBuilder;
 import fiftyone.mobile.detection.Match;
 import fiftyone.mobile.detection.Provider;
-import fiftyone.mobile.detection.cache.ICache;
-import fiftyone.mobile.detection.cache.ILoadingCache;
-import fiftyone.mobile.detection.cache.IPutCache;
-import fiftyone.mobile.detection.cache.IValueLoader;
+import fiftyone.mobile.detection.cache.*;
 
 import java.io.IOException;
 import java.util.Date;
@@ -102,6 +99,17 @@ class GuavaExample {
         }
     }
 
+    static class GuavaCacheBuilder implements ICacheBuilder {
+        public ICache build(int size){
+            com.google.common.cache.Cache guavaCache = CacheBuilder.newBuilder()
+                    .initialCapacity(size)
+                    .maximumSize(size)
+                    .concurrencyLevel(5) // set to number of threads that can access cache at same time
+                    .build();
+
+            return new PutCacheAdaptor(guavaCache);
+        }
+    }
 
     public static void main (String[] args) throws IOException {
         com.google.common.cache.Cache uaCache = CacheBuilder.newBuilder()
@@ -110,22 +118,12 @@ class GuavaExample {
                 .concurrencyLevel(5) // set to number of threads that can access cache at same time
                 .build();
 
-        com.google.common.cache.Cache nodeCache = CacheBuilder.newBuilder()
-                .initialCapacity(NODES_CACHE_SIZE)
-                .maximumSize(NODES_CACHE_SIZE)
-                .concurrencyLevel(5)
-                .build();
-
-        com.google.common.cache.Cache profileCache = CacheBuilder.newBuilder()
-                .initialCapacity(PROFILES_CACHE_SIZE)
-                .maximumSize(PROFILES_CACHE_SIZE)
-                .concurrencyLevel(5)
-                .build();
+        ICacheBuilder builder = new GuavaCacheBuilder();
 
         @SuppressWarnings("unchecked")
         Dataset dataset = DatasetBuilder.file()
-                .addCache(NodesCache, new PutCacheAdaptor(nodeCache))
-                .addCache(ProfilesCache, new PutCacheAdaptor(profileCache))
+                .setCacheBuilder(NodesCache, builder)
+                .setCacheBuilder(ProfilesCache, builder)
                 .lastModified(new Date())
                 .build(Shared.getLitePatternV32());
 

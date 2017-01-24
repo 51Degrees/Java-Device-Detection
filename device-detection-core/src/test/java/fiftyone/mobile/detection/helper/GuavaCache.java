@@ -4,10 +4,7 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import fiftyone.mobile.Filename;
 import fiftyone.mobile.detection.DatasetBuilder;
-import fiftyone.mobile.detection.cache.ICache;
-import fiftyone.mobile.detection.cache.ILoadingCache;
-import fiftyone.mobile.detection.cache.IPutCache;
-import fiftyone.mobile.detection.cache.IValueLoader;
+import fiftyone.mobile.detection.cache.*;
 import fiftyone.mobile.detection.IndirectDataset;
 
 import java.io.IOException;
@@ -95,49 +92,35 @@ public class GuavaCache {
         }
     }
 
+    static class GuavaCacheBuilder implements ICacheBuilder{
+         public ICache build(int size){
+             com.google.common.cache.Cache guavaCache = CacheBuilder.newBuilder()
+                     .initialCapacity(size)
+                     .maximumSize(size)
+                     .recordStats()
+                     .build();
+
+             return new PutCacheAdaptor(guavaCache);
+         }
+    }
+
     public static IndirectDataset getDatasetWithGuavaCaches() throws IOException {
-        com.google.common.cache.Cache nodeCache = CacheBuilder.newBuilder()
-                .initialCapacity(NODES_CACHE_SIZE)
-                .maximumSize(NODES_CACHE_SIZE)
-                .recordStats()
-                .build();
-
-        com.google.common.cache.Cache profileCache = CacheBuilder.newBuilder()
-                .initialCapacity(PROFILES_CACHE_SIZE)
-                .maximumSize(PROFILES_CACHE_SIZE)
-                .recordStats()
-                .build();
-
-        com.google.common.cache.Cache stringsCache = CacheBuilder.newBuilder()
-                .initialCapacity(STRINGS_CACHE_SIZE)
-                .maximumSize(STRINGS_CACHE_SIZE)
-                .recordStats()
-                .build();
-
-        com.google.common.cache.Cache valuesCache = CacheBuilder.newBuilder()
-                .initialCapacity(VALUES_CACHE_SIZE)
-                .maximumSize(VALUES_CACHE_SIZE)
-                .recordStats()
-                .build();
-
-        com.google.common.cache.Cache signaturesCache = CacheBuilder.newBuilder()
-                .initialCapacity(SIGNATURES_CACHE_SIZE)
-                .maximumSize(SIGNATURES_CACHE_SIZE)
-                .recordStats()
-                .build();
+        ICacheBuilder builder = new GuavaCacheBuilder();
 
         @SuppressWarnings("unchecked")
         IndirectDataset dataset =
                 DatasetBuilder.file()
-                        .addCache(NodesCache, new PutCacheAdaptor(nodeCache))
-                        .addCache(ProfilesCache, new PutCacheAdaptor(profileCache))
-                        .addCache(StringsCache, new PutCacheAdaptor(stringsCache))
-                        .addCache(ValuesCache, new PutCacheAdaptor(valuesCache))
-                        .addCache(SignaturesCache, new PutCacheAdaptor(signaturesCache))
+                        .setCacheBuilder(NodesCache, builder)
+                        .setCacheBuilder(ProfilesCache, builder)
+                        .setCacheBuilder(StringsCache, builder)
+                        .setCacheBuilder(ValuesCache, builder)
+                        .setCacheBuilder(SignaturesCache, builder)
                         .lastModified(new Date())
                         .build(Filename.LITE_PATTERN_V32);
 
         return dataset;
+
+
     }
 
     public static <K,V> ILoadingCache<K,V> getUserAgentCache() {

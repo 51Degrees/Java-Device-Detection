@@ -69,7 +69,7 @@ public final class StreamFactory {
      */
     public static IndirectDataset create(byte[] data) throws IOException {
         return DatasetBuilder.buffer()
-                .addDefaultCaches()
+                .configureDefaultCaches()
                 .build(data);
     }
     
@@ -118,7 +118,7 @@ public final class StreamFactory {
                                          boolean isTempFile) throws IOException {
 
         return DatasetBuilder.file()
-                .addDefaultCaches()
+                .configureDefaultCaches()
                 .setTempFile(isTempFile)
                 .lastModified(lastModified)
                 .build(filepath);

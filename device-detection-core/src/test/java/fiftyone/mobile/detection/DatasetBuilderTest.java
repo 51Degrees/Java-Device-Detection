@@ -3,6 +3,7 @@ package fiftyone.mobile.detection;
 import com.google.common.io.Files;
 import fiftyone.mobile.Filename;
 import fiftyone.mobile.StandardUnitTest;
+import fiftyone.mobile.detection.cache.CacheOptions;
 import fiftyone.mobile.detection.cache.LruCache;
 import fiftyone.mobile.detection.factories.MemoryFactory;
 import fiftyone.mobile.detection.helper.GuavaCache;
@@ -41,7 +42,7 @@ public class DatasetBuilderTest extends StandardUnitTest {
     @Test
     public void testAddDefaultCaches () throws IOException {
         IndirectDataset dataset = DatasetBuilder.file()
-                .addDefaultCaches()
+                .configureDefaultCaches()
                 .build(Filename.LITE_PATTERN_V32);
         assertEquals(LruCache.class, dataset.getCache(StringsCache).getClass());
         assertEquals(LruCache.class, dataset.getCache(SignaturesCache).getClass());
@@ -104,14 +105,11 @@ public class DatasetBuilderTest extends StandardUnitTest {
     // tests to see if Stream and Memory load the same thing (user supplied partial LRUCache)
     @Test
     public void testMemoryStreamDatasetConsistentPartialLruCache () throws IOException {
-        LruCache nodesCache = new LruCache(20);
-        LruCache valuesCache = new LruCache(100);
-        LruCache stringsCache = new LruCache(100);
 
         IndirectDataset indirectDataset = DatasetBuilder.file()
-                .addCache(NodesCache, nodesCache)
-                .addCache(ValuesCache, valuesCache)
-                .addCache(StringsCache, stringsCache)
+                .configureCache(NodesCache, new CacheOptions(20, LruCache.builder()))
+                .configureCache(ValuesCache, new CacheOptions(100, LruCache.builder()))
+                .configureCache(StringsCache, new CacheOptions(100, LruCache.builder()))
                 .build(Filename.LITE_PATTERN_V32);
         Dataset memoryDataset = MemoryFactory.create(Filename.LITE_PATTERN_V32);
 
