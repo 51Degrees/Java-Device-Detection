@@ -1,9 +1,6 @@
 package fiftyone.mobile.detection;
 
-import fiftyone.mobile.detection.cache.ICache;
-import fiftyone.mobile.detection.cache.IPutCache;
-import fiftyone.mobile.detection.cache.IValueLoader;
-import fiftyone.mobile.detection.cache.LruCache;
+import fiftyone.mobile.detection.cache.*;
 import fiftyone.mobile.detection.entities.*;
 import fiftyone.mobile.detection.entities.Map;
 import fiftyone.mobile.detection.entities.headers.Header;
@@ -56,55 +53,61 @@ public class DatasetBuilder {
     public static final int PROFILES_CACHE_SIZE = 600;
     public static final int SIGNATURES_CACHE_SIZE = 500;
 
+    private static ICacheBuilder lruBuilder = LruCache.builder();
 
     // TODO Fill me in!
-    private static EnumMap<CacheType, Integer> defaultCacheSizes = new EnumMap<CacheType, Integer>(CacheType.class);
+    private static EnumMap<CacheType, ICacheOptions> defaultCacheSizes =
+            new EnumMap<CacheType, ICacheOptions>(CacheType.class);
     static {
-        defaultCacheSizes.put(StringsCache, STRINGS_CACHE_SIZE);
-        defaultCacheSizes.put(NodesCache, NODES_CACHE_SIZE);
-        defaultCacheSizes.put(ValuesCache, VALUES_CACHE_SIZE);
-        defaultCacheSizes.put(ProfilesCache, PROFILES_CACHE_SIZE);
-        defaultCacheSizes.put(SignaturesCache, SIGNATURES_CACHE_SIZE);
+        defaultCacheSizes.put(StringsCache, new CacheOptions(STRINGS_CACHE_SIZE, lruBuilder));
+        defaultCacheSizes.put(NodesCache, new CacheOptions(NODES_CACHE_SIZE, lruBuilder));
+        defaultCacheSizes.put(ValuesCache, new CacheOptions(VALUES_CACHE_SIZE, lruBuilder));
+        defaultCacheSizes.put(ProfilesCache, new CacheOptions(PROFILES_CACHE_SIZE, lruBuilder));
+        defaultCacheSizes.put(SignaturesCache, new CacheOptions(SIGNATURES_CACHE_SIZE, lruBuilder));
     }
 
     // TODO Fill me in!
-    private static EnumMap<CacheType, Integer> MthmCacheSizes = new EnumMap<CacheType, Integer>(CacheType.class);
+    private static EnumMap<CacheType, ICacheOptions> MtCacheSizes =
+            new EnumMap<CacheType, ICacheOptions>(CacheType.class);
     static {
-        MthmCacheSizes.put(StringsCache, STRINGS_CACHE_SIZE);
-        MthmCacheSizes.put(NodesCache, NODES_CACHE_SIZE);
-        MthmCacheSizes.put(ValuesCache, VALUES_CACHE_SIZE);
-        MthmCacheSizes.put(ProfilesCache, PROFILES_CACHE_SIZE);
-        MthmCacheSizes.put(SignaturesCache, SIGNATURES_CACHE_SIZE);
+        MtCacheSizes.put(StringsCache, new CacheOptions(STRINGS_CACHE_SIZE, lruBuilder));
+        MtCacheSizes.put(NodesCache, new CacheOptions(NODES_CACHE_SIZE, lruBuilder));
+        MtCacheSizes.put(ValuesCache, new CacheOptions(VALUES_CACHE_SIZE, lruBuilder));
+        MtCacheSizes.put(ProfilesCache, new CacheOptions(PROFILES_CACHE_SIZE, lruBuilder));
+        MtCacheSizes.put(SignaturesCache, new CacheOptions(SIGNATURES_CACHE_SIZE, lruBuilder));
     }
 
     // TODO Fill me in!
-    private static EnumMap<CacheType, Integer> SthmCacheSizes = new EnumMap<CacheType, Integer>(CacheType.class);
+    private static EnumMap<CacheType, ICacheOptions> StCacheSizes =
+            new EnumMap<CacheType, ICacheOptions>(CacheType.class);
     static {
-        SthmCacheSizes.put(StringsCache, STRINGS_CACHE_SIZE);
-        SthmCacheSizes.put(NodesCache, NODES_CACHE_SIZE);
-        SthmCacheSizes.put(ValuesCache, VALUES_CACHE_SIZE);
-        SthmCacheSizes.put(ProfilesCache, PROFILES_CACHE_SIZE);
-        SthmCacheSizes.put(SignaturesCache, SIGNATURES_CACHE_SIZE);
+        StCacheSizes.put(StringsCache, new CacheOptions(STRINGS_CACHE_SIZE, lruBuilder));
+        StCacheSizes.put(NodesCache, new CacheOptions(NODES_CACHE_SIZE, lruBuilder));
+        StCacheSizes.put(ValuesCache, new CacheOptions(VALUES_CACHE_SIZE, lruBuilder));
+        StCacheSizes.put(ProfilesCache, new CacheOptions(PROFILES_CACHE_SIZE, lruBuilder));
+        StCacheSizes.put(SignaturesCache, new CacheOptions(SIGNATURES_CACHE_SIZE, lruBuilder));
     }
 
     // TODO Fill me in!
-    private static EnumMap<CacheType, Integer> StlmCacheSizes = new EnumMap<CacheType, Integer>(CacheType.class);
+    private static EnumMap<CacheType, ICacheOptions> StlmCacheSizes =
+            new EnumMap<CacheType, ICacheOptions>(CacheType.class);
     static {
-        StlmCacheSizes.put(StringsCache, STRINGS_CACHE_SIZE);
-        StlmCacheSizes.put(NodesCache, NODES_CACHE_SIZE);
-        StlmCacheSizes.put(ValuesCache, VALUES_CACHE_SIZE);
-        StlmCacheSizes.put(ProfilesCache, PROFILES_CACHE_SIZE);
-        StlmCacheSizes.put(SignaturesCache, SIGNATURES_CACHE_SIZE);
+        StlmCacheSizes.put(StringsCache, new CacheOptions(STRINGS_CACHE_SIZE, lruBuilder));
+        StlmCacheSizes.put(NodesCache, new CacheOptions(NODES_CACHE_SIZE, lruBuilder));
+        StlmCacheSizes.put(ValuesCache, new CacheOptions(VALUES_CACHE_SIZE, lruBuilder));
+        StlmCacheSizes.put(ProfilesCache, new CacheOptions(PROFILES_CACHE_SIZE, lruBuilder));
+        StlmCacheSizes.put(SignaturesCache, new CacheOptions(SIGNATURES_CACHE_SIZE, lruBuilder));
     }
 
     // TODO Fill me in!
-    private static EnumMap<CacheType, Integer> MtlmCacheSizes = new EnumMap<CacheType, Integer>(CacheType.class);
+    private static EnumMap<CacheType, ICacheOptions> MtlmCacheSizes =
+            new EnumMap<CacheType, ICacheOptions>(CacheType.class);
     static {
-        MtlmCacheSizes.put(StringsCache, STRINGS_CACHE_SIZE);
-        MtlmCacheSizes.put(NodesCache, NODES_CACHE_SIZE);
-        MtlmCacheSizes.put(ValuesCache, VALUES_CACHE_SIZE);
-        MtlmCacheSizes.put(ProfilesCache, PROFILES_CACHE_SIZE);
-        MtlmCacheSizes.put(SignaturesCache, SIGNATURES_CACHE_SIZE);
+        MtlmCacheSizes.put(StringsCache, new CacheOptions(STRINGS_CACHE_SIZE, lruBuilder));
+        MtlmCacheSizes.put(NodesCache, new CacheOptions(NODES_CACHE_SIZE, lruBuilder));
+        MtlmCacheSizes.put(ValuesCache, new CacheOptions(VALUES_CACHE_SIZE, lruBuilder));
+        MtlmCacheSizes.put(ProfilesCache, new CacheOptions(PROFILES_CACHE_SIZE, lruBuilder));
+        MtlmCacheSizes.put(SignaturesCache, new CacheOptions(SIGNATURES_CACHE_SIZE, lruBuilder));
     }
 
     /**
@@ -116,45 +119,30 @@ public class DatasetBuilder {
 
     @SuppressWarnings("unused")
     public interface CacheSet {
-        int getSize(CacheType cacheType);
-        ICache getCache(ICache.Builder cacheBuilder, CacheType cacheType);
-        java.util.Map<CacheType, ICache> getCaches(ICache.Builder builder);
+        java.util.Map<CacheType, ICacheOptions> getCacheConfiguration();
     }
 
     public enum CacheTemplate implements CacheSet {
         Default(defaultCacheSizes),
         SingleThreadLowMemory(StlmCacheSizes),
-        SingleThreadHighmemory(SthmCacheSizes),
+        SingleThread(StCacheSizes),
         MultiThreadLowMemory(MtlmCacheSizes),
-        MultiThreadHighMemory(MthmCacheSizes);
+        MultiThread(MtCacheSizes);
 
-        private EnumMap<CacheType, Integer> sizes = new EnumMap<CacheType, Integer>(CacheType.class);
+        private EnumMap<CacheType, ICacheOptions> configuration =
+                new EnumMap<CacheType, ICacheOptions>(CacheType.class);
         
-        CacheTemplate(EnumMap<CacheType, Integer> sizes) {
-            this.sizes.putAll(sizes);
+        CacheTemplate(EnumMap<CacheType, ICacheOptions> configuration) {
+            this.configuration.putAll(configuration);
         }
 
         @Override
-        public int getSize(CacheType cacheType) {
-           return sizes.get(cacheType);
-        }
-
-        @Override
-        public ICache getCache(ICache.Builder cacheBuilder, CacheType cacheType) {
-            return cacheBuilder.build(sizes.get(cacheType));
-        }
-
-        @Override
-        public java.util.Map<CacheType, ICache> getCaches(ICache.Builder builder){
-            java.util.Map<CacheType, ICache> result = new EnumMap<CacheType, ICache>(CacheType.class);
-            for (CacheType t: CacheType.values()) {
-                result.put(t, builder.build(sizes.get(t)));
-            }
-            return result;
+        public java.util.Map<CacheType, ICacheOptions> getCacheConfiguration(){
+            return configuration;
         }
     }
     
-    private java.util.Map<CacheType, ICache> cacheMap = new EnumMap<CacheType, ICache>(CacheType.class);
+    private java.util.Map<CacheType, ICacheOptions> cacheMap = new EnumMap<CacheType, ICacheOptions>(CacheType.class);
 
     // prevent direct construction
     private DatasetBuilder() {
@@ -188,42 +176,81 @@ public class DatasetBuilder {
         }
 
         /**
-         * Add a cache to this (Stream) Dataset
-         * @param cacheType the type
-         * @param cache the cache
+         * Set a cache builder to use for the specified type of cache
+         * @param cacheType The cache type
+         * @param builder The cache builder used to create the cache.
+         *                If null is passed then the specified cache type
+         *                will operate without a cache.
+         * @return The {@link DatasetBuilder}
          */
-        public T addCache(CacheType cacheType, ICache cache) {
-            cacheMap.put(cacheType, cache);
+        public T setCacheBuilder(CacheType cacheType, ICacheBuilder builder){
+            if(cacheMap.containsKey(cacheType)) {
+                cacheMap.get(cacheType).setBuilder(builder);
+            } else {
+                cacheMap.put(cacheType, new CacheOptions(
+                        CacheTemplate.Default.getCacheConfiguration().get(cacheType).getSize(), builder));
+            }
+            return (T) this;
+        }
+
+        /**
+         * Set cache builders for multiple cache types
+         * @param map A map of cache types and associated cache builders.
+         *            Where a null builder is supplied the associated cache
+         *            type will operate without a cache
+         * @return The {@link DatasetBuilder}
+         */
+        public T setCacheBuilders(java.util.Map<CacheType, ICacheBuilder> map){
+            for (CacheType cacheType: map.keySet()) {
+                setCacheBuilder(cacheType, map.get(cacheType));
+            }
+            return (T) this;
+        }
+
+        /**
+         * Set the builder and size parameter for the specified cache type
+         * @param cacheType the type
+         * @param options An {@link ICacheOptions} object that
+         *                specifies a cache builder and size to use when
+         *                constructing the specified cache type
+         */
+        public T configureCache(CacheType cacheType, ICacheOptions options) {
+            cacheMap.put(cacheType, options);
             //noinspection unchecked
             return (T) this;
         }
 
         /**
-         * Add all the caches in the map
-         * @param map a map of instantiated caches with their type
+         * Set builders and size parameters for multiple cache types
+         * @param map a map of {@link ICacheBuilder} and size parameters
+         *            to use when constructing each cache type
          */
-        public T addCaches(java.util.Map<CacheType, ICache> map) {
+        public T configureCaches(java.util.Map<CacheType, ICacheOptions> map) {
             cacheMap.putAll(map);
             //noinspection unchecked
             return (T) this;
         }
 
         /**
-         * Add the internal default caches
+         * Initialises the {@link DatasetBuilder} with the default cache configuration.
+         * Individual elements of this configuration can be overridden by using the
+         * ConfigureCache, ConfigureCaches, SetCacheBuilder and SetCacheBuilders methods
          */
-        public T addDefaultCaches() {
-            addCaches(CacheTemplate.Default.getCaches(LruCache.builder()));
+        public T configureDefaultCaches() {
+            configureCaches(CacheTemplate.Default.getCacheConfiguration());
             //noinspection unchecked
             return (T) this;
         }
 
         /**
-         * Add caches from a predefined cache template with default LruCache
+         * Add cache configuration from a predefined cache template.
+         * Individual elements of this configuration can be overridden by using the
+         * ConfigureCache, ConfigureCaches, SetCacheBuilder and SetCacheBuilders methods
+         * @param template A {@link CacheTemplate} that defines the desired
+         *                 cache configuration
          */
-        public T addCachesFromTemplate(CacheTemplate template) {
-            addCaches(template.getCaches(LruCache.builder()));
-            //noinspection unchecked
-            return (T) this;
+        public T configureCachesFromTemplate(CacheTemplate template) {
+            return configureCachesFromCacheSet(template);
         }
 
         /**
@@ -236,12 +263,11 @@ public class DatasetBuilder {
          * </code>
          *
          * @param set the template
-         * @param builder a cache builder
          */
-        public T addCachesFromCacheSet(CacheSet set, ICache.Builder builder) {
-            addCaches(set.getCaches(builder));
+        public T configureCachesFromCacheSet(CacheSet set) {
+            configureCaches(set.getCacheConfiguration());
             //noinspection unchecked
-            return (T) this;
+			return (T) this;
         }
     }
 
@@ -576,9 +602,11 @@ public class DatasetBuilder {
      * @throws IOException if there was a problem accessing data file.
      */
     @SuppressWarnings("null")
-    private static void loadForStreaming(IndirectDataset dataSet, java.util.Map<CacheType, ICache> cacheMap) throws IOException {
+    private static void loadForStreaming(IndirectDataset dataSet, java.util.Map<CacheType, ICacheOptions> cacheConfiguration) throws IOException {
         BinaryReader reader = dataSet.pool.getReader();
         try {
+            java.util.Map<CacheType, ICache> cacheMap = buildCaches(cacheConfiguration);
+
             dataSet.setCacheMap(cacheMap);
             reader.setPos(0);
             //Load headers that are common for both V31 and V32.
@@ -676,5 +704,28 @@ public class DatasetBuilder {
                 dataSet.pool.release(reader);
             }
         }
+    }
+
+    /**
+     * Build caches using the specified configuration.
+     * The caches are returned in a map of CacheType to the cache instance
+     * @param cacheConfiguration A dictionary mapping {@link CacheType} values to an object
+     *                           implementing {@link ICacheOptions}.
+     *                           This specifies the {@link ICacheBuilder} and size parameter to
+     *                           use when constructing a cache of the associated type.
+     * @return A map containing the created caches
+     */
+    private static java.util.Map<CacheType, ICache> buildCaches(
+            java.util.Map<CacheType, ICacheOptions> cacheConfiguration) {
+        java.util.Map<CacheType, ICache> caches = new EnumMap<CacheType, ICache>(CacheType.class);
+
+        for (CacheType cacheType: cacheConfiguration.keySet()) {
+            ICacheOptions options = cacheConfiguration.get(cacheType);
+            if(options.getBuilder() != null) {
+                caches.put(cacheType, options.getBuilder().build(options.getSize()));
+            }
+        }
+
+        return caches;
     }
 }

@@ -357,12 +357,13 @@ public class LruCache<K, V>  implements ILoadingCache<K,V> {
     /**
      * Return builder for an LRU cache
      */
-    public static Builder builder() {
-        return new Builder() {
-            @Override
-            public ICache build(int size) {
-                return new LruCache(size);
-            }
-        };
+    public static ICacheBuilder builder() {
+        return new LruBuilder();
+    }
+
+    public static class LruBuilder implements ICacheBuilder {
+        public ICache build(int size) {
+            return new LruCache(size);
+        }
     }
 }
