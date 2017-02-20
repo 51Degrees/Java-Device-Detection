@@ -44,4 +44,7 @@ public class CacheOptions implements ICacheOptions {
     public void setBuilder(ICacheBuilder builder){
         this.builder = builder;
     }
+    public void setSize(int cacheSize){
+        this.size = cacheSize;
+    }
 }

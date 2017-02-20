@@ -29,4 +29,5 @@ public interface ICacheOptions {
 
     ICacheBuilder getBuilder();
     void setBuilder(ICacheBuilder builder);
+    void setSize(int cacheSize);
 }

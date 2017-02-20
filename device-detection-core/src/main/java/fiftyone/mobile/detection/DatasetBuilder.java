@@ -228,6 +228,34 @@ public class DatasetBuilder {
         }
 
         /**
+         * Set a size to use for the specified type of cache
+         * @param cacheType The cache type
+         * @param cacheSize The size used when creating the cache.
+         * @return The {@link DatasetBuilder}
+         */
+        public T setCacheSize(CacheType cacheType, int cacheSize){
+            if(cacheMap.containsKey(cacheType)) {
+                cacheMap.get(cacheType).setSize(cacheSize);
+            } else {
+                cacheMap.put(cacheType, new CacheOptions(
+                        cacheSize, CacheTemplate.Default.getCacheConfiguration().get(cacheType).getBuilder()));
+            }
+            return (T) this;
+        }
+
+        /**
+         * Set cache sizes for multiple cache types
+         * @param map A map of cache types and associated cache sizes.
+         * @return The {@link DatasetBuilder}
+         */
+        public T setCacheSizes(java.util.Map<CacheType, Integer> map){
+            for (CacheType cacheType: map.keySet()) {
+                setCacheSize(cacheType, map.get(cacheType));
+            }
+            return (T) this;
+        }
+
+        /**
          * Set the builder and size parameter for the specified cache type
          * @param cacheType the type
          * @param options An {@link ICacheOptions} object that
