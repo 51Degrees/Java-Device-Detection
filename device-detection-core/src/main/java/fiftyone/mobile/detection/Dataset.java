@@ -60,7 +60,6 @@ import java.util.concurrent.TimeUnit;
  * For more information see https://51degrees.com/Support/Documentation/Java
  */
 public class Dataset implements Closeable {
-    // TODO why is this here?
     public boolean FindProfilesInitialiseValueProfiles = false;
 
     /**

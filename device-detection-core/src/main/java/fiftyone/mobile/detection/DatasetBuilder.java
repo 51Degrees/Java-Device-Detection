@@ -75,7 +75,6 @@ public class DatasetBuilder {
 
     private static ICacheBuilder lruBuilder = LruCache.builder();
 
-    // TODO Fill me in!
     private static EnumMap<CacheType, ICacheOptions> defaultCacheSizes =
             new EnumMap<CacheType, ICacheOptions>(CacheType.class);
     static {
@@ -86,18 +85,16 @@ public class DatasetBuilder {
         defaultCacheSizes.put(SignaturesCache, new CacheOptions(SIGNATURES_CACHE_SIZE, lruBuilder));
     }
 
-    // TODO Fill me in!
     private static EnumMap<CacheType, ICacheOptions> MtCacheSizes =
             new EnumMap<CacheType, ICacheOptions>(CacheType.class);
     static {
-        MtCacheSizes.put(StringsCache, new CacheOptions(STRINGS_CACHE_SIZE, lruBuilder));
-        MtCacheSizes.put(NodesCache, new CacheOptions(NODES_CACHE_SIZE, lruBuilder));
-        MtCacheSizes.put(ValuesCache, new CacheOptions(VALUES_CACHE_SIZE, lruBuilder));
-        MtCacheSizes.put(ProfilesCache, new CacheOptions(PROFILES_CACHE_SIZE, lruBuilder));
-        MtCacheSizes.put(SignaturesCache, new CacheOptions(SIGNATURES_CACHE_SIZE, lruBuilder));
+        MtCacheSizes.put(StringsCache, new CacheOptions(0, null));
+        MtCacheSizes.put(NodesCache, new CacheOptions(0, null));
+        MtCacheSizes.put(ValuesCache, new CacheOptions(0, null));
+        MtCacheSizes.put(ProfilesCache, new CacheOptions(0, null));
+        MtCacheSizes.put(SignaturesCache, new CacheOptions(0, null));
     }
 
-    // TODO Fill me in!
     private static EnumMap<CacheType, ICacheOptions> StCacheSizes =
             new EnumMap<CacheType, ICacheOptions>(CacheType.class);
     static {
@@ -108,7 +105,6 @@ public class DatasetBuilder {
         StCacheSizes.put(SignaturesCache, new CacheOptions(SIGNATURES_CACHE_SIZE, lruBuilder));
     }
 
-    // TODO Fill me in!
     private static EnumMap<CacheType, ICacheOptions> StlmCacheSizes =
             new EnumMap<CacheType, ICacheOptions>(CacheType.class);
     static {
@@ -119,15 +115,14 @@ public class DatasetBuilder {
         StlmCacheSizes.put(SignaturesCache, new CacheOptions(SIGNATURES_CACHE_SIZE, lruBuilder));
     }
 
-    // TODO Fill me in!
     private static EnumMap<CacheType, ICacheOptions> MtlmCacheSizes =
             new EnumMap<CacheType, ICacheOptions>(CacheType.class);
     static {
-        MtlmCacheSizes.put(StringsCache, new CacheOptions(STRINGS_CACHE_SIZE, lruBuilder));
-        MtlmCacheSizes.put(NodesCache, new CacheOptions(NODES_CACHE_SIZE, lruBuilder));
-        MtlmCacheSizes.put(ValuesCache, new CacheOptions(VALUES_CACHE_SIZE, lruBuilder));
-        MtlmCacheSizes.put(ProfilesCache, new CacheOptions(PROFILES_CACHE_SIZE, lruBuilder));
-        MtlmCacheSizes.put(SignaturesCache, new CacheOptions(SIGNATURES_CACHE_SIZE, lruBuilder));
+        MtlmCacheSizes.put(StringsCache, new CacheOptions(0, null));
+        MtlmCacheSizes.put(NodesCache, new CacheOptions(0, null));
+        MtlmCacheSizes.put(ValuesCache, new CacheOptions(0, null));
+        MtlmCacheSizes.put(ProfilesCache, new CacheOptions(0, null));
+        MtlmCacheSizes.put(SignaturesCache, new CacheOptions(0, null));
     }
 
     /**
