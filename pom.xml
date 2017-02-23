@@ -37,8 +37,8 @@
         <junit.version>4.12</junit.version>
 
         <javaee-api.version>6.0</javaee-api.version>
-        <slf4j-api.version>1.7.21</slf4j-api.version>
-        <logback.version>1.1.7</logback.version>
+        <slf4j-api.version>1.7.22</slf4j-api.version>
+        <logback.version>1.1.8</logback.version>
         <jopt-simple.version>4.9</jopt-simple.version>
         <commons-codec.version>1.10</commons-codec.version>
     </properties>

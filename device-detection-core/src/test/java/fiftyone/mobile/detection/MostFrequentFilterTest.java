@@ -20,17 +20,17 @@
  * ********************************************************************* */
 package fiftyone.mobile.detection;
 
-import fiftyone.mobile.detection.test.TestType;
+import fiftyone.mobile.StandardUnitTest;
+import org.junit.Test;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import static org.junit.Assert.assertTrue;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
 
-@Category(TestType.TypeApi.class)
-public class MostFrequentFilterTest extends DetectionTestSupport {
+import static org.junit.Assert.assertTrue;
+
+public class MostFrequentFilterTest extends StandardUnitTest {
  
     private static final int NUMBER_OF_ARRAYS = 10;
     
@@ -48,7 +48,6 @@ public class MostFrequentFilterTest extends DetectionTestSupport {
     }
     
     @Test
-    @Category(TestType.TypeUnit.class)
     public void allDuplicates() throws IOException {
         List<List<Integer>> arrays = new ArrayList<List<Integer>>();
         for (int i = 0; i < NUMBER_OF_ARRAYS; i++) {

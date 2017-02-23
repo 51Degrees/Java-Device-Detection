@@ -20,36 +20,31 @@
  * ********************************************************************* */
 package fiftyone.mobile.detection.entities.stream;
 
+import fiftyone.mobile.detection.IndirectDataset;
 import fiftyone.mobile.detection.entities.Modes;
-import fiftyone.mobile.detection.readers.SourceBase;
-import fiftyone.mobile.detection.readers.SourceFile;
-import fiftyone.mobile.detection.readers.SourceMemory;
+
 import java.io.IOException;
 import java.util.Date;
 
 /**
  * A data set returned from the stream factory which includes a pool of
- * data readers that are used to fetch data from the source when the data 
+ * data readers that are used to fetch data from the source when the data
  * set is used to retrieve data not already in memory.
  * <p>
  * Extends {@link fiftyone.mobile.detection.Dataset}
  * <p>
  * Created by {@link fiftyone.mobile.detection.factories.StreamFactory}.
- * Since stream works with file directly a pool of readers is maintained until 
- * the dataset is closed. Class provides extra methods to check how many readers 
+ * Since stream works with file directly a pool of readers is maintained until
+ * the dataset is closed. Class provides extra methods to check how many readers
  * were created and how many are currently free to use.
+ *
+ * Use {@link IndirectDataset} instead, if you need access to the pool
+ * of readers, or use {@link fiftyone.mobile.detection.Dataset} if not.
+ * This is only here for backwards compatibility
  */
-public class Dataset extends fiftyone.mobile.detection.Dataset {
-    /**
-     * A pool of data readers.
-     */
-    public final Pool pool;
-    
-    /**
-     * Data source to be used with the pool.
-     */
-    private final SourceBase source;
-    
+public class Dataset extends IndirectDataset {
+
+
     /**
      * Creates a dataset object with a pool of readers used to retrieve data 
      * from the data file. Only useful in stram mode.
@@ -63,9 +58,7 @@ public class Dataset extends fiftyone.mobile.detection.Dataset {
      */
     public Dataset(String fileName, Date lastModified, 
                    Modes mode, boolean isTempFile) throws IOException {
-        super(lastModified, mode);
-        source = new SourceFile(fileName, isTempFile);
-        this.pool = new Pool(source);
+        super(fileName, lastModified, mode, isTempFile);
     }
     
     /**
@@ -78,45 +71,6 @@ public class Dataset extends fiftyone.mobile.detection.Dataset {
      * @throws IOException if there was a problem accessing data file.
      */
     public Dataset(byte[] data, Modes mode) throws IOException {
-        super(new Date(Long.MIN_VALUE), mode);
-        source = new SourceMemory(data);
-        this.pool = new Pool(source);
-    }
-    
-    /**
-     * Dispose of the dataset and the pool of readers.
-     * 
-     * @throws java.io.IOException if there was a problem accessing data file.
-     */
-    @Override
-    public void close() throws IOException {
-        source.close();
-        super.close();
-    }
-    
-    /**
-     * Resets the cache for the data set.
-     */
-    @Override
-    @Deprecated
-    public void resetCache() {
-        super.resetCache();
-    }
-    
-    /**
-     * @return The number of readers that have been created in the pool
-     * that connects the data set to the data source.
-     */
-    public int getReadersCreated()
-    {
-        return pool.getReadersCreated();
-    }
-
-    /**
-     * @return The number of readers in the queue ready to be used.
-     */
-    public int getReadersQueued()
-    {
-        return pool.getReadersQueued();
+        super(data, mode);
     }
 }
