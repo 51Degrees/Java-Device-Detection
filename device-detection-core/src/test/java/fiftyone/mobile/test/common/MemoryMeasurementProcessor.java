@@ -36,6 +36,9 @@ import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Used to approximate the amount of memory used during the test.
+ * Note: all memory tests are designed to be run individually. When all tests
+ * are run as part of a batch, the nature of the JVM's garbage collector means
+ * memory measurements are unreliable and cause tests to fail.
  */
 public class MemoryMeasurementProcessor implements MatchProcessor {
 
