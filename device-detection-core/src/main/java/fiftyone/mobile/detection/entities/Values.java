@@ -180,11 +180,8 @@ public class Values {
      * @param index of the element in the array.
      * @return {@link Value} at provided index, or null if out of bounds.
      */
-    public Value get(int index) {
-        if (index > values.length) {
-            return null;
-        }
-        return values[index];
+    public Value get(final int index) {
+        return index < values.length ? values[index] : null;
     }
     
     /**
