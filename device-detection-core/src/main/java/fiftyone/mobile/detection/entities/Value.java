@@ -301,7 +301,7 @@ public class Value extends BaseEntity {
     public boolean equals(Object obj)
     {
         if (this==obj) return true;
-        if (this == null) return false;
+        if (obj == null) return false;
         if (this.getClass() != obj.getClass()) return false;
         return index == ((Value)obj).index;
     }

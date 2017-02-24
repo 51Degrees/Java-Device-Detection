@@ -69,7 +69,7 @@ public class Enumerable implements Iterator<Integer>, Iterable<Integer> {
      * 
      * @return integer entry.
      */
-    public int getNext() {
+    public Integer getNext() {
         Integer value = null;
         if (count < max) {
             value = reader.readInt32();

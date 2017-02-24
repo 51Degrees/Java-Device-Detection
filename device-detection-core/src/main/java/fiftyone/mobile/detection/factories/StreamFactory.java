@@ -20,35 +20,21 @@
  * ********************************************************************* */
 package fiftyone.mobile.detection.factories;
 
-import fiftyone.mobile.detection.entities.stream.Dataset;
-import fiftyone.mobile.detection.entities.AsciiString;
-import fiftyone.mobile.detection.entities.Component;
-import fiftyone.mobile.detection.entities.Map;
-import fiftyone.mobile.detection.entities.Modes;
-import fiftyone.mobile.detection.entities.Node;
-import fiftyone.mobile.detection.entities.Profile;
-import fiftyone.mobile.detection.entities.ProfileOffset;
-import fiftyone.mobile.detection.entities.Signature;
-import fiftyone.mobile.detection.entities.Value;
-import fiftyone.mobile.detection.entities.memory.MemoryFixedList;
-import fiftyone.mobile.detection.entities.memory.PropertiesList;
-import fiftyone.mobile.detection.entities.stream.IntegerList;
-import fiftyone.mobile.detection.entities.stream.StreamVariableList;
-import fiftyone.mobile.detection.entities.stream.StreamFixedList;
-import fiftyone.mobile.detection.factories.stream.NodeStreamFactoryV31;
-import fiftyone.mobile.detection.factories.stream.NodeStreamFactoryV32;
-import fiftyone.mobile.detection.factories.stream.ProfileStreamFactory;
-import fiftyone.mobile.detection.readers.BinaryReader;
+import fiftyone.mobile.detection.DatasetBuilder;
+import fiftyone.mobile.detection.IndirectDataset;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 
 /**
- * Factory class used to create a DetectorDataSet from a source data structure.
+ * StreamFactory will at some point be replaced by {@link DatasetBuilder}
+ * <p>
+ * Factory class used to create a DataSet from a source data structure.
  * <p>
  * All the entities are held in the persistent store and only loads into memory
  * when required. A cache mechanism is used to improve efficiency as many
- * entities are frequently used in a high volume environment. 
+ * entities are frequently used in a high volume environment.
  * <p>
  * The data set will be initialised very quickly as only the header information 
  * is loaded. Entities are then created when requested by the detection process 
@@ -70,6 +56,7 @@ import java.util.Date;
  *  <p>Where the byte array is the 51Degrees device data file read into a byte
  *  array.
  * </ul>
+ * @see DatasetBuilder for a more flexible way of creating Datastores
  */
 public final class StreamFactory {
 
@@ -80,10 +67,10 @@ public final class StreamFactory {
      * @return Stream Dataset object.
      * @throws IOException if there was a problem accessing data file.
      */
-    public static Dataset create(byte[] data) throws IOException {
-        Dataset dataSet = new Dataset(data, Modes.MEMORY_MAPPED);
-        load(dataSet);
-        return dataSet;
+    public static IndirectDataset create(byte[] data) throws IOException {
+        return DatasetBuilder.buffer()
+                .configureDefaultCaches()
+                .build(data);
     }
     
     /**
@@ -94,7 +81,7 @@ public final class StreamFactory {
      *         required.
      * @throws IOException  if there was a problem accessing the data file.
      */
-    public static Dataset create(String filePath)
+    public static IndirectDataset create(String filePath)
             throws IOException {
         return create(filePath, false);
     }
@@ -110,13 +97,13 @@ public final class StreamFactory {
      *         required.
      * @throws IOException if there was a problem accessing data file.
      */
-    public static Dataset create(String filePath, boolean isTempFile) 
+    public static IndirectDataset create(String filePath, boolean isTempFile)
                                                             throws IOException {
         return create(filePath, 
                 new Date(new File(filePath).lastModified()), 
                 isTempFile);
     }
-    
+
     /**
      * Constructor creates a new dataset from the supplied data file.
      * 
@@ -127,121 +114,13 @@ public final class StreamFactory {
      * @return Stream Dataset object.
      * @throws IOException if there was a problem accessing data file.
      */
-    public static Dataset create(String filepath, Date lastModified, 
-            boolean isTempFile) throws IOException {
-        Dataset dataSet = 
-                new fiftyone.mobile.detection.entities.stream.Dataset(
-                        filepath, 
-                        lastModified, 
-                        Modes.FILE, 
-                        isTempFile);
-        load(dataSet);
-        return dataSet;
-    }
+    public static IndirectDataset create(String filepath, Date lastModified,
+                                         boolean isTempFile) throws IOException {
 
-    /**
-     * Uses the provided BinaryReader to load the necessary values from the data 
-     * file in to the Dataset. Stream mode only loads the essential information 
-     * such as file headers.
-     * 
-     * @param reader BinaryReader to use for reading data in to the dataset.
-     * @param dataSet The dataset object to load in to.
-     * @return Stream Dataset object that has just been written to.
-     * @throws IOException if there was a problem accessing data file.
-     */
-    @SuppressWarnings("null")
-    static void load(Dataset dataSet) throws IOException {
-        BinaryReader reader = null;
-        try {
-            reader = dataSet.pool.getReader();
-            reader.setPos(0);
-            //Load headers that are common for both V31 and V32.
-            CommonFactory.loadHeader(dataSet, reader);
-            
-            dataSet.strings = new StreamVariableList<AsciiString>(
-                    dataSet, reader, new AsciiStringFactory());
-            
-            MemoryFixedList<Component> components = null;
-            switch (dataSet.versionEnum) {
-                case PatternV31:
-                    components = new MemoryFixedList<Component>(
-                            dataSet, reader, new ComponentFactoryV31());
-                    break;
-                case PatternV32:
-                    components = new MemoryFixedList<Component>(
-                            dataSet, reader, new ComponentFactoryV32());
-                    break;
-            }
-            dataSet.components = components;
-            
-            MemoryFixedList<Map> maps = new MemoryFixedList<Map>(
-                    dataSet, reader, new MapFactory());
-            dataSet.maps = maps;
-                      
-            PropertiesList properties = new PropertiesList(
-                    dataSet, reader, new PropertyFactory());
-            dataSet.properties = properties; 
-            
-            dataSet.values = new StreamFixedList<Value>(
-                    dataSet, reader, new ValueFactory());
-            
-            dataSet.profiles = new StreamVariableList<Profile>(
-                    dataSet, reader, new ProfileStreamFactory());
-            
-            switch (dataSet.versionEnum) {
-                case PatternV31:
-                    dataSet.signatures = new StreamFixedList<Signature>(
-                            dataSet, reader, new SignatureFactoryV31(dataSet));
-                    break;
-                case PatternV32:
-                    dataSet.signatures = new StreamFixedList<Signature>(
-                            dataSet, reader, new SignatureFactoryV32(dataSet));
-                    dataSet.signatureNodeOffsets = 
-                            new IntegerList(dataSet, reader);
-                    dataSet.nodeRankedSignatureIndexes = 
-                            new IntegerList(dataSet, reader);
-                    break;
-            }
-            dataSet.rankedSignatureIndexes = new IntegerList(dataSet, reader);
-            
-            switch (dataSet.versionEnum) {
-                case PatternV31:
-                    dataSet.nodes = new StreamVariableList<Node>(
-                            dataSet, reader, 
-                            new NodeStreamFactoryV31());
-                    break;
-                case PatternV32:
-                    dataSet.nodes = new StreamVariableList<Node>(
-                            dataSet, reader, 
-                            new NodeStreamFactoryV32());
-                    break;
-            }
-            
-            MemoryFixedList<Node> rootNodes = new MemoryFixedList<Node>(
-                    dataSet, reader, new RootNodeFactory());
-            dataSet.rootNodes = rootNodes;
-            
-            MemoryFixedList<ProfileOffset> profileOffsets = 
-                new MemoryFixedList<ProfileOffset>( dataSet, reader, 
-                                                    new ProfileOffsetFactory());
-             dataSet.profileOffsets = profileOffsets;
-             
-            //Read into memory all small lists which are frequently accessed.
-            reader.setPos(components.header.getStartPosition());
-            components.read(reader);
-            reader.setPos(maps.header.getStartPosition());
-            maps.read(reader);
-            reader.setPos(properties.header.getStartPosition());
-            properties.read(reader);
-            reader.setPos(rootNodes.header.getStartPosition());
-            rootNodes.read(reader);
-            reader.setPos(profileOffsets.header.getStartPosition());
-            profileOffsets.read(reader);
-            
-        } finally {
-            if (reader != null) {
-                dataSet.pool.release(reader);
-            }
-        }
+        return DatasetBuilder.file()
+                .configureDefaultCaches()
+                .setTempFile(isTempFile)
+                .lastModified(lastModified)
+                .build(filepath);
     }
 }

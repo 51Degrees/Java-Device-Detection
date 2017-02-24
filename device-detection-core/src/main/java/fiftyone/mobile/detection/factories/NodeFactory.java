@@ -98,4 +98,5 @@ public abstract class NodeFactory extends BaseEntityFactory<Node> {
      */
     protected abstract Node construct(Dataset dataSet, 
             int index, BinaryReader reader) throws IOException;
+
 }

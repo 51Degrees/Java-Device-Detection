@@ -29,12 +29,8 @@ import fiftyone.mobile.detection.entities.Values;
 import fiftyone.mobile.detection.factories.MemoryFactory;
 import fiftyone.mobile.detection.factories.StreamFactory;
 import fiftyone.properties.MatchMethods;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+
+import java.io.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -312,8 +308,11 @@ public class Benchmark {
         
         System.out.printf("Benchmarking stream memory dataset: %s\r\n", 
                 deviceDataFile);
+
+        byte[] fileContent = fileAsBytes(deviceDataFile);
+
         runBenchmark(
-                StreamFactory.create(Files.readAllBytes(Paths.get(deviceDataFile))),
+                StreamFactory.create(fileContent),
                 userAgentFile,
                 numberOfThreads);
 
@@ -331,7 +330,22 @@ public class Benchmark {
                 userAgentFile,
                 numberOfThreads);
     }
-        
+
+    protected static byte[] fileAsBytes(String deviceDataFile) throws IOException {
+        File file = new File(deviceDataFile);
+        byte fileContent[] = new byte[(int) file.length()];
+        FileInputStream fin = new FileInputStream(file);
+        try {
+            int bytesRead = fin.read(fileContent);
+            if (bytesRead != file.length()) {
+                throw new IllegalStateException("File not completely read");
+            }
+        } finally {
+            fin.close();
+        }
+        return fileContent;
+    }
+
     /**
      * Instantiates this class and starts 
      * {@link #runBenchmarks(String, String, int)} with parameters from the 
