@@ -22,6 +22,8 @@ package fiftyone.mobile.detection.entities.stream;
 
 import fiftyone.mobile.detection.readers.BinaryReader;
 import fiftyone.mobile.detection.readers.SourceBase;
+
+import java.io.Closeable;
 import java.io.IOException;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -51,7 +53,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * will be relatively small and the Pool does not need to limit the maximum
  * number that can be created.
  */
-public class Pool {
+public class Pool implements Closeable {
 
     /**
      * Linked list of readers available for use.
@@ -125,5 +127,16 @@ public class Pool {
      */
     public int getReadersQueued() {
         return readers.size();
+    }
+
+
+    @Override
+    public void close() throws IOException {
+        while(!readers.isEmpty()) {
+            BinaryReader reader = readers.poll();
+            if (reader != null) {
+                reader.close();
+            }
+        }
     }
 }

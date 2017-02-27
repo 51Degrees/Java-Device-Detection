@@ -92,6 +92,7 @@ public class IndirectDataset extends fiftyone.mobile.detection.Dataset {
      */
     @Override
     public void close() throws IOException {
+        pool.close();
         source.close();
         super.close();
     }
