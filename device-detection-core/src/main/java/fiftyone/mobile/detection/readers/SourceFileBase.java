@@ -65,6 +65,9 @@ public abstract class SourceFileBase extends SourceBase {
             int iterations = 0;
             while (getFile().exists() && iterations < 10) {
                 if (getFile().delete() == false) {
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {}
                     System.gc();
                     iterations++;
                 }
