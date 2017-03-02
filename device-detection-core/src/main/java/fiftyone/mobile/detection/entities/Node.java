@@ -320,34 +320,53 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
     public Node getCompleteNumericNode(MatchState state) throws IOException {
         Node node = null;
 
-        // Check to see if there's a next node which matches
-        // exactly.
+        // Get the next child node that matches the target User-Agent exactly.
         Node nextNode = getNextNode(state);
         if (nextNode != null) {
+            // An exact matching child node was found. Evaluate it for a numeric
+            // child. 
             node = nextNode.getCompleteNumericNode(state);
         }
 
         if (node == null && numericChildrenCount > 0) {
-            // No. So try each of the numeric matches in ascending order of
-            // difference.
+            // There is either no exact matching normal child or there are no 
+            // children that generated a numeric match. This node does have
+            // numeric children that should be evaluated. Get the numeric value 
+            // of the current position from the target  User-Agent.
             int target = getCurrentPositionAsNumeric(state);
             if (target >= 0) {
+                // Return the numeric nodes in the ascending order from the 
+                // target value. i.e. if the target is 10 and the  numeric nodes
+                // are ordered 5, 8, 11, 15 they would be provided in the order 
+                // 11, 8, 5, 15 by the enumerator.                
                 NodeNumericIndexIterator iterator = 
                         getNumericNodeIterator(target);
                 if (iterator != null) {
                     while (iterator.hasNext()) {
                         NodeNumericIndex current = iterator.next();
-                        node = current.getNode().getCompleteNumericNode(state);
-                        if (node != null) {
-                            int difference = 
-                                    Math.abs(target - current.getValue());
-                            state.incrLowestScore(difference);
-                            break;
+                        // Evaluate the node from the enumerator if it has
+                        // not already been evaluated earlier in the method
+                        // when it was found as the nextNode.                        
+                        if (nextNode == null ||
+                            nextNode.equals(current.getNode()) == false) {
+                            // Check if there is a complete numeric node under
+                            // this node. If there is then calculate and record
+                            // the difference value before returning it.                            
+                            node = current.getNode().getCompleteNumericNode(state);
+                            if (node != null) {
+                                int difference = 
+                                        Math.abs(target - current.getValue());
+                                state.incrLowestScore(difference);
+                                break;
+                            }
                         }
                     }
                 }
             }
         }
+        
+        // If no suitable child node could be found and this node is a complete
+        // node then return this node.        
         if (node == null && isComplete()) {
             node = this;
         }
@@ -430,6 +449,33 @@ public abstract class Node extends BaseEntity implements Comparable<Node> {
         }
     }
     
+    /**
+     * Tests this instance against the object for equality using the getIndex
+     * method result for comparison where the object is of the same class.
+     * @param obj to compare for equality
+     * @return true if equal, otherwise false.
+     */
+    @Override 
+    public boolean equals(Object obj) { 
+        if (obj == this) { 
+            return true; 
+        } 
+        if (obj == null || obj.getClass() != this.getClass()) { 
+            return false; 
+        } 
+        Node other = (Node) obj; 
+        return getIndex() == other.getIndex();
+    }
+
+    /**
+     * Gets a hashcode for the Node instance.
+     * @return the return value of getIndex()
+     */
+    @Override
+    public int hashCode() {
+        return getIndex();
+    }
+   
     // <editor-fold defaultstate="collapsed" desc="Private methods">
     /**
      * Returns the node position as a number.
