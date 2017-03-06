@@ -75,7 +75,7 @@ public class Pool {
      * 
      * @param source The data source for the list.
      */
-    Pool(SourceBase source) {
+    public Pool(SourceBase source) {
         this.source = source;
     }
 

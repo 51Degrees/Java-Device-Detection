@@ -20,7 +20,7 @@
  * ********************************************************************* */
 package fiftyone.mobile.detection;
 
-import fiftyone.mobile.detection.cache.ICacheLoader;
+import fiftyone.mobile.detection.cache.IValueLoader;
 import fiftyone.mobile.detection.entities.Node;
 import fiftyone.mobile.detection.entities.Profile;
 import fiftyone.mobile.detection.entities.Signature;
@@ -37,7 +37,7 @@ import java.util.Collections;
  * method of the match class to retrieve the state.
  */
 public class MatchState extends MatchResult 
-    implements ICacheLoader<String, MatchResult> {
+    implements IValueLoader<String, MatchResult> {
 
     /**
      * Sets the elapsed time for the match.
@@ -370,7 +370,7 @@ public class MatchState extends MatchResult
     }
 
     @Override
-    public MatchResult fetch(String key) throws IOException {
+    public MatchResult load(String key) throws IOException {
         match.provider.matchNoCache(key, this);
         return new MatchResult(this);
     }
