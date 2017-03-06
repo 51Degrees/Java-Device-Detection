@@ -22,7 +22,8 @@ package fiftyone.mobile.detection.factories.stream;
 
 import fiftyone.mobile.detection.Dataset;
 import fiftyone.mobile.detection.entities.Node;
-import fiftyone.mobile.detection.factories.NodeFactory;
+import fiftyone.mobile.detection.IndirectDataset;
+import fiftyone.mobile.detection.factories.NodeFactoryV32;
 import fiftyone.mobile.detection.readers.BinaryReader;
 import java.io.IOException;
 
@@ -32,7 +33,7 @@ import java.io.IOException;
  * Objects of this class should not be created directly as they are part of the 
  * internal logic.
  */
-public class NodeStreamFactoryV32 extends NodeFactory {
+public class NodeStreamFactoryV32 extends NodeFactoryV32 {
 
     /**
      * Constructs a new instance of NodeStreamFactoryV32.
@@ -54,7 +55,7 @@ public class NodeStreamFactoryV32 extends NodeFactory {
     protected Node construct(Dataset dataSet, int index, BinaryReader reader) 
                                                             throws IOException {
         return new fiftyone.mobile.detection.entities.stream.NodeV32(
-                (fiftyone.mobile.detection.entities.stream.Dataset)dataSet, 
+                (IndirectDataset)dataSet,
                 index, 
                 reader);
     }

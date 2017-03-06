@@ -23,6 +23,7 @@ package fiftyone.mobile.detection.factories.memory;
 import fiftyone.mobile.detection.Dataset;
 import fiftyone.mobile.detection.factories.NodeFactory;
 import fiftyone.mobile.detection.factories.NodeFactoryShared;
+import fiftyone.mobile.detection.factories.NodeFactoryV31;
 import fiftyone.mobile.detection.readers.BinaryReader;
 import fiftyone.properties.DetectionConstants;
 import java.io.IOException;
@@ -33,7 +34,7 @@ import java.io.IOException;
  * Objects of this class should not be created directly as they are part of the 
  * internal logic.
  */
-public class NodeMemoryFactoryV31 extends NodeFactory {
+public class NodeMemoryFactoryV31 extends NodeFactoryV31 {
 
     /**
      * Implements the creation of a new instance of Node version 3.1.
@@ -50,23 +51,5 @@ public class NodeMemoryFactoryV31 extends NodeFactory {
         return new fiftyone.mobile.detection.entities.memory.NodeV31(
                 dataSet, index, reader);
     }
-    
-    /**
-     * Returns the length of the NodeV31 entity provided.
-     * 
-     * @param entity An entity of type Node who length is required.
-     * @return The number of bytes used to store the node.
-     * @throws java.io.IOException if there was a problem accessing data file.
-     */
-    @Override
-    public int getLength(fiftyone.mobile.detection.entities.Node entity) 
-                                                            throws IOException {
-        return getBaseLength() + DetectionConstants.SIZE_OF_INT + 
-                (entity.getChildrenLength() * 
-                    NodeFactoryShared.getNodeIndexLengthV31()) + 
-                (entity.getNumericChildrenLength() * 
-                    getNodeNumericIndexLength()) + 
-                (entity.getRankedSignatureIndexes().size() * 
-                    DetectionConstants.SIZE_OF_INT);
-    }
+
 }
