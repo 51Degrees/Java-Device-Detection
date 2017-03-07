@@ -210,7 +210,9 @@ public class MatchResult {
             // duplicate instances in cases where the data set is an indirect 
             // one and a cache, or no cache is being used. This approach ensures
             // a consistent memory profile.
-            signatureIndex = source.getSignature().index;
+            signatureIndex = source.getSignature() != null ? 
+                    source.getSignature().index : 
+                    -1;
             Profile[] localProfiles = source.getProfiles();
             profileOffsets = new int[localProfiles.length];
             for (int i = 0; i < localProfiles.length; i++) {
