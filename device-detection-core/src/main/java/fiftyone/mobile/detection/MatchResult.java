@@ -32,6 +32,16 @@ import java.io.IOException;
 public class MatchResult {
 
     /**
+     * Used to avoid creating multiple instances of empty integer arrays.
+     */
+    private static final int[] emptyArray = new int[0];
+    
+    /**
+     * Reference to the internal data set used to populate the match result.
+     */
+    private final Dataset dataset;
+    
+    /**
      * @return The elapsed time for the match.
      */
     public long getElapsed() {
@@ -68,12 +78,16 @@ public class MatchResult {
     /**
      * The signature with the closest match to the target User-Agent provided.
      * @return {@link Signature} for the current match.
-     */    
-    public Signature getSignature() {
-        return signature;
+     * @throws java.io.IOException
+     */
+    public Signature getSignature() throws IOException {
+        return signature != null ? 
+                signature : 
+                dataset.signatures.get(signatureIndex);
     }
+    private final int signatureIndex;
     protected Signature signature;
-
+    
     /**
      * @return The number of signatures that were compared against the target 
      * User-Agent if the Closest match method was used.
@@ -130,43 +144,101 @@ public class MatchResult {
      * @return An array of the nodes associated with the match result. Used for 
      * further analysis of the results and gaining a string representation of 
      * the match.
-     */    
-    Node[] getNodes() {
-        return nodes;
+     */
+    Node[] getNodes() throws IOException {
+        Node[] localNodes;
+        if (nodes == null) {
+            // Fetch the latest instance of the nodes from the data set
+            // list of nodes.
+            localNodes = new Node[nodeOffsets.length];
+            for (int i = 0; i < nodeOffsets.length; i++){
+                localNodes[i] = dataset.nodes.get(nodeOffsets[i]);
+            }
+        }
+        else {
+            localNodes = nodes;
+        }
+        return localNodes;
     }
     protected Node[] nodes;
+    private final int[] nodeOffsets;
 
     /**
      * @return Array of profiles associated with the device that was found.
      * @throws java.io.IOException if there was a problem accessing data file.
-     */    
+     */
     public Profile[] getProfiles() throws IOException {
-        return profiles;
+        Profile[] localProfiles;
+        if (profiles == null) {
+            // Fetch the latest instance of the profiles from the data set
+            // list of profiles.
+            localProfiles = new Profile[profileOffsets.length];
+            for (int i = 0; i < profileOffsets.length; i++) {
+                localProfiles[i] = dataset.profiles.get(profileOffsets[i]);
+            }
+        } else {
+            localProfiles = profiles;
+        }
+        return localProfiles;
     }
     protected Profile[] profiles;
+    private final int[] profileOffsets;
 
     /**
      * Creates a default instance of MatchState.
+     * @param dataset the match result is associated with.
      */
-    protected MatchResult() {}
+    protected MatchResult(Dataset dataset) {
+        this.dataset = dataset;
+        signatureIndex = -1;
+        nodeOffsets = emptyArray;
+        profileOffsets = emptyArray;
+    }
     
     /**
      * Creates a copy of the MatchState provided.
      * @param source result of a previous match
      */
     MatchResult(MatchState source) throws IOException {
+        dataset = source.getDataSet();
         elapsed = source.getElapsed();
         method = source.getMethod();
         nodesEvaluated = source.getNodesEvaluated();
         rootNodesEvaluated = source.getRootNodesEvaluated();
-        signature = source.getSignature();
         signaturesCompared = source.getSignaturesCompared();
         signaturesRead = source.getSignaturesRead();
         stringsRead = source.getStringsRead();
         closestSignaturesCount = source.getClosestSignaturesCount();
         lowestScore = source.getLowestScore();
         targetUserAgent = source.getTargetUserAgent();
-        profiles = source.getProfiles().clone();
-        nodes = source.getNodes();
+        
+        if (dataset instanceof IndirectDataset) {
+            // The match result will only store the index or offset of the 
+            // related entity type in the source dataset to avoid creating 
+            // duplicate instances in cases where the data set is an indirect 
+            // one and a cache, or no cache is being used. This approach ensures
+            // a consistent memory profile.
+            signatureIndex = source.getSignature().index;
+            Profile[] localProfiles = source.getProfiles();
+            profileOffsets = new int[localProfiles.length];
+            for (int i = 0; i < localProfiles.length; i++) {
+                profileOffsets[i] = localProfiles[i].index;
+            }
+            Node[] localNodes = source.getNodes();
+            nodeOffsets = new int[localNodes.length];
+            for (int i = 0; i < localNodes.length; i++) {
+                nodeOffsets[i] = localNodes[i].index;
+            }
+        }
+        else {
+            // The entire data set is being held in memory so a direct reference
+            // to the related entity instance can be stored.            
+            signature = source.getSignature();
+            nodes = source.getNodes();
+            profiles = source.getProfiles().clone();
+            signatureIndex = -1;
+            nodeOffsets = emptyArray;
+            profileOffsets = emptyArray;
+        }
     } 
 }
