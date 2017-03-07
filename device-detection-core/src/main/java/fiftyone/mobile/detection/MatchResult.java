@@ -32,11 +32,6 @@ import java.io.IOException;
 public class MatchResult {
 
     /**
-     * Used to avoid creating multiple instances of empty integer arrays.
-     */
-    private static final int[] emptyArray = new int[0];
-    
-    /**
      * Reference to the internal data set used to populate the match result.
      */
     private final Dataset dataset;
@@ -85,7 +80,7 @@ public class MatchResult {
                 signature : 
                 dataset.signatures.get(signatureIndex);
     }
-    private final int signatureIndex;
+    private int signatureIndex;
     protected Signature signature;
     
     /**
@@ -161,7 +156,7 @@ public class MatchResult {
         return localNodes;
     }
     protected Node[] nodes;
-    private final int[] nodeOffsets;
+    private int[] nodeOffsets;
 
     /**
      * @return Array of profiles associated with the device that was found.
@@ -182,7 +177,7 @@ public class MatchResult {
         return localProfiles;
     }
     protected Profile[] profiles;
-    private final int[] profileOffsets;
+    private int[] profileOffsets;
 
     /**
      * Creates a default instance of MatchState.
@@ -190,9 +185,6 @@ public class MatchResult {
      */
     protected MatchResult(Dataset dataset) {
         this.dataset = dataset;
-        signatureIndex = -1;
-        nodeOffsets = emptyArray;
-        profileOffsets = emptyArray;
     }
     
     /**
@@ -236,9 +228,6 @@ public class MatchResult {
             signature = source.getSignature();
             nodes = source.getNodes();
             profiles = source.getProfiles().clone();
-            signatureIndex = -1;
-            nodeOffsets = emptyArray;
-            profileOffsets = emptyArray;
         }
     } 
 }
