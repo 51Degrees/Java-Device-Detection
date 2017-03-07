@@ -258,7 +258,7 @@ public class LruCache<K, V>  implements ILoadingCache<K,V> {
      * 
      * @param key or the item required.
      * @return An instance of the value associated with the key.
-     * @throws java.io.IOException if there was a problem accessing data file.
+     * @throws java.lang.IllegalStateException if there was a problem accessing data file.
      */    
     @Override
     public V get(K key) {
