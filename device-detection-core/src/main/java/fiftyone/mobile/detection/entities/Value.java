@@ -35,17 +35,17 @@ import java.util.Collections;
 
 /**
  * A value associated with a property and component within the dataset.
- * <p/>
+ * <p>
  * Every {@link Property} can return one of many values, or multiple values if it's a list property. For example:
  * SupportedBearers returns a list of the bearers that the device can support.
- * <p/>
+ * <p>
  * Class contains metadata related to this value including the display name, description and URL to find out additional
  * information. Metadata can be used by UI developers to provide users with more information about the meaning and
  * intended use of this value. Access metadata like: {@code value.getDescription();} and {@code value.getUrl();}.
- * <p/>
+ * <p>
  * Objects of this class should not be created directly as they are part of the internal logic. Use the relevant {@link
  * Dataset} method to access these objects.
- * <p/>
+ * <p>
  * For more information see: <a href="https://51degrees.com/support/documentation/device-detection-data-model">
  * 51Degrees pattern data model</a>.
  */
@@ -269,7 +269,7 @@ public class Value extends BaseEntity {
      * Called after the entire data set has been loaded to ensure any further initialisation steps that require other
      * items in the data set can be completed. The Profiles and Signatures are not initialised as they are very rarely
      * used and take a long time to initialise.
-     * <p/>
+     * <p>
      * This method should not be called as it is part of the internal logic.
      *
      * @throws IOException if there was a problem accessing data file.
