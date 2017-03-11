@@ -229,6 +229,7 @@ public class MatchState extends MatchResult
      * @param match instance the state relates to
      */
     MatchState(Match match) {
+        super(match.getDataSet());
         this.match = match;
         super.method = MatchMethods.NONE;
     }
@@ -305,7 +306,7 @@ public class MatchState extends MatchResult
         nextCharacterPositionIndex = Math.min(
                 targetUserAgentArray.length - 1,
                 getDataSet().rootNodes.size() - 1);
-    }    
+    }
     
     /**
      * Inserts the node into the list checking to find it's correct position in
@@ -318,7 +319,7 @@ public class MatchState extends MatchResult
         int index = ~Collections.binarySearch(nodesList, node);
         nodesList.add(index, node);
         return index;
-    }    
+    }
     
     /**
      * Returns the start character position of the node within the target user
