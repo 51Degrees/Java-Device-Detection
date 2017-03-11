@@ -21,7 +21,7 @@
 package fiftyone.mobile.detection.cache;
 
 import fiftyone.mobile.DetectionTestSupport;
-import fiftyone.mobile.detection.cache.LruCache.KeyValuePair;
+import fiftyone.mobile.detection.cache.LruCache.CachedItem;
 import fiftyone.mobile.TestType;
 
 import java.io.IOException;
@@ -161,12 +161,25 @@ public class LruCacheTest extends DetectionTestSupport {
 
         // Fill the cache with half of the values.
         for (K key : keysFront) {
-            LruCache.Node expectedLast = cache.linkedList.last;
+            CachedItem[] expectedLast = new CachedItem[cache.linkedLists.length];
+            for(int i = 0; i < cache.linkedLists.length; i++) {
+                expectedLast[i] = cache.linkedLists[i].last;
+            }
             assertTrue(cache.get(key) == source.get(key));
-            KeyValuePair kvp = (KeyValuePair)cache.linkedList.first.item;
-            assertTrue(kvp.key == key);
-            assertTrue(expectedLast == null ||
-                    expectedLast == cache.linkedList.last);
+            boolean isTop = false;
+            int listIndex = -1;
+            for(int i = 0; i < cache.linkedLists.length; i++) {
+                CachedItem item = cache.linkedLists[i].first;
+                if(item != null) {
+                    if(item.key == key) {
+                        isTop = true;
+                        listIndex = i;
+                    }
+                }
+            }
+            assertTrue(isTop);
+            assertTrue(expectedLast[listIndex] == null ||
+                    expectedLast[listIndex] == cache.linkedLists[listIndex].last);
         }
         assertTrue(cache.getCacheMisses() == loader.fetches.get());
         assertTrue(cache.getCacheMisses() == source.size() / 2);
@@ -174,12 +187,25 @@ public class LruCacheTest extends DetectionTestSupport {
 
         // Check all the values are returned from the cache.
         for (K key : keysFront) {
-            LruCache.Node expectedLast = cache.linkedList.last.previous;
+            CachedItem[] expectedLast = new CachedItem[cache.linkedLists.length];
+            for(int i = 0; i < cache.linkedLists.length; i++) {
+                expectedLast[i] = cache.linkedLists[i].last.previous;
+            }
             assertTrue(cache.get(key) == source.get(key));
-            KeyValuePair kvp = (KeyValuePair)cache.linkedList.first.item;
-            assertTrue(kvp.key == key);
-            assertTrue(expectedLast == null ||
-                    expectedLast == cache.linkedList.last);
+            boolean isTop = false;
+            int listIndex = -1;
+            for(int i = 0; i < cache.linkedLists.length; i++) {
+                CachedItem item = cache.linkedLists[i].first;
+                if(item != null) {
+                    if(item.key == key) {
+                        isTop = true;
+                        listIndex = i;
+                    }
+                }
+            }
+            assertTrue(isTop);
+            assertTrue(expectedLast[listIndex] == null ||
+                    expectedLast[listIndex] == cache.linkedLists[listIndex].last);
         }
         assertTrue(cache.getCacheMisses() == loader.fetches.get());
         assertTrue(cache.getCacheMisses() == source.size() / 2);
@@ -188,12 +214,25 @@ public class LruCacheTest extends DetectionTestSupport {
         // Now use the 2nd half of the source to push out all 
         // the first half.
         for (K key : keysBack) {
-            LruCache.Node expectedLast = cache.linkedList.last.previous;
+            CachedItem[] expectedLast = new CachedItem[cache.linkedLists.length];
+            for(int i = 0; i < cache.linkedLists.length; i++) {
+                expectedLast[i] = cache.linkedLists[i].last.previous;
+            }
             assertTrue(cache.get(key) == source.get(key));
-            KeyValuePair kvp = (KeyValuePair)cache.linkedList.first.item;
-            assertTrue(kvp.key == key);
-            assertTrue(expectedLast == null ||
-                    expectedLast == cache.linkedList.last);
+            boolean isTop = false;
+            int listIndex = -1;
+            for(int i = 0; i < cache.linkedLists.length; i++) {
+                CachedItem item = cache.linkedLists[i].first;
+                if(item != null) {
+                    if(item.key == key) {
+                        isTop = true;
+                        listIndex = i;
+                    }
+                }
+            }
+            assertTrue(isTop);
+            assertTrue(expectedLast[listIndex] == null ||
+                    expectedLast[listIndex] == cache.linkedLists[listIndex].last);
         }
         assertTrue(cache.getCacheMisses() == loader.fetches.get());
         assertTrue(cache.getCacheMisses() == source.size());
@@ -202,29 +241,37 @@ public class LruCacheTest extends DetectionTestSupport {
         // Still using the 2nd half of the source retrieve all
         // the values again. They should come from the cache.
         for (K key : keysBack) {
-            LruCache.Node expectedLast = cache.linkedList.last.previous;
             assertTrue(cache.get(key) == source.get(key));
-            KeyValuePair kvp = (KeyValuePair)cache.linkedList.first.item;
-            assertTrue(kvp.key == key);
-            assertTrue(expectedLast == null ||
-                    expectedLast == cache.linkedList.last);
+            boolean isTop = false;
+            for(int i = 0; i < cache.linkedLists.length; i++) {
+                CachedItem item = cache.linkedLists[i].first;
+                if(item != null) {
+                    if(item.key == key) {
+                        isTop = true;
+                    }
+                }
+            }
+            assertTrue(isTop);
         }
         assertTrue(cache.getCacheMisses() == loader.fetches.get());
-        assertTrue(cache.getCacheMisses() == source.size());
         assertTrue(cache.getCacheRequests() == source.size() * 2);
 
         // Check that the 1st half of the source is now fetched
         // again and are not already in the cache.
         for (K key : keysFront) {
-            LruCache.Node expectedLast = cache.linkedList.last.previous;
             assertTrue(cache.get(key) == source.get(key));
-            KeyValuePair kvp = (KeyValuePair)cache.linkedList.first.item;
-            assertTrue(kvp.key == key);
-            assertTrue(expectedLast == null ||
-                    expectedLast == cache.linkedList.last);
+            boolean isTop = false;
+            for(int i = 0; i < cache.linkedLists.length; i++) {
+                CachedItem item = cache.linkedLists[i].first;
+                if(item != null) {
+                    if(item.key == key) {
+                        isTop = true;
+                    }
+                }
+            }
+            assertTrue(isTop);
         }
         assertTrue(cache.getCacheMisses() == loader.fetches.get());
-        assertTrue(cache.getCacheMisses() == source.size() * 1.5);
         assertTrue(cache.getCacheRequests() == source.size() * 2.5);
 
         // Go through in random order and check there are no cache 
@@ -233,16 +280,21 @@ public class LruCacheTest extends DetectionTestSupport {
         random.addAll(keysFront);
         Collections.shuffle(random, new Random(System.nanoTime()));
         for (K key : random) {
-            LruCache.Node expectedLast = cache.linkedList.last;
-            KeyValuePair kvpExpectedLast = (KeyValuePair)expectedLast.item;
             assertTrue(cache.get(key) == source.get(key));
-            KeyValuePair kvp = (KeyValuePair)cache.linkedList.first.item;
-            assertTrue(kvp.key == key);
-            assertTrue(kvpExpectedLast.key == key ||
-                    expectedLast == cache.linkedList.last);
+            boolean isTop = false;
+            int listIndex = -1;
+            for(int i = 0; i < cache.linkedLists.length; i++) {
+                CachedItem item = cache.linkedLists[i].first;
+                if(item != null) {
+                    if(item.key == key) {
+                        isTop = true;
+                        listIndex = i;
+                    }
+                }
+            }
+            assertTrue(isTop);
         }
         assertTrue(cache.getCacheMisses() == loader.fetches.get());
-        assertTrue(cache.getCacheMisses() == source.size() * 1.5);
         assertTrue(cache.getCacheRequests() == source.size() * 3);
     }
 
