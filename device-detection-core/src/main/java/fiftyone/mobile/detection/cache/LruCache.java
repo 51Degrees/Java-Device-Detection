@@ -21,9 +21,9 @@
 package fiftyone.mobile.detection.cache;
 
 import java.io.IOException;
-import java.util.List;
+import java.lang.reflect.Array;
+import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -32,13 +32,19 @@ import java.util.concurrent.atomic.AtomicLong;
  * by storing previously requested entities for a period of time to avoid the 
  * need to re-fetch them from the underlying storage mechanism.
  * <p>
- * The Least Recently Used (LRU) cache is used. LRU cache keeps track of what 
- * was used when in order to discard the least recently used items first.
- * Every time a cache item is used the "age" of the item used is updated.
+ * A variation of a Least Recently Used (LRU) cache is used. LRU cache keeps
+ * track of what was used when in order to discard the least recently used
+ * items first. Every time a cache item is used the "age" of the item used
+ * is updated.
  * <p>
- * Cache is implemented using the doubly linked list of Nodes where each Node 
- * tracks the next and previous Node and contains a value. Cache entries are 
- * stored as a Key : Value pair.
+ * This implementation supports concurrency by using multiple linked lists
+ * in place of a single linked list in the original implementation.
+ * The linked list to use is assigned at random and stored in the cached
+ * item. This will generate an even set of results across the different
+ * linked lists. The approach reduces the probability of the same linked
+ * list being locked when used in a environments with a high degree of
+ * concurrency. If the feature is not required then the constructor should be
+ * provided with a concurrency value of 1.
  * <p>
  * For a vast majority of the real life environments a constant stream of unique 
  * User-Agents is a fairly rare event. Usually the same User-Agent can be 
@@ -59,112 +65,186 @@ import java.util.concurrent.atomic.AtomicLong;
 public class LruCache<K, V>  implements ILoadingCache<K,V> {
 
     /**
-     * A key value pair for cached items.
+     * An item stored in the cache along with references to the next and
+     * previous items.
      */
-    class KeyValuePair {
+    class CachedItem {
+
+        /**
+         * Key associated with the cached item.
+         */
         final K key;
+
+        /**
+         * Value of the cached item.
+         */
         final V value;
-        public KeyValuePair(K key, V value) {
+
+        /**
+         * The next item in the linked list.
+         */
+        CachedItem next;
+
+        /**
+         * The previous item in the linked list.
+         */
+        CachedItem previous;
+
+        /**
+         * The linked list the item is part of.
+         */
+        final CacheLinkedList list;
+
+        /**
+         * Indicates that the item is valid and added to the linked list.
+         * It is not in the process of being manipulated by another thread
+         * either being added to the list or being removed.
+         */
+        boolean isValid;
+
+        public CachedItem(CacheLinkedList list, K key, V value) {
+            this.list = list;
             this.key = key;
             this.value = value;
         }
     }
 
-    class Node<T> {
-        final T item;
-        Node next;
-        Node previous;
-        DoublyLinkedList list;
+    /**
+     * A linked list used in the LruCache implementation.
+     * This linked list implementation enables items to be moved
+     * within the linked list.
+     */
+    class CacheLinkedList {
 
-        public DoublyLinkedList getList() {
-            return list;
+        /**
+         * The cache that the list is part of.
+         */
+        LruCache cache = null;
+
+        /**
+         * The first item in the list.
+         */
+        CachedItem first = null;
+
+        /**
+         * The last item in the list.
+         */
+        CachedItem last = null;
+
+        /**
+         * Constructs a new instance of the CacheLinkedList.
+         */
+        public CacheLinkedList(LruCache cache) {
+            this.cache = cache;
         }
 
-        public Node(T item) {
-            this.item = item;
+        /**
+         * Adds a new cache item to the linked list.
+         */
+        void addNew(CachedItem item)
+        {
+            boolean added = false;
+            if (item != first)
+            {
+                synchronized(this)
+                {
+                    if (item != first)
+                    {
+                        if (first == null)
+                        {
+                            // First item to be added to the queue.
+                            first = item;
+                            last = item;
+                        }
+                        else
+                        {
+                            // Add this item to the head of the linked list.
+                            item.next = first;
+                            first.previous = item;
+                            first = item;
+
+                            // Set flag to indicate an item was added and if
+                            // the cache is full an item should be removed.
+                            added = true;
+                        }
+
+                        // Indicate the item is now ready for another thread
+                        // to manipulate and is fully added to the linked list.
+                        item.isValid = true;
+                    }
+                }
+            }
+
+            // Check if the linked list needs to be trimmed as the cache
+            // size has been exceeded.
+            if (added && cache.hashMap.size() > cache.cacheSize)
+            {
+                synchronized (this)
+                {
+                    if (cache.hashMap.size() > cache.cacheSize)
+                    {
+                        // Indicate that the last item is being removed from
+                        // the linked list.
+                        last.isValid = false;
+
+                        // Remove the item from the dictionary before
+                        // removing from the linked list.
+                        cache.hashMap.remove(last.key);
+                        last = last.previous;
+                        last.next = null;
+                    }
+                }
+            }
         }
-    }
-    
-    class DoublyLinkedList {
 
-        Node first = null;
-        Node last = null;
+        /**
+         * Set the first item in the linked list to the item provided.
+         */
+        void moveFirst(CachedItem item)
+        {
+            if (item != first && item.isValid == true)
+            {
+                synchronized (this)
+                {
+                    if (item != first && item.isValid == true)
+                    {
+                        if (item == last)
+                        {
+                            // The item is the last one in the list so is
+                            // easy to remove. A new last will need to be
+                            // set.
+                            last = item.previous;
+                            last.next = null;
+                        }
+                        else
+                        {
+                            // The item was not at the end of the list.
+                            // Remove it from it's current position ready
+                            // to be added to the top of the list.
+                            item.previous.next = item.next;
+                            item.next.previous = item.previous;
+                        }
 
-        void clear() {
+                        // Add this item to the head of the linked list.
+                        item.next = first;
+                        item.previous = null;
+                        first.previous = item;
+                        first = item;
+                    }
+                }
+            }
+        }
+
+        /**
+         * Clears all items from the linked list.
+         */
+        void clear()
+        {
             first = null;
             last = null;
         }
-        
-        void addFirst(Node newNode) {
-            newNode.list = linkedList;
-            if (first == null) {
-                newNode.next = null;
-                newNode.previous = null;
-                first = newNode;
-                last = newNode;
-            } else {
-                first.previous = newNode;
-                newNode.next = first;
-                newNode.previous = null;
-                first = newNode;
-            }
-        }
-
-        void remove(Node node) {
-            if (node.previous != null) {
-                node.previous.next = node.next;
-            }
-            if (node.next != null) {
-                node.next.previous = node.previous;
-            }
-            if (node == first) {
-                first = first.next;
-            }
-            if (node == last) {
-                last = last.previous;
-            }
-            node.list = null;
-        }
-        
-        Node removeFirst() {
-            Node result = first;
-            if (first.next == null) {
-                first = null;
-                last = null;
-            } else {
-                first = first.next;
-                first.previous = null;
-            }
-            result.list = null;
-            return first;
-        }
-
-        Node removeLast() {
-            Node result = last;
-            if (first.next == null) {
-                first = null;
-                last = null;
-            } else {
-                last = last.previous;
-                last.next = null;
-            }
-            result.list = null;
-            return result;
-        }
     }    
 
-    /**
-     * Used in place of an object to make lock profiling easier to identify 
-     * different caches.
-     */
-    private class CacheLock<K,V> {};
-    
-    /**
-     * Used to synchronise access to the the dictionary and linked list in the
-     * function of the cache.
-     */
-    private final CacheLock<K,V> writeLock = new CacheLock<K,V>();
-    
     /**
      * Loader used to fetch items not in the cache.
      */
@@ -176,13 +256,19 @@ public class LruCache<K, V>  implements ILoadingCache<K,V> {
     /**
      * Hash map of keys to item values.
      */
-    private final ConcurrentHashMap<K, Node> hashMap;
+    private final ConcurrentHashMap<K, CachedItem> hashMap;
 
     /**
-     * A doubly linked list of nodes. Not marked private so that the unit
+     * A array of doubly linked lists. Not marked private so that the unit
      * test can check the elements.
      */
-    final DoublyLinkedList linkedList;
+    final CacheLinkedList[] linkedLists;
+
+    /**
+     * Random number generator used to select the linked list to use with
+     * the new item being added to the cache.
+     */
+    final Random random = new Random();
     
     /**
      * Constructs a new instance of the cache.
@@ -199,31 +285,39 @@ public class LruCache<K, V>  implements ILoadingCache<K,V> {
      * @param loader used to fetch items not in the cache.
      */    
     public LruCache(int cacheSize, IValueLoader<K,V> loader) {
-        this.cacheSize = new AtomicInteger(cacheSize);
-        this.loader = loader;
-        this.hashMap = new ConcurrentHashMap<K,Node>(cacheSize);
-        this.linkedList = new DoublyLinkedList();
+        this(cacheSize, Runtime.getRuntime().availableProcessors(), loader);
     }
 
     /**
-     * Gets the size of the cache.
+     * Constructs a new instance of the cache.
      *
-     * @return size of the cache.
+     * @param cacheSize The number of items to store in the cache.
+     * @param loader used to fetch items not in the cache.
      */
-    @Override
-    public long getCacheSize() { return cacheSize.get(); }
+    public LruCache(int cacheSize, int concurrency, IValueLoader<K,V> loader) {
+        if (concurrency <= 0)
+        {
+            throw new IllegalArgumentException(
+                    "Concurrency must be a positive integer greater than 0.");
+        }
+        this.cacheSize = cacheSize;
+        this.loader = loader;
+        this.hashMap = new ConcurrentHashMap<K,CachedItem>(cacheSize);
+        linkedLists = (CacheLinkedList[]) Array.newInstance(
+                CacheLinkedList.class, concurrency);
+        for(int i = 0; i < linkedLists.length; i++){
+            linkedLists[i] = new CacheLinkedList(this);
+        }
+    }
 
     /**
-     * Sets the size of the cache. Used to improve performance when
-     * more frequently requested items are likely to be required.
-     * For example
-     * {@link fiftyone.mobile.detection.entities.Property#findProfiles(String, List)}.
-     * .
+     * The number of items the cache lists should have capacity for.
      *
-     * @param size
+     * @return capacity of the cache.
      */
-    public void setCacheSize(int size) { cacheSize.set(size); }
-    private AtomicInteger cacheSize;
+    @Override
+    public long getCacheSize() { return cacheSize; }
+    private int cacheSize;
 
     /**
      * @return number of cache misses.
@@ -282,64 +376,38 @@ public class LruCache<K, V>  implements ILoadingCache<K,V> {
     public V get(K key, IValueLoader<K, V> loader) throws IOException {
         boolean added = false;
         requests.incrementAndGet();
-        Node node = hashMap.get(key);
+        // First, try to get the item from the hashMap
+        CachedItem node = hashMap.get(key);
         if (node == null) {
-            // Get the item fresh from the loader before trying
-            // to write the item to the cache.
             misses.incrementAndGet();
-            V value = loader.load(key);
-            Node newItem = new Node(new KeyValuePair(key, value));
+            // The item was not in the cache so need to load it
+            // before trying to add it in.
+            // Also get a randomly selected linked list to add
+            // the item to.
+            CachedItem newNode = new CachedItem(
+                    GetRandomLinkedList(),
+                    key,
+                    loader.load(key));
 
-            synchronized(writeLock) {
-                // If the node has already been added to the dictionary
-                // then get it, otherise add the one just fetched.
-                node = hashMap.putIfAbsent(key, newItem);
+            // If the node has already been added to the dictionary
+            // then get it, otherwise add the one just fetched.
+            node = hashMap.putIfAbsent(key, newNode);
 
-                // If the node got from the dictionary is the new one just feteched
-                // from the loader (node == null) then it needs to be added to the
-                // linked list. The value just added to the hash map needs to set as
-                // the returned item.
-                if (node == null) {
-                    added = true;
-                    node = newItem;
-                    
-                    // Add the key to the head of the linked list.
-                    linkedList.addFirst(node);
-
-                    // Check to see if the cache has grown and if so remove
-                    // the last element.
-                    removeLeastRecent();
-                }
+            // If the node was absent and was added to the dictionary (node == null)
+            // then it needs to be added to the linked list.
+            if (node == null) {
+                added = true;
+                newNode.list.addNew(newNode);
+                node = newNode;
             }
         }
-        if (added == false && node.list != null) {
-            // The item is in the dictionary and still in the list. Get a write
-            // lock and then check again that it's still in the list. If so them
-            // move the key to the head of the list.
-            synchronized(writeLock) {
-                if (node.list != null) {
-                    linkedList.remove(node);
-                    linkedList.addFirst(node);
-                }
-            }
+        if (added == false) {
+            // The item is in the dictionary.
+            // Move the item to the head of it's LRU list.
+            node.list.moveFirst(node);
         }
-        KeyValuePair kvp = (KeyValuePair)node.item;
-        return kvp.value;
-    }
-    
-    /**
-     * Removes the last item in the cache if the cache size is reached. This 
-     * must be called from a method that already has the write lock as it 
-     * manipulates the linked list and the hash map.
-     */
-    private void removeLeastRecent() {
-        if (hashMap.size() > cacheSize.get()) {
-            Node removedNode = linkedList.removeLast();
-            KeyValuePair kvp = (KeyValuePair)removedNode.item;
-            Node previousNode = hashMap.remove(kvp.key);
-            assert previousNode != null;
-            assert hashMap.size() == cacheSize.get();
-        }
+
+        return node.value;
     }
 
     /**
@@ -349,9 +417,19 @@ public class LruCache<K, V>  implements ILoadingCache<K,V> {
     public void resetCache()
     {
         this.hashMap.clear();
-        this.linkedList.clear();
         misses.set(0);
         requests.set(0);
+        for(int i = 0; i < linkedLists.length; i++){
+            linkedLists[i].clear();
+        }
+    }
+
+    /**
+     * Returns a random linked list.
+     */
+    private CacheLinkedList GetRandomLinkedList()
+    {
+        return linkedLists[random.nextInt(linkedLists.length)];
     }
 
     /**
