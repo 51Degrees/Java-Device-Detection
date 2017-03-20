@@ -78,9 +78,11 @@ public class MatchResult {
     public Signature getSignature() throws IOException {
         return signature != null ? 
                 signature : 
-                dataset.signatures.get(signatureIndex);
+                    signatureIndex != null ?
+                    dataset.signatures.get(signatureIndex) :
+                    null;
     }
-    private int signatureIndex;
+    private Integer signatureIndex;
     protected Signature signature;
     
     /**
@@ -212,7 +214,7 @@ public class MatchResult {
             // a consistent memory profile.
             signatureIndex = source.getSignature() != null ? 
                     source.getSignature().index : 
-                    -1;
+                    null;
             Profile[] localProfiles = source.getProfiles();
             profileOffsets = new int[localProfiles.length];
             for (int i = 0; i < localProfiles.length; i++) {
