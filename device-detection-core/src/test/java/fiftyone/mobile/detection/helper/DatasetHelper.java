@@ -75,7 +75,12 @@ public class DatasetHelper {
         assertEquals(nodesMisses, dataset.getCache(NodesCache).getCacheMisses());
         assertEquals(valuesRequests, dataset.getCache(ValuesCache).getCacheRequests());
         assertEquals(valuesMisses, dataset.getCache(ValuesCache).getCacheMisses());
-        assertEquals(profilesRequests, dataset.getCache(ProfilesCache).getCacheRequests());
+        if (provider.dataSet instanceof IndirectDataset == false)
+        {
+            // only check this if the dataset is in memory, as the indirect
+            // dataset needs to fetch profiles from the cache
+            assertEquals(profilesRequests, dataset.getCache(ProfilesCache).getCacheRequests());
+        }
         assertEquals(profilesMisses, dataset.getCache(ProfilesCache).getCacheMisses());
         assertEquals(signaturesRequests, dataset.getCache(SignaturesCache).getCacheRequests());
         assertEquals(signaturesMisses, dataset.getCache(SignaturesCache).getCacheMisses());
@@ -90,7 +95,12 @@ public class DatasetHelper {
         assertEquals(nodesMisses, dataset.getCache(NodesCache).getCacheMisses());
         assertEquals(valuesRequests, dataset.getCache(ValuesCache).getCacheRequests());
         assertEquals(valuesMisses, dataset.getCache(ValuesCache).getCacheMisses());
-        assertEquals(profilesRequests, dataset.getCache(ProfilesCache).getCacheRequests());
+        if (provider.dataSet instanceof IndirectDataset == false)
+        {
+            // only check this if the dataset is in memory, as the indirect
+            // dataset needs to fetch profiles from the cache
+            assertEquals(profilesRequests, dataset.getCache(ProfilesCache).getCacheRequests());
+        }
         assertEquals(profilesMisses, dataset.getCache(ProfilesCache).getCacheMisses());
         assertEquals(signaturesRequests, dataset.getCache(SignaturesCache).getCacheRequests());
         assertEquals(signaturesMisses, dataset.getCache(SignaturesCache).getCacheMisses());
