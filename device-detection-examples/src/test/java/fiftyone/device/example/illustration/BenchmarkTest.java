@@ -1,6 +1,6 @@
 /*
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited.
- * Copyright © 2015 51Degrees Mobile Experts Limited, 5 Charlotte Close,
+ * Copyright © 2017 51Degrees Mobile Experts Limited, 5 Charlotte Close,
  * Caversham, Reading, Berkshire, United Kingdom RG4 7BY
  *
  * This Source Code Form is the subject of the following patent
@@ -26,8 +26,6 @@ import fiftyone.mobile.detection.Dataset;
 import fiftyone.mobile.detection.factories.MemoryFactory;
 import fiftyone.mobile.detection.factories.StreamFactory;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import org.junit.After;
 import static org.junit.Assert.assertTrue;
 import org.junit.Before;
@@ -57,9 +55,7 @@ public class BenchmarkTest {
     @Test
     public void testStreamMemory() throws Exception {
         logger.info("Stream Array / Memory"); 
-        testDataSet(
-                StreamFactory.create(Files.readAllBytes(
-                        Paths.get(Shared.getLitePatternV32()))));
+        testDataSet(StreamFactory.create(Benchmark.fileAsBytes(Shared.getLitePatternV32())));
     }
    
     @Test

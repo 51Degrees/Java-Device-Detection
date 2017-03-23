@@ -100,6 +100,17 @@ Data files which are updated weekly and daily, automatically, and with more prop
 
 ## Recent Changes
 
+### Version 3.2.15.9 Highlights:
+Improved performance of GetCompleteNumericNode method.
+
+Improved performance of LruCache when running in multi-threaded environments.
+
+Reduced memory usage when using a user agent cache in the Provider in conjuction with the StreamFactory or DataSetBuilder.
+
+The caching policy used by the API can now be customised as required by the application. This allows the developer to replace the 51Degrees cache entirely with their own implementation. If using the 51Degrees cache, this gives the developer the flexibility to make the decision about the memory usage / performance balance rather than having it imposed by the API. By default, the 51Degrees LRU cache will be used, with size values determined by internal testing to give good performance in a wide range of scenarios without using too much memory. Templates are available with size values more suited to specific use cases.
+
+Updated the Lite data files for March 2017 data.
+
 ### Version 3.2.11.3 Changes:
 Removed assert which caused increased memory usage.
 

@@ -1,6 +1,6 @@
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
- * Copyright © 2015 51Degrees Mobile Experts Limited, 5 Charlotte Close,
+ * Copyright © 2017 51Degrees Mobile Experts Limited, 5 Charlotte Close,
  * Caversham, Reading, Berkshire, United Kingdom RG4 7BY
  * 
  * This Source Code Form is the subject of the following patent 
@@ -69,7 +69,7 @@ public class Enumerable implements Iterator<Integer>, Iterable<Integer> {
      * 
      * @return integer entry.
      */
-    public int getNext() {
+    public Integer getNext() {
         Integer value = null;
         if (count < max) {
             value = reader.readInt32();

@@ -1,6 +1,6 @@
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
- * Copyright © 2015 51Degrees Mobile Experts Limited, 5 Charlotte Close,
+ * Copyright © 2017 51Degrees Mobile Experts Limited, 5 Charlotte Close,
  * Caversham, Reading, Berkshire, United Kingdom RG4 7BY
  * 
  * This Source Code Form is the subject of the following patent 
@@ -23,6 +23,7 @@ package fiftyone.device.example.batch;
 import fiftyone.mobile.detection.Match;
 import fiftyone.mobile.detection.Provider;
 import fiftyone.mobile.detection.entities.Values;
+import fiftyone.mobile.detection.IndirectDataset;
 
 import java.io.*;
 
@@ -80,7 +81,7 @@ public interface UaProcessor {
         public void printStats(PrintWriter output) {
             output.println("Heap is " + (Runtime.getRuntime().maxMemory() - Runtime.getRuntime().freeMemory()) / (1024 * 1024) + " MBytes");
             output.printf("'%.3fms' average detection time%n", (double) (stop - start) / (double) count);
-            if (provider.dataSet instanceof fiftyone.mobile.detection.entities.stream.Dataset) {
+            if (provider.dataSet instanceof IndirectDataset) {
                 output.printf("'%.2f' Node cache misses%n", provider.dataSet.getPercentageNodeCacheMisses());
                 output.printf("'%.2f' Profiles cache misses%n", provider.dataSet.getPercentageProfilesCacheMisses());
                 output.printf("'%.2f' Signature cache misses%n", provider.dataSet.getPercentageSignatureCacheMisses());

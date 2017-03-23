@@ -1,6 +1,6 @@
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
- * Copyright © 2015 51Degrees Mobile Experts Limited, 5 Charlotte Close,
+ * Copyright © 2017 51Degrees Mobile Experts Limited, 5 Charlotte Close,
  * Caversham, Reading, Berkshire, United Kingdom RG4 7BY
  * 
  * This Source Code Form is the subject of the following patent 
@@ -20,6 +20,7 @@
  * ********************************************************************* */
 package fiftyone.mobile.detection.entities.stream;
 
+import fiftyone.mobile.detection.IndirectDataset;
 import fiftyone.mobile.detection.factories.NodeFactoryShared;
 import fiftyone.mobile.detection.readers.BinaryReader;
 import fiftyone.properties.DetectionConstants;
@@ -52,7 +53,7 @@ public class NodeV31 extends Node {
      * positioned to start reading.
      * @throws java.io.IOException if there was a problem accessing data file.
      */
-    public NodeV31(fiftyone.mobile.detection.entities.stream.Dataset dataSet, 
+    public NodeV31(IndirectDataset dataSet,
             int offset, BinaryReader reader) throws IOException {
         super(dataSet, offset, reader);
         super.rankedSignatureCount = reader.readInt32();

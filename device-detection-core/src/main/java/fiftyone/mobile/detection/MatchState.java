@@ -1,6 +1,6 @@
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
- * Copyright © 2015 51Degrees Mobile Experts Limited, 5 Charlotte Close,
+ * Copyright © 2017 51Degrees Mobile Experts Limited, 5 Charlotte Close,
  * Caversham, Reading, Berkshire, United Kingdom RG4 7BY
  * 
  * This Source Code Form is the subject of the following patent 
@@ -20,7 +20,7 @@
  * ********************************************************************* */
 package fiftyone.mobile.detection;
 
-import fiftyone.mobile.detection.cache.ICacheLoader;
+import fiftyone.mobile.detection.cache.IValueLoader;
 import fiftyone.mobile.detection.entities.Node;
 import fiftyone.mobile.detection.entities.Profile;
 import fiftyone.mobile.detection.entities.Signature;
@@ -37,7 +37,7 @@ import java.util.Collections;
  * method of the match class to retrieve the state.
  */
 public class MatchState extends MatchResult 
-    implements ICacheLoader<String, MatchResult> {
+    implements IValueLoader<String, MatchResult> {
 
     /**
      * Sets the elapsed time for the match.
@@ -229,6 +229,7 @@ public class MatchState extends MatchResult
      * @param match instance the state relates to
      */
     MatchState(Match match) {
+        super(match.getDataSet());
         this.match = match;
         super.method = MatchMethods.NONE;
     }
@@ -305,7 +306,7 @@ public class MatchState extends MatchResult
         nextCharacterPositionIndex = Math.min(
                 targetUserAgentArray.length - 1,
                 getDataSet().rootNodes.size() - 1);
-    }    
+    }
     
     /**
      * Inserts the node into the list checking to find it's correct position in
@@ -318,7 +319,7 @@ public class MatchState extends MatchResult
         int index = ~Collections.binarySearch(nodesList, node);
         nodesList.add(index, node);
         return index;
-    }    
+    }
     
     /**
      * Returns the start character position of the node within the target user
@@ -370,7 +371,7 @@ public class MatchState extends MatchResult
     }
 
     @Override
-    public MatchResult fetch(String key) throws IOException {
+    public MatchResult load(String key) throws IOException {
         match.provider.matchNoCache(key, this);
         return new MatchResult(this);
     }

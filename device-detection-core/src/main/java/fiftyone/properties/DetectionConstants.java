@@ -1,6 +1,6 @@
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
- * Copyright © 2015 51Degrees Mobile Experts Limited, 5 Charlotte Close,
+ * Copyright © 2017 51Degrees Mobile Experts Limited, 5 Charlotte Close,
  * Caversham, Reading, Berkshire, United Kingdom RG4 7BY
  * 
  * This Source Code Form is the subject of the following patent 
@@ -109,7 +109,7 @@ public class DetectionConstants {
      * URL for the service that provides automatic updates of device data.
      */
     public static final String AUTO_UPDATE_URL = 
-            "https://51degrees.com/Products/Downloads/Premium.aspx";
+            "https://distributor.51degrees.com/api/v2/download";
     /**
      * Deprecated since V3.2 uses a temporary data file instead of memory to 
      * download the update.

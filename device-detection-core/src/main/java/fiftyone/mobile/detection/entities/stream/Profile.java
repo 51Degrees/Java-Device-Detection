@@ -1,6 +1,6 @@
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
- * Copyright © 2015 51Degrees Mobile Experts Limited, 5 Charlotte Close,
+ * Copyright © 2017 51Degrees Mobile Experts Limited, 5 Charlotte Close,
  * Caversham, Reading, Berkshire, United Kingdom RG4 7BY
  * 
  * This Source Code Form is the subject of the following patent 
@@ -20,6 +20,7 @@
  * ********************************************************************* */
 package fiftyone.mobile.detection.entities.stream;
 
+import fiftyone.mobile.detection.IndirectDataset;
 import fiftyone.mobile.detection.entities.BaseEntity;
 import fiftyone.mobile.detection.readers.BinaryReader;
 import java.io.IOException;
@@ -43,7 +44,7 @@ public class Profile extends fiftyone.mobile.detection.entities.Profile {
      * @param index the index in the data structure to the profile.
      * @param reader BinaryReader object to be used.
      */
-    public Profile(Dataset dataSet, int index, BinaryReader reader) {
+    public Profile(IndirectDataset dataSet, int index, BinaryReader reader) {
         super(dataSet, index, reader);
         this.pool = dataSet.pool;
         valueIndexesCount = reader.readInt32();

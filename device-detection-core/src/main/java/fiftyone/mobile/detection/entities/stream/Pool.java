@@ -1,6 +1,6 @@
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
- * Copyright © 2015 51Degrees Mobile Experts Limited, 5 Charlotte Close,
+ * Copyright © 2017 51Degrees Mobile Experts Limited, 5 Charlotte Close,
  * Caversham, Reading, Berkshire, United Kingdom RG4 7BY
  * 
  * This Source Code Form is the subject of the following patent 
@@ -22,6 +22,8 @@ package fiftyone.mobile.detection.entities.stream;
 
 import fiftyone.mobile.detection.readers.BinaryReader;
 import fiftyone.mobile.detection.readers.SourceBase;
+
+import java.io.Closeable;
 import java.io.IOException;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -51,7 +53,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * will be relatively small and the Pool does not need to limit the maximum
  * number that can be created.
  */
-public class Pool {
+public class Pool implements Closeable {
 
     /**
      * Linked list of readers available for use.
@@ -75,7 +77,7 @@ public class Pool {
      * 
      * @param source The data source for the list.
      */
-    Pool(SourceBase source) {
+    public Pool(SourceBase source) {
         this.source = source;
     }
 
@@ -125,5 +127,16 @@ public class Pool {
      */
     public int getReadersQueued() {
         return readers.size();
+    }
+
+
+    @Override
+    public void close() throws IOException {
+        while(!readers.isEmpty()) {
+            BinaryReader reader = readers.poll();
+            if (reader != null) {
+                reader.close();
+            }
+        }
     }
 }

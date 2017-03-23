@@ -1,6 +1,6 @@
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
- * Copyright © 2015 51Degrees Mobile Experts Limited, 5 Charlotte Close,
+ * Copyright © 2017 51Degrees Mobile Experts Limited, 5 Charlotte Close,
  * Caversham, Reading, Berkshire, United Kingdom RG4 7BY
  * 
  * This Source Code Form is the subject of the following patent 
@@ -180,11 +180,8 @@ public class Values {
      * @param index of the element in the array.
      * @return {@link Value} at provided index, or null if out of bounds.
      */
-    public Value get(int index) {
-        if (index > values.length) {
-            return null;
-        }
-        return values[index];
+    public Value get(final int index) {
+        return index < values.length ? values[index] : null;
     }
     
     /**

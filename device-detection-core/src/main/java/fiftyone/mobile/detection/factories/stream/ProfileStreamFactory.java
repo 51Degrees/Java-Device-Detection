@@ -1,6 +1,6 @@
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
- * Copyright © 2015 51Degrees Mobile Experts Limited, 5 Charlotte Close,
+ * Copyright © 2017 51Degrees Mobile Experts Limited, 5 Charlotte Close,
  * Caversham, Reading, Berkshire, United Kingdom RG4 7BY
  * 
  * This Source Code Form is the subject of the following patent 
@@ -22,6 +22,7 @@ package fiftyone.mobile.detection.factories.stream;
 
 import fiftyone.mobile.detection.Dataset;
 import fiftyone.mobile.detection.entities.Profile;
+import fiftyone.mobile.detection.IndirectDataset;
 import fiftyone.mobile.detection.readers.BinaryReader;
 
 /**
@@ -38,7 +39,7 @@ public class ProfileStreamFactory
     @Override
     protected Profile construct(Dataset dataSet, int index, BinaryReader reader) {
         return new fiftyone.mobile.detection.entities.stream.Profile(
-                (fiftyone.mobile.detection.entities.stream.Dataset)dataSet, 
+                (IndirectDataset)dataSet,
                 index, 
                 reader);
     }

@@ -1,6 +1,6 @@
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
- * Copyright © 2015 51Degrees Mobile Experts Limited, 5 Charlotte Close,
+ * Copyright © 2017 51Degrees Mobile Experts Limited, 5 Charlotte Close,
  * Caversham, Reading, Berkshire, United Kingdom RG4 7BY
  * 
  * This Source Code Form is the subject of the following patent 
@@ -22,7 +22,8 @@ package fiftyone.mobile.detection.factories.stream;
 
 import fiftyone.mobile.detection.Dataset;
 import fiftyone.mobile.detection.entities.Node;
-import fiftyone.mobile.detection.factories.NodeFactory;
+import fiftyone.mobile.detection.IndirectDataset;
+import fiftyone.mobile.detection.factories.NodeFactoryV31;
 import fiftyone.mobile.detection.readers.BinaryReader;
 import java.io.IOException;
 
@@ -32,7 +33,7 @@ import java.io.IOException;
  * Objects of this class should not be created directly as they are part of the 
  * internal logic.
  */
-public class NodeStreamFactoryV31 extends NodeFactory {
+public class NodeStreamFactoryV31 extends NodeFactoryV31 {
 
     /**
      * Constructs a new instance of NodeStreamFactoryV31.
@@ -53,7 +54,7 @@ public class NodeStreamFactoryV31 extends NodeFactory {
     protected Node construct(Dataset dataSet, int index, BinaryReader reader) 
                                                             throws IOException {
         return new fiftyone.mobile.detection.entities.stream.NodeV31(
-                (fiftyone.mobile.detection.entities.stream.Dataset)dataSet, 
+                (IndirectDataset)dataSet,
                 index, 
                 reader);
     }
