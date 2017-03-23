@@ -100,7 +100,7 @@ Data files which are updated weekly and daily, automatically, and with more prop
 
 ## Recent Changes
 
-### Version 3.2.15.9 Highlights:
+### Version 3.2.13.9 Highlights:
 Improved performance of GetCompleteNumericNode method.
 
 Improved performance of LruCache when running in multi-threaded environments.
