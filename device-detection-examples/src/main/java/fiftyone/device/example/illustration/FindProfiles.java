@@ -54,7 +54,7 @@ public class FindProfiles implements Closeable {
      * <ol>
      * <li>invokes
      * {@code Provider.DataSet.FindProfiles(java.lang.String, java.lang.String, List<Profile>)}.
-     * Profiles are then stored in the {@link List<Profile>} list and can be
+     * Profiles are then stored in the {@link fiftyone.mobile.detection.entities.Profile} list and can be
      * accessed using the {@code profiles.get(int index)} method.
      * <li>prints results.
      * </ol>

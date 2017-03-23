@@ -175,7 +175,7 @@ public class AllProfiles implements Closeable {
     
     /**
      * Instantiates this class and starts 
-     * {@link #processCsv(java.lang.String, java.lang.String)} with default 
+     * {@link #run(java.lang.String)} with default 
      * parameters.
      * 
      * @param args command line arguments.
