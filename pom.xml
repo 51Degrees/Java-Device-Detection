@@ -7,7 +7,7 @@
     <groupId>com.51degrees</groupId>
     <artifactId>device-detection</artifactId>
     <packaging>pom</packaging>
-    <version>3.2.13.9</version>
+    <version>3.2.14-SNAPSHOT</version>
 
     <name>51Degrees :: Device Detection</name>
 
