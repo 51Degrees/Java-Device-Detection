@@ -7,7 +7,7 @@
     <groupId>com.51degrees</groupId>
     <artifactId>device-detection</artifactId>
     <packaging>pom</packaging>
-    <version>v3.2.12.4</version>
+    <version>3.2.13.9</version>
 
     <name>51Degrees :: Device Detection</name>
 
@@ -24,18 +24,23 @@
     </modules>
 
     <properties>
-        <javaee-api.version>6.0</javaee-api.version>
-        <slf4j-api.version>1.7.7</slf4j-api.version>
-        <logback.version>1.1.3</logback.version>
-
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <jopt-simple.version>4.9</jopt-simple.version>
-        <commons-codec.version>1.9</commons-codec.version>
-        <maven-compiler-plugin.version>3.3</maven-compiler-plugin.version>
-        <exec-maven-plugin.version>1.4.0</exec-maven-plugin.version>
-        <maven-surefire-plugin.version>2.18.1</maven-surefire-plugin.version>
-        <surefire-junit47.version>2.18.1</surefire-junit47.version>
+        <java.version>1.6</java.version>
+
+        <maven-compiler-plugin.version>3.5.1</maven-compiler-plugin.version>
+        <maven-jar-plugin.version>3.0.1</maven-jar-plugin.version>
+        <maven-war-plugin.version>2.6</maven-war-plugin.version>
+        <exec-maven-plugin.version>1.5.0</exec-maven-plugin.version>
+
+        <maven-surefire-plugin.version>2.19.1</maven-surefire-plugin.version>
+        <surefire-junit47.version>2.19.1</surefire-junit47.version>
         <junit.version>4.12</junit.version>
+
+        <javaee-api.version>6.0</javaee-api.version>
+        <slf4j-api.version>1.7.22</slf4j-api.version>
+        <logback.version>1.1.8</logback.version>
+        <jopt-simple.version>4.9</jopt-simple.version>
+        <commons-codec.version>1.10</commons-codec.version>
     </properties>
 
     <build>
@@ -46,8 +51,8 @@
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>${maven-compiler-plugin.version}</version>
                     <configuration>
-                        <source>1.6</source>
-                        <target>1.6</target>
+                        <source>${java.version}</source>
+                        <target>${java.version}</target>
                     </configuration>
                 </plugin>
 
@@ -69,6 +74,22 @@
                     <artifactId>exec-maven-plugin</artifactId>
                     <version>${exec-maven-plugin.version}</version>
                 </plugin>
+
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>${maven-jar-plugin.version}</version>
+                    <configuration>
+                        <archive>
+                            <manifest>
+                                <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                                <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+                            </manifest>
+                        </archive>
+                    </configuration>
+                </plugin>
+
             </plugins>
         </pluginManagement>
     </build>

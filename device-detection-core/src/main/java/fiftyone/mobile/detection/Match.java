@@ -1,6 +1,6 @@
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
- * Copyright © 2015 51Degrees Mobile Experts Limited, 5 Charlotte Close,
+ * Copyright © 2017 51Degrees Mobile Experts Limited, 5 Charlotte Close,
  * Caversham, Reading, Berkshire, United Kingdom RG4 7BY
  * 
  * This Source Code Form is the subject of the following patent 
@@ -149,8 +149,9 @@ public class Match {
      * A signature can be used to retrieve {@link Profile profiles} and rank.
      * 
      * @return {@link Signature} with best match to the User-Agent provided.
+     * @throws java.io.IOException
      */
-    public Signature getSignature() {
+    public Signature getSignature() throws IOException {
         return getResult().getSignature();
     }
     
@@ -221,8 +222,9 @@ public class Match {
     
     /**
      * @return the number of nodes found by the match.
+     * @throws java.io.IOException
      */
-    public int getNodesFound() {
+    public int getNodesFound() throws IOException {
         return getResult().getNodes().length;
     }
     
@@ -348,8 +350,9 @@ public class Match {
     /**
      * @return User-Agent of the matching device with irrelevant characters 
      * removed.
+     * @throws java.io.IOException
      */
-    public String getUserAgent() {
+    public String getUserAgent() throws IOException {
         return getSignature() != null ? getSignature().toString() : null;
     }
     

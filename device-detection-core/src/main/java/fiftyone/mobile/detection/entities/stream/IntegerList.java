@@ -1,6 +1,6 @@
 /* *********************************************************************
  * This Source Code Form is copyright of 51Degrees Mobile Experts Limited. 
- * Copyright © 2015 51Degrees Mobile Experts Limited, 5 Charlotte Close,
+ * Copyright © 2017 51Degrees Mobile Experts Limited, 5 Charlotte Close,
  * Caversham, Reading, Berkshire, United Kingdom RG4 7BY
  * 
  * This Source Code Form is the subject of the following patent 
@@ -22,6 +22,7 @@
 package fiftyone.mobile.detection.entities.stream;
 
 import fiftyone.mobile.detection.ISimpleList;
+import fiftyone.mobile.detection.IndirectDataset;
 import fiftyone.mobile.detection.WrappedIOException;
 import fiftyone.mobile.detection.entities.headers.Header;
 import fiftyone.mobile.detection.readers.BinaryReader;
@@ -42,7 +43,7 @@ public class IntegerList implements ISimpleList {
     // Entity header.
     private final Header header;
     // Array of items contained in the list.
-    protected final Dataset dataSet;
+    protected final IndirectDataset dataSet;
     
     /**
      * Constructs a new instance of this class.
@@ -51,14 +52,14 @@ public class IntegerList implements ISimpleList {
      * @param reader BinaryReader connected to the source data structure and 
      *               positioned to start reading.
      */
-    public IntegerList(Dataset dataSet, BinaryReader reader) {
+    public IntegerList(IndirectDataset dataSet, BinaryReader reader) {
         this.header = new Header(reader);
         this.dataSet = dataSet;
     }
     
     @Override
     public int get(int index) {
-        int result = 0;
+        int result;
         BinaryReader reader = null;
         try {
             reader = dataSet.pool.getReader();
