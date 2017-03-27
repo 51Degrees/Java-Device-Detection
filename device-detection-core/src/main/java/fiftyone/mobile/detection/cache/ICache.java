@@ -46,7 +46,7 @@ public interface ICache<K,V> {
     long getCacheRequests();
 
     /**
-     * a fraction < 1 (not a percentage) misses/requests
+     * a fraction &#60; 1 (not a percentage) misses/requests
      */
     double getPercentageMisses();
 
