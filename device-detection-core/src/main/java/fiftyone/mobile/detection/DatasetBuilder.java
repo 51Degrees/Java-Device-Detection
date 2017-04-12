@@ -75,6 +75,9 @@ public class DatasetBuilder {
 
     private static ICacheBuilder lruBuilder = LruCache.builder();
 
+    /**
+     * Default cache sizes which perform well with most systems.
+     */
     private static EnumMap<CacheType, ICacheOptions> defaultCacheSizes =
             new EnumMap<CacheType, ICacheOptions>(CacheType.class);
     static {
@@ -85,44 +88,100 @@ public class DatasetBuilder {
         defaultCacheSizes.put(SignaturesCache, new CacheOptions(SIGNATURES_CACHE_SIZE, lruBuilder));
     }
 
+    /**
+     * Cache sizes optimised for a multi threaded environment using a JVM
+     * limited to between 150-250 Mb. Memory usage without a User-Agent cache
+     * is expected to be around 80-90 Mb.
+     * 
+     * Bear in mind that actual memory load is dependent on the data file type
+     * (i.e. Lite, Premium, etc) and to some extent upon the way in which the
+     * API is being used.
+     */
     private static EnumMap<CacheType, ICacheOptions> MtCacheSizes =
             new EnumMap<CacheType, ICacheOptions>(CacheType.class);
     static {
-        MtCacheSizes.put(StringsCache, new CacheOptions(0, null));
-        MtCacheSizes.put(NodesCache, new CacheOptions(0, null));
-        MtCacheSizes.put(ValuesCache, new CacheOptions(0, null));
-        MtCacheSizes.put(ProfilesCache, new CacheOptions(0, null));
-        MtCacheSizes.put(SignaturesCache, new CacheOptions(0, null));
+        MtCacheSizes.put(StringsCache, new CacheOptions(500, lruBuilder));
+        MtCacheSizes.put(NodesCache, new CacheOptions(90000, lruBuilder));
+        MtCacheSizes.put(ValuesCache, new CacheOptions(500, lruBuilder));
+        MtCacheSizes.put(ProfilesCache, new CacheOptions(7500, lruBuilder));
+        MtCacheSizes.put(SignaturesCache, new CacheOptions(60000, lruBuilder));
     }
 
+    /**
+     * Cache sizes optimised for a single threaded environment using a JVM
+     * limited to between 150-250 Mb. Memory usage without a User-Agent cache
+     * is expected to be around 80-90 Mb.
+     * 
+     * Bear in mind that actual memory load is dependent on the data file type
+     * (i.e. Lite, Premium, etc) and to some extent upon the way in which the
+     * API is being used.
+     */
     private static EnumMap<CacheType, ICacheOptions> StCacheSizes =
             new EnumMap<CacheType, ICacheOptions>(CacheType.class);
     static {
-        StCacheSizes.put(StringsCache, new CacheOptions(STRINGS_CACHE_SIZE, lruBuilder));
-        StCacheSizes.put(NodesCache, new CacheOptions(NODES_CACHE_SIZE, lruBuilder));
-        StCacheSizes.put(ValuesCache, new CacheOptions(VALUES_CACHE_SIZE, lruBuilder));
-        StCacheSizes.put(ProfilesCache, new CacheOptions(PROFILES_CACHE_SIZE, lruBuilder));
-        StCacheSizes.put(SignaturesCache, new CacheOptions(SIGNATURES_CACHE_SIZE, lruBuilder));
+        StCacheSizes.put(StringsCache, new CacheOptions(66000, lruBuilder));
+        StCacheSizes.put(NodesCache, new CacheOptions(100000, lruBuilder));
+        StCacheSizes.put(ValuesCache, new CacheOptions(14000, lruBuilder));
+        StCacheSizes.put(ProfilesCache, new CacheOptions(14000, lruBuilder));
+        StCacheSizes.put(SignaturesCache, new CacheOptions(100000, lruBuilder));
     }
 
+    /**
+     * Cache sizes optimised for a single threaded environment using a JVM
+     * limited to around 100 Mb. Memory usage without a User-Agent cache
+     * is expected to be around 60-70 Mb.
+     * 
+     * Bear in mind that actual memory load is dependent on the data file type
+     * (i.e. Lite, Premium, etc) and to some extent upon the way in which the
+     * API is being used.
+     */
     private static EnumMap<CacheType, ICacheOptions> StlmCacheSizes =
             new EnumMap<CacheType, ICacheOptions>(CacheType.class);
     static {
-        StlmCacheSizes.put(StringsCache, new CacheOptions(STRINGS_CACHE_SIZE, lruBuilder));
-        StlmCacheSizes.put(NodesCache, new CacheOptions(NODES_CACHE_SIZE, lruBuilder));
-        StlmCacheSizes.put(ValuesCache, new CacheOptions(VALUES_CACHE_SIZE, lruBuilder));
-        StlmCacheSizes.put(ProfilesCache, new CacheOptions(PROFILES_CACHE_SIZE, lruBuilder));
-        StlmCacheSizes.put(SignaturesCache, new CacheOptions(SIGNATURES_CACHE_SIZE, lruBuilder));
+        StlmCacheSizes.put(StringsCache, new CacheOptions(0, lruBuilder));
+        StlmCacheSizes.put(NodesCache, new CacheOptions(40000, lruBuilder));
+        StlmCacheSizes.put(ValuesCache, new CacheOptions(40000, lruBuilder));
+        StlmCacheSizes.put(ProfilesCache, new CacheOptions(40000, lruBuilder));
+        StlmCacheSizes.put(SignaturesCache, new CacheOptions(0, lruBuilder));
     }
 
+    /**
+     * Cache sizes optimised for a multi threaded environment using a JVM
+     * limited to around 100 Mb. Memory usage without a User-Agent cache
+     * is expected to be around 60-70 Mb.
+     * 
+     * Bear in mind that actual memory load is dependent on the data file type
+     * (i.e. Lite, Premium, etc) and to some extent upon the way in which the
+     * API is being used.
+     */
     private static EnumMap<CacheType, ICacheOptions> MtlmCacheSizes =
             new EnumMap<CacheType, ICacheOptions>(CacheType.class);
     static {
-        MtlmCacheSizes.put(StringsCache, new CacheOptions(0, null));
-        MtlmCacheSizes.put(NodesCache, new CacheOptions(0, null));
-        MtlmCacheSizes.put(ValuesCache, new CacheOptions(0, null));
-        MtlmCacheSizes.put(ProfilesCache, new CacheOptions(0, null));
-        MtlmCacheSizes.put(SignaturesCache, new CacheOptions(0, null));
+        MtlmCacheSizes.put(StringsCache, new CacheOptions(20500, lruBuilder));
+        MtlmCacheSizes.put(NodesCache, new CacheOptions(40000, lruBuilder));
+        MtlmCacheSizes.put(ValuesCache, new CacheOptions(500, lruBuilder));
+        MtlmCacheSizes.put(ProfilesCache, new CacheOptions(20500, lruBuilder));
+        MtlmCacheSizes.put(SignaturesCache, new CacheOptions(0, lruBuilder));
+    }
+    
+    /**
+     * Cache sizes optimised for a highly concurrent environment, around 100
+     * threads and up. Memory usage without a User-Agent cache
+     * is expected to be around 40-120 Mb depending on the size limit imposed
+     * on the JVM.
+     * 
+     * Bear in mind that actual memory load is dependent on the data file type
+     * (i.e. Lite, Premium, etc) and to some extent upon the way in which the
+     * API is being used.
+     */
+    private static EnumMap<CacheType, ICacheOptions> HcCacheSizes =
+            new EnumMap<CacheType, ICacheOptions>(CacheType.class);
+    static {
+        HcCacheSizes.put(StringsCache, new CacheOptions(0, null));
+        HcCacheSizes.put(NodesCache, new CacheOptions(0, null));
+        HcCacheSizes.put(ValuesCache, new CacheOptions(0, null));
+        HcCacheSizes.put(ProfilesCache, new CacheOptions(0, null));
+        HcCacheSizes.put(SignaturesCache, new CacheOptions(0, null));
     }
 
     /**
@@ -142,7 +201,8 @@ public class DatasetBuilder {
         SingleThreadLowMemory(StlmCacheSizes),
         SingleThread(StCacheSizes),
         MultiThreadLowMemory(MtlmCacheSizes),
-        MultiThread(MtCacheSizes);
+        MultiThread(MtCacheSizes),
+        HighConcurrency(HcCacheSizes);
 
         private EnumMap<CacheType, ICacheOptions> configuration =
                 new EnumMap<CacheType, ICacheOptions>(CacheType.class);
