@@ -75,9 +75,6 @@ public class DatasetBuilder {
 
     private static ICacheBuilder lruBuilder = LruCache.builder();
 
-    /**
-     * Default cache sizes which perform well with most systems.
-     */
     private static EnumMap<CacheType, ICacheOptions> defaultCacheSizes =
             new EnumMap<CacheType, ICacheOptions>(CacheType.class);
     static {
@@ -88,15 +85,6 @@ public class DatasetBuilder {
         defaultCacheSizes.put(SignaturesCache, new CacheOptions(SIGNATURES_CACHE_SIZE, lruBuilder));
     }
 
-    /**
-     * Cache sizes optimised for a multi threaded environment using a JVM
-     * limited to between 150-250 Mb. Memory usage without a User-Agent cache
-     * is expected to be around 80-90 Mb.
-     * 
-     * Bear in mind that actual memory load is dependent on the data file type
-     * (i.e. Lite, Premium, etc) and to some extent upon the way in which the
-     * API is being used.
-     */
     private static EnumMap<CacheType, ICacheOptions> MtCacheSizes =
             new EnumMap<CacheType, ICacheOptions>(CacheType.class);
     static {
@@ -107,15 +95,6 @@ public class DatasetBuilder {
         MtCacheSizes.put(SignaturesCache, new CacheOptions(60000, lruBuilder));
     }
 
-    /**
-     * Cache sizes optimised for a single threaded environment using a JVM
-     * limited to between 150-250 Mb. Memory usage without a User-Agent cache
-     * is expected to be around 80-90 Mb.
-     * 
-     * Bear in mind that actual memory load is dependent on the data file type
-     * (i.e. Lite, Premium, etc) and to some extent upon the way in which the
-     * API is being used.
-     */
     private static EnumMap<CacheType, ICacheOptions> StCacheSizes =
             new EnumMap<CacheType, ICacheOptions>(CacheType.class);
     static {
@@ -126,15 +105,6 @@ public class DatasetBuilder {
         StCacheSizes.put(SignaturesCache, new CacheOptions(100000, lruBuilder));
     }
 
-    /**
-     * Cache sizes optimised for a single threaded environment using a JVM
-     * limited to around 100 Mb. Memory usage without a User-Agent cache
-     * is expected to be around 60-70 Mb.
-     * 
-     * Bear in mind that actual memory load is dependent on the data file type
-     * (i.e. Lite, Premium, etc) and to some extent upon the way in which the
-     * API is being used.
-     */
     private static EnumMap<CacheType, ICacheOptions> StlmCacheSizes =
             new EnumMap<CacheType, ICacheOptions>(CacheType.class);
     static {
@@ -145,15 +115,6 @@ public class DatasetBuilder {
         StlmCacheSizes.put(SignaturesCache, new CacheOptions(0, lruBuilder));
     }
 
-    /**
-     * Cache sizes optimised for a multi threaded environment using a JVM
-     * limited to around 100 Mb. Memory usage without a User-Agent cache
-     * is expected to be around 60-70 Mb.
-     * 
-     * Bear in mind that actual memory load is dependent on the data file type
-     * (i.e. Lite, Premium, etc) and to some extent upon the way in which the
-     * API is being used.
-     */
     private static EnumMap<CacheType, ICacheOptions> MtlmCacheSizes =
             new EnumMap<CacheType, ICacheOptions>(CacheType.class);
     static {
@@ -164,16 +125,6 @@ public class DatasetBuilder {
         MtlmCacheSizes.put(SignaturesCache, new CacheOptions(0, lruBuilder));
     }
     
-    /**
-     * Cache sizes optimised for a highly concurrent environment, around 100
-     * threads and up. Memory usage without a User-Agent cache
-     * is expected to be around 40-120 Mb depending on the size limit imposed
-     * on the JVM.
-     * 
-     * Bear in mind that actual memory load is dependent on the data file type
-     * (i.e. Lite, Premium, etc) and to some extent upon the way in which the
-     * API is being used.
-     */
     private static EnumMap<CacheType, ICacheOptions> HcCacheSizes =
             new EnumMap<CacheType, ICacheOptions>(CacheType.class);
     static {
@@ -197,11 +148,60 @@ public class DatasetBuilder {
     }
 
     public enum CacheTemplate implements CacheSet {
+        /**
+        * Default cache sizes which perform well with most systems.
+        */
         Default(defaultCacheSizes),
+        /**
+        * Cache sizes optimised for a single threaded environment using a JVM
+        * limited to around 100 Mb. Memory usage without a User-Agent cache
+        * is expected to be around 60-70 Mb.
+        * 
+        * Bear in mind that actual memory load is dependent on the data file type
+        * (i.e. Lite, Premium, etc) and to some extent upon the way in which the
+        * API is being used.
+        */
         SingleThreadLowMemory(StlmCacheSizes),
+        /**
+        * Cache sizes optimised for a single threaded environment using a JVM
+        * limited to between 150-250 Mb. Memory usage without a User-Agent cache
+        * is expected to be around 80-90 Mb.
+        * 
+        * Bear in mind that actual memory load is dependent on the data file type
+        * (i.e. Lite, Premium, etc) and to some extent upon the way in which the
+        * API is being used.
+        */
         SingleThread(StCacheSizes),
+        /**
+        * Cache sizes optimised for a multi threaded environment using a JVM
+        * limited to around 100 Mb. Memory usage without a User-Agent cache
+        * is expected to be around 60-70 Mb.
+        * 
+        * Bear in mind that actual memory load is dependent on the data file type
+        * (i.e. Lite, Premium, etc) and to some extent upon the way in which the
+        * API is being used.
+        */
         MultiThreadLowMemory(MtlmCacheSizes),
+        /**
+        * Cache sizes optimised for a multi threaded environment using a JVM
+        * limited to between 150-250 Mb. Memory usage without a User-Agent cache
+        * is expected to be around 80-90 Mb.
+        * 
+        * Bear in mind that actual memory load is dependent on the data file type
+        * (i.e. Lite, Premium, etc) and to some extent upon the way in which the
+        * API is being used.
+        */
         MultiThread(MtCacheSizes),
+        /**
+        * Cache sizes optimised for a highly concurrent environment, around 100
+        * threads and up. Memory usage without a User-Agent cache
+        * is expected to be around 40-120 Mb depending on the size limit imposed
+        * on the JVM.
+        * 
+        * Bear in mind that actual memory load is dependent on the data file type
+        * (i.e. Lite, Premium, etc) and to some extent upon the way in which the
+        * API is being used.
+        */
         HighConcurrency(HcCacheSizes);
 
         private EnumMap<CacheType, ICacheOptions> configuration =
