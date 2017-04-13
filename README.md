@@ -100,6 +100,27 @@ Data files which are updated weekly and daily, automatically, and with more prop
 
 ## Recent Changes
 
+### Version 3.2.14.1 Highlights:
+
+Updated cache template values. Further testing has been carried out to determine the optimum cache configuration for device detection running in various different environments.
+
+##### Use as follows:
+
+For stream dataset read from byte array buffer...
+```
+Dataset dataset = DatasetBuilder.buffer()
+  .configureDefaultCaches()   // To use caching
+  .build(array);
+```
+For stream dataset read from file...
+```
+Dataset dataset = DatasetBuilder.file()
+  .configureDefaultCaches()   // To use caching (recommended)
+  .setTempFile()        // If a temporary file (deleted on dataset close)
+  .lastModified(date)   // To set the date explicitly
+  .build(filename);
+```
+
 ### Version 3.2.13.9 Highlights:
 Improved performance of GetCompleteNumericNode method.
 

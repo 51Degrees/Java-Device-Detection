@@ -48,13 +48,13 @@ import static fiftyone.mobile.detection.DatasetBuilder.CacheType.*;
  *      // for stream dataset read from byte array buffer
  *      Dataset dataset = DatasetBuilder.buffer()
  *          // to use caching
- *          .addDefaultCaches()
+ *          .configureDefaultCaches()
  *          .build(array);
  *
  *      // for stream dataset read from file
  *      Dataset dataset = DatasetBuilder.file()
  *          // to use caching (recommended)
- *          .addDefaultCaches()
+ *          .configureDefaultCaches()
  *          // if a temporary file (deleted on dataset close)
  *          .setTempFile()
  *          // to set the date explicitly
