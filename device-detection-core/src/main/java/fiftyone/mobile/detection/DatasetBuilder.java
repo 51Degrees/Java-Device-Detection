@@ -64,6 +64,13 @@ import static fiftyone.mobile.detection.DatasetBuilder.CacheType.*;
  * </code></pre>
  */
 
+/**
+ * Used for creating a DataSet.
+ * This uses the fluent builder pattern to create a DataSet with 
+ * minimal effort from the user initially while also allowing a 
+ * deep level of customisation if required.
+ */
+
 public class DatasetBuilder {
 
     /* Default Cache sizes */
@@ -149,7 +156,9 @@ public class DatasetBuilder {
 
     public enum CacheTemplate implements CacheSet {
         /**
-        * Default cache sizes which perform well with most systems.
+        * The default settings. Testing has shown that these settings offer 
+        * all-around good performance. Suitable for most users but not optimised
+        * for any specific environment.
         */
         Default(defaultCacheSizes),
         /**

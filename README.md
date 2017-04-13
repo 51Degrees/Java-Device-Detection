@@ -102,7 +102,7 @@ Data files which are updated weekly and daily, automatically, and with more prop
 
 ### Version 3.2.14.1 Highlights:
 
-Updated cache template values. Further testing has been carried out to determine the optimum cache configuration for device detection running in various different environments.
+Updated cache template values. Further testing has been carried out to determine the optimum cache configuration for device detection running in a variety of environments.
 
 ##### Use as follows:
 
