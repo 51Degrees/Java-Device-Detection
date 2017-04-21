@@ -100,7 +100,9 @@ Data files which are updated weekly and daily, automatically, and with more prop
 
 ## Recent Changes
 
-### Version 3.2.14.1 Highlights:
+### Version 3.2.14.2 Highlights:
+
+Updated the Lite data files for April 2017 data.
 
 Updated cache template values. Further testing has been carried out to determine the optimum cache configuration for device detection running in a variety of environments.
 
