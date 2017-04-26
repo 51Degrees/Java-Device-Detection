@@ -191,7 +191,6 @@ public abstract class Signature extends BaseEntity
      *         signature.
      * @throws IOException if there was a problem accessing data file.
      */
-    @SuppressWarnings("DoubleCheckedLocking")
     public Iterator<Value> getValues() throws IOException {
         return new ValueIterator(this);
     }
@@ -308,12 +307,15 @@ public abstract class Signature extends BaseEntity
         // SortedList extends HashMap.
         SortedList<String, List<String>> list = 
                 new SortedList<String, List<String>>();
-        while (getValues().hasNext()) {
-            Value v = getValues().next();
-            if (!list.containsKey(v.getProperty().getName())) {
-                list.add(v.getProperty().getName(), new ArrayList<String>());
+        Iterator<Value> iterator = getValues();
+        while (iterator.hasNext()) {
+            Value v = iterator.next();
+            List<String> values = list.get(v.getProperty().getName());
+            if (values == null) {
+                values = new ArrayList<String>();
+                list.add(v.getProperty().getName(), values);
             }
-            list.get(v.getProperty().getName()).add(v.getName());
+            values.add(v.getName());
         }
         return list;
     }
@@ -597,11 +599,9 @@ public abstract class Signature extends BaseEntity
         @Override
         public Value next() {
             try {
-                Value v = signature.getProfiles()[currentProfile]
-                                                    .getValues()[currentValue];
-                currentProfile++;
-                if (currentValue >= signature.getProfiles()[currentProfile]
-                                                        .getValues().length) {
+                Profile profile = signature.getProfiles()[currentProfile];
+                Value v = profile.getValues()[currentValue++];
+                if (currentValue >= profile.getValues().length) {
                     currentValue = 0;
                     currentProfile++;
                 }
