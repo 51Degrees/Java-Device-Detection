@@ -60,11 +60,6 @@ import static fiftyone.mobile.detection.DatasetBuilder.PROFILES_CACHE_SIZE;
  * main assumes it is being run with a working directory at root of
  * project or of this module.
  */
-
-
-/**
- * Example Illustrates using a Guava cache in place of the 51 Degrees internal LRU Cache
- */
 public class CachingConfiguration {
 
     @SuppressWarnings("WeakerAccess")
