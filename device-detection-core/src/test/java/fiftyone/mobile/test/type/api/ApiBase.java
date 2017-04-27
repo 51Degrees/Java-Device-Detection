@@ -30,6 +30,8 @@ import fiftyone.mobile.detection.entities.Component;
 import fiftyone.mobile.detection.entities.Profile;
 import fiftyone.mobile.detection.entities.Values;
 import fiftyone.mobile.TestType;
+import fiftyone.mobile.detection.SortedList;
+import fiftyone.mobile.detection.entities.Signature;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -41,6 +43,7 @@ import static fiftyone.mobile.test.common.UserAgentGenerator.getRandomUserAgent;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -210,6 +213,26 @@ public abstract class ApiBase extends DetectionTestSupport {
                                  deviceIdByteArray));
         assertTrue(Arrays.equals(matchDeviceIdArray.getDeviceIdAsByteArray(),
                                  deviceIdByteArray));
+    }
+    
+    /**
+     * Gets the values for all properties associated with every signature.
+     * @throws IOException 
+     */
+    @Test
+    public void signatureProperties() throws IOException {
+        int numOfMandProperties = 0;
+        for (int i = 0; i < getDataset().properties.size(); i++) {
+            if (getDataset().properties.get(i).isMandatory) {
+                numOfMandProperties++;
+            }
+        }
+        for (int i = 0; i < getDataset().signatures.size(); i++) {
+            Signature signature = getDataset().signatures.get(i);
+            SortedList<String, List<String>> values = 
+                    signature.getPropertyValuesAsStrings();
+            assertTrue(values.size() >= numOfMandProperties);
+        }
     }
     
     private int getHighestProfileId() {
