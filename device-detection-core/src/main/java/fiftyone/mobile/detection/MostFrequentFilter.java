@@ -121,14 +121,15 @@ class MostFrequentFilter extends ArrayList<Integer> {
                     ol.reset();
                 }
                 while (lists[listIndex].moveNext()) {
-                    if (getHasProcessed(lists, listIndex) == false) {
-                        int count = getCount(lists, listIndex, topCount);
+                    Integer current = lists[listIndex].current();
+                    if (!getHasProcessed(lists, listIndex, current)) {
+                        int count = getCount(lists, listIndex, topCount, current);
                         if (count > topCount) {
                             topCount = count;
                             clear();
                         }
                         if (count == topCount) {
-                            add(lists[listIndex].current());
+                            add(current);
                         }
                     }
                 }
@@ -148,12 +149,13 @@ class MostFrequentFilter extends ArrayList<Integer> {
      * @param lists OrderedList array being filtered.
      * @param index Index of the list whose current value should be checked in 
      *      prior lists.
+     * @param current item at current index.
      * @return True if the value has been processed, otherwise false.
      */
-    private boolean getHasProcessed(OrderedList[] lists, int index) 
+    private boolean getHasProcessed(OrderedList[] lists, int index, Integer current)
                                                             throws IOException {
         for (int i = (index - 1); i >= 0; i--) {
-            if (lists[i].contains(lists[index].current())) {
+            if (lists[i].contains(current)) {
                 return true;
             }
         }
@@ -166,17 +168,18 @@ class MostFrequentFilter extends ArrayList<Integer> {
      * @param lists being filtered.
      * @param index of the list whose current value should be counted.
      * @param topCount highest count so far.
+     * @param current item at current index.
      * @return Number of lists that contain the value held by the list at the 
      *      index.
      */
-    private int getCount(OrderedList[] lists, int index, int topCount) 
+    private int getCount(OrderedList[] lists, int index, int topCount, Integer current)
                                                             throws IOException {
         int count = 1;
-        for (int i = index + 1; 
-                i < lists.length && 
-                (lists.length - index + count) > topCount; 
+        int length = lists.length;
+        for (int i = index + 1;
+                i < length && (length - index + count) > topCount;
                 i++) {
-            if (lists[i].contains(lists[index].current())) {
+            if (lists[i].contains(current)) {
                 count++;
             }
         }
@@ -211,24 +214,18 @@ class MostFrequentFilter extends ArrayList<Integer> {
          * @param value integer to be checked in the list.
          * @return True if the list contains the value, otherwise false.
          */
-        boolean contains(int value) throws IOException {
+        boolean contains(Integer value) throws IOException {
             int itemIndex = 
                     search.binarySearch(items, value, this.nextStartIndex, 
                                         items.size() - 1);
-
-            if (itemIndex < 0) {
-                this.nextStartIndex = ~itemIndex;
-            }
-            else {
-                this.nextStartIndex = itemIndex + 1;
-            }
+            this.nextStartIndex = itemIndex < 0 ? ~itemIndex : itemIndex + 1;
             return itemIndex >= 0;
         }
         
         /**
          * @return item at current index.
          */
-        int current() {
+        Integer current() {
             return this.items.get(this.currentIndex);
         }
         
