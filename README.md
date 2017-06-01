@@ -100,6 +100,14 @@ Data files which are updated weekly and daily, automatically, and with more prop
 
 ## Recent Changes
 
+### Version 3.2.15.3 Highlights:
+
+Updated the Lite data files for May 2017 data.
+
+Reduced boxing/unboxing operations when an exact match is not found.
+
+Changed the scope of Logback from runtime to test.
+
 ### Version 3.2.14.2 Highlights:
 
 Updated the Lite data files for April 2017 data.
