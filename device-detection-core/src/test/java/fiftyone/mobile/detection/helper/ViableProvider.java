@@ -2,7 +2,6 @@ package fiftyone.mobile.detection.helper;
 
 import fiftyone.mobile.detection.Match;
 import fiftyone.mobile.detection.Provider;
-import fiftyone.mobile.detection.TrieProvider;
 import fiftyone.properties.MatchMethods;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,18 +31,5 @@ public class ViableProvider {
         assertEquals("Match method should be exact", MatchMethods.EXACT, match.getMethod());
         assertEquals("Is a mobile device", true, match.getValues("IsMobile").toBool());
         assertEquals("Screen width should be 640", 640.0, match.getValues("ScreenPixelsWidth").toDouble(),0);
-    }
-
-    /**
-     * Tests that a provider can match a couple of properties as a basic test
-     * of viability - for Trie
-     * @param provider the TrieProvider to test
-     * @throws Exception - because provider.getDeviceIndex can throw an exception
-     */
-    public static void ensureViableProvider(TrieProvider provider) throws Exception {
-        int deviceIndex = provider.getDeviceIndex(TEST_USER_AGENT);
-        logger.debug(TEST_USER_AGENT);
-        assertEquals("Is a mobile device", "True", provider.getPropertyValue(deviceIndex, "IsMobile"));
-        assertEquals("Screen width should be 640", "640", provider.getPropertyValue(deviceIndex, "ScreenPixelsWidth"));
     }
 }

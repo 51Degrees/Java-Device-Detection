@@ -23,7 +23,6 @@ package fiftyone.mobile.test.common;
 
 import fiftyone.mobile.detection.Match;
 import fiftyone.mobile.detection.Provider;
-import fiftyone.mobile.detection.TrieProvider;
 import fiftyone.properties.MatchMethods;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -96,35 +95,6 @@ public class Results {
         return results;
     }
 
-    public static Results detectLoopSingleThreaded(TrieProvider provider, Iterable<String> userAgents) {
-        Results results = new Results();
-        TrieDetector trieDetector = new TrieDetector(provider, results);
-        for (String userAgent : userAgents) {
-            try {
-                if (!trieDetector.newDetector(userAgent).call()) {
-                    fail("Detection failed");
-                }
-            } catch (Exception ex) {
-                fail(ex.getClass().getName() + " " + ex.getMessage());
-            }
-        }
-        return results;
-    }
-
-    public static Results detectLoopMultiThreaded(TrieProvider provider,
-                                                  Iterable<String> userAgents) {
-        final Results results = new Results();
-        int detections = executeDetectionLoop(userAgents, new TrieDetector(provider, results));
-
-        assertTrue(String.format(
-                        "Loop performed '%d' iterations but results show '%d'.",
-                        detections,
-                        results.count.intValue()),
-                detections == results.count.intValue());
-
-        return results;
-    }
-
     public static Results detectLoopMultiThreaded(final Provider provider,
                                                   Iterable<String> userAgents,
                                                   final MatchProcessor processor) throws IOException {
@@ -154,33 +124,6 @@ public class Results {
          * @throws Exception if a detector could not be created
          */
         public abstract CallableDetector newDetector(String userAgent) throws Exception;
-    }
-
-    /**
-     * Trie Callable Detector
-     */
-    public static  class TrieDetector extends CallableDetector {
-        private final Results results;
-        private final TrieProvider provider;
-
-        public TrieDetector(TrieProvider provider, Results results) {
-            this.provider = provider;
-            this.results = results;
-        }
-
-        @Override
-        public CallableDetector newDetector(String userAgent) throws Exception {
-            TrieDetector instance = new TrieDetector(provider, results);
-            instance.userAgent = userAgent;
-            return instance;
-        }
-
-        @Override
-        public Boolean call() throws Exception {
-            provider.getDeviceIndex(userAgent);
-            results.count.incrementAndGet();
-            return true;
-        }
     }
 
     /**

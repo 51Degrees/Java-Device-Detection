@@ -24,10 +24,8 @@ package fiftyone.mobile.test.type.api;
 import fiftyone.mobile.TestType;
 import fiftyone.mobile.test.type.api.enterprise.V31EnterpriseApiTest;
 import fiftyone.mobile.test.type.api.enterprise.V32EnterpriseApiTest;
-import fiftyone.mobile.test.type.api.lite.V30LiteApiTrieTest;
 import fiftyone.mobile.test.type.api.lite.V31LiteApiTest;
 import fiftyone.mobile.test.type.api.lite.V32LiteApiTest;
-import fiftyone.mobile.test.type.api.lite.V32LiteApiTrieTest;
 import fiftyone.mobile.test.type.api.premium.V31PremiumApiTest;
 import fiftyone.mobile.test.type.api.premium.V32PremiumApiTest;
 import org.junit.experimental.categories.Categories;
@@ -38,8 +36,6 @@ import org.junit.runners.Suite;
 @Suite.SuiteClasses({
     V31LiteApiTest.class,
     V32LiteApiTest.class,
-    V30LiteApiTrieTest.class,
-    V32LiteApiTrieTest.class,
     V31EnterpriseApiTest.class,
     V32EnterpriseApiTest.class,
     V31PremiumApiTest.class,

@@ -23,10 +23,8 @@ package fiftyone.mobile.test.type.httpheader;
 
 import fiftyone.mobile.test.type.httpheader.enterprise.V31EnterpriseHttpHeaderArrayTest;
 import fiftyone.mobile.test.type.httpheader.enterprise.V32EnterpriseHttpHeaderArrayTest;
-import fiftyone.mobile.test.type.httpheader.enterprise.V32EnterpriseHttpHeaderTrieFileTest;
 import fiftyone.mobile.test.type.httpheader.premium.V31HttpHeaderArrayTest;
 import fiftyone.mobile.test.type.httpheader.premium.V32HttpHeaderArrayTest;
-import fiftyone.mobile.test.type.httpheader.premium.V32HttpHeaderTrieFileTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
@@ -34,10 +32,8 @@ import org.junit.runners.Suite;
 @Suite.SuiteClasses({
     V31HttpHeaderArrayTest.class,
     V32HttpHeaderArrayTest.class,
-    V32HttpHeaderTrieFileTest.class,
     V31EnterpriseHttpHeaderArrayTest.class,
-    V32EnterpriseHttpHeaderArrayTest.class,
-    V32EnterpriseHttpHeaderTrieFileTest.class
+    V32EnterpriseHttpHeaderArrayTest.class
 })
 public class HttpHeaderSuite {
 }
