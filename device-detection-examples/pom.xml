@@ -5,7 +5,7 @@
     <parent>
         <artifactId>device-detection</artifactId>
         <groupId>com.51degrees</groupId>
-        <version>3.2.15.3</version>
+        <version>3.2.16.4</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -46,6 +46,11 @@
             <version>1.7.22</version>
             <scope>test</scope>
             <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>com.blueconic</groupId>
+            <artifactId>browscap-java</artifactId>
+            <version>1.0.1</version>
         </dependency>
     </dependencies>
     <build>

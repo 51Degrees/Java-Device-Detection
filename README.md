@@ -33,7 +33,7 @@ You can also get a package with examples and a package with WebApp example servl
 **Server Side and Offline projects:** Initialize detector like...
 
 ```java
-Provider p new Provider(StreamFactory.create("path_to_data_file", false));
+Provider p = new Provider(StreamFactory.create("path_to_data_file", false));
 Match match = p.match("HTTP User-Agent string");
 ```
 
@@ -99,6 +99,11 @@ Data files which are updated weekly and daily, automatically, and with more prop
 
 
 ## Recent Changes
+
+### Version 3.2.16.4 Highlights:
+Updated the Lite data files for September 2017 data.
+
+Added an example which can be used to compare mainstream Device-Detection APIs
 
 ### Version 3.2.15.3 Highlights:
 
