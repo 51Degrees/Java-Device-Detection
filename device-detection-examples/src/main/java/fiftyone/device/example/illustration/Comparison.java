@@ -508,6 +508,84 @@ public class Comparison {
             return fileContent;
         }
     }
+
+    /**
+     * Uncomment the following code blocks to test with 51Degrees Hash Trie.
+     * The FiftyOneDegreesTrieV3 jar will need building and adding as a dependency
+     * to this project. This can be found at:
+     * https://github.com/51Degrees/Device-Detection
+     */
+    static class FiftyOneDegreesHashTrieProvider implements ComparisonProvider {
+        /** UNCOMMENT FOR 51D HASH TRIE **/
+        // private FiftyOneDegreesTrieV3.Provider provider;
+        private ArrayList<String> availableProperties = new ArrayList<String>();
+        String isMobile, hardwareVendor, hardwareModel, browserName,
+                browserVersion, deviceType;
+
+        FiftyOneDegreesHashTrieProvider(String dataFile) {
+            /** UNCOMMENT FOR 51D HASH TRIE **/
+            /**
+            try {
+                FiftyOneDegreesTrieV3.LibLoader.load("/FiftyOneDegreesTrieV3.dll");
+            } catch (IOException e) {
+                System.out.printf("Failed to load FiftyOneDegreesTrieV3.dll");
+                e.printStackTrace();
+            }
+            provider = new FiftyOneDegreesTrieV3.Provider(
+                    dataFile,
+                    "IsMobile,BrowserName,BrowserVersion,HardwareName," +
+                            "HardwareVendor,HardwareModel,DeviceType"
+            );
+            FiftyOneDegreesTrieV3.VectorString propertiesVector =  provider.getAvailableProperties();
+            for (int i = 0; i < propertiesVector.size(); i++) {
+                availableProperties.add(propertiesVector.get(i));
+            }
+            isMobile = availableProperties.contains("IsMobile") ?
+                    "IsMobile" : null;
+            hardwareVendor = availableProperties.contains("HardwareVendor") ?
+                    "HardwareVendor" : null;
+            hardwareModel = availableProperties.contains("HardwareModel") ?
+                    "HarwareModel" : null;
+            browserName = availableProperties.contains("BrowserName") ?
+                    "BrowserName" : null;
+            browserVersion = availableProperties.contains("BrowserVersion") ?
+                    "BrowserVersion" : null;
+            deviceType = availableProperties.contains("DeviceType") ?
+                    "DeviceType" : null;
+            **/
+        }
+
+        @Override
+        public void calculateResult(String userAgent, Result result) throws Exception {
+            /** UNCOMMENT FOR 51D HASH TRIE **/
+            /**
+            FiftyOneDegreesTrieV3.Match match = provider.getMatch(userAgent);
+
+            result.isMobile = isMobile != null && match.getValue(isMobile) == "True" ?
+                    true : false;
+            result.browserName = browserName != null ?
+                    match.getValue(browserName) : UNSUPPORTED_VALUE;
+            result.browserVersion = browserVersion != null ?
+                    match.getValue(browserVersion) :
+                    UNSUPPORTED_VALUE;
+            result.hardwareVendor = hardwareVendor != null ?
+                    match.getValue(hardwareVendor) :
+                    UNSUPPORTED_VALUE;
+            result.hardwareModel = hardwareModel != null ?
+                    match.getValue(hardwareModel) :
+                    UNSUPPORTED_VALUE;
+            result.deviceType = deviceType != null ?
+                    match.getValue(deviceType) : UNSUPPORTED_VALUE;
+            result.difference = -1;
+             **/
+        }
+
+        @Override
+        public void close() throws IOException {
+            /** UNCOMMENT FOR 51D HASH TRIE **/
+            // provider.delete();
+        }
+    }
     
     /**
      * An MIT licence implementation of BrowsCap project.
@@ -898,6 +976,31 @@ public class Comparison {
             }
         }
     }
+
+    private static void runFiftyOneDegreesHashTrie(
+            ArrayList<String> providerNames,
+            LinkedList<Request> requests,
+            int numberOfThreads,
+            String dataFile) throws IOException, InterruptedException {
+        if (dataFile != null && new File(dataFile).exists()) {
+            providerNames.add("51DHashTrie");
+            System.out.printf("Processing 51Degrees Hash Trie File: %s\r\n",
+                    dataFile);
+            long startTime = System.currentTimeMillis();
+            ComparisonProvider fodhtf = new FiftyOneDegreesHashTrieProvider(
+                    dataFile);
+            long endTime = System.currentTimeMillis();
+            System.out.printf(
+                    "Initialised 51Degrees Hash Trie file provider in %d ms\r\n",
+                    endTime - startTime);
+            try {
+                runComparison(fodhtf, requests, numberOfThreads);
+            }
+            finally {
+                fodhtf.close();
+            }
+        }
+    }
     
     private static void runWurfl(
             ArrayList<String> providerNames,
@@ -990,6 +1093,7 @@ public class Comparison {
     private static void runComparisons(
         String userAgentsFile,
         String fiftyOneDegreesFile,
+        String fiftyoneDegreesHashTrieFile,
         String wurflFile,
         String deviceAtlasFile,
         String csvOutputFile,
@@ -1020,6 +1124,11 @@ public class Comparison {
                 cacheSize, 
                 numberOfThreads, 
                 fiftyOneDegreesFile);
+        runFiftyOneDegreesHashTrie(
+                providerNames,
+                requests,
+                numberOfThreads,
+                fiftyoneDegreesHashTrieFile);
         runWurfl(
                 providerNames,
                 requests,
@@ -1039,7 +1148,7 @@ public class Comparison {
     
     /**
      * Instantiates this class and starts 
-     * {@link #runComparisons(String, String, String, String, String, int)} 
+     * {@link #runComparisons(String, String, String, String, String, String, int)}
      * with parameters from the command line. When run from the command line
      * the first and last file arguments must be a file of User-Agents and the
      * file that the comparison results will be written to. Files between the
@@ -1073,12 +1182,14 @@ public class Comparison {
         /**
          * Execute the comparison now the data has been gathered.
          *
-         * NOTE: Modify the following code to test with Device Atlas and
-         * WURFL, replace null with the path to the corresponding data file.
+         * NOTE: Modify the following code to test with Device Atlas,
+         * WURFL, and 51Degrees Hash Trie, replace null with the path
+         * to the corresponding data file.
         **/
         runComparisons(
                 args[0], // The file containing User-Agents
                 args[1], // The 51Degrees data file
+                null, // The 51Degrees Hash Trie data file
                 null, // The WURFL data file
                 null, // The DA data file
                 args[2], // The output CSV file
