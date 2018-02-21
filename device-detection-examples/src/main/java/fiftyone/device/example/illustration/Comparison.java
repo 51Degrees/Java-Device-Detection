@@ -63,6 +63,25 @@ import com.blueconic.browscap.UserAgentService;
 
 /**
  * <!-- tutorial -->
+ * <h3>Configuration</h3>
+ * <p>
+ * As standard the Hash provider is available by uncommenting the code starting at the FiftyOneDegreesHashTrieProvider method and then adding the compiled Hash JAR as a dependency which can be found <a href="https://github.com/51Degrees/Device-Detection/blob/master/java/trie/target/">here</a>.
+ * <p>
+ * <p>
+ * You can build a new version of the dependency by cloning this repository and following these steps:
+ * <p>
+ * <i>NOTE: SWIG and and Maven are required to compile a new JAR dependency</i>
+ * <pre class="prettyprint lang-sh">
+ * <code>
+ * git clone https://github.com/51Degrees/Device-Detection</br>
+ * cd Device-Detection/java/</br>
+ * build.sh (build.bat for Windows)</br>
+ * cd trie</br>
+ * mvn install</br>
+ * </code>
+ * </pre>
+ * <p>
+ * Add the compiled JAR file to your project and ensure you add a reference to your Hash Trie data file when you run the comparison.
  * <p>
  * Compares multiple device detection methods for accuracy and performance 
  * outputting a single CSV file where each row contains the results from one
