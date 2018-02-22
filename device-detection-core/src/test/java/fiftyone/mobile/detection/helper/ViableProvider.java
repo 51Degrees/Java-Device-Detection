@@ -30,6 +30,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 
@@ -49,8 +51,33 @@ public class ViableProvider {
      * @throws IOException - because provider.match can throw an exception
      */
     public static void ensureViableProvider(Provider provider) throws IOException {
+        testString(provider);
+        testMap(provider);
+    }
+    
+    /**
+     * Tests provider using a User-Agent string.
+     * @param provider to test
+     * @throws IOException - because provider.match can throw an exception
+     */
+    public static void testString(Provider provider) throws IOException {
         Match match = provider.match(TEST_USER_AGENT);
-        logger.debug(TEST_USER_AGENT);
+        logger.debug("string - " + TEST_USER_AGENT);
+        assertEquals("Match method should be exact", MatchMethods.EXACT, match.getMethod());
+        assertEquals("Is a mobile device", true, match.getValues("IsMobile").toBool());
+        assertEquals("Screen width should be 640", 640.0, match.getValues("ScreenPixelsWidth").toDouble(),0);
+    }
+      
+    /**
+     * Tests provider using a HashMap containing a header and a User-Agent. 
+     * @param provider to test
+     * @throws IOException - because provider.match can throw an exception
+     */
+    public static void testMap(Provider provider) throws IOException {
+        Map<String, String> map = new HashMap<String, String>();
+        map.put("User-Agent", TEST_USER_AGENT);
+        Match match = provider.match(map);
+        logger.debug("map - " + TEST_USER_AGENT);
         assertEquals("Match method should be exact", MatchMethods.EXACT, match.getMethod());
         assertEquals("Is a mobile device", true, match.getValues("IsMobile").toBool());
         assertEquals("Screen width should be 640", 640.0, match.getValues("ScreenPixelsWidth").toDouble(),0);

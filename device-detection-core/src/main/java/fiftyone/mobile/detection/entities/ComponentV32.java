@@ -81,19 +81,27 @@ public class ComponentV32 extends Component {
             synchronized(this) {
                 localHttpHeaders = httpHeaders;
                 if (localHttpHeaders == null) {
-                    List<String> tempList = new ArrayList<String>();
-                    for (int element : httpHeaderOffsets) {
-                        tempList.add(dataSet.strings.get(element).toString());
-                    }
-                    httpHeaders = localHttpHeaders = 
-                            tempList.toArray(new String[tempList.size()]);
-                    tempList.clear();
+                    httpHeaders = localHttpHeaders = loadHttpheaders();
                 }
             }
         }
         return localHttpHeaders;
     }
+    
     @SuppressWarnings("VolatileArrayField")
     private volatile String[] httpHeaders;
     
+    @Override
+    public void init() throws IOException {
+        super.init();
+        httpHeaders = loadHttpheaders();
+    }
+    
+    private String[] loadHttpheaders() throws IOException {
+        List<String> tempList = new ArrayList<String>();
+        for (int element : httpHeaderOffsets) {
+            tempList.add(dataSet.strings.get(element).toString());
+        }
+        return tempList.toArray(new String[tempList.size()]);
+    }
 }

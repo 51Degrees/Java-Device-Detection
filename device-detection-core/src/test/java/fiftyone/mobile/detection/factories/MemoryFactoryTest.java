@@ -33,6 +33,8 @@ import java.io.File;
 import java.io.FileInputStream;
 
 import static fiftyone.mobile.detection.helper.ViableProvider.ensureViableProvider;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -42,10 +44,20 @@ public class MemoryFactoryTest extends StandardUnitTest {
 
     @Test
     public void testCreateFromStream() throws Exception {
+        testCreate(false);
+    }
+        
+    @Test
+    public void testCreateFromStreamWithInit() throws Exception {
+        testCreate(true);
+    }
+    
+    private void testCreate(boolean init) 
+            throws FileNotFoundException, IOException {
         File testFile = new File(Filename.LITE_PATTERN_V32);
         FileInputStream fileInputStream = new FileInputStream(testFile);
         try {
-            Dataset dataset = MemoryFactory.create(fileInputStream);
+            Dataset dataset = MemoryFactory.create(fileInputStream, init);
             try {
                 Provider provider = new Provider(dataset);
                 ensureViableProvider(provider);
