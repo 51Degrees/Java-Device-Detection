@@ -70,10 +70,12 @@ public class DatasetHelper {
 
 
     public static void cacheTests(Provider provider) throws IOException {
+        // When ensureViableProvider is called, 2 cache requests are made. 1 for
+        // testMap and 1 for testString.
         ViableProvider.ensureViableProvider(provider);
         IndirectDataset dataset = (IndirectDataset) provider.dataSet;
         assertEquals(1, provider.getCacheMisses());
-        assertEquals(1, provider.getCacheRequests(), 0);
+        assertEquals(2, provider.getCacheRequests(), 0);
         printDatasetCacheInfo(dataset);
 
         long stringsRequests = dataset.getCache(StringsCache).getCacheRequests();
@@ -91,7 +93,7 @@ public class DatasetHelper {
         // check that the requests go up and that nothing hits the backend caches
         ViableProvider.ensureViableProvider(provider);
         assertEquals(1, provider.getCacheMisses());
-        assertEquals(2, provider.getCacheRequests(), 0);
+        assertEquals(4, provider.getCacheRequests(), 0);
         assertEquals(stringsRequests, dataset.getCache(StringsCache).getCacheRequests());
         assertEquals(stringsMisses, dataset.getCache(StringsCache).getCacheMisses());
         assertEquals(nodesRequests, dataset.getCache(NodesCache).getCacheRequests());
@@ -111,7 +113,7 @@ public class DatasetHelper {
         // again check that the requests go up and that nothing hits the backend caches
         ViableProvider.ensureViableProvider(provider);
         assertEquals(1, provider.getCacheMisses());
-        assertEquals(3, provider.getCacheRequests(), 0);
+        assertEquals(6, provider.getCacheRequests(), 0);
         assertEquals(stringsRequests, dataset.getCache(StringsCache).getCacheRequests());
         assertEquals(stringsMisses, dataset.getCache(StringsCache).getCacheMisses());
         assertEquals(nodesRequests, dataset.getCache(NodesCache).getCacheRequests());
