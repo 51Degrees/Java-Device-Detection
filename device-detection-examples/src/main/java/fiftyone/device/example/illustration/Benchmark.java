@@ -188,7 +188,7 @@ public class Benchmark {
      * <a href="https://51degrees.com/compare-data-options">compare data options
      * </a>
      * 
-     * @param userAgentFile
+     * @param userAgentFile path to the source User-Agents file.
      * @throws IOException if there was a problem reading from the data file.
      */
     public Benchmark(String userAgentFile) 
@@ -209,7 +209,7 @@ public class Benchmark {
      * @param dataSet to be used for the benchmark.
      * @param numberOfThreads
      * @throws IOException if there was a problem reading from the data file.
-     * @throws InterruptedException
+     * @throws InterruptedException if one of the benchmark threads is interrupted.
      */
     public void run(Dataset dataSet, int numberOfThreads)
             throws IOException, InterruptedException {
@@ -354,8 +354,8 @@ public class Benchmark {
      * command line.
      * 
      * @param args command line arguments.
-     * @throws IOException
-     * @throws InterruptedException
+     * @throws IOException if the data file cannot be accessed.
+     * @throws InterruptedException if the benchmark threads are interrupted.
      */
     public static void main(String[] args) 
             throws IOException, InterruptedException {

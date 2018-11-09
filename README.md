@@ -100,6 +100,9 @@ Data files which are updated weekly and daily, automatically, and with more prop
 
 ## Recent Changes
 
+### Version 3.2.18.1 Highlights:
+Updated the Lite data files for November 2018 data.
+
 ### Version 3.2.16.4 Highlights:
 Updated the Lite data files for September 2017 data.
 

@@ -67,17 +67,16 @@ import com.blueconic.browscap.UserAgentService;
  * <p>
  * As standard the Hash provider is available by uncommenting the code starting at the FiftyOneDegreesHashTrieProvider method and then adding the compiled Hash JAR as a dependency which can be found <a href="https://github.com/51Degrees/Device-Detection/blob/master/java/trie/target/">here</a>.
  * <p>
- * <p>
  * You can build a new version of the dependency by cloning this repository and following these steps:
  * <p>
  * <i>NOTE: SWIG and and Maven are required to compile a new JAR dependency</i>
  * <pre class="prettyprint lang-sh">
  * <code>
- * git clone https://github.com/51Degrees/Device-Detection</br>
- * cd Device-Detection/java/</br>
- * build.sh (build.bat for Windows)</br>
- * cd trie</br>
- * mvn install</br>
+ * git clone https://github.com/51Degrees/Device-Detection<br>
+ * cd Device-Detection/java/<br>
+ * build.sh (build.bat for Windows)<br>
+ * cd trie<br>
+ * mvn install<br>
  * </code>
  * </pre>
  * <p>
@@ -1178,6 +1177,8 @@ public class Comparison {
      * operation.
      * 
      * @param args command line arguments.
+     * @throws IOException if the data file cannot be accessed.
+     * @throws InterruptedException if the comparison threads are interrupted.
      */
     public static void main(String[] args) 
             throws IOException, InterruptedException {
